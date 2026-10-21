@@ -29,10 +29,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Assemble site
         run: |
           mkdir -p _site/content
           cp -r site/. _site/
+          python3 tools/write_build_info.py _site/data/build.json
           cp README.md ROADMAP.md CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md _site/content/
           cp -r docs research _site/content/
           for f in _site/data/*.json; do python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done

@@ -23,3 +23,6 @@ site/content/
 # Single-file build output
 hound-protocol.html
 _bundle.html
+
+# Generated at build time
+site/data/build.json

@@ -10,7 +10,7 @@
 | `.dat`, `.fpk` | Game archive and pack formats |
 | FOB | Forward Operating Base, the game's online base-invasion mode |
 | GNS | GameNetworkingSockets, Valve's networking library (open-source version without relay) |
-| Host | The player who runs the session as Venom Snake; authoritative for game state |
+| Host | The player who runs the session in Venom Snake's place (helicopter seat, Command Center, briefings, cutscenes); authoritative for game state |
 | IH | Infinite Heaven, a large MGSV gameplay mod |
 | IHHook | MIT-licensed proxy DLL that extends the game for Infinite Heaven; can load plugins |
 | MGO | Metal Gear Online, the game's online multiplayer mode |

@@ -1,13 +1,17 @@
 {
   "project": "Joint Operations",
   "team": "Hound Protocol",
-  "tagline": "Multiplayer for up to 16 players in the open world of Metal Gear Solid V",
+  "tagline": "Multiplayer mod for Metal Gear Solid V for up to 16 players",
   "version": "0.0.1",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
   "siteUrl": "https://hound-protocol.github.io/Joint-Operations/",
-  "logo": { "src": "", "alt": "Joint Operations logo", "opacity": 0.18 },
+  "logo": {
+    "src": "",
+    "alt": "Joint Operations logo",
+    "opacity": 0.18
+  },
   "links": {
     "discord": "",
     "discordIcon": "",

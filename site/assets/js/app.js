@@ -283,7 +283,7 @@
       case "download":
         if (data.releases === undefined) return "Checking releases";
         if (data.releases && data.releases.length) return "Latest " + (data.releases[0].tag_name || "") + " · " + fmtDate(data.releases[0].published_at);
-        return "Build " + cfg.version + " · " + cfg.stage + " · No public release yet";
+        return buildLabel() + " · " + cfg.stage + " · No public release yet";
       case "sessions":
         var n = data.servers ? (data.servers.servers || []).length : 0;
         return n ? plural(n, "session") + " listed" : "No sessions online";
@@ -302,7 +302,7 @@
   }
   function renderMenu() {
     $("#menu").innerHTML = ITEMS.map(function (it, n) {
-      return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '"><i class="hl"></i><span class="t">' + esc(it.title) + '</span><span class="d">' + esc(it.desc) + "</span></a>";
+      return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + esc(it.title) + '</span><span class="win" aria-hidden="true"><span class="d"></span></span></a>';
     }).join("");
     $$("#menu a").forEach(function (a) {
       var n = +a.dataset.n;
@@ -317,9 +317,23 @@
         : '<span class="btn off" aria-disabled="true" title="Invite link coming soon">' + l[2] + l[0] + "</span>";
     }).join("");
   }
+  function typeInto(el, text) {
+    el.textContent = "";
+    for (var k = 0; k < text.length; k++) {
+      var c = document.createElement("span"); c.className = "ch"; c.textContent = text[k] === " " ? "\u00a0" : text[k];
+      c.style.animationDelay = (k * 9) + "ms"; el.appendChild(c);
+    }
+    var cur = document.createElement("i"); cur.className = "cur"; el.appendChild(cur);
+  }
   function select(n, focus) {
+    var prev = cur;
     cur = (n + ITEMS.length) % ITEMS.length;
-    $$("#menu a").forEach(function (a, j) { a.classList.toggle("on", j === cur); });
+    $$("#menu a").forEach(function (a, j) {
+      var on = j === cur, d = a.querySelector(".d");
+      if (on && (!a.classList.contains("on") || prev !== cur || !d.childNodes.length)) typeInto(d, ITEMS[j].desc);
+      if (!on && d) d.textContent = "";
+      a.classList.toggle("on", on);
+    });
     if (focus) { var a = $$("#menu a")[cur]; if (a) a.focus({ preventScroll: false }); }
     led($("#ledInfo"), itemInfo(ITEMS[cur].id));
   }
@@ -340,29 +354,57 @@
   var ICON_LNX = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13"/><path d="M8 21h8M12 17v4M7 9l3 2-3 2M12 13h4"/></svg>';
 
   /* Briefing */
+  function hl(t) { return esc(t).replace(/\{\{([^}]+)\}\}/g, '<mark class="key">$1</mark>'); }
+  function sessionDiagram() {
+    var W = 400, C = 200, R = 150, out = '<svg class="bf-dia" viewBox="0 0 ' + W + ' 400" role="img" aria-label="Session diagram: one host at the center connected to fifteen soldier slots">';
+    var pts = [];
+    for (var k = 0; k < 15; k++) { var a = -Math.PI / 2 + k * (2 * Math.PI / 15); pts.push([C + R * Math.cos(a), C + R * Math.sin(a)]); }
+    pts.forEach(function (p) { out += '<line class="link" x1="' + C + '" y1="' + C + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"/><line class="flow" x1="' + C + '" y1="' + C + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"/>'; });
+    out += '<circle cx="' + C + '" cy="' + C + '" r="' + R + '" fill="none" stroke="var(--line)" stroke-dasharray="2 6"/>';
+    pts.forEach(function (p, k) {
+      out += '<g class="node soldier" style="--k:' + (k + 1) + '"><circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="15"/><text x="' + p[0].toFixed(1) + '" y="' + (p[1] + 3).toFixed(1) + '" text-anchor="middle">' + (k < 8 ? "0" : "") + (k + 2) + "</text></g>";
+    });
+    out += '<g class="node host" style="--k:0"><circle class="ring" cx="' + C + '" cy="' + C + '" r="30"/><circle class="core" cx="' + C + '" cy="' + C + '" r="30"/><text x="' + C + '" y="' + (C + 4) + '" text-anchor="middle">HOST</text></g>';
+    out += '<text class="cap" x="' + C + '" y="392" text-anchor="middle">1 HOST · 15 SOLDIER SLOTS</text></svg>';
+    return out;
+  }
+  function countUp(el) {
+    var to = +el.dataset.to, t0 = null;
+    if (!opts.motion || to === 0) { el.textContent = to; return; }
+    function step(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 900); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
   function viewBriefing() {
     var v = $("#view");
     v.innerHTML = shell("Overview", "Briefing", loading("Loading briefing"));
     Promise.all([loadLocal("briefing"), loadRoadmap()]).then(function () {
       if (currentView !== "briefing") return;
-      var b = data.briefing || { summary: [], facts: [], principles: [] }, r = data.roadmap || [], ph = currentPhase();
-      var body = '<div class="brief"><div class="brief-main">' +
-        '<p class="lead">' + esc(cfg.tagline || "") + "</p>" +
-        (b.summary || []).map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") +
-        '<div class="label">Principles</div><ol class="steps">' + (b.principles || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ol>" +
-        '<div class="toolbar" style="margin-top:16px"><a class="btn primary" href="#/contribute">Join the Protocol</a><a class="btn" href="#/docs/roadmap">Full roadmap</a><a class="btn" href="#/devlog">Dev log</a></div></div>' +
+      var b = data.briefing || {}, r = data.roadmap || [], ph = currentPhase(), host = b.host || { places: [] };
+      var idx = r.indexOf(ph), prog = r.length ? Math.round(((idx < 0 ? 0 : idx) + (ph && ph.total ? ph.done / ph.total : 0)) / r.length * 100) : 0;
+      var html = '<div class="bf">' +
+        '<section class="bf-sec bf-hero"><div><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" + (b.summary || []).map(function (t) { return "<p>" + hl(t) + "</p>"; }).join("") +
+        '<div class="toolbar" style="margin-top:18px"><a class="btn primary" href="#/contribute">Join the Protocol</a><a class="btn" href="#/docs/plan">Read the plan</a></div></div>' + sessionDiagram() + "</section>" +
+        '<section class="bf-sec bf-stats">' + (b.stats || []).map(function (st) { return '<div class="bf-stat"><b data-to="' + (+st[0]) + '">0</b><span>' + esc(st[1]) + "</span></div>"; }).join("") + "</section>" +
+        '<section class="bf-sec bf-host"><div><h3>' + esc(host.title || "") + "</h3><p>" + hl(host.text || "") + '</p></div><ul class="bf-places">' + (host.places || []).map(function (pl, k) { return '<li style="--k:' + k + '">' + esc(pl) + "</li>"; }).join("") + "</ul></section>" +
+        '<section class="bf-sec"><h3 class="bf-flow-h">How a session works</h3><ol class="bf-flow">' + (b.flow || []).map(function (f, k) { return '<li style="--k:' + k + '"><b>' + esc(f[0]) + "</b><span>" + esc(f[1]) + "</span></li>"; }).join("") + "</ol></section>" +
+        '<section class="bf-sec"><h3 class="bf-flow-h">Roadmap</h3>' + (r.length ? '<div class="bf-road" style="--p:' + prog + '%"><i class="fill"></i>' + r.map(function (p) {
+          var state = p === ph ? "now" : (p.total && p.done === p.total ? "done" : "next");
+          return '<div class="ph ' + state + '"><div class="n">Phase ' + p.n + (state === "now" ? " · Now" : state === "done" ? " · Done" : "") + '</div><div class="tt">' + esc(p.title) + '</div><div class="c">' + p.done + " / " + p.total + " tasks</div></div>";
+        }).join("") + '</div><p class="source">Progress counted from ROADMAP.md checklists</p>' : '<div class="empty">Roadmap unavailable</div>') + "</section>" +
+        '<section class="bf-sec bf-two"><div><div class="label">Principles</div><ol class="steps">' + (b.principles || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ol></div>" +
         '<aside class="panel"><div class="label">At a glance</div>' + (b.facts || []).map(function (f) { return '<div class="kv"><span>' + esc(f[0]) + "</span><b>" + esc(f[1]) + "</b></div>"; }).join("") +
-        '<div class="kv"><span>Stage</span><b><span class="pill warn">' + esc(cfg.stage) + "</span></b></div></aside></div>";
-      body += '<div class="label" style="margin-top:26px">Roadmap' + (ph ? " · current phase " + ph.n : "") + "</div>";
-      body += r.length ? '<ol class="phases">' + r.map(function (p) {
-        var pct = p.total ? Math.round(p.done / p.total * 100) : 0, state = p === ph ? "now" : p.done === p.total && p.total ? "done" : "next";
-        return '<li class="phase ' + state + '"><div class="ph-h"><span class="ph-n">Phase ' + p.n + '</span><span class="ph-s">' + (state === "now" ? "In progress" : state === "done" ? "Complete" : "Planned") + "</span></div>" +
-          '<div class="ph-t">' + esc(p.title) + '</div><div class="meter"><i style="width:' + pct + '%"></i></div><div class="ph-c">' + p.done + " / " + p.total + " tasks</div></li>";
-      }).join("") + "</ol>" + '<p class="source">Source: ROADMAP.md · progress is counted from its checklists</p>'
-        : '<div class="empty">Roadmap unavailable<small>ROADMAP.md could not be loaded.</small></div>';
-      $("#vb").innerHTML = body;
+        '<div class="kv"><span>Stage</span><b><span class="pill warn">' + esc(cfg.stage) + "</span></b></div></aside></section></div>";
+      $("#vb").innerHTML = html;
+      revealSections();
       refreshInfo();
     });
+  }
+  function revealSections() {
+    var secs = $$(".bf-sec");
+    function show(el) { if (el.classList.contains("in")) return; el.classList.add("in"); $$("[data-to]", el).forEach(countUp); }
+    if (!("IntersectionObserver" in window)) { secs.forEach(show); return; }
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } }); }, { root: $("#center"), threshold: 0.15 });
+    secs.forEach(function (el, k) { setTimeout(function () { io.observe(el); }, k * 90); });
   }
 
   /* Dev log */
@@ -694,7 +736,7 @@
       '<div><div class="label">Data</div>' +
       '<div class="orow"><span>GitHub data<small>Releases and contracts are cached for ' + (cfg.cacheMinutes || 10) + ' minutes</small></span><button class="btn small" id="oclr">Refresh now</button></div>' +
       '<div class="orow"><span>Repository<small>' + esc(cfg.repo) + '</small></span><a class="btn small" href="' + repoUrl() + '" target="_blank" rel="noopener noreferrer">Open</a></div>' +
-      '<div class="orow"><span>Site build<small>' + esc(cfg.version) + " · " + esc(cfg.stage) + "</small></span><span></span></div>" +
+      '<div class="orow"><span>Site build<small>' + esc(buildLabel()) + " · " + esc(cfg.stage) + (data.build && data.build.date ? " · " + esc(fmtDate(data.build.date)) : "") + "</small></span><span></span></div>" +
       '<div class="orow"><span>Privacy<small>No cookies, analytics or trackers</small></span><a class="btn small" href="#/docs/privacy">Read</a></div>' +
       '<div class="label">Reset</div>' +
       '<div class="orow"><span>Restore defaults<small>Resets every setting on this page</small></span><button class="btn small" id="orst">Reset</button></div></div></div>' +
@@ -712,7 +754,18 @@
 
   /* ---------------- Router ---------------- */
   var VIEWS = { briefing: viewBriefing, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var flashTimer;
+  function flash() {
+    var x = $(".xfer"), st = $("#stage");
+    if (!x || !opts.motion) return;
+    x.classList.remove("go"); st.classList.remove("going"); void x.offsetWidth;
+    x.classList.add("go"); st.classList.add("going");
+    clearTimeout(flashTimer); flashTimer = setTimeout(function () { x.classList.remove("go"); st.classList.remove("going"); }, 400);
+  }
+  var booted = false;
   function route() {
+    if (booted) flash();
+    booted = true;
     var parts = (location.hash || "").replace(/^#\/?/, "").split("/"), name = parts[0];
     var menu = $("#menuView"), view = $("#view");
     $("#keys").innerHTML = VIEWS[name] ? "<kbd>←</kbd><kbd>→</kbd>Section<kbd>Esc</kbd>Menu" : "<kbd>↑</kbd><kbd>↓</kbd>Select<kbd>Enter</kbd>Confirm";
@@ -765,11 +818,15 @@
   };
 
   /* ---------------- Boot ---------------- */
+  function buildLabel() {
+    var b = data.build;
+    return "Build " + cfg.version + (b && b.build ? "." + b.build : "") + (b && b.sha ? " · " + String(b.sha).slice(0, 7) : "");
+  }
   function applyConfig() {
     $("#teamName").textContent = cfg.team;
     $("#projectName").textContent = cfg.project;
     $("#tagline").textContent = cfg.tagline || "";
-    $("#build").textContent = "Build " + cfg.version + " · " + cfg.stage;
+    $("#build").textContent = buildLabel() + " · " + cfg.stage;
     document.title = cfg.team + " · " + cfg.project;
     var logo = cfg.logo || {};
     if (logo.src) {
@@ -789,7 +846,7 @@
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });
   }, function () { /* keep defaults */ }).then(function () {
-    applyConfig(); renderMenu(); select(cur, false); route(); preload();
+    loadLocal("build").then(function () { applyConfig(); renderMenu(); select(cur, false); route(); preload(); });
   });
   window.addEventListener("hashchange", route);
 })();

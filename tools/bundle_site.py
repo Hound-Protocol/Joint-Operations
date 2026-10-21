@@ -13,6 +13,13 @@ def safe(text):
     return text.replace("</", "<\\/")
 
 data = {n: json.loads((site / "data" / f"{n}.json").read_text()) for n in ["config", "servers", "mods", "docs", "contracts", "briefing", "devlog"]}
+import subprocess
+def _git(*a):
+    return subprocess.run(["git", *a], cwd=root, capture_output=True, text=True).stdout.strip()
+try:
+    data["build"] = {"build": int(_git("rev-list", "--count", "HEAD")), "sha": _git("rev-parse", "HEAD"), "date": _git("log", "-1", "--format=%cI")}
+except ValueError:
+    pass
 data["content"] = {}
 for d in data["docs"]["docs"] + [{"path": "ROADMAP.md"}]:
     f = root / d["path"]
