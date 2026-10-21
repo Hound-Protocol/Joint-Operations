@@ -1,0 +1,15 @@
+{
+  "note": "Documentation library. Paths are relative to the repository root.",
+  "docs": [
+    { "id": "overview", "title": "Overview", "group": "Project", "path": "README.md" },
+    { "id": "roadmap", "title": "Roadmap", "group": "Project", "path": "ROADMAP.md" },
+    { "id": "team", "title": "Team", "group": "Project", "path": "docs/team.md" },
+    { "id": "architecture", "title": "Architecture", "group": "Technical", "path": "docs/architecture.md" },
+    { "id": "phase1", "title": "Phase 1 Research Plan", "group": "Technical", "path": "docs/phase1-research-plan.md" },
+    { "id": "research", "title": "Research Index", "group": "Technical", "path": "research/README.md" },
+    { "id": "contributing", "title": "Contributing", "group": "Community", "path": "CONTRIBUTING.md" },
+    { "id": "discord", "title": "Discord Blueprint", "group": "Community", "path": "docs/discord.md" },
+    { "id": "recruiting", "title": "Recruiting", "group": "Community", "path": "docs/recruiting.md" },
+    { "id": "legal", "title": "Legal and Ethics", "group": "Legal", "path": "docs/legal.md" }
+  ]
+}

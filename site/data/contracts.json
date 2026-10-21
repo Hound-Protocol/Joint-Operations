@@ -1,0 +1,167 @@
+{
+  "note": "Planned contracts. Shown when no GitHub issues carry the contract label yet.",
+  "contracts": [
+    {
+      "id": "C01",
+      "title": "Pin game build and set up Windows test rig",
+      "module": "testing",
+      "size": "S",
+      "skills": "Windows, docs",
+      "depends": []
+    },
+    {
+      "id": "C02",
+      "title": "Proton test rig and setup guide",
+      "module": "testing",
+      "size": "M",
+      "skills": "Linux, Proton",
+      "depends": [
+        "C01"
+      ]
+    },
+    {
+      "id": "C03",
+      "title": "Survey public MGSV modding tools and docs",
+      "module": "hooks",
+      "size": "M",
+      "skills": "Research",
+      "depends": []
+    },
+    {
+      "id": "C04",
+      "title": "Document mod loading path (Windows)",
+      "module": "launcher",
+      "size": "L",
+      "skills": "Reverse engineering, C++",
+      "depends": [
+        "C03"
+      ]
+    },
+    {
+      "id": "C05",
+      "title": "Document mod loading path (Proton)",
+      "module": "launcher",
+      "size": "L",
+      "skills": "Reverse engineering, Linux",
+      "depends": [
+        "C04"
+      ]
+    },
+    {
+      "id": "C06",
+      "title": "Player and companion representation notes",
+      "module": "hooks",
+      "size": "L",
+      "skills": "Reverse engineering",
+      "depends": [
+        "C04"
+      ]
+    },
+    {
+      "id": "C07",
+      "title": "Mother Base roster notes",
+      "module": "hooks",
+      "size": "M",
+      "skills": "Reverse engineering",
+      "depends": [
+        "C04"
+      ]
+    },
+    {
+      "id": "C08",
+      "title": "State inventory and sync priorities",
+      "module": "session",
+      "size": "M",
+      "skills": "Netcode, research",
+      "depends": [
+        "C06"
+      ]
+    },
+    {
+      "id": "C09",
+      "title": "Spike: GameNetworkingSockets, Steam Messages vs Sockets",
+      "module": "net",
+      "size": "L",
+      "skills": "C++, networking",
+      "depends": []
+    },
+    {
+      "id": "C10",
+      "title": "Simulate 16 clients and measure bandwidth",
+      "module": "net",
+      "size": "M",
+      "skills": "C++, tooling",
+      "depends": [
+        "C09"
+      ]
+    },
+    {
+      "id": "C11",
+      "title": "Mock Steam DLL for one-PC testing",
+      "module": "testing",
+      "size": "L",
+      "skills": "C++",
+      "depends": []
+    },
+    {
+      "id": "C12",
+      "title": "Bad-network test profiles (clumsy, tc netem)",
+      "module": "testing",
+      "size": "S",
+      "skills": "Tooling",
+      "depends": []
+    },
+    {
+      "id": "C13",
+      "title": "Summarize networking playbook in our own words",
+      "module": "docs",
+      "size": "S",
+      "skills": "Writing",
+      "depends": []
+    },
+    {
+      "id": "C14",
+      "title": "Draft Steam App ID and rights position",
+      "module": "legal",
+      "size": "M",
+      "skills": "Research",
+      "depends": []
+    },
+    {
+      "id": "C15",
+      "title": "Publish Phase 1 contracts as GitHub issues",
+      "module": "web",
+      "size": "S",
+      "skills": "GitHub",
+      "depends": []
+    },
+    {
+      "id": "C16",
+      "title": "Lobby app wireframes",
+      "module": "lobby",
+      "size": "M",
+      "skills": "UI design",
+      "depends": []
+    },
+    {
+      "id": "C17",
+      "title": "Mod API draft v0",
+      "module": "modapi",
+      "size": "L",
+      "skills": "API design",
+      "depends": [
+        "C08"
+      ]
+    },
+    {
+      "id": "C18",
+      "title": "Join and leave feasibility notes",
+      "module": "hooks",
+      "size": "L",
+      "skills": "Reverse engineering",
+      "depends": [
+        "C06"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hound Protocol · Joint Operations</title>
+<meta name="description" content="MGSV: Joint Operations, an unofficial fan-made multiplayer project for Metal Gear Solid V on PC, by Hound Protocol.">
+<meta name="theme-color" content="#0c0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@200;300;400;500&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="fx grid" aria-hidden="true"></div>
+  <div class="fx grid fine" aria-hidden="true"></div>
+  <div class="fx scan" aria-hidden="true"></div>
+  <div class="logo" id="logo" aria-hidden="true"><span>Logo</span></div>
+  <i class="ruler l" aria-hidden="true"></i><i class="ruler r" aria-hidden="true"></i>
+  <i class="corner c1" aria-hidden="true"></i><i class="corner c2" aria-hidden="true"></i>
+  <i class="corner c3" aria-hidden="true"></i><i class="corner c4" aria-hidden="true"></i>
+
+  <header class="bar top">
+    <span id="build">Build —</span>
+    <span class="keys"><kbd>↑</kbd><kbd>↓</kbd>Select<kbd>Enter</kbd>Confirm<kbd>Esc</kbd>Back</span>
+  </header>
+
+  <main class="center" id="center">
+    <div class="menu-wrap" id="menuView">
+      <div class="hd">
+        <div class="hd-a" id="teamName">Hound Protocol</div>
+        <h1 class="hd-b" id="projectName">Joint Operations</h1>
+      </div>
+      <div class="rule"></div>
+      <nav class="menu" id="menu" aria-label="Main menu"></nav>
+      <div class="rule short"></div>
+      <div class="links" id="links"></div>
+      <p class="disclaimer">Unofficial fan project. Not affiliated with or endorsed by Konami.</p>
+    </div>
+    <section class="view" id="view" hidden aria-live="polite"></section>
+  </main>
+
+  <footer class="bar bot">
+    <span class="led" id="ledInfo"></span>
+    <span class="led right" id="ledStatus" role="status"></span>
+  </footer>
+</div>
+<noscript><p class="noscript">This site needs JavaScript. The project lives at github.com/Hound-Protocol/Joint-Operations.</p></noscript>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

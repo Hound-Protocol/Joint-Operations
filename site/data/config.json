@@ -1,0 +1,11 @@
+{
+  "project": "Joint Operations",
+  "team": "Hound Protocol",
+  "version": "0.0.1",
+  "stage": "Pre-release",
+  "repo": "Hound-Protocol/Joint-Operations",
+  "branch": "main",
+  "logo": { "src": "", "alt": "Joint Operations logo", "opacity": 0.18 },
+  "links": { "discord": "", "github": "https://github.com/Hound-Protocol/Joint-Operations" },
+  "cacheMinutes": 10
+}
