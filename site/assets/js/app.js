@@ -342,7 +342,7 @@
   /* Briefing */
   function viewBriefing() {
     var v = $("#view");
-    v.innerHTML = shell(cfg.team, "Briefing", loading("Loading briefing"));
+    v.innerHTML = shell("Overview", "Briefing", loading("Loading briefing"));
     Promise.all([loadLocal("briefing"), loadRoadmap()]).then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || { summary: [], facts: [], principles: [] }, r = data.roadmap || [], ph = currentPhase();
@@ -400,7 +400,7 @@
   /* Download */
   function viewDownload() {
     var v = $("#view");
-    v.innerHTML = shell(cfg.team, "Download", loading("Checking releases on GitHub"));
+    v.innerHTML = shell("Releases", "Download", loading("Checking releases on GitHub"));
     loadReleases().then(function (rel) {
       if (currentView !== "download") return;
       var latest = rel && rel[0], body = "", pre = "";
@@ -515,6 +515,7 @@
   function viewContribute() {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Contribute", loading("Loading the contract board"));
+    cardsAnim = true;
     Promise.all([loadContracts(), loadLocal("contracts")]).then(function () { if (currentView === "contribute") drawContribute(); refreshInfo(); });
   }
   function drawContribute() {
@@ -537,7 +538,7 @@
         (c.module ? '<span class="pill">' + esc(MODULES[c.module] || c.module) + "</span>" : "") +
         (c.size ? '<span class="pill">' + esc(c.size) + " · " + (SIZE_PTS[c.size] || 0) + " pts</span>" : "") +
         (c.skills ? '<span class="pill">' + esc(c.skills) + "</span>" : "") + "</div>" +
-        '<div class="status ' + (c.blocked && c.status === "open" ? "claimed" : c.status === "planned" ? "open" : c.status) + '">' + label + (c.by && c.by.length ? " · " + esc(c.by.join(", ")) : "") + "</div>" +
+        '<div class="status ' + (c.blocked && c.status === "open" ? "claimed" : c.status) + '">' + label + (c.by && c.by.length ? " · " + esc(c.by.join(", ")) : "") + "</div>" +
         (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">Depends on ' + esc(c.depends.join(", ")) + "</div>" : "") +
         '<div class="actions">' + action + "</div></article>";
     }).join("");
@@ -566,7 +567,7 @@
         '<select class="field" id="cm" aria-label="Module">' + opt("all", conState.module, "All modules") + Object.keys(MODULES).map(function (k) { return opt(k, conState.module, MODULES[k]); }).join("") + "</select>" +
         '<select class="field" id="cs" aria-label="Status">' + opt("all", conState.status, "All statuses") + (live ? opt("open", conState.status, "Open") + opt("claimed", conState.status, "Claimed") + opt("review", conState.status, "In review") + opt("done", conState.status, "Done") : opt("planned", conState.status, "Planned")) + "</select>" +
         '<select class="field" id="cz" aria-label="Size">' + opt("all", conState.size, "All sizes") + opt("S", conState.size, "Small") + opt("M", conState.size, "Medium") + opt("L", conState.size, "Large") + "</select></div>" +
-        (board ? '<div class="cards">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
+        (board ? '<div class="cards' + (cardsAnim ? " anim" : "") + '">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
         '<p class="source">Source: ' + (live ? "GitHub issues labeled contract, live" : data.issues === null ? "data/contracts.json · GitHub could not be reached" : "data/contracts.json") + "</p>",
       how:
         '<div class="cols"><div class="panel"><div class="label">Taking a contract</div><ol class="steps">' +
@@ -586,6 +587,7 @@
         }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Operatives appear here when contracts are closed on GitHub.</small></div>')
     };
     $("#ctab").innerHTML = tabHtml[conTab];
+    cardsAnim = false;
     $$('[data-tab]').forEach(function (b) { b.addEventListener("click", function () { conTab = b.dataset.tab; drawContribute(); }); });
     if (conTab === "board") {
       $("#cq").addEventListener("input", function (e) { conState.q = e.target.value; var p = e.target.selectionStart; drawContribute(); var n = $("#cq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ } });
@@ -594,7 +596,7 @@
       $("#cz").addEventListener("change", function (e) { conState.size = e.target.value; drawContribute(); });
     }
   }
-  var conTab = "board";
+  var conTab = "board", cardsAnim = true;
 
   /* Mods */
   var modState = { tab: "compatible", q: "" };
@@ -727,7 +729,7 @@
     var same = currentView === name;
     currentView = name; lastView = name;
     menu.hidden = true; view.hidden = false; document.body.classList.add("in-view");
-    if (!same || name !== "docs") { view.innerHTML = ""; view.style.animation = "none"; void view.offsetWidth; view.style.animation = ""; $("#center").scrollTop = 0; }
+    if (!same || name !== "docs") { view.innerHTML = ""; $("#center").scrollTop = 0; }
     var item = ITEMS.filter(function (i) { return i.id === name; })[0];
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
@@ -783,10 +785,11 @@
     });
   }
   applyOpts();
+  renderMenu(); select(0, false);
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });
   }, function () { /* keep defaults */ }).then(function () {
-    applyConfig(); renderMenu(); select(0, false); route(); preload();
+    applyConfig(); renderMenu(); select(cur, false); route(); preload();
   });
   window.addEventListener("hashchange", route);
 })();

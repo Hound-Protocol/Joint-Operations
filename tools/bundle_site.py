@@ -23,6 +23,7 @@ def data_uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode(path.read_bytes()).decode()
 
 html = (site / "index.html").read_text()
+html = re.sub(r'<link rel="preload"[^>]*>\n', "", html)  # fonts are inlined below
 for name in ["emblem.svg", "favicon.svg"]:
     html = html.replace(f"assets/img/{name}", data_uri(site / "assets/img" / name, "image/svg+xml"))
 css = (site / "assets/css/main.css").read_text()
