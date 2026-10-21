@@ -141,8 +141,10 @@
     }, function () { data.issues = null; return null; });
   }
 
+  var EMBED = window.JO_EMBED || null; // set by tools/bundle_site.py for the single-file build
   function loadLocal(name) {
     if (data[name]) return Promise.resolve(data[name]);
+    if (EMBED && EMBED[name]) { data[name] = EMBED[name]; return Promise.resolve(data[name]); }
     return fetchJSON("data/" + name + ".json").then(function (v) { data[name] = v; return v; }, function () { return null; });
   }
 
@@ -558,6 +560,7 @@
   }
   function loadDoc(doc) {
     if (docCache[doc.path]) return Promise.resolve(docCache[doc.path]);
+    if (EMBED && EMBED.content && EMBED.content[doc.path] != null) return Promise.resolve(docCache[doc.path] = EMBED.content[doc.path]);
     var raw = "https://raw.githubusercontent.com/" + cfg.repo + "/" + cfg.branch + "/" + doc.path;
     return fetchText("content/" + doc.path).catch(function () { return fetchText(raw); }).then(function (t) { docCache[doc.path] = t; return t; });
   }
@@ -664,7 +667,7 @@
     });
   }
   applyOpts();
-  fetchJSON("data/config.json").then(function (c) {
+  (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo) });
   }, function () { /* keep defaults */ }).then(function () {
     applyConfig(); renderMenu(); select(0, false); route(); preload();

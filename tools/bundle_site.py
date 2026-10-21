@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+"""Build a single self-contained HTML file of the site (works opened from disk).
+
+Usage: python3 tools/bundle_site.py [output.html]
+"""
+import json, pathlib, sys
+
+root = pathlib.Path(__file__).resolve().parent.parent
+site = root / "site"
+out = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else root / "hound-protocol.html")
+
+def safe(text):
+    return text.replace("</", "<\\/")
+
+data = {n: json.loads((site / "data" / f"{n}.json").read_text()) for n in ["config", "servers", "mods", "docs", "contracts"]}
+data["content"] = {}
+for d in data["docs"]["docs"]:
+    f = root / d["path"]
+    if f.exists():
+        data["content"][d["path"]] = f.read_text()
+
+html = (site / "index.html").read_text()
+css = (site / "assets/css/main.css").read_text()
+js = (site / "assets/js/app.js").read_text()
+html = html.replace('<link rel="stylesheet" href="assets/css/main.css">', "<style>\n" + css + "\n</style>")
+html = html.replace('<script src="assets/js/app.js"></script>',
+                    "<script>window.JO_EMBED = " + safe(json.dumps(data)) + ";</script>\n<script>\n" + safe(js) + "\n</script>")
+out.write_text(html)
+print(f"Wrote {out} ({out.stat().st_size // 1024} KB)")
