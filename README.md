@@ -31,6 +31,7 @@ Start with **docs/pre-development.md**: the plan, the gates before development, 
 - docs/governance.md: seats, terms and decision making
 - docs/risk-register.md: known risks and mitigations
 - docs/glossary.md: terms used in the project
+- docs/github-setup.md: one-time repository and organization settings
 - CODE_OF_CONDUCT.md, SECURITY.md
 - CONTRIBUTING.md: how to take a contract and submit work
 - docs/team.md: roles

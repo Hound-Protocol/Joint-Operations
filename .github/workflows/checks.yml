@@ -1,0 +1,31 @@
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate data files
+        run: for f in site/data/*.json; do python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
+      - name: Check site script syntax
+        run: node -e "new Function(require('fs').readFileSync('site/assets/js/app.js','utf8'))"
+      - name: Check relative links in docs
+        run: python3 tools/check_links.py
+      - name: Docs library entries exist
+        run: python3 -c "import json,os,sys; m=[d['path'] for d in json.load(open('site/data/docs.json'))['docs'] if not os.path.exists(d['path'])]; print('missing:',m); sys.exit(1 if m else 0)"
+      - name: No game files committed
+        run: |
+          if git ls-files | grep -iE '\.(exe|dll|dat|fpk|fpkd|pak|arc)$'; then echo "Game or binary files found"; exit 1; fi
+      - name: Build single-file site
+        run: python3 tools/bundle_site.py _bundle.html

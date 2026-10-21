@@ -47,9 +47,10 @@ All items in the [Phase 1 research plan](phase1-research-plan.md). The ones that
 - [ ] **R4** State inventory: every single-player system ranked by cost to make multiplayer-aware
 
 ### G5 Infrastructure
-- [ ] Merge pull request #1 (squash merge) and enable GitHub Pages
+- [ ] Apply the [GitHub setup checklist](github-setup.md): merge pull request #1 (squash), repository details, Pages, security settings, organization two-factor
 - [ ] Branch protection on `main`: pull requests required, one approving review, CI must pass
-- [ ] CI: lint docs and data files, build the site; later build and sign binaries
+- [x] CI checks for pull requests: data files, site script, doc links, no game files, single-file build (`.github/workflows/checks.yml`)
+- [ ] CI later: build and sign binaries
 - [ ] Discord server built from [the blueprint](discord.md)
 
 ## 3. Sequence

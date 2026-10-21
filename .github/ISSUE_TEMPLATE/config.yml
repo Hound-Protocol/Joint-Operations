@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation and plan
+    url: https://hound-protocol.github.io/Joint-Operations/#/docs/plan
+    about: Read the pre-development plan and decisions before opening an issue.
+  - name: Security problem
+    url: https://github.com/Hound-Protocol/Joint-Operations/security/advisories/new
+    about: Report security problems privately, not as a public issue.

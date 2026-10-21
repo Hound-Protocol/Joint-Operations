@@ -50,6 +50,12 @@
       "path": "docs/glossary.md"
     },
     {
+      "id": "github-setup",
+      "title": "GitHub Setup Checklist",
+      "group": "Technical",
+      "path": "docs/github-setup.md"
+    },
+    {
       "id": "decisions",
       "title": "Decision Index",
       "group": "Decisions",
