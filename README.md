@@ -2,8 +2,11 @@
 
 Status: Phase 0, foundation. Not playable yet.
 
-MGSV: Joint Operations is a host-authoritative multiplayer mod for Metal Gear Solid V (PC) supporting up to 16 players.
-Venom Snake hosts; soldiers join from the Mother Base roster.
+MGSV: Joint Operations is a multiplayer mod for Metal Gear Solid V: The Phantom Pain (PC). It brings the game's online
+functionality into the single-player world, so up to 16 players share the open world and its missions.
+Venom Snake hosts; the other players join as soldiers from the Mother Base roster.
+
+It is a multiplayer mod, not a co-op add-on: the goal is a full multiplayer layer for the single-player game.
 
 - Platforms: Windows, Linux via Proton
 - Transport: GameNetworkingSockets, Steam relay primary, direct IP fallback
@@ -20,6 +23,15 @@ The project site lives in `site/` and is deployed to GitHub Pages by `.github/wo
 It reads releases and contract issues live from this repository, and mods, sessions and the docs library from `site/data/`.
 
 ## Docs
+Start with **docs/pre-development.md**: the plan, the gates before development, and the decisions still open.
+
+- docs/decisions/: decision records (scope, strategy, transport, loader, license, online services, host authority)
+- research/: desk research with sources (engine, modding tools, Steam, Proton, law, funding, prior art)
+- docs/development-process.md: how work flows from issue to release
+- docs/governance.md: seats, terms and decision making
+- docs/risk-register.md: known risks and mitigations
+- docs/glossary.md: terms used in the project
+- CODE_OF_CONDUCT.md, SECURITY.md
 - CONTRIBUTING.md: how to take a contract and submit work
 - docs/team.md: roles
 - docs/legal.md: license, clean-room rules, Steam App ID gate

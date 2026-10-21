@@ -26,16 +26,22 @@ Learn what is needed to run a 16-player session in MGSV, and prove the networkin
 | R8 | Test harness | Mock Steam DLL, clumsy and tc netem profiles, state hash logging | Networking, Proton Tester | tools/ scripts and research/test-harness.md |
 | R9 | Performance budget | CPU, memory, bandwidth targets on a modest PC at 2, 4, 8, 16 players | Networking | research/performance.md |
 | R10 | Legal gate | Steam App ID and rights position, license text, donation policy | Lead | docs/legal.md updated |
-| R11 | Networking reference summary | Summarize the Co-op Anything networking playbook in our own words | Docs | research/networking-playbook-summary.md |
+| R11 | Networking reference summary | Summarize the Co-op Anything networking playbook in our own words | Docs | research/networking-playbook-summary.md (**done**) |
+| R12 | Engine session spike | Start a mission or free roam as an engine multiplayer session. Can 3 or more players join? What blocks it? Time-boxed | RE / Hooks, Networking | research/engine-session-spike.md, decides ADR 0002 |
+| R13 | Steam interfaces | From inside the game process, can we reach current Steam networking and matchmaking interfaces through the game's older Steam API? | Networking | research/steam-interfaces.md, decides ADR 0003 |
+
+## Background reading
+Start with the desk research in research/: game-and-engine.md, modding-ecosystem.md, steam-networking.md, proton.md and prior-art/dynamite.md.
 
 ## Suggested order
-1. R1, R10, R11 (can start immediately).
-2. R2, R7, R8 (independent of each other).
+1. R1, R10, R13 (can start immediately).
+2. R2, R7, R8, R12 (independent of each other).
 3. R3, R5 (after R2).
 4. R4, R6, R9 (after R3 and R7 produce data).
 
 ## Exit criteria for Phase 1
-- A written architecture update with the Steam API choice and transport decision (from R7).
+- Integration strategy decided from R12 (ADR 0002).
+- A written architecture update with the Steam API choice and transport decision (from R7 and R13).
 - A state inventory and sync priority list (R4).
 - A confirmed way to load our code under Windows and Proton (R2, R1).
 - A feasibility statement for seamless join and leave, with known unknowns listed (R6).

@@ -3,22 +3,29 @@
 Status: DRAFT
 
 ## Phase 0: Foundation (current)
-- [ ] Repo created (private until legal gate is cleared)
-- [ ] docs: team, legal, architecture written and reviewed
-- [ ] Steam App ID and rights question opened as BLOCKING (legal.md)
+Gates and sequence are in docs/pre-development.md.
+- [x] Repository created (public) and website built
+- [x] Core docs written: team, legal, architecture, governance, process, decisions, research
+- [ ] Docs reviewed and pull request #1 merged
+- [ ] License chosen (ADR 0005)
+- [ ] Steam App ID position recorded (legal.md)
 - [ ] Donation and hosting policy decided (legal.md)
+- [ ] Critical seats filled, human technical delegate appointed (governance.md)
 - [ ] Proton test environment defined
 - [ ] Discord structure set up (see docs/discord.md)
 - [ ] Recruiting post reviewed (see docs/recruiting.md)
 
 ## Phase 1: Research (see docs/phase1-research-plan.md)
-- [ ] Summarize networking playbook into research/ in our own words
+- [x] Summarize networking playbook into research/ in our own words
+- [ ] Engine session spike: 3 or more players in one session (R12)
+- [ ] Steam interfaces reachable from the game process (R13)
 - [ ] Document how MGSV launches and how a second player can be introduced
 - [ ] Identify game state that must be synced
 - [ ] Decide Steam API: Networking Messages vs Networking Sockets
 - [ ] Set up mock Steam DLL and bad-network test profiles (clumsy, tc netem)
 
 ## Phase 2: 0.1 (2 players)
+- [ ] Integration strategy decided (ADR 0002)
 - [ ] Two-player session on Windows
 - [ ] Same session under Proton on Linux
 - [ ] Basic host-to-client state sync

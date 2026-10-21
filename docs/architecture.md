@@ -1,49 +1,56 @@
 # Architecture
 
-Status: DRAFT
+Status: DRAFT · Updated: 2026-10-21 after desk research
 
 ## 1. Overview
-Host-authoritative multiplayer. One machine (Venom Snake) runs the canonical state.
-Other machines are clients (soldiers) that send inputs and receive state.
+Joint Operations is a multiplayer mod ([ADR 0001](decisions/0001-multiplayer-scope.md)). It brings the game's online multiplayer functionality into the single-player world for up to 16 players. The host plays Venom Snake and is authoritative; other players join as Mother Base soldiers ([ADR 0007](decisions/0007-host-authority.md)).
 
-## 2. Components
-1. Launcher / injector: starts MGSV with the mod loaded. Windows and Proton.
-2. Game hook layer: reads and writes game state. Isolated from networking.
-3. Session and host logic: the authority. Runs canonical state.
-4. Networking: transport, message types for input, snapshots, join and leave.
-5. Player slots: fixed IDs 1 to 16. Scaling is configuration, not redesign.
-6. Config and mod API: settings now, extension point in Phase 4.
-7. Apps and web: lobby, browser, docs. Outside the game process.
+## 2. Two candidate strategies
+Decided by the Phase 1 spike R12 ([ADR 0002](decisions/0002-integration-strategy.md)).
 
-## 3. Roles in a session
-- Venom Snake: host.
-- Soldiers: clients, each chosen from the Mother Base roster, mapped to one player slot.
+| | Strategy A: engine-native (preferred) | Strategy B: own netcode (fallback) |
+|---|---|---|
+| Idea | Start single-player missions and free roam as engine multiplayer sessions, as FOB and MGO do | Run our own host-authoritative sync; remote players are puppets driven by our data |
+| Engine does | Sessions, player replication, game messaging | Rendering and local simulation only |
+| We do | Lift single-player limits (player count, AI targeting, markers, damage rules, missions, vehicles), session join and leave, matchmaking without Konami | All replication, interpolation, AI and mission sync |
+| Main risk | Sessions beyond 2 players failed in prior work | Very large amount of sync work for 16 players |
 
-## 4. Sync model
-- Host-authoritative state sync.
-- Client owns its own avatar and camera.
-- Priority and delta compression needed at scale.
+## 3. Components
+| # | Component | Language | Notes |
+|---|---|---|---|
+| 1 | Installer and launcher | to be decided | Places files, backs up saves, checks game build, shows the Proton launch option |
+| 2 | Loader | C++ | IHHook plugin first, own `dinput8.dll` proxy fallback ([ADR 0004](decisions/0004-loader.md)); version check against build 1.0.15.4 |
+| 3 | Hook layer | C++ | Native hooks for systems Lua cannot reach (for example AI targeting). Address tables per game build. Isolated from networking |
+| 4 | Lua layer | Lua | Mission, player, marker and session logic in the game's own scripting |
+| 5 | Session layer | C++ / Lua | Player slots 1 to 16, join and leave, host authority, late-join snapshots |
+| 6 | Transport | C++ | Steam path through the game's Steam API; direct path through open-source GNS ([ADR 0003](decisions/0003-transport.md)) |
+| 7 | Matchmaking | — | Steam lobbies and friend invites; our own server only if needed. Never Konami's ([ADR 0006](decisions/0006-no-konami-services.md)) |
+| 8 | Config and mod API | Lua / data | Settings now; extension points in Phase 4 |
+| 9 | Apps and web | Web | Website now; lobby app later. Outside the game process |
 
-## 5. Transport
-- Library: GameNetworkingSockets (BSD-3-Clause).
-- Primary path: Steam relay (SDR). Steam only.
-- Fallback: direct IP:port, always kept working.
-- Steam API (Networking Messages vs Networking Sockets): undecided, Phase 1 test.
-- Discovery: Steam lobbies and friend invites.
+## 4. Session model
+- Slot 1 is the host (Venom Snake). Slots 2 to 16 are soldiers from the host's Mother Base roster.
+- Each player owns their own movement and camera. The host owns AI, mission state, world objects, time and weather.
+- Late joiners receive a full snapshot, then updates.
+- If the host leaves, the session ends for 0.1. Host migration comes later.
+- Joint Operations uses its own save files, separate from the player's normal saves.
+
+## 5. Sync priorities
+In order: player avatars; AI ownership and targeting; combat and damage; markers and HUD; world objects; mission and story flags; vehicles and buddies; support functions (helicopter, supply drops); cutscenes. The full list with costs is the R4 state inventory.
+
+Netcode principles are summarized in [the playbook summary](../research/networking-playbook-summary.md): unreliable movement and reliable events, stable IDs, quantization and delta compression, interest management at 16 players, keep-alives.
 
 ## 6. Open questions (Phase 1)
-1. Steam App ID and rights (BLOCKING for release).
-2. Steam API choice, tested at 16 players.
-3. Serialization format and sync rate.
-4. Priority and interest management at 16 players.
-5. Input model and host validation.
-6. Host disconnect behavior (session end; host migration out of scope for 0.1).
+1. Can 3 or more players share an engine session? (R12, blocking)
+2. Are current Steam networking interfaces reachable through the game's older Steam API? (R13)
+3. Does IHHook's plugin interface give us what we need? (R2)
+4. Which single-player systems break with extra players, and how costly is each? (R4)
+5. Steam App ID position for a public release (R10, blocking for release)
+6. Bandwidth and CPU budget at 16 players (R9)
 
 ## 7. Testing
-- Mock Steam DLL for two clients on one PC.
-- clumsy (Windows) and tc netem (Linux) for bad-network profiles.
-- State hash logging on both ends to detect desync.
-- Real two-account Steam relay test is a separate human step, listed as untested until done.
+See [development process](development-process.md): unit tests outside the game, a multi-client harness with a mock Steam layer and bad-network profiles, written in-game checklists for Windows and Proton, and soak tests with state-hash comparison.
 
 ## 8. References
-- Co-op Anything playbook (MIT): networking.md and networking-steam-spacewar.md. Read and summarized in research/, not copied.
+- [Research index](../research/README.md)
+- [Decision records](decisions/README.md)

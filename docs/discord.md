@@ -54,7 +54,7 @@ Status: DRAFT. Server name: MGSV: Joint Operations | Hound Protocol
 7. Moderators have the final say.
 
 ## Welcome message (post in #welcome)
-Welcome to MGSV: Joint Operations, by Hound Protocol. We are building a 16-player, host-led co-op experience for Metal Gear Solid V on PC, for Windows and Linux via Proton. This is an unofficial fan project. Read #rules, check #roadmap, and pick a role in #welcome.
+Welcome to MGSV: Joint Operations, by Hound Protocol. We are building a multiplayer mod that brings online play for up to 16 players into the single-player world of Metal Gear Solid V on PC, for Windows and Linux via Proton. This is an unofficial fan project. Read #rules, check #roadmap, and pick a role in #welcome.
 
 ## Bug report template (pin in #bug-reports)
 - Game version / build:

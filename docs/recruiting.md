@@ -3,7 +3,7 @@
 Status: DRAFT. Do not publish until the repo is public-ready and the Discord is open.
 
 ## Long version (forums, Reddit, modding communities)
-**MGSV: Joint Operations: a 16-player co-op project for Metal Gear Solid V (PC)**
+**MGSV: Joint Operations: a 16-player multiplayer mod for Metal Gear Solid V (PC)**
 
 Hound Protocol is a community development team building MGSV: Joint Operations. The goal: up to 16 players in a single Metal Gear Solid V session, with Venom Snake as host and soldiers joining from the Mother Base roster. Players join and leave with proper in-game animations, not pop-ins.
 
@@ -14,7 +14,7 @@ What we are:
 
 What we are not:
 - Affiliated with Konami. This is an unofficial fan project.
-- A replacement for or competitor to any existing co-op mod. We work independently.
+- A replacement for or competitor to any existing mod. We work independently.
 
 Where we are: Phase 0 (structure and documentation). Nothing playable yet. Research starts now.
 
@@ -32,7 +32,7 @@ What we offer: a clear roadmap, written architecture, open decisions, and real o
 Join: [Discord invite] | Code: github.com/Hound-Protocol/Joint-Operations
 
 ## Short version (Discord, social)
-Building MGSV: Joint Operations, an unofficial fan project for up to 16-player co-op in Metal Gear Solid V on PC (Windows and Linux/Proton). Looking for reverse engineers, networking devs, Proton testers, docs writers, and web devs. Open source, non-commercial. Join: [Discord invite]
+Building MGSV: Joint Operations, an unofficial multiplayer mod bringing online play for up to 16 players into the single-player world of Metal Gear Solid V on PC (Windows and Linux/Proton). Looking for reverse engineers, networking devs, Proton testers, docs writers, and web devs. Open source, non-commercial. Join: [Discord invite]
 
 ## Rules for recruiters on our team
 - State clearly that the project is unofficial and early.
