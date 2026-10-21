@@ -27,6 +27,7 @@ It reads releases and contract issues live from this repository, and mods, sessi
 - docs/discord.md: Discord blueprint
 - docs/recruiting.md: recruiting posts
 - docs/phase1-research-plan.md: Phase 1 research plan
+- docs/privacy.md: what the website stores and which services it contacts
 - ROADMAP.md: phases and status
 
 ## License

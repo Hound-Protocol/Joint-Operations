@@ -4,11 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hound Protocol · Joint Operations</title>
-<meta name="description" content="MGSV: Joint Operations, an unofficial fan-made multiplayer project for Metal Gear Solid V on PC, by Hound Protocol.">
+<meta name="description" content="MGSV: Joint Operations is an unofficial, fan-made project bringing co-op for up to 16 players to Metal Gear Solid V on PC. Built in the open by Hound Protocol.">
 <meta name="theme-color" content="#0c0f10">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@200;300;400;500&family=Share+Tech+Mono&display=swap">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hound Protocol">
+<meta property="og:title" content="MGSV: Joint Operations · Hound Protocol">
+<meta property="og:description" content="Unofficial fan project: co-op for up to 16 players in Metal Gear Solid V on PC, for Windows and Linux through Proton.">
+<meta property="og:url" content="https://hound-protocol.github.io/Joint-Operations/">
+<meta property="og:image" content="https://hound-protocol.github.io/Joint-Operations/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
@@ -16,14 +23,15 @@
   <div class="fx grid" aria-hidden="true"></div>
   <div class="fx grid fine" aria-hidden="true"></div>
   <div class="fx scan" aria-hidden="true"></div>
-  <div class="logo" id="logo" aria-hidden="true"><span>Logo</span></div>
+  <!-- Logo hook: set logo.src in site/data/config.json to replace the emblem -->
+  <div class="logo" id="logo" aria-hidden="true"><img class="emblem" src="assets/img/emblem.svg" alt=""></div>
   <i class="ruler l" aria-hidden="true"></i><i class="ruler r" aria-hidden="true"></i>
   <i class="corner c1" aria-hidden="true"></i><i class="corner c2" aria-hidden="true"></i>
   <i class="corner c3" aria-hidden="true"></i><i class="corner c4" aria-hidden="true"></i>
 
   <header class="bar top">
     <span id="build">Build —</span>
-    <span class="keys"><kbd>↑</kbd><kbd>↓</kbd>Select<kbd>Enter</kbd>Confirm<kbd>Esc</kbd>Back</span>
+    <span class="keys" id="keys"><kbd>↑</kbd><kbd>↓</kbd>Select<kbd>Enter</kbd>Confirm</span>
   </header>
 
   <main class="center" id="center">
@@ -31,12 +39,13 @@
       <div class="hd">
         <div class="hd-a" id="teamName">Hound Protocol</div>
         <h1 class="hd-b" id="projectName">Joint Operations</h1>
+        <p class="tagline" id="tagline"></p>
       </div>
       <div class="rule"></div>
       <nav class="menu" id="menu" aria-label="Main menu"></nav>
       <div class="rule short"></div>
       <div class="links" id="links"></div>
-      <p class="disclaimer">Unofficial fan project. Not affiliated with or endorsed by Konami.</p>
+      <p class="disclaimer">Unofficial fan project. Not affiliated with or endorsed by Konami. <a href="#/docs/privacy">Privacy</a></p>
     </div>
     <section class="view" id="view" hidden aria-live="polite"></section>
   </main>

@@ -6,11 +6,14 @@
  *   data/mods.json       reviewed mods: compatible and with known issues
  *   data/docs.json       documentation library manifest
  *   data/contracts.json  planned contracts, used until GitHub issues carry the "contract" label
- *   GitHub API           releases (Download) and contract issues (Contribute), read live
+ *   data/briefing.json   text for the Briefing page
+ *   data/devlog.json     manual dev log entries
+ *   GitHub API           releases, contract issues and commits, read live
  *
  * Hooks (for the future session service or tools)
  *   window.JO.setServers(list)   replace the session list
  *   window.JO.setMods({compatible, issues})
+ *   window.JO.setDevlog(entries) replace the manual dev log entries
  *   window.JO.refresh()          clear cached GitHub data and reload the current view
  */
 (function () {
@@ -54,7 +57,7 @@
     for (var k = 0; k < s.length; k++) {
       var span = document.createElement("span");
       if (s[k] === " ") { span.className = "gap"; span.textContent = "\u00a0"; }
-      else { span.className = "ch"; span.textContent = s[k]; span.style.animationDelay = (k * 16) + "ms"; }
+      else { span.className = "ch"; span.textContent = s[k]; span.style.animationDelay = (k * 8) + "ms"; }
       el.appendChild(span);
     }
     el.setAttribute("aria-label", s);
@@ -68,14 +71,14 @@
 
   /* ---------------- Config and state ---------------- */
   var DEFAULT_CFG = {
-    project: "Joint Operations", team: "Hound Protocol", version: "0.0.1", stage: "Pre-release",
+    project: "Joint Operations", team: "Hound Protocol", tagline: "", version: "0.0.1", stage: "Pre-release", milestones: {},
     repo: "Hound-Protocol/Joint-Operations", branch: "main",
     logo: { src: "", alt: "Joint Operations logo", opacity: 0.18 },
-    links: { discord: "", github: "https://github.com/Hound-Protocol/Joint-Operations" },
+    links: { discord: "", discordIcon: "", github: "https://github.com/Hound-Protocol/Joint-Operations" },
     cacheMinutes: 10
   };
   var cfg = DEFAULT_CFG;
-  var data = { servers: null, mods: null, docs: null, contracts: null, releases: undefined, issues: undefined };
+  var data = { servers: null, mods: null, docs: null, contracts: null, briefing: null, devlog: null, releases: undefined, issues: undefined, commits: undefined, roadmap: undefined };
   var docCache = {};
 
   var OPT_KEY = "hp-jo-options";
@@ -141,6 +144,36 @@
     }, function () { data.issues = null; return null; });
   }
 
+  function loadCommits() {
+    if (data.commits !== undefined) return Promise.resolve(data.commits);
+    return gh("/repos/" + cfg.repo + "/commits?sha=" + encodeURIComponent(cfg.branch) + "&per_page=30").then(function (list) {
+      data.commits = (list || []).map(function (c) {
+        var msg = (c.commit && c.commit.message) || "";
+        return { date: (c.commit && c.commit.author && c.commit.author.date) || "", title: msg.split("\n")[0], tag: "Commit", url: c.html_url, by: (c.author && c.author.login) || (c.commit && c.commit.author && c.commit.author.name) || "" };
+      });
+      return data.commits;
+    }, function () { data.commits = null; return null; });
+  }
+  function parseRoadmap(md) {
+    var phases = [], cur = null;
+    String(md).split("\n").forEach(function (l) {
+      var h = /^##\s+Phase\s+(\d+):\s*([^(]*)/.exec(l);
+      if (h) { cur = { n: +h[1], title: h[2].trim(), done: 0, total: 0, items: [] }; phases.push(cur); return; }
+      if (/^##\s/.test(l)) { cur = null; return; }
+      var t = /^\s*-\s+\[([ xX])\]\s+(.*)$/.exec(l);
+      if (t && cur) { cur.total++; if (t[1] !== " ") cur.done++; cur.items.push({ done: t[1] !== " ", text: t[2] }); }
+    });
+    return phases;
+  }
+  function loadRoadmap() {
+    if (data.roadmap !== undefined) return Promise.resolve(data.roadmap);
+    return loadDoc({ path: "ROADMAP.md" }).then(function (md) { data.roadmap = parseRoadmap(md); return data.roadmap; }, function () { data.roadmap = null; return null; });
+  }
+  function currentPhase() {
+    var r = data.roadmap || [];
+    for (var k = 0; k < r.length; k++) if (r[k].done < r[k].total) return r[k];
+    return r[r.length - 1] || null;
+  }
   var EMBED = window.JO_EMBED || null; // set by tools/bundle_site.py for the single-file build
   function loadLocal(name) {
     if (data[name]) return Promise.resolve(data[name]);
@@ -229,16 +262,24 @@
 
   /* ---------------- Menu ---------------- */
   var ITEMS = [
-    { id: "download", title: "Download", desc: "Available for Windows and Linux using Proton" },
-    { id: "sessions", title: "Session Overview", desc: "Browse sessions, details, status and ping" },
-    { id: "contribute", title: "Contribute", desc: "Become a part of the Protocol" },
-    { id: "mods", title: "Mods", desc: "Compatible mods and mods with known issues" },
-    { id: "docs", title: "Documentation", desc: "Library of project documentation" },
-    { id: "options", title: "Options", desc: "Interface and data settings" }
+    { id: "briefing", title: "Briefing", desc: "What Joint Operations is and where it stands", tab: "Briefing" },
+    { id: "download", title: "Download", desc: "Available for Windows and Linux using Proton", tab: "Download" },
+    { id: "sessions", title: "Session Overview", desc: "Browse sessions, details, status and ping", tab: "Sessions" },
+    { id: "contribute", title: "Contribute", desc: "Become a part of the Protocol", tab: "Contribute" },
+    { id: "mods", title: "Mods", desc: "Compatible mods and mods with known issues", tab: "Mods" },
+    { id: "devlog", title: "Dev Log", desc: "Recent changes, decisions and releases", tab: "Dev Log" },
+    { id: "docs", title: "Documentation", desc: "Library of project documentation", tab: "Docs" },
+    { id: "options", title: "Options", desc: "Interface and data settings", tab: "Options" }
   ];
   var cur = 0;
   function itemInfo(id) {
     switch (id) {
+      case "briefing":
+        var ph = currentPhase();
+        return ph ? "Current: Phase " + ph.n + " · " + ph.title + " · " + ph.done + " of " + ph.total + " done" : "Project overview";
+      case "devlog":
+        var n2 = devlogEntries().length;
+        return n2 ? plural(n2, "entry", "entries") : "Dev log";
       case "download":
         if (data.releases === undefined) return "Checking releases";
         if (data.releases && data.releases.length) return "Latest " + (data.releases[0].tag_name || "") + " · " + fmtDate(data.releases[0].published_at);
@@ -268,10 +309,12 @@
       a.addEventListener("mouseenter", function () { select(n, false); });
       a.addEventListener("focus", function () { select(n, false); });
     });
-    var links = [["Discord", cfg.links.discord], ["GitHub", cfg.links.github]];
+    // Discord icon hook: set links.discordIcon in config.json to Discord's official logo file.
+    var dIcon = cfg.links.discordIcon ? '<img class="ico" src="' + esc(cfg.links.discordIcon) + '" alt="">' : ICON_CHAT;
+    var links = [["Discord", cfg.links.discord, dIcon], ["GitHub", cfg.links.github, ""]];
     $("#links").innerHTML = links.map(function (l) {
-      return l[1] ? '<a class="btn" href="' + esc(l[1]) + '" target="_blank" rel="noopener noreferrer">' + l[0] + "</a>"
-        : '<span class="btn off" aria-disabled="true" title="Link not set yet">' + l[0] + "</span>";
+      return l[1] ? '<a class="btn" href="' + esc(l[1]) + '" target="_blank" rel="noopener noreferrer">' + l[2] + l[0] + "</a>"
+        : '<span class="btn off" aria-disabled="true" title="Invite link coming soon">' + l[2] + l[0] + "</span>";
     }).join("");
   }
   function select(n, focus) {
@@ -285,11 +328,74 @@
   /* ---------------- Views ---------------- */
   var currentView = "";
   function shell(kicker, title, body) {
-    return '<div class="vh"><div><span class="kicker">' + esc(kicker) + '</span><h2>' + esc(title) + '</h2></div><a class="btn" href="#/">Back</a></div><div id="vb">' + body + "</div>";
+    var tabs = '<nav class="secbar" aria-label="Sections">' + ITEMS.map(function (it) {
+      return '<a href="#/' + it.id + '"' + (it.id === currentView ? ' aria-current="page"' : "") + ">" + esc(it.tab) + "</a>";
+    }).join("") + "</nav>";
+    return tabs + '<div class="vh"><div><span class="kicker">' + esc(kicker) + '</span><h2>' + esc(title) + '</h2></div><a class="btn" href="#/">Menu</a></div><div id="vb">' + body + "</div>";
   }
+  function milestone(key) { var m = cfg.milestones && cfg.milestones[key]; return m ? '<p class="note">' + esc(m) + "</p>" : ""; }
   function loading(t) { return '<p class="sub"><span class="spin"></span>' + esc(t) + "</p>"; }
+  var ICON_CHAT = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h.01M12 10h.01M16 10h.01" stroke-width="2.4" stroke-linecap="round"/></svg>';
   var ICON_WIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5l8-1v8H3zM13 4l8-1v9h-8zM3 13h8v7l-8-1zM13 13h8v8l-8-1z"/></svg>';
   var ICON_LNX = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13"/><path d="M8 21h8M12 17v4M7 9l3 2-3 2M12 13h4"/></svg>';
+
+  /* Briefing */
+  function viewBriefing() {
+    var v = $("#view");
+    v.innerHTML = shell(cfg.team, "Briefing", loading("Loading briefing"));
+    Promise.all([loadLocal("briefing"), loadRoadmap()]).then(function () {
+      if (currentView !== "briefing") return;
+      var b = data.briefing || { summary: [], facts: [], principles: [] }, r = data.roadmap || [], ph = currentPhase();
+      var body = '<div class="brief"><div class="brief-main">' +
+        '<p class="lead">' + esc(cfg.tagline || "") + "</p>" +
+        (b.summary || []).map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") +
+        '<div class="label">Principles</div><ol class="steps">' + (b.principles || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ol>" +
+        '<div class="toolbar" style="margin-top:16px"><a class="btn primary" href="#/contribute">Join the Protocol</a><a class="btn" href="#/docs/roadmap">Full roadmap</a><a class="btn" href="#/devlog">Dev log</a></div></div>' +
+        '<aside class="panel"><div class="label">At a glance</div>' + (b.facts || []).map(function (f) { return '<div class="kv"><span>' + esc(f[0]) + "</span><b>" + esc(f[1]) + "</b></div>"; }).join("") +
+        '<div class="kv"><span>Stage</span><b><span class="pill warn">' + esc(cfg.stage) + "</span></b></div></aside></div>";
+      body += '<div class="label" style="margin-top:26px">Roadmap' + (ph ? " · current phase " + ph.n : "") + "</div>";
+      body += r.length ? '<ol class="phases">' + r.map(function (p) {
+        var pct = p.total ? Math.round(p.done / p.total * 100) : 0, state = p === ph ? "now" : p.done === p.total && p.total ? "done" : "next";
+        return '<li class="phase ' + state + '"><div class="ph-h"><span class="ph-n">Phase ' + p.n + '</span><span class="ph-s">' + (state === "now" ? "In progress" : state === "done" ? "Complete" : "Planned") + "</span></div>" +
+          '<div class="ph-t">' + esc(p.title) + '</div><div class="meter"><i style="width:' + pct + '%"></i></div><div class="ph-c">' + p.done + " / " + p.total + " tasks</div></li>";
+      }).join("") + "</ol>" + '<p class="source">Source: ROADMAP.md · progress is counted from its checklists</p>'
+        : '<div class="empty">Roadmap unavailable<small>ROADMAP.md could not be loaded.</small></div>';
+      $("#vb").innerHTML = body;
+      refreshInfo();
+    });
+  }
+
+  /* Dev log */
+  var logFilter = "all";
+  function devlogEntries() {
+    var out = [];
+    ((data.devlog && data.devlog.entries) || []).forEach(function (e) { out.push(Object.assign({ kind: "note" }, e)); });
+    (data.commits || []).forEach(function (c) { out.push(Object.assign({ kind: "commit" }, c)); });
+    (data.releases || []).forEach(function (r) { out.push({ kind: "release", tag: "Release", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url }); });
+    return out.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+  }
+  function viewDevlog() {
+    var v = $("#view");
+    v.innerHTML = shell("Intel", "Dev Log", loading("Loading the dev log"));
+    Promise.all([loadLocal("devlog"), loadCommits(), loadReleases()]).then(function () { if (currentView === "devlog") drawDevlog(); refreshInfo(); });
+  }
+  function drawDevlog() {
+    var all = devlogEntries(), list = all.filter(function (e) { return logFilter === "all" || e.kind === logFilter; }), groups = [], by = {};
+    list.forEach(function (e) { var d = fmtDate(e.date); if (!by[d]) { by[d] = []; groups.push(d); } by[d].push(e); });
+    var count = function (k) { return all.filter(function (e) { return e.kind === k; }).length; };
+    $("#vb").innerHTML = '<div class="tabs" role="tablist">' + [["all", "All", all.length], ["note", "Notes", count("note")], ["commit", "Commits", count("commit")], ["release", "Releases", count("release")]].map(function (t) {
+      return '<button role="tab" data-lf="' + t[0] + '" aria-selected="' + (logFilter === t[0]) + '">' + t[1] + '<span class="count">' + t[2] + "</span></button>";
+    }).join("") + "</div>" +
+      (groups.length ? groups.map(function (g) {
+        return '<section class="day"><div class="day-d">' + esc(g) + "</div>" + by[g].map(function (e) {
+          var title = e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) + "</a>" : esc(e.title);
+          return '<article class="entry"><span class="pill ' + (e.kind === "release" ? "ok" : e.kind === "note" ? "hot" : "") + '">' + esc(e.tag || e.kind) + "</span><div><h3>" + title + "</h3>" +
+            (e.body ? "<p>" + esc(e.body) + "</p>" : "") + (e.by ? '<div class="meta">' + esc(e.by) + "</div>" : "") + "</div></article>";
+        }).join("") + "</section>";
+      }).join("") : '<div class="empty">No entries<small>' + (logFilter === "commit" && data.commits === null ? "GitHub could not be reached." : "Nothing logged here yet.") + "</small></div>") +
+      '<p class="source">Sources: data/devlog.json' + (data.commits ? " · commits on " + esc(cfg.branch) : "") + (data.releases && data.releases.length ? " · releases" : "") + (data.commits === null ? " · GitHub unreachable" : "") + "</p>";
+    $$("[data-lf]").forEach(function (b) { b.addEventListener("click", function () { logFilter = b.dataset.lf; drawDevlog(); }); });
+  }
 
   /* Download */
   function viewDownload() {
@@ -297,7 +403,7 @@
     v.innerHTML = shell(cfg.team, "Download", loading("Checking releases on GitHub"));
     loadReleases().then(function (rel) {
       if (currentView !== "download") return;
-      var latest = rel && rel[0], body = "";
+      var latest = rel && rel[0], body = "", pre = "";
       body += '<div class="cols">';
       if (latest) {
         body += '<div class="panel"><div class="label">Latest release</div>' +
@@ -311,6 +417,7 @@
           }).join("") + "</ul>" : '<p class="sub">This release has no attached files.</p>') +
           '<div class="toolbar" style="margin-top:12px"><a class="btn" href="' + esc(latest.html_url) + '" target="_blank" rel="noopener noreferrer">Release notes</a><a class="btn" href="' + repoUrl("/releases") + '" target="_blank" rel="noopener noreferrer">All releases</a></div></div>';
       } else {
+        pre = milestone("download");
         body += '<div class="panel"><div class="label">Release status</div>' +
           '<div class="kv"><span>Build</span><b>' + esc(cfg.version) + "</b></div>" +
           '<div class="kv"><span>Stage</span><b><span class="pill warn">' + esc(cfg.stage) + "</span></b></div>" +
@@ -332,7 +439,7 @@
         '<div class="panel"><div class="platform">' + ICON_LNX + "Linux (Proton)</div><ol class=\"steps\">" +
         "<li>Enable Steam Play and run MGSV with Proton. Launch it once.</li><li>Download the same release as Windows. Proton runs it.</li><li>Follow the install notes, installing into the game folder Steam uses.</li><li>Include your Proton version in any bug report.</li></ol></div></div>";
       body += '<p class="note">Joint Operations does not include or distribute any game files. You need your own copy of Metal Gear Solid V.</p>';
-      v.querySelector("#vb").innerHTML = body;
+      v.querySelector("#vb").innerHTML = pre + body;
       refreshInfo();
     });
   }
@@ -368,7 +475,7 @@
       return "<tr><td>" + esc(s.name) + "</td><td>" + esc(s.host || "—") + "</td><td>" + esc(s.details || "—") + '</td><td class="num">' + (+s.players || 0) + " / " + (s.maxPlayers || 16) +
         '</td><td><span class="pill ' + (full ? "bad" : "ok") + '">' + esc(full ? "Full" : (s.status || "Open")) + '</span></td><td class="num ' + pingCls(s.ping) + '">' + (s.ping != null ? s.ping + " ms" : "—") + "</td></tr>";
     }).join("");
-    $("#vb").innerHTML =
+    $("#vb").innerHTML = (all.length ? "" : milestone("sessions")) +
       '<div class="stats"><div class="stat"><b>' + all.length + '</b><span>Sessions</span></div><div class="stat"><b>' + online + '</b><span>Online</span></div><div class="stat"><b>' + players + '</b><span>Players</span></div><div class="stat"><b>16</b><span>Max per session</span></div></div>' +
       '<div class="toolbar"><input class="field grow" id="sq" type="search" placeholder="Search sessions" value="' + esc(sessState.q) + '" aria-label="Search sessions">' +
       '<select class="field" id="sr" aria-label="Region"><option value="all">All regions</option>' + Object.keys(regions).sort().map(function (r) { return '<option' + (sessState.region === r ? " selected" : "") + ">" + esc(r) + "</option>"; }).join("") + "</select>" +
@@ -503,6 +610,7 @@
     $("#vb").innerHTML =
       '<div class="tabs" role="tablist"><button role="tab" data-mt="compatible" aria-selected="' + (modState.tab === "compatible") + '">Compatible<span class="count">' + (md.compatible || []).length + "</span></button>" +
       '<button role="tab" data-mt="issues" aria-selected="' + (modState.tab === "issues") + '">Known issues<span class="count">' + (md.issues || []).length + "</span></button></div>" +
+      ((md.compatible || []).length + (md.issues || []).length ? "" : milestone("mods")) +
       '<p class="sub">' + (modState.tab === "compatible" ? "Reviewed and tested with Joint Operations. No known issues." : "Run with Joint Operations, but with known issues. Read the notes before installing.") + "</p>" +
       '<div class="toolbar"><input class="field grow" id="mq" type="search" placeholder="Search mods" value="' + esc(modState.q) + '" aria-label="Search mods">' +
       '<a class="btn primary" href="' + esc(repoUrl("/issues/new?template=mod-submission.md")) + '" target="_blank" rel="noopener noreferrer">Submit a mod</a></div>' +
@@ -585,6 +693,7 @@
       '<div class="orow"><span>GitHub data<small>Releases and contracts are cached for ' + (cfg.cacheMinutes || 10) + ' minutes</small></span><button class="btn small" id="oclr">Refresh now</button></div>' +
       '<div class="orow"><span>Repository<small>' + esc(cfg.repo) + '</small></span><a class="btn small" href="' + repoUrl() + '" target="_blank" rel="noopener noreferrer">Open</a></div>' +
       '<div class="orow"><span>Site build<small>' + esc(cfg.version) + " · " + esc(cfg.stage) + "</small></span><span></span></div>" +
+      '<div class="orow"><span>Privacy<small>No cookies, analytics or trackers</small></span><a class="btn small" href="#/docs/privacy">Read</a></div>' +
       '<div class="label">Reset</div>' +
       '<div class="orow"><span>Restore defaults<small>Resets every setting on this page</small></span><button class="btn small" id="orst">Reset</button></div></div></div>' +
       '<p class="source">Settings are stored in this browser only.</p>');
@@ -600,10 +709,11 @@
   }
 
   /* ---------------- Router ---------------- */
-  var VIEWS = { download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
   function route() {
     var parts = (location.hash || "").replace(/^#\/?/, "").split("/"), name = parts[0];
     var menu = $("#menuView"), view = $("#view");
+    $("#keys").innerHTML = VIEWS[name] ? "<kbd>←</kbd><kbd>→</kbd>Section<kbd>Esc</kbd>Menu" : "<kbd>↑</kbd><kbd>↓</kbd>Select<kbd>Enter</kbd>Confirm";
     if (!VIEWS[name]) {
       if (currentView) {
         currentView = ""; view.hidden = true; view.innerHTML = ""; menu.hidden = false;
@@ -634,6 +744,10 @@
       else select(0, true);
       return;
     }
+    if (currentView && !/INPUT|SELECT|TEXTAREA/.test(tag) && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+      var ids = ITEMS.map(function (i) { return i.id; }), k = ids.indexOf(currentView);
+      location.hash = "#/" + ids[(k + (e.key === "ArrowRight" ? 1 : -1) + ids.length) % ids.length]; e.preventDefault(); return;
+    }
     if (currentView || /INPUT|SELECT|TEXTAREA/.test(tag)) return;
     if (e.key === "ArrowDown") { select(cur + 1, true); e.preventDefault(); }
     else if (e.key === "ArrowUp") { select(cur - 1, true); e.preventDefault(); }
@@ -644,13 +758,15 @@
   window.JO = {
     setServers: function (list) { data.servers = { servers: Array.isArray(list) ? list : [] }; data.serversHooked = true; if (currentView === "sessions") drawSessions(); refreshInfo(); },
     setMods: function (m) { data.mods = { compatible: (m && m.compatible) || [], issues: (m && m.issues) || [] }; if (currentView === "mods") drawMods(); refreshInfo(); },
-    refresh: function () { session.clear("jo-gh:"); data.releases = undefined; data.issues = undefined; preload(); if (currentView) route(); }
+    setDevlog: function (list) { data.devlog = { entries: Array.isArray(list) ? list : [] }; if (currentView === "devlog") drawDevlog(); refreshInfo(); },
+    refresh: function () { session.clear("jo-gh:"); data.releases = undefined; data.issues = undefined; data.commits = undefined; preload(); if (currentView) route(); }
   };
 
   /* ---------------- Boot ---------------- */
   function applyConfig() {
     $("#teamName").textContent = cfg.team;
     $("#projectName").textContent = cfg.project;
+    $("#tagline").textContent = cfg.tagline || "";
     $("#build").textContent = "Build " + cfg.version + " · " + cfg.stage;
     document.title = cfg.team + " · " + cfg.project;
     var logo = cfg.logo || {};
@@ -661,14 +777,14 @@
     }
   }
   function preload() {
-    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadReleases(), loadContracts()]).then(function () {
+    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("devlog"), loadRoadmap(), loadReleases(), loadContracts(), loadCommits()]).then(function () {
       refreshInfo();
       if (data.releases === null || data.issues === null) status("GitHub unreachable · showing bundled data");
     });
   }
   applyOpts();
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
-    cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo) });
+    cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });
   }, function () { /* keep defaults */ }).then(function () {
     applyConfig(); renderMenu(); select(0, false); route(); preload();
   });

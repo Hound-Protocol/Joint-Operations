@@ -1,0 +1,8 @@
+{
+  "note": "Manual dev log entries, merged with commits and releases read from GitHub. Fields: date (YYYY-MM-DD), title, body, tag.",
+  "entries": [
+    { "date": "2026-10-21", "tag": "Milestone", "title": "Website and documentation published", "body": "The Hound Protocol site, project documents, contract board and mod repository went up for review." },
+    { "date": "2026-10-21", "tag": "Decision", "title": "Transport chosen", "body": "GameNetworkingSockets over Steam relay, with direct IP as fallback. The Steam API variant will be decided by testing in Phase 1." },
+    { "date": "2026-10-21", "tag": "Milestone", "title": "Project founded", "body": "MGSV: Joint Operations started, with Hound Protocol as the development team. Phase 0 (foundation) is underway." }
+  ]
+}
