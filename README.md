@@ -12,9 +12,8 @@ Venom Snake hosts; soldiers join from the Mother Base roster.
 ## Team
 Developed by Hound Protocol, a community development team.
 
-## Relationship to Dynamite
-This project is independent. It learns from public documentation and behavior of
-Dynamite (by unknown321) and does not copy its code. See docs/legal.md.
+## Independent project
+Joint Operations is built independently and does not copy code from other mods. See docs/legal.md.
 
 ## Website
 The project site lives in `site/` and is deployed to GitHub Pages by `.github/workflows/pages.yml`.

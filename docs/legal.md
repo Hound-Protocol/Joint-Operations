@@ -7,12 +7,10 @@ Status: DRAFT, pending project lead review. Not legal advice.
 - Planned license: GPL-3.0 (copyleft: derivatives remain open and credited). Confirmed direction by project lead.
 - Before first public release: replace the LICENSE placeholder with the official GPL-3.0 text.
 
-## 2. Relationship to Dynamite
-- Dynamite (by unknown321) is an existing MGSV co-op mod. This project is independent.
-- No Dynamite source is copied, forked, or vendored.
-- Behavior and public documentation may be studied. Findings are written in our own words in research/.
-- Dynamite is credited in the README where its research is referenced.
-- The project does not present itself as a replacement for Dynamite.
+## 2. Independent development
+- Joint Operations is an independent project. It does not fork, copy, or vendor code from other mods.
+- Public documentation and observed game behavior may be studied. Findings are written in our own words in research/.
+- Where public research from others is used, it is credited in the relevant research note.
 
 ## 3. Clean-room rules
 - Contributors who read any third-party mod's source record findings only, not code.
