@@ -2,6 +2,21 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.7 · Chain of command · 2026-10-22
+A solid hierarchy, grades that match the game, a calmer interface and support for older browsers.
+
+- **Chain of command:** three kinds of authority (social, technical, organizational) that only flow down the keycard levels. Moderators and Administration decide social matters; Development and Administration decide technical ones; Quality, contractors and members have no authority over others. Open communication and transparency rules, and appeals one level up. New policy [HP-POL-007](docs/guides/HP-POL-007-chain-of-command.md) and [ADR 0013](docs/decisions/0013-chain-of-command.md). Discord permissions follow it: only LV6 and LV7 roles can moderate.
+- **Team page:** the hierarchy as a tree, from LV7 down to LV2, with each role's authority and holders.
+- **Contractor grades like MGSV:** E, D, C, B, A, A+, A++, S, S+, S++, held per field the way staff hold a grade per unit. Contracts earn points in their field (Easy 2, Medium 5, Hard 10), thresholds climb steeply, commendations work like medals. Grades carry no authority.
+- **Section tabs:** bigger, centered, with icons, and a description under the bar for the tab you point at.
+- **About:** the session diagram is replaced by short, numbered text.
+- **Session Browser:** a calm "no connection" icon instead of the flashing scan.
+- **Download:** redesigned, with release status, install steps per system (your system is preselected), requirements and the foundation builds.
+- **Mods:** mod cards and how a mod gets listed.
+- **Dev Log:** search, a project status strip and release-note excerpts.
+- **Options:** presets (Full effects, Calm, Performance), grouped settings, a Docs view choice and a background emblem switch. The moving light band behind the page is gone. Animations start off if your system asks for reduced motion.
+- **Older browsers:** CSS fallbacks for layout (checked in CI by `tools/css_compat.py`), a fetch fallback, small polyfills, the classic Docs list where the neural web cannot run, and a plain page with the essentials for browsers too old for the app.
+
 ## v0.0.6 · Official emblem · 2026-10-22
 Official emblem, a 16:9 layout and a smoother interface.
 

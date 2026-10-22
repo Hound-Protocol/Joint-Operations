@@ -2,7 +2,7 @@
 
 Generated from `site/data/contracts.json` by `tools/contracts_md.py`. Edit the JSON, then run the tool.
 
-Every contract has a goal, a deliverable and acceptance criteria. The Quality Department checks each criterion before merging. Difficulty (Easy, Medium, Hard) tells you how demanding a contract is. It is information only: anyone can take any contract. Core contracts are on the 0.1 critical path and reserved for the Development Department. Each completed contract counts toward the contractor's rank (A to S++). See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).
+Every contract has a goal, a deliverable and acceptance criteria. The Quality Department checks each criterion before merging. Difficulty (Easy, Medium, Hard) tells you how demanding a contract is. It is information only: anyone can take any contract. Core contracts are on the 0.1 critical path and reserved for the Development Department. Each completed contract earns points toward the contractor's grade in its field (E to S++). See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).
 
 Version 0.1 is built by the project lead. These contracts open to contractors after 0.1.
 

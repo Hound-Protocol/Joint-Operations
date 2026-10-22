@@ -39,16 +39,9 @@
       '<div class="tw"><table><tr>' + th("name", "Session") + th("host", "Host") + "<th>Details</th>" + th("players", "Players") + "<th>Status</th>" + th("ping", "Ping") + "</tr>" +
       rows + "</table></div>" +
       (rows ? "" : all.length ? '<div class="empty" id="noServers">No sessions match<small>Try other filters.</small></div>'
-        : '<div class="ops" id="noServers">' +
-            '<div class="ops-radar" aria-hidden="true"><i class="g"></i><i class="sw"></i><i class="ring r1"></i><i class="ring r2"></i>' +
-              '<i class="bp b1"></i><i class="bp b2"></i><i class="bp b3"></i><i class="bp b4"></i><i class="you"></i><i class="static"></i></div>' +
-            '<div class="ops-read"><div class="ops-k">SEARCH · AREA SCAN</div>' +
-              '<div class="ops-freq" aria-hidden="true"><span id="opsF">140.85</span><i>MHz</i></div>' +
-              '<div class="ops-alert"><b data-t="NO SESSIONS DETECTED">NO SESSIONS DETECTED</b></div>' +
-              '<div class="ops-bars" aria-hidden="true">' + new Array(14).join("<i></i>") + "</div>" +
-              '<small>Live sessions appear here from version 0.1. Hosts list their game, you pick one and deploy.</small></div></div>') +
+        : '<div class="nolink" id="noServers"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 20a23 23 0 0132 0M14 26a15 15 0 0120 0M20 32a7 7 0 018 0"/><circle cx="24" cy="38" r="2"/><path class="x" d="M9 9l30 30"/></svg>' +
+            '<b>No sessions online</b><small>Live sessions appear here from version 0.1. Hosts list their game, you pick one and deploy.</small></div>') +
       '<p class="source">Source: data/servers.json' + (data.serversHooked ? " · live hook" : "") + "</p>";
-    opsScan();
     $("#sq").addEventListener("input", function (e) { sessState.q = e.target.value; drawSessionsKeepFocus("#sq"); });
     $("#sr").addEventListener("change", function (e) { sessState.region = e.target.value; drawSessions(); });
     $("#sf").addEventListener("click", function () { sessState.hideFull = !sessState.hideFull; drawSessions(); });
@@ -66,15 +59,3 @@
     var n = $(sel); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { /* not a text field */ } }
   }
 
-  /* Empty Session Browser: a fast area scan that keeps tuning frequencies */
-  var opsTimer = 0;
-  function opsScan() {
-    clearInterval(opsTimer);
-    var el = $("#opsF"); if (!el || !opts.motion) return;
-    var f = 140.85;
-    opsTimer = setInterval(function () {
-      if (currentView !== "sessions" || !$("#opsF")) { clearInterval(opsTimer); return; }
-      f = 140 + Math.random() * 1.99;
-      $("#opsF").textContent = f.toFixed(2);
-    }, 110);
-  }

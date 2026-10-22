@@ -25,6 +25,13 @@
   "use strict";
 
   /* ---------------- Utilities ---------------- */
+  // Browsers too old for the app get the plain page from index.html instead
+  if (window.JO_LEGACY) return;
+  // Small polyfills for older browsers (Safari 9, old Chromium on older systems)
+  if (typeof Object.assign !== "function") {
+    Object.assign = function (t) { for (var i = 1; i < arguments.length; i++) { var s = arguments[i]; if (s) for (var k in s) if (Object.prototype.hasOwnProperty.call(s, k)) t[k] = s[k]; } return t; };
+  }
+  if (window.Element && !Element.prototype.remove) Element.prototype.remove = function () { if (this.parentNode) this.parentNode.removeChild(this); };
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -41,9 +48,21 @@
     clear: function (prefix) { try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(prefix) === 0) sessionStorage.removeItem(k); }); } catch (e) { /* storage unavailable */ } }
   };
 
+  // fetch() fallback for older browsers: same result, through XMLHttpRequest
+  function xhrGet(url, headers) {
+    return new Promise(function (ok, fail) {
+      var x = new XMLHttpRequest(), h = headers || {};
+      x.open("GET", url, true); x.timeout = 9000;
+      Object.keys(h).forEach(function (k) { x.setRequestHeader(k, h[k]); });
+      x.onload = function () { if (x.status < 200 || x.status > 299) fail(new Error("HTTP " + x.status)); else ok(x.responseText); };
+      x.onerror = x.ontimeout = function () { fail(new Error("Network error")); };
+      x.send();
+    });
+  }
   function fetchJSON(url, opts) {
     var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 9000);
+    if (typeof fetch !== "function") { clearTimeout(timer); return xhrGet(url, opts && opts.headers).then(JSON.parse); }
     return fetch(url, Object.assign({ signal: ctl ? ctl.signal : undefined, cache: /^https?:/.test(url) ? "default" : "no-cache" }, opts || {})).then(function (r) {
       clearTimeout(timer);
       if (!r.ok) throw new Error("HTTP " + r.status);
@@ -51,6 +70,7 @@
     }, function (e) { clearTimeout(timer); throw e; });
   }
   function fetchText(url) {
+    if (typeof fetch !== "function") return xhrGet(url);
     return fetch(url, { cache: /^https?:/.test(url) ? "default" : "no-cache" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); });
   }
 
@@ -87,7 +107,8 @@
   var docCache = {};
 
   var OPT_KEY = "hp-jo-options";
-  var DEFAULT_OPTS = { glitch: true, grid: true, motion: true, ledFx: true, contrast: false, sound: false, size: "1" };
+  var PREFERS_LESS_MOTION = (function () { try { return !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) { return false; } })();
+  var DEFAULT_OPTS = { glitch: !PREFERS_LESS_MOTION, grid: true, motion: !PREFERS_LESS_MOTION, ledFx: true, emblem: true, contrast: false, sound: false, size: "1" };
   var opts = Object.assign({}, DEFAULT_OPTS, store.get(OPT_KEY, {}));
   function applyOpts() {
     var c = document.body.classList;
@@ -96,6 +117,7 @@
     c.toggle("no-motion", !opts.motion);
     c.toggle("no-led", !opts.ledFx);
     c.toggle("hi-contrast", !!opts.contrast);
+    c.toggle("no-emblem", opts.emblem === false);
     document.documentElement.style.setProperty("--fs", opts.size);
   }
 
@@ -292,7 +314,7 @@
     { id: "download", title: "Download", desc: "Get the mod for Windows or Linux", tab: "Download" },
     { id: "sessions", title: "Session Browser", desc: "Browse, Create & Join active Joint Operations", tab: "Sessions" },
     { id: "contribute", title: "Contribute", desc: "Take part in development & Become a Hound Member", tab: "Contribute" },
-    { id: "team", title: "Team", desc: "The people behind Hound Protocol", tab: "Team", tabOnly: true },
+    { id: "team", title: "Team", desc: "Chain of command and the people behind Hound Protocol", tab: "Team", tabOnly: true },
     { id: "mods", title: "Mods", desc: "Upload, Download & Browse Re-Engineered mods curated to function with Joint Operations", tab: "Mods" },
     { id: "devlog", title: "Dev Log", desc: "News, decisions and releases", tab: "Dev Log" },
     { id: "guides", title: "Guides", desc: "How to play, help, test and run the project", tab: "Guides" },
@@ -483,9 +505,10 @@
   /* ---------------- Views ---------------- */
   var currentView = "";
   function shell(kicker, title, body) {
-    var tabs = '<nav class="secbar" aria-label="Sections">' + ITEMS.map(function (it) {
-      return '<a href="#/' + it.id + '"' + (it.id === currentView ? ' aria-current="page"' : "") + ">" + esc(it.tab) + "</a>";
-    }).join("") + "</nav>";
+    var now = ITEMS.filter(function (it) { return it.id === currentView; })[0];
+    var tabs = '<div class="secwrap"><nav class="secbar" aria-label="Sections">' + ITEMS.map(function (it) {
+      return '<a href="#/' + it.id + '" data-desc="' + esc(it.desc) + '"' + (it.id === currentView ? ' aria-current="page"' : "") + ">" + menuIcon(it.id) + "<span>" + esc(it.tab) + "</span></a>";
+    }).join("") + '</nav><div class="secdesc" id="secDesc" aria-hidden="true">' + esc(now ? now.desc : "") + "</div></div>";
     return tabs + '<div class="vh"><div><span class="kicker">' + esc(kicker) + '</span><h2>' + esc(title) + '</h2></div><a class="btn" href="#/">Menu</a></div><div id="vb">' + body + "</div>";
   }
   function milestone(key) { var m = cfg.milestones && cfg.milestones[key]; return m ? '<p class="note">' + esc(m) + "</p>" : ""; }
@@ -494,6 +517,22 @@
   var ICON_WIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5l8-1v8H3zM13 4l8-1v9h-8zM3 13h8v7l-8-1zM13 13h8v8l-8-1z"/></svg>';
   var ICON_LNX = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13"/><path d="M8 21h8M12 17v4M7 9l3 2-3 2M12 13h4"/></svg>';
 
+  /* Section bar: the description under the bar follows the tab you point at, and returns to the current section */
+  (function () {
+    var t = 0;
+    function show(a) {
+      var d = $("#secDesc"); if (!d) return;
+      var txt = a ? a.getAttribute("data-desc") : ((ITEMS.filter(function (it) { return it.id === currentView; })[0] || {}).desc || "");
+      if (d.textContent === txt) { d.classList.remove("out"); return; }
+      d.classList.add("out"); clearTimeout(t);
+      t = setTimeout(function () { d.textContent = txt; d.classList.remove("out"); }, opts.motion ? 140 : 0);
+    }
+    function find(e) { var el = e.target; while (el && el !== document && !(el.tagName === "A" && el.parentNode && el.parentNode.className === "secbar")) el = el.parentNode; return el && el !== document ? el : null; }
+    document.addEventListener("mouseover", function (e) { var a = find(e); if (a) show(a); });
+    document.addEventListener("focusin", function (e) { var a = find(e); if (a) show(a); });
+    document.addEventListener("mouseout", function (e) { var a = find(e); if (a && !(e.relatedTarget && find({ target: e.relatedTarget }))) show(null); });
+  })();
+
   /* Briefing */
   function hl(t) { return esc(t).replace(/\{\{([^}]+)\}\}/g, '<mark class="key">$1</mark>'); }
   var ICONS = {
@@ -501,54 +540,20 @@
     client: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="6" r="3"/><path d="M4 18c0-4 2.7-6 6-6s6 2 6 6"/></svg>',
     link: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 7h13l-3-3M18 13H5l3 3"/></svg>'
   };
-  /* Architecture diagram: host PC, connection, client PCs, and what flows each way */
-  function howDiagram() {
-    var narrow = window.matchMedia && matchMedia("(max-width: 700px)").matches;
-    function box(x, y, w, h, title, sub, rows, cls, k) {
-      var o = '<g class="dn ' + cls + '" style="--k:' + k + '"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>' +
-        '<path class="tick" d="M' + x + ' ' + (y + 10) + 'V' + y + 'H' + (x + 10) + '"/>' +
-        '<text class="t" x="' + (x + 16) + '" y="' + (y + 26) + '">' + title + '</text><text class="s" x="' + (x + 16) + '" y="' + (y + 42) + '">' + sub + "</text>";
-      rows.forEach(function (r, i) { o += '<rect class="row" x="' + (x + 16) + '" y="' + (y + 56 + i * 26) + '" width="' + (w - 32) + '" height="20"/><text class="r" x="' + (x + 26) + '" y="' + (y + 70 + i * 26) + '">' + r + "</text>"; });
-      return o + "</g>";
-    }
-    if (narrow) {
-      var v = '<svg class="how narrow" viewBox="0 0 340 600" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; client PCs send movement and actions; the host sends world state back.">';
-      v += box(10, 10, 320, 180, "HOST PC", "Runs the session", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
-      v += '<g class="dn lane" style="--k:1"><text class="lt" x="170" y="222" text-anchor="middle">STEAM RELAY · DIRECT IP</text>' +
-        '<line class="rail" x1="120" y1="236" x2="120" y2="362"/><line class="pkt up" x1="120" y1="362" x2="120" y2="236"/><path class="arrow" d="M114 244l6-8 6 8"/><text class="lb" x="110" y="304" text-anchor="end">movement</text><text class="lb" x="110" y="318" text-anchor="end">actions</text>' +
-        '<line class="rail" x1="220" y1="236" x2="220" y2="362"/><line class="pkt down" x1="220" y1="236" x2="220" y2="362"/><path class="arrow" d="M214 354l6 8 6-8"/><text class="lb" x="230" y="296">world state</text><text class="lb" x="230" y="310">AI</text><text class="lb" x="230" y="324">events</text></g>';
-      [0, 1].forEach(function (i) { v += '<g class="dn ghost" style="--k:' + (3 + i) + '"><rect x="' + (26 - i * 8) + '" y="' + (382 + i * 8) + '" width="304" height="160"/></g>'; });
-      v += box(10, 398, 304, 160, "CLIENT PC", "Up to 15 clients", ["Own movement", "Own camera", "Local view of world"], "clientbox", 2);
-      return v + '<text class="foot" x="170" y="592" text-anchor="middle">ONE HOST DECIDES · ALL SEE THE SAME WORLD</text></svg>';
-    }
-    var svg = '<svg class="how" viewBox="0 30 760 270" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; client PCs send movement and actions; the host sends world state back through Steam relay or a direct connection.">';
-    svg += box(10, 40, 230, 200, "HOST PC", "Runs the session", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
-    [0, 1, 2].forEach(function (i) { svg += '<g class="dn ghost" style="--k:' + (3 + i) + '"><rect x="' + (536 - i * 8) + '" y="' + (40 + i * 8) + '" width="214" height="200"/></g>'; });
-    svg += box(520, 56, 214, 200, "CLIENT PC", "Up to 15 clients", ["Own movement", "Own camera", "Local view of world"], "clientbox", 2);
-    svg += '<g class="dn lane" style="--k:1">' +
-      '<text class="lt" x="380" y="70" text-anchor="middle">STEAM RELAY · DIRECT IP</text>' +
-      '<line class="rail" x1="250" y1="120" x2="510" y2="120"/><line class="pkt up" x1="510" y1="120" x2="250" y2="120"/>' +
-      '<path class="arrow" d="M258 114l-8 6 8 6"/><text class="lb" x="380" y="108" text-anchor="middle">movement · actions</text>' +
-      '<line class="rail" x1="250" y1="180" x2="510" y2="180"/><line class="pkt down" x1="250" y1="180" x2="510" y2="180"/>' +
-      '<path class="arrow" d="M502 174l8 6-8 6"/><text class="lb" x="380" y="204" text-anchor="middle">world state · AI · events</text></g>';
-    svg += '<text class="foot" x="380" y="292" text-anchor="middle">UP TO 16 PLAYERS · ONE HOST DECIDES · EVERYONE SEES THE SAME WORLD</text></svg>';
-    return svg;
-  }
   function viewBriefing() {
     var v = $("#view");
     v.innerHTML = shell("Overview", "About Joint Operations", loading("Loading"));
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
-      var b = data.briefing || {}, host = b.host || { places: [] };
+      var b = data.briefing || {};
       $("#vb").innerHTML = '<div class="bf">' +
         '<section class="bf-sec bf-hero"><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
         (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
         '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Guides</a></div></section>' +
-        '<section class="bf-sec"><div class="label">How a session works</div>' + howDiagram() +
-        '<div class="bf-how">' + (b.how || []).map(function (h, k) {
-          return '<div class="bf-pt" style="--k:' + k + '"><h4>' + (ICONS[h[0]] || "") + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div>";
-        }).join("") + "</div></section>" +
-        '<section class="bf-sec bf-hostline"><p>' + ICONS.host + hl(host.text || "") + '</p><ul class="chips">' + (host.places || []).map(function (pl, k) { return '<li style="--k:' + k + '">' + esc(pl) + "</li>"; }).join("") + "</ul></section>" +
+        '<section class="bf-sec"><div class="label">How a session works</div>' +
+        '<ol class="bf-steps">' + (b.how || []).map(function (h, k) {
+          return '<li style="--k:' + k + '"><span class="st-n">' + (ICONS[h[0]] || k + 1) + '</span><div><h4>' + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div></li>";
+        }).join("") + "</ol></section>" +
         (b.alert ? '<section class="bf-sec"><div class="label">' + esc(b.alert.title) + '</div><p class="bf-lead">' + hl(b.alert.text) + '</p><div class="alerts">' + (b.alert.states || []).map(function (s, k) {
           return '<div class="al ' + esc(s[0]) + '" style="--k:' + k + '"><b>' + esc(s[1]) + "</b><p>" + hl(s[2]) + "</p></div>";
         }).join("") + '</div><p class="source">' + hl(b.alert.foot || "") + ' · <a href="#/docs/adr-0012">ADR 0012</a></p></section>' : "") +
@@ -601,80 +606,119 @@
   }
 
   /* Dev log */
-  var logFilter = "all";
+  var logFilter = "all", logQ = "";
+  function plainExcerpt(md, n) {
+    var t = String(md || "").replace(/```[\s\S]*?```/g, " ").replace(/^#+\s.*$/gm, " ").replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`>#|-]+/g, " ").replace(/\s+/g, " ").trim();
+    return t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : t;
+  }
   function devlogEntries() {
     var out = [];
     ((data.devlog && data.devlog.entries) || []).forEach(function (e) { out.push(Object.assign({ kind: "note" }, e)); });
     (data.commits || []).forEach(function (c) { out.push(Object.assign({ kind: "commit" }, c)); });
-    (data.releases || []).forEach(function (r) { out.push({ kind: "release", tag: isPlayable(r) ? "Release" : "Foundation", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url }); });
+    (data.releases || []).forEach(function (r) {
+      out.push({ kind: "release", tag: isPlayable(r) ? "Release" : "Foundation", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url, body: plainExcerpt(r.body, 260), ver: r.tag_name });
+    });
     return out.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
   }
   function viewDevlog() {
     var v = $("#view");
     v.innerHTML = shell("News", "Dev Log", loading("Loading the dev log"));
-    Promise.all([loadLocal("devlog"), loadCommits(), loadReleases()]).then(function () { if (currentView === "devlog") drawDevlog(); refreshInfo(); });
+    Promise.all([loadLocal("devlog"), loadCommits(), loadReleases(), loadRoadmap()]).then(function () { if (currentView === "devlog") drawDevlog(); refreshInfo(); });
+  }
+  function markQ(text) {
+    var t = esc(text);
+    if (!logQ) return t;
+    var q = esc(logQ).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return t.replace(new RegExp("(" + q + ")", "ig"), "<mark>$1</mark>");
   }
   function drawDevlog() {
-    var all = devlogEntries(), list = all.filter(function (e) { return logFilter === "all" || e.kind === logFilter; }), groups = [], by = {};
+    var all = devlogEntries(), q = logQ.toLowerCase();
+    var list = all.filter(function (e) {
+      if (logFilter !== "all" && e.kind !== logFilter) return false;
+      return !q || [e.title, e.body, e.tag, e.by, e.ver].join(" ").toLowerCase().indexOf(q) > -1;
+    });
+    var groups = [], by = {};
     list.forEach(function (e) { var d = fmtDate(e.date); if (!by[d]) { by[d] = []; groups.push(d); } by[d].push(e); });
     var count = function (k) { return all.filter(function (e) { return e.kind === k; }).length; };
-    $("#vb").innerHTML = '<div class="tabs" role="tablist">' + [["all", "All", all.length], ["note", "Notes", count("note")], ["commit", "Commits", count("commit")], ["release", "Releases", count("release")]].map(function (t) {
-      return '<button role="tab" data-lf="' + t[0] + '" aria-selected="' + (logFilter === t[0]) + '">' + t[1] + '<span class="count">' + t[2] + "</span></button>";
-    }).join("") + "</div>" +
+    var rel = (data.releases || [])[0], ph = currentPhase(), last = all[0];
+    var ctx = '<div class="log-ctx">' +
+      '<div><span>Current build</span><b>' + esc(cfg.version) + "</b></div>" +
+      '<div><span>Latest release</span><b>' + (rel ? esc(rel.tag_name) + " · " + fmtDate(rel.published_at) : "–") + "</b></div>" +
+      '<div><span>Roadmap</span><b>' + (ph ? "Phase " + ph.n + " · " + ph.done + " of " + ph.total + " done" : "–") + "</b></div>" +
+      '<div><span>Last update</span><b>' + (last ? fmtDate(last.date) : "–") + "</b></div></div>";
+    $("#vb").innerHTML = ctx +
+      '<div class="toolbar log-tools"><input class="field grow" id="lq" type="search" placeholder="Search notes, releases and commits" value="' + esc(logQ) + '" aria-label="Search the dev log"></div>' +
+      '<div class="tabs" role="tablist">' + [["all", "All", all.length], ["note", "Notes", count("note")], ["release", "Releases", count("release")], ["commit", "Commits", count("commit")]].map(function (t) {
+        return '<button role="tab" data-lf="' + t[0] + '" aria-selected="' + (logFilter === t[0]) + '">' + t[1] + '<span class="count">' + t[2] + "</span></button>";
+      }).join("") + "</div>" +
+      (q ? '<p class="sub">' + plural(list.length, "result") + " for “" + esc(logQ) + "”</p>" : "") +
       (groups.length ? groups.map(function (g) {
         return '<section class="day"><div class="day-d">' + esc(g) + "</div>" + by[g].map(function (e) {
-          var title = e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) + "</a>" : esc(e.title);
-          return '<article class="entry"><span class="pill ' + (e.kind === "release" ? "ok" : e.kind === "note" ? "hot" : "") + '">' + esc(e.tag || e.kind) + "</span><div><h3>" + title + "</h3>" +
-            (e.body ? "<p>" + esc(e.body) + "</p>" : "") + (e.by ? '<div class="meta">' + esc(e.by) + "</div>" : "") + "</div></article>";
+          var title = e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener noreferrer">' + markQ(e.title) + "</a>" : markQ(e.title);
+          var kindTxt = { note: "Team note", release: e.tag === "Release" ? "Playable release" : "Foundation release", commit: "Change on " + cfg.branch }[e.kind] || "";
+          return '<article class="entry k-' + e.kind + '"><span class="pill ' + (e.kind === "release" ? "ok" : e.kind === "note" ? "hot" : "") + '">' + esc(e.tag || e.kind) + "</span><div><h3>" + title + "</h3>" +
+            (e.body ? "<p>" + markQ(e.body) + "</p>" : "") +
+            '<div class="meta">' + esc(kindTxt) + (e.by ? " · " + markQ(e.by) : "") + "</div></div></article>";
         }).join("") + "</section>";
-      }).join("") : '<div class="empty">No entries<small>' + (logFilter === "commit" && data.commits === null ? "GitHub could not be reached." : "Nothing logged here yet.") + "</small></div>") +
+      }).join("") : '<div class="empty">No entries<small>' + (q ? "Nothing matches that search." : logFilter === "commit" && data.commits === null ? "GitHub could not be reached." : "Nothing logged here yet.") + "</small></div>") +
       '<p class="source">Sources: data/devlog.json' + (data.commits ? " · commits on " + esc(cfg.branch) : "") + (data.releases && data.releases.length ? " · releases" : "") + (data.commits === null ? " · GitHub unreachable" : "") + "</p>";
     $$("[data-lf]").forEach(function (b) { b.addEventListener("click", function () { logFilter = b.dataset.lf; drawDevlog(); }); });
+    var t = 0;
+    $("#lq").addEventListener("input", function (e) {
+      clearTimeout(t); var val = e.target.value;
+      t = setTimeout(function () { logQ = val.trim(); var pos = $("#lq").selectionStart; drawDevlog(); var n = $("#lq"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (x) { /* older browsers */ } }, 160);
+    });
   }
 
   /* Download */
+  var dlOS = null;
+  function guessOS() {
+    var ua = (navigator.userAgent || "") + " " + (navigator.platform || "");
+    return /Linux|X11|SteamOS/i.test(ua) && !/Android/i.test(ua) ? "linux" : "windows";
+  }
+  var DL_STEPS = {
+    windows: ["Install Metal Gear Solid V from Steam and start it once.", "Download the latest release.", "Run the installer. It backs up your saves first.", "Start the game, then host a session or join one from the Session Browser."],
+    linux: ["Install Metal Gear Solid V in Steam and start it once with Proton.", "Download the same release as Windows and install it into the game folder.", 'In Steam, open MGSV → Properties → Launch Options and paste:<br><code>WINEDLLOVERRIDES="dinput8=n,b" %command%</code>', 'Start the game. Full steps and Bazzite notes: <a href="#/guides/hp-gde-002">Linux and Proton Guide</a>.']
+  };
   function viewDownload() {
     var v = $("#view");
     v.innerHTML = shell("Releases", "Download", loading("Checking releases on GitHub"));
     loadReleases().then(function (rel) {
       if (currentView !== "download") return;
-      var latest = playableReleases()[0], body = "", pre = "";
-      body += '<div class="cols">';
-      if (latest) {
-        body += '<div class="panel"><div class="label">Latest release</div>' +
-          '<div class="kv"><span>Version</span><b>' + esc(latest.tag_name) + "</b></div>" +
-          '<div class="kv"><span>Name</span><b>' + esc(latest.name || latest.tag_name) + "</b></div>" +
-          '<div class="kv"><span>Published</span><b>' + fmtDate(latest.published_at) + "</b></div>" +
-          '<div class="kv"><span>Channel</span><b>' + (latest.prerelease ? '<span class="pill warn">Pre-release</span>' : '<span class="pill ok">Stable</span>') + "</b></div>" +
-          '<div class="label">Files</div>' +
-          ((latest.assets || []).length ? '<ul class="release-assets">' + latest.assets.map(function (a) {
-            return "<li><span>" + esc(a.name) + '<br><small class="sub">' + fmtBytes(a.size) + " · " + plural(a.download_count || 0, "download") + '</small></span><a class="btn primary small" href="' + esc(a.browser_download_url) + '">Download</a></li>';
-          }).join("") + "</ul>" : '<p class="sub">This release has no attached files.</p>') +
-          '<div class="toolbar" style="margin-top:12px"><a class="btn" href="' + esc(latest.html_url) + '" target="_blank" rel="noopener noreferrer">Release notes</a><a class="btn" href="' + repoUrl("/releases") + '" target="_blank" rel="noopener noreferrer">All releases</a></div></div>';
-      } else {
-        pre = milestone("download");
-        body += '<div class="panel"><div class="label">Release status</div>' +
-          '<div class="kv"><span>Build</span><b>' + esc(cfg.version) + "</b></div>" +
-          '<div class="kv"><span>Stage</span><b><span class="pill warn">' + esc(cfg.stage) + "</span></b></div>" +
-          '<div class="kv"><span>Playable release</span><b>' + (rel === null ? "Could not reach GitHub" : "Coming with 0.1") + "</b></div>" +
-          '<p class="sub" style="margin-top:12px">' + (rel === null ? "GitHub could not be reached. Releases will show here when it responds." : "No playable version yet. When 0.1 is released, it appears here automatically.") + "</p>" +
-          '<div class="toolbar"><a class="btn" href="' + repoUrl("/releases") + '" target="_blank" rel="noopener noreferrer">Releases on GitHub</a>' +
-          '<a class="btn" href="' + repoUrl("/archive/refs/heads/" + cfg.branch + ".zip") + '">Source code (zip)</a></div></div>';
-      }
-      body += '<div class="panel"><div class="label">Requirements</div>' +
-        '<div class="kv"><span>Game</span><b>Your own copy of MGSV on Steam</b></div>' +
-        '<div class="kv"><span>Windows</span><b>Supported</b></div>' +
-        '<div class="kv"><span>Linux</span><b>Supported through Proton</b></div>' +
-        '<div class="kv"><span>Online play</span><b>Steam client running</b></div>' +
-        '<div class="kv"><span>Players</span><b>Up to 16 per session</b></div></div>';
-      body += "</div>";
-      body += '<div class="cols" style="margin-top:14px">' +
-        '<div class="panel"><div class="platform">' + ICON_WIN + "Windows</div><ol class=\"steps\">" +
-        "<li>Install MGSV from Steam and start it once.</li><li>Download the latest release above.</li><li>Run the installer. It backs up your saves.</li><li>Start the game. Host a session or join one from the Session Browser.</li></ol></div>" +
-        '<div class="panel"><div class="platform">' + ICON_LNX + "Linux (Proton)</div><ol class=\"steps\">" +
-        "<li>Install MGSV in Steam and start it once with Proton.</li><li>Download the same release as Windows and install it into the game folder.</li><li>In Steam, open MGSV → Properties → Launch Options and paste:<br><code>WINEDLLOVERRIDES=\"dinput8=n,b\" %command%</code></li><li>Start the game. Full steps in the <a href=\"#/guides/hp-gde-002\">Linux and Proton Guide</a>.</li></ol></div></div>";
-      body += '<p class="note">You need your own copy of Metal Gear Solid V. Joint Operations never includes game files. Step-by-step help: <a href="#/guides/hp-gde-001">Player Guide</a>.</p>';
-      v.querySelector("#vb").innerHTML = pre + body;
+      dlOS = dlOS || guessOS();
+      var latest = playableReleases()[0], foundation = (rel || []).filter(function (r) { return !isPlayable(r); }).slice(0, 5);
+      var files = latest ? (latest.assets || []) : [];
+      var hero = latest
+        ? '<div class="dl-hero ready"><div class="dl-main"><span class="kicker">Latest release · ' + (latest.prerelease ? "Pre-release" : "Stable") + '</span><h3>Joint Operations ' + esc(latest.tag_name) + '</h3><p>Published ' + fmtDate(latest.published_at) + ". Free and open source.</p>" +
+            '<div class="dl-files">' + (files.length ? files.map(function (a) {
+              return '<a class="btn primary" href="' + esc(a.browser_download_url) + '">' + esc(a.name) + ' <small>' + fmtBytes(a.size) + "</small></a>";
+            }).join("") : '<span class="sub">This release has no attached files yet.</span>') + "</div>" +
+            '<div class="toolbar"><a class="btn" href="' + esc(latest.html_url) + '" target="_blank" rel="noopener noreferrer">Release notes</a><a class="btn" href="' + repoUrl("/releases") + '" target="_blank" rel="noopener noreferrer">All releases</a></div></div></div>'
+        : '<div class="dl-hero"><div class="dl-main"><span class="kicker">Playable release</span><h3>Joint Operations 0.1 is on its way</h3>' +
+            "<p>" + (rel === null ? "GitHub could not be reached, so the latest status is not shown. Try again later." : "There is no playable version yet. When 0.1 is released, the download appears here automatically, for Windows and Linux.") + "</p>" +
+            '<div class="dl-status"><div><span>Current build</span><b>' + esc(cfg.version) + '</b></div><div><span>Stage</span><b>' + esc(cfg.stage || "In development") + '</b></div><div><span>Next</span><b>0.1 · first playable</b></div></div>' +
+            '<div class="toolbar"><a class="btn primary" href="#/roadmap">See the roadmap</a><a class="btn" href="#/contribute">Help test</a><a class="btn" href="' + repoUrl("/archive/refs/heads/" + cfg.branch + ".zip") + '">Source code (zip)</a></div></div></div>';
+      var req = [["Game", "Your own copy of MGSV: The Phantom Pain on Steam"], ["Windows", "Windows 10 or 11"], ["Linux", "Through Proton, including Steam Deck and Bazzite"], ["Online", "Steam running. No ports to open"], ["Players", "Up to 16 per session"], ["Price", "Free"]];
+      var body = hero +
+        '<div class="dl-grid"><section class="panel"><div class="label">Install</div>' +
+          '<div class="tabs small" role="tablist">' + [["windows", "Windows"], ["linux", "Linux · Proton"]].map(function (t) {
+            return '<button role="tab" data-os="' + t[0] + '" aria-selected="' + (dlOS === t[0]) + '">' + (t[0] === "windows" ? ICON_WIN : ICON_LNX) + t[1] + "</button>";
+          }).join("") + "</div>" +
+          '<ol class="steps" id="dlSteps">' + DL_STEPS[dlOS].map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>" +
+          '<p class="sub">We guessed your system from your browser. Pick the other tab if that is wrong.</p></section>' +
+        '<section class="panel"><div class="label">Requirements</div><dl class="dl-req">' + req.map(function (r) { return "<div><dt>" + r[0] + "</dt><dd>" + r[1] + "</dd></div>"; }).join("") + "</dl></section></div>" +
+        (foundation.length ? '<section class="panel" style="margin-top:14px"><div class="label">Foundation builds · not playable</div><ul class="dl-hist">' + foundation.map(function (r) {
+          return '<li><a href="' + esc(r.html_url) + '" target="_blank" rel="noopener noreferrer"><b>' + esc(r.tag_name) + "</b><span>" + esc((r.name || "").replace(/^Release\s+v?[\d.]+:?\s*/i, "") || "Foundation release") + "</span><small>" + fmtDate(r.published_at) + "</small></a></li>";
+        }).join("") + '</ul><p class="sub">Foundation builds update the website, docs and tools. The game mod starts with 0.1.</p></section>' : "") +
+        '<p class="note">You need your own copy of Metal Gear Solid V. Joint Operations never includes game files and never connects to Konami\'s servers. Step-by-step help: <a href="#/guides/hp-gde-001">Player Guide</a>.</p>';
+      v.querySelector("#vb").innerHTML = body;
+      $$('[data-os]').forEach(function (b) {
+        b.addEventListener("click", function () {
+          dlOS = b.dataset.os;
+          $$('[data-os]').forEach(function (x) { x.setAttribute("aria-selected", String(x === b)); });
+          $("#dlSteps").innerHTML = DL_STEPS[dlOS].map(function (s) { return "<li>" + s + "</li>"; }).join("");
+        });
+      });
       refreshInfo();
     });
   }
@@ -720,16 +764,9 @@
       '<div class="tw"><table><tr>' + th("name", "Session") + th("host", "Host") + "<th>Details</th>" + th("players", "Players") + "<th>Status</th>" + th("ping", "Ping") + "</tr>" +
       rows + "</table></div>" +
       (rows ? "" : all.length ? '<div class="empty" id="noServers">No sessions match<small>Try other filters.</small></div>'
-        : '<div class="ops" id="noServers">' +
-            '<div class="ops-radar" aria-hidden="true"><i class="g"></i><i class="sw"></i><i class="ring r1"></i><i class="ring r2"></i>' +
-              '<i class="bp b1"></i><i class="bp b2"></i><i class="bp b3"></i><i class="bp b4"></i><i class="you"></i><i class="static"></i></div>' +
-            '<div class="ops-read"><div class="ops-k">SEARCH · AREA SCAN</div>' +
-              '<div class="ops-freq" aria-hidden="true"><span id="opsF">140.85</span><i>MHz</i></div>' +
-              '<div class="ops-alert"><b data-t="NO SESSIONS DETECTED">NO SESSIONS DETECTED</b></div>' +
-              '<div class="ops-bars" aria-hidden="true">' + new Array(14).join("<i></i>") + "</div>" +
-              '<small>Live sessions appear here from version 0.1. Hosts list their game, you pick one and deploy.</small></div></div>') +
+        : '<div class="nolink" id="noServers"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 20a23 23 0 0132 0M14 26a15 15 0 0120 0M20 32a7 7 0 018 0"/><circle cx="24" cy="38" r="2"/><path class="x" d="M9 9l30 30"/></svg>' +
+            '<b>No sessions online</b><small>Live sessions appear here from version 0.1. Hosts list their game, you pick one and deploy.</small></div>') +
       '<p class="source">Source: data/servers.json' + (data.serversHooked ? " · live hook" : "") + "</p>";
-    opsScan();
     $("#sq").addEventListener("input", function (e) { sessState.q = e.target.value; drawSessionsKeepFocus("#sq"); });
     $("#sr").addEventListener("change", function (e) { sessState.region = e.target.value; drawSessions(); });
     $("#sf").addEventListener("click", function () { sessState.hideFull = !sessState.hideFull; drawSessions(); });
@@ -747,23 +784,23 @@
     var n = $(sel); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { /* not a text field */ } }
   }
 
-  /* Empty Session Browser: a fast area scan that keeps tuning frequencies */
-  var opsTimer = 0;
-  function opsScan() {
-    clearInterval(opsTimer);
-    var el = $("#opsF"); if (!el || !opts.motion) return;
-    var f = 140.85;
-    opsTimer = setInterval(function () {
-      if (currentView !== "sessions" || !$("#opsF")) { clearInterval(opsTimer); return; }
-      f = 140 + Math.random() * 1.99;
-      $("#opsF").textContent = f.toFixed(2);
-    }, 110);
-  }
-
   /* Contribute */
   var MODULES = { launcher: "Launcher / Injector", hooks: "Game Hooks", session: "Session / Host", net: "Networking", modapi: "Mod API", lobby: "Lobby App", web: "Web", docs: "Docs", testing: "Testing", legal: "Legal" };
   // Contractor ranks, Mother Base style, by completed contracts (docs/departments.md)
-  var RANKS = [["—", 0, "Take any contract, {{easy:Easy}} to {{hard:Hard}}"], ["A", 1, "Listed on the contributor wall, contractor role on Discord"], ["A+", 3, "Hold two contracts at once"], ["A++", 6, "Review {{easy:Easy}} contracts with Quality"], ["S", 10, "Review {{medium:Medium}} contracts with Quality"], ["S+", 20, "Review {{hard:Hard}} contracts, invitation into a department"], ["S++", 35, "Vote on priorities, seat candidate"]];
+  // Contractor grades follow Mother Base staff grades (E to S++). As in MGSV, a contractor holds a grade in every field
+  // (like a unit), earned from contract points in that field; the thresholds climb steeply. See docs/departments.md.
+  var GRADES = [
+    ["E", 1, "Contractor role on Discord, listed on the contributor wall"],
+    ["D", 4, ""], ["C", 8, ""],
+    ["B", 14, "Hold two contracts at once"],
+    ["A", 22, "Review {{easy:Easy}} contracts in this field, as advice to Quality"],
+    ["A+", 32, "Review {{medium:Medium}} contracts in this field"],
+    ["A++", 50, "Mentor new contractors in this field"],
+    ["S", 80, "Review {{hard:Hard}} contracts in this field"],
+    ["S+", 125, "Can be invited into a department"],
+    ["S++", 200, "Candidate for a lead position"]
+  ];
+  var CP = { easy: 2, medium: 5, hard: 10 }; // contract points per completed contract
   // Contract difficulty (docs/departments.md): information only, never a gate. Name, short label, and what makes it this hard
   var DIFF = {
     easy: ["Easy", "Good first contract", "Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools."],
@@ -793,7 +830,23 @@
     var p = data.contracts && data.contracts.contracts;
     return (p || []).map(function (c) { return Object.assign({ status: "planned", by: [], live: false }, c); });
   }
-  function rankFor(p) { var r = RANKS[0]; RANKS.forEach(function (x) { if (p >= x[1]) r = x; }); return r; }
+  function gradeFor(p) { var r = null; GRADES.forEach(function (x) { if (p >= x[1]) r = x; }); return r; }
+  function gradeIdx(g) { return g ? GRADES.indexOf(g) : -1; }
+  function fieldOf(module) { var f = FIELDS.filter(function (x) { return x[3].indexOf(module) > -1; })[0]; return f ? f[0] : "code"; }
+  // items: [{ login, name, difficulty, module }] -> sorted [{ login, name, n, f: {field: points}, best: grade }]
+  function tallyGrades(items) {
+    var by = {};
+    items.forEach(function (it) {
+      var u = by[it.login] = by[it.login] || { login: it.login, name: it.name, n: 0, f: {} }, k = fieldOf(it.module);
+      u.n++; if (it.name) u.name = it.name;
+      u.f[k] = (u.f[k] || 0) + (CP[it.difficulty] || CP.easy);
+    });
+    return Object.keys(by).map(function (k) {
+      var u = by[k], best = null;
+      Object.keys(u.f).forEach(function (f) { var g = gradeFor(u.f[f]); if (gradeIdx(g) > gradeIdx(best)) best = g; });
+      u.best = best; return u;
+    }).sort(function (a, b) { return gradeIdx(b.best) - gradeIdx(a.best) || b.n - a.n || a.login.localeCompare(b.login); });
+  }
   function viewContribute() {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Contribute", loading("Loading the contract board"));
@@ -855,9 +908,9 @@
       return { k: k, n: l.length, d: d };
     }).filter(function (m) { return m.n; });
     // Leaderboard from completed live contracts
-    var pts = {};
-    list.forEach(function (c) { if (c.status === "done") (c.by || []).forEach(function (u) { pts[u] = pts[u] || { n: 0 }; pts[u].n++; }); });
-    var ops = Object.keys(pts).sort(function (a, b) { return pts[b].n - pts[a].n || a.localeCompare(b); });
+    var items = [];
+    list.forEach(function (c) { if (c.status === "done") (c.by || []).forEach(function (u) { items.push({ login: u, difficulty: c.difficulty, module: c.module }); }); });
+    var ops = tallyGrades(items);
     var opt = function (val, cur, txt) { return '<option value="' + val + '"' + (cur === val ? " selected" : "") + ">" + txt + "</option>"; };
     $("#vb").innerHTML =
       '<div class="tabs" role="tablist">' + [["board", "Contract board"], ["how", "How it works"], ["ranks", "Contractor ranks"]].map(function (t) {
@@ -893,14 +946,18 @@
           return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
         }).join("") + "</div>",
       ranks:
-        '<p class="sub">Contractors are ranked like Mother Base staff, by the number of completed contracts. Each one also earns a <a href="#/verify">signed contributor record</a>.</p>' +
-        '<div class="ranks">' + RANKS.slice(1).map(function (r, k) { return '<div class="rank" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " contract" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + tint(r[2]) + "</span></div>"; }).join("") + "</div>" +
+        '<p class="sub">Contractors are graded like Mother Base staff, from <b>E</b> to <b>S++</b>. As in the game, you hold a grade in <b>each field</b>, the way staff hold a grade in each unit. Every completed contract earns points in its field: <b class="tint easy">Easy</b> ' + CP.easy + ', <b class="tint medium">Medium</b> ' + CP.medium + ', <b class="tint hard">Hard</b> ' + CP.hard + '. Each grade needs more points than the last, so the top grades take real work. Your best grade is your rank on Discord.</p>' +
+        '<div class="ranks">' + GRADES.map(function (r, k) { return '<div class="rank' + (r[2] ? "" : " quiet") + '" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " point" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + (r[2] ? tint(r[2]) : "Experience in the field") + "</span></div>"; }).join("") + "</div>" +
+        '<ul class="notes"><li><b>Commendations</b> work like medals: Administration can award one for exceptional work. It adds ' + CP.medium + ' points to every field and is listed publicly with the reason.</li>' +
+        '<li>Grades never go down. Leaving and coming back is normal.</li>' +
+        '<li>Grades give no authority over other people. Reviews are advice: Quality and Development still decide. See <a href="#/team">the chain of command</a>.</li></ul>' +
         '<div class="label">Contract difficulty</div>' +
         '<div class="tw"><table><tr><th>Difficulty</th><th>What makes it this hard</th></tr>' + DIFF_ORDER.map(function (k) { return '<tr><td><span class="pill diff ' + k + '">' + DIFF[k][0] + "</span></td><td>" + DIFF[k][2] + "</td></tr>"; }).join("") +
         '<tr><td><span class="pill diff core">Core</span></td><td>On the 0.1 critical path, at any difficulty. Reserved for the Development Department until 0.1.</td></tr></table></div>' +
         '<div class="label">Contractors</div>' +
-        (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Rank</th></tr>' + ops.map(function (u) {
-          return '<tr><td><a href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u) + '</a></td><td class="num">' + pts[u].n + "</td><td>" + esc(rankFor(pts[u].n)[0]) + "</td></tr>";
+        (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Rank</th>' + FIELDS.map(function (f) { return "<th>" + esc(f[1]) + "</th>"; }).join("") + "</tr>" + ops.map(function (u) {
+          return '<tr><td><a href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer">' + esc(u.login) + '</a></td><td class="num">' + u.n + "</td><td><b>" + esc(u.best ? u.best[0] : "–") + "</b></td>" +
+            FIELDS.map(function (f) { var g = gradeFor(u.f[f[0]] || 0); return '<td class="num">' + (g ? esc(g[0]) : "–") + "</td>"; }).join("") + "</tr>";
         }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Contractors appear here when contracts are closed on GitHub.</small></div>')
     };
     $("#ctab").innerHTML = tabHtml[conTab];
@@ -942,12 +999,15 @@
       '<p class="sub">' + (modState.tab === "compatible" ? "Re-engineered and tested to work with Joint Operations." : "These work, with known issues. Read the notes before you install.") + "</p>" +
       '<div class="toolbar"><input class="field grow" id="mq" type="search" placeholder="Search mods" value="' + esc(modState.q) + '" aria-label="Search mods">' +
       '<a class="btn primary" href="' + esc(repoUrl("/issues/new?template=mod-submission.md")) + '" target="_blank" rel="noopener noreferrer">Upload a mod</a></div>' +
-      '<div class="tw"><table><tr><th>Mod</th><th>Version</th><th>Author</th><th>Tested on</th><th>Notes</th><th></th></tr>' +
-      (list.length ? list.map(function (m) {
-        return "<tr><td>" + esc(m.name) + "</td><td>" + esc(m.version || "—") + "</td><td>" + esc(m.author || "—") + "</td><td>" + esc(m.tested || "—") + "</td><td>" + esc(m.notes || "—") + '</td><td class="num">' +
-          (m.url && /^https?:/i.test(m.url) ? '<a class="btn small" href="' + esc(m.url) + '" target="_blank" rel="noopener noreferrer">Get</a>' : "") + "</td></tr>";
-      }).join("") : "") + "</table></div>" +
-      (list.length ? "" : '<div class="empty">No mods listed<small>' + (modState.q ? "No mods match the search." : "Curated mods appear here after review. Upload yours for review.") + "</small></div>") +
+      (list.length ? '<div class="modgrid">' + list.map(function (m, k) {
+        return '<article class="modc ' + (modState.tab === "issues" ? "warn" : "ok") + '" style="--k:' + k + '"><header><h3>' + esc(m.name) + '</h3><span class="pill ' + (modState.tab === "issues" ? "warn" : "ok") + '">' + (modState.tab === "issues" ? "Known issues" : "Compatible") + "</span></header>" +
+          '<dl><div><dt>Version</dt><dd>' + esc(m.version || "–") + '</dd></div><div><dt>Author</dt><dd>' + esc(m.author || "–") + '</dd></div><div><dt>Tested on</dt><dd>' + esc(m.tested || "–") + "</dd></div></dl>" +
+          (m.notes ? "<p>" + esc(m.notes) + "</p>" : "") +
+          (m.url && /^https?:/i.test(m.url) ? '<a class="btn small" href="' + esc(m.url) + '" target="_blank" rel="noopener noreferrer">Get the mod</a>' : "") + "</article>";
+      }).join("") + "</div>"
+        : '<div class="empty">' + (modState.q ? "No mods match<small>Try another search.</small>" : "No mods listed yet<small>Curated mods appear here after review. Upload yours to be the first.</small>") + "</div>") +
+      '<div class="label">How a mod gets listed</div><ol class="modflow"><li><b>Upload</b><span>Open a mod submission on GitHub with a link, version and what it changes.</span></li><li><b>Quality review</b><span>Quality installs it with Joint Operations on Windows and Proton and notes any issues.</span></li><li><b>Listed</b><span>It appears here as Compatible or with Known issues, and is retested on new releases.</span></li></ol>' +
+      '<p class="sub">Mods must not contain game files, code copied from other mods without permission, or generative AI art, music or voices (<a href="#/guides/hp-pol-002">AI Use Policy</a>).</p>' +
       '<p class="source">Source: data/mods.json</p>';
     $$("[data-mt]").forEach(function (b) { b.addEventListener("click", function () { modState.tab = b.dataset.mt; drawMods(); }); });
     $("#mq").addEventListener("input", function (e) { modState.q = e.target.value; var p = e.target.selectionStart; drawMods(); var n = $("#mq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ } });
@@ -1045,7 +1105,8 @@
   var NW_COLORS = { Project: "#c9a24a", Technical: "#6fb7c9", Decisions: "#d77a6e", Research: "#8fbf7f", Community: "#a99be0", Legal: "#b7c2c6", Handbook: "#e6dcc0" };
   var NW_BUILD_MS = 3000, NW_MAX_DOCS = 5;
   var NW = null;
-  function docsMode() { return store.get("jo-docs-mode", "neural") === "classic" ? "classic" : "neural"; }
+  // The neural web needs pointer events and canvas; older browsers get the classic list
+  function docsMode() { if (!window.PointerEvent || !document.createElement("canvas").getContext) return "classic"; return store.get("jo-docs-mode", "neural") === "classic" ? "classic" : "neural"; }
   function setDocsMode(m) { store.set("jo-docs-mode", m); }
   function nwColor(g) { return NW_COLORS[g] || "#c9d0d2"; }
   function rgba(hex, a) { var n = parseInt(hex.slice(1), 16); return "rgba(" + (n >> 16) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")"; }
@@ -1493,39 +1554,81 @@
   }
 
   /* Options */
+  var OPT_PRESETS = {
+    full: ["Full effects", "Everything on, as designed", { glitch: true, grid: true, motion: true, ledFx: true, emblem: true }],
+    calm: ["Calm", "No glitch or flicker, gentle motion", { glitch: false, grid: true, motion: true, ledFx: false, emblem: true }],
+    light: ["Performance", "Static and light, for older or slower computers", { glitch: false, grid: false, motion: false, ledFx: false, emblem: false }]
+  };
+  function presetNow() {
+    var hit = "";
+    Object.keys(OPT_PRESETS).forEach(function (k) {
+      var p = OPT_PRESETS[k][2], same = Object.keys(p).every(function (o) { return !!opts[o] === p[o]; });
+      if (same && !hit) hit = k;
+    });
+    return hit;
+  }
   function viewOptions() {
     var v = $("#view");
     function sw(k, label, sub) {
       return '<div class="orow"><span>' + label + "<small>" + sub + '</small></span><button class="sw" role="switch" data-opt="' + k + '" aria-checked="' + !!opts[k] + '" aria-label="' + label + '"></button></div>';
     }
-    var size = [["1", "Normal"], ["1.1", "Large"], ["1.2", "Larger"]];
+    function seg(id, cur, list, label) {
+      return '<div class="seg" role="radiogroup" aria-label="' + label + '" id="' + id + '">' + list.map(function (s) {
+        return '<button role="radio" data-v="' + s[0] + '" aria-checked="' + (cur === s[0]) + '">' + s[1] + "</button>";
+      }).join("") + "</div>";
+    }
+    var pre = presetNow();
     v.innerHTML = shell("Settings", "Options",
-      '<div class="opt"><div><div class="label">Display</div>' +
-      sw("glitch", "Glitch effect", "A light background distortion every 5 to 20 seconds") +
-      sw("grid", "Background grid", "Grid and moving light band") +
-      sw("motion", "Animations", "Turn off for a static interface") +
-      sw("ledFx", "LED glow", "Glow and letter-by-letter text on the status lines") +
-      sw("contrast", "High contrast", "Brighter secondary text and lines") +
-      sw("sound", "Interface sounds", "Short tones when selecting and opening sections") +
-      '<div class="orow"><span>Text size<small>Applies to the whole site</small></span><select class="field" id="osz" aria-label="Text size">' +
-      size.map(function (s) { return '<option value="' + s[0] + '"' + (opts.size === s[0] ? " selected" : "") + ">" + s[1] + "</option>"; }).join("") + "</select></div></div>" +
-      '<div><div class="label">Data</div>' +
-      '<div class="orow"><span>GitHub data<small>Releases and contracts are cached for ' + (cfg.cacheMinutes || 10) + ' minutes</small></span><button class="btn small" id="oclr">Refresh now</button></div>' +
-      '<div class="orow"><span>Repository<small>' + esc(cfg.repo) + '</small></span><a class="btn small" href="' + repoUrl() + '" target="_blank" rel="noopener noreferrer">Open</a></div>' +
-      '<div class="orow"><span>Site build<small>' + esc(buildLabel()) + " · " + esc(cfg.stage) + (data.build && data.build.date ? " · " + esc(fmtDate(data.build.date)) : "") + "</small></span><span></span></div>" +
-      '<div class="orow"><span>Privacy<small>No cookies, analytics or trackers</small></span><a class="btn small" href="#/docs/privacy">Read</a></div>' +
-      '<div class="label">Reset</div>' +
-      '<div class="orow"><span>Restore defaults<small>Resets every setting on this page</small></span><button class="btn small" id="orst">Reset</button></div></div></div>' +
-      '<p class="source">Settings are stored in this browser only.</p>');
+      '<div class="presets">' + Object.keys(OPT_PRESETS).map(function (k) {
+        var p = OPT_PRESETS[k];
+        return '<button class="preset' + (pre === k ? " on" : "") + '" data-preset="' + k + '"><b>' + p[0] + "</b><small>" + p[1] + "</small></button>";
+      }).join("") + "</div>" +
+      '<div class="opt">' +
+        '<section class="ogroup"><div class="label">Look</div>' +
+          sw("glitch", "Glitch effect", "A light distortion every 5 to 20 seconds") +
+          sw("grid", "Background grid", "The tactical grid behind every page") +
+          sw("emblem", "Background emblem", "The faint Joint Operations emblem behind the menu") +
+          sw("ledFx", "LED glow", "Glowing, letter-by-letter status lines") +
+          sw("contrast", "High contrast", "Brighter secondary text and lines") +
+        "</section>" +
+        '<section class="ogroup"><div class="label">Motion and sound</div>' +
+          sw("motion", "Animations", "Turn off for a static interface. Off by default if your system asks for reduced motion") +
+          sw("sound", "Interface sounds", "Short, quiet tones when selecting and opening sections") +
+          '<div class="label">Reading</div>' +
+          '<div class="orow"><span>Text size<small>Applies to the whole site</small></span>' + seg("osz", opts.size, [["1", "Normal"], ["1.1", "Large"], ["1.2", "Larger"]], "Text size") + "</div>" +
+          '<div class="orow"><span>Docs view<small>How the Docs section opens</small></span>' + seg("odm", docsMode(), [["neural", "Neural web"], ["classic", "Classic list"]], "Docs view") + "</div>" +
+        "</section>" +
+        '<section class="ogroup"><div class="label">Data</div>' +
+          '<div class="orow"><span>GitHub data<small>Releases and contracts are cached for ' + (cfg.cacheMinutes || 10) + ' minutes</small></span><button class="btn small" id="oclr">Refresh now</button></div>' +
+          '<div class="orow"><span>Site build<small>' + esc(buildLabel()) + " · " + esc(cfg.stage) + (data.build && data.build.date ? " · " + esc(fmtDate(data.build.date)) : "") + "</small></span><a class=\"btn small\" href=\"#/devlog\">Dev log</a></div>" +
+          '<div class="orow"><span>Privacy<small>No cookies, analytics or trackers. Settings stay in this browser</small></span><a class="btn small" href="#/docs/privacy">Read</a></div>' +
+          '<div class="orow"><span>Restore defaults<small>Resets every setting on this page</small></span><button class="btn small" id="orst">Reset</button></div>' +
+        "</section>" +
+      "</div>");
+    function changed(msg) { store.set(OPT_KEY, opts); applyOpts(); status(msg); var p = presetNow(); $$("[data-preset]").forEach(function (b) { b.classList.toggle("on", b.dataset.preset === p); }); }
     $$("[data-opt]").forEach(function (b) {
       b.addEventListener("click", function () {
-        var k = b.dataset.opt; opts[k] = !opts[k]; store.set(OPT_KEY, opts); applyOpts();
-        b.setAttribute("aria-checked", String(!!opts[k])); status(b.getAttribute("aria-label") + (opts[k] ? " on" : " off"));
+        var k = b.dataset.opt; opts[k] = !opts[k];
+        b.setAttribute("aria-checked", String(!!opts[k])); changed(b.getAttribute("aria-label") + (opts[k] ? " on" : " off"));
       });
     });
-    $("#osz").addEventListener("change", function (e) { opts.size = e.target.value; store.set(OPT_KEY, opts); applyOpts(); status("Text size changed"); });
+    $$("[data-preset]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var p = OPT_PRESETS[b.dataset.preset];
+        Object.keys(p[2]).forEach(function (k) { opts[k] = p[2][k]; });
+        $$("[data-opt]").forEach(function (s) { s.setAttribute("aria-checked", String(!!opts[s.dataset.opt])); });
+        changed(p[0] + " preset applied");
+      });
+    });
+    function segBind(id, fn) {
+      $$("#" + id + " button").forEach(function (b) {
+        b.addEventListener("click", function () { $$("#" + id + " button").forEach(function (x) { x.setAttribute("aria-checked", String(x === b)); }); fn(b.dataset.v); });
+      });
+    }
+    segBind("osz", function (val) { opts.size = val; changed("Text size changed"); });
+    segBind("odm", function (val) { setDocsMode(val); status("Docs open in " + (val === "classic" ? "the classic list" : "the neural web")); });
     $("#oclr").addEventListener("click", function () { JO.refresh(); status("GitHub data cleared · reloading"); });
-    $("#orst").addEventListener("click", function () { opts = Object.assign({}, DEFAULT_OPTS); store.set(OPT_KEY, opts); applyOpts(); viewOptions(); status("Settings reset"); });
+    $("#orst").addEventListener("click", function () { opts = Object.assign({}, DEFAULT_OPTS); store.set(OPT_KEY, opts); applyOpts(); setDocsMode("neural"); viewOptions(); status("Settings reset"); });
   }
 
   /* Team */
@@ -1544,12 +1647,7 @@
             '<img src="' + esc(still && m.still ? m.still : m.image) + '" alt="' + esc(m.name) + '" width="168" height="168" loading="lazy"></picture><i class="pc tl"></i><i class="pc br"></i></div>' +
             '<div><div class="m-role">' + esc(m.role) + '</div><h3 class="m-name">' + esc(m.name) + '</h3><p>' + esc(m.bio) + "</p></div></article>";
         }).join("") + "</section>" +
-        ((t.departments || []).length ? '<section class="bf-sec"><div class="label">Departments</div><div class="depts">' + t.departments.map(function (d, k) {
-          return '<article class="dept" style="--k:' + k + '"><div class="d-head"><span class="d-code">' + esc(d.code) + '</span><h3>' + esc(d.name) + '</h3></div><p>' + esc(d.job) + "</p>" +
-            '<ul class="chips small">' + (d.units || []).map(function (u) { return "<li>" + esc(u) + "</li>"; }).join("") + "</ul>" +
-            '<div class="d-who">' + ((d.members || []).length ? esc(d.members.join(" · ")) : "No members yet") + "</div>" +
-            (d.open ? '<span class="pill warn">' + esc(d.open) + "</span>" : "") + "</article>";
-        }).join("") + '</div><p class="source">Organized like Mother Base. See <a href="#/docs/departments">departments and ranks</a>.</p></section>' : "") +
+        (t.hierarchy ? teamChain(t) : "") +
         '<section class="bf-sec"><div class="label">Seats</div><div class="seats">' + t.seats.map(function (s, k) {
           var open = Math.max(0, s.need - s.holders.length);
           return '<div class="seat" style="--k:' + k + '"><div class="s-name">' + esc(s.seat) + '</div><div class="s-who">' + (s.holders.length ? esc(s.holders.join(", ")) : "Vacant") + '</div><span class="pill ' + (open ? "warn" : "ok") + '">' + (open ? open + " open" : "Filled") + "</span></div>";
@@ -1558,6 +1656,26 @@
         '<div class="toolbar" style="margin-top:18px"><a class="btn primary" href="#/contribute">Join the Hound</a></div></section></div>';
       revealSections();
     });
+  }
+
+  // Chain of command (HP-POL-007): one tier per keycard level, authority badges per role
+  function teamChain(t) {
+    var A = t.authority || {}, depts = {};
+    (t.departments || []).forEach(function (d) { depts[d.id] = d; });
+    return '<section class="bf-sec"><div class="label">Chain of command</div>' +
+      '<div class="principles">' + (t.principles || []).map(function (p) { return "<div><b>" + esc(p[0]) + "</b><span>" + esc(p[1]) + "</span></div>"; }).join("") + "</div>" +
+      '<div class="chain">' + t.hierarchy.map(function (tier, k) {
+        return '<div class="tier" style="--k:' + k + '"><span class="tier-lv">' + esc(tier.card) + '</span><div class="tier-nodes">' + tier.nodes.map(function (n) {
+          var d = n.dept && /Department/.test(n.sub || "") ? depts[n.dept] : null;
+          return '<article class="node' + (n.authority.length ? "" : " plain") + '"><header><h3>' + esc(n.title) + "</h3><small>" + esc(n.sub || "") + "</small></header>" +
+            "<p>" + esc(n.job) + "</p>" +
+            '<div class="auth">' + (n.authority.length ? n.authority.map(function (a) { return '<span class="au ' + a + '" title="' + esc((A[a] || [a, ""])[1]) + '">' + esc((A[a] || [a])[0]) + "</span>"; }).join("") : '<span class="au none">No authority over others</span>') + "</div>" +
+            (d && d.units && d.units.length ? '<ul class="chips small">' + d.units.map(function (u) { return "<li>" + esc(u) + "</li>"; }).join("") + "</ul>" : "") +
+            '<div class="d-who">' + (n.holders.length ? esc(n.holders.join(" · ")) : "No one yet") + (n.open ? ' <span class="pill warn">' + esc(n.open) + "</span>" : "") + "</div></article>";
+        }).join("") + "</div></div>";
+      }).join("") + "</div>" +
+      '<div class="auth-key">' + Object.keys(A).map(function (k) { return '<span><i class="au ' + k + '">' + esc(A[k][0]) + "</i>" + esc(A[k][1]) + "</span>"; }).join("") + "</div>" +
+      '<p class="source">Authority only flows down, and only in its own kind. Anyone can talk to anyone. See <a href="#/guides/hp-pol-007">HP-POL-007 Chain of Command</a> and <a href="#/docs/departments">departments and grades</a>.</p></section>';
   }
 
   /* Verify: signed contributor records and the contributor wall */
@@ -1603,7 +1721,7 @@
   function viewVerify(rid) {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Verify", loading("Loading contributor records"));
-    Promise.all([loadLocal("records"), loadLocal("records-key"), loadLocal("staff")]).then(function (res) {
+    Promise.all([loadLocal("records"), loadLocal("records-key"), loadLocal("staff"), loadLocal("contracts")]).then(function (res) {
       if (currentView !== "verify") return;
       var recs = (res[0] && res[0].records) || [], keys = (res[1] && res[1].keys) || [], staff = (res[2] && res[2].staff) || [];
       var key = keys[keys.length - 1];
@@ -1621,14 +1739,14 @@
         return;
       }
       // Contributor wall
-      var by = {};
-      recs.forEach(function (r) { var u = by[r.login] = by[r.login] || { login: r.login, name: r.name, n: 0 }; u.n++; if (r.name) u.name = r.name; });
-      var wall = Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return b.n - a.n || a.login.localeCompare(b.login); });
+      // Grades per field, from each record's difficulty and its contract's module (data/contracts.json)
+      var specs = {}; ((data.contracts && data.contracts.contracts) || []).forEach(function (c) { specs[c.id] = c; });
+      var wall = tallyGrades(recs.map(function (r) { return { login: r.login, name: r.name, difficulty: r.difficulty, module: (specs[r.contract] || {}).module }; }));
       $("#vb").innerHTML =
         '<p class="sub">Every completed contract earns a contributor record, signed with the project\'s key. This page checks each signature in your browser. Hand-written and AI-assisted work earn the same record.</p>' +
         '<div class="label">Contributor wall</div>' +
         (wall.length ? '<div class="wall">' + wall.map(function (u, n) {
-          var grade = rankFor(u.n)[0];
+          var grade = u.best ? u.best[0] : "–";
           return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(grade) + "</span><b>" + esc(u.name || u.login) + "</b><small>Rank " + esc(grade) + " · " + u.n + " contract" + (u.n === 1 ? "" : "s") + "</small></a>";
         }).join("") + "</div>" : '<div class="empty">No records yet<small>The wall fills as contracts are completed and signed.</small></div>') +
         '<div class="label">Records</div>' +

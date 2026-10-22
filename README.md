@@ -60,7 +60,7 @@ Hound Protocol is a non-commercial community development team, organized like Mo
 | **Administration** | Direction, decisions, accounts, community |
 | **Development** | Architecture and code |
 | **Quality** | Testing, reviews, release sign-off |
-| **Contractor** | Contributors who take contracts and are ranked A to S++ |
+| **Contractor** | Contributors who take contracts and are graded E to S++ in each field |
 
 Access works like keycards, from **LV1** (visitor) to **LV7** (owner), and every staff member has a verifiable **Hound ID**. Every completed contract earns a signed record that anyone can check on the website. See [departments and ranks](docs/departments.md) and [keycard access](docs/decisions/0011-keycard-access.md).
 

@@ -1,4 +1,11 @@
   /* ---------------- Utilities ---------------- */
+  // Browsers too old for the app get the plain page from index.html instead
+  if (window.JO_LEGACY) return;
+  // Small polyfills for older browsers (Safari 9, old Chromium on older systems)
+  if (typeof Object.assign !== "function") {
+    Object.assign = function (t) { for (var i = 1; i < arguments.length; i++) { var s = arguments[i]; if (s) for (var k in s) if (Object.prototype.hasOwnProperty.call(s, k)) t[k] = s[k]; } return t; };
+  }
+  if (window.Element && !Element.prototype.remove) Element.prototype.remove = function () { if (this.parentNode) this.parentNode.removeChild(this); };
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -15,9 +22,21 @@
     clear: function (prefix) { try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(prefix) === 0) sessionStorage.removeItem(k); }); } catch (e) { /* storage unavailable */ } }
   };
 
+  // fetch() fallback for older browsers: same result, through XMLHttpRequest
+  function xhrGet(url, headers) {
+    return new Promise(function (ok, fail) {
+      var x = new XMLHttpRequest(), h = headers || {};
+      x.open("GET", url, true); x.timeout = 9000;
+      Object.keys(h).forEach(function (k) { x.setRequestHeader(k, h[k]); });
+      x.onload = function () { if (x.status < 200 || x.status > 299) fail(new Error("HTTP " + x.status)); else ok(x.responseText); };
+      x.onerror = x.ontimeout = function () { fail(new Error("Network error")); };
+      x.send();
+    });
+  }
   function fetchJSON(url, opts) {
     var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 9000);
+    if (typeof fetch !== "function") { clearTimeout(timer); return xhrGet(url, opts && opts.headers).then(JSON.parse); }
     return fetch(url, Object.assign({ signal: ctl ? ctl.signal : undefined, cache: /^https?:/.test(url) ? "default" : "no-cache" }, opts || {})).then(function (r) {
       clearTimeout(timer);
       if (!r.ok) throw new Error("HTTP " + r.status);
@@ -25,5 +44,6 @@
     }, function (e) { clearTimeout(timer); throw e; });
   }
   function fetchText(url) {
+    if (typeof fetch !== "function") return xhrGet(url);
     return fetch(url, { cache: /^https?:/.test(url) ? "default" : "no-cache" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); });
   }

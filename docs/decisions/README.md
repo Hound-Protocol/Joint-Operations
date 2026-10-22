@@ -18,6 +18,7 @@ Status values: **Proposed** (waiting for the project lead), **Accepted**, **Supe
 | [0010](0010-funding.md) | Donations open at version 0.1, through a fiscal host | Accepted |
 | [0011](0011-keycard-access.md) | Keycard access levels LV1 to LV7, GitHub teams as the source, server-side checks, matching Discord roles | Accepted (design) |
 | [0012](0012-shared-alert.md) | Enemies target players individually; one shared alert status (hidden, searched for, detected) that players join | Accepted |
+| [0013](0013-chain-of-command.md) | Chain of command: social, technical and organizational authority, open communication, transparency | Accepted |
 
 ## Template
 ```

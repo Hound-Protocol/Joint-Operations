@@ -1,12 +1,25 @@
 # Governance
 
-Status: DRAFT · Date: 2026-10-21
+Status: Accepted · Date: 2026-10-22
 
-Hound Protocol works as a contract network: contributors come and go, and the project must not depend on any one person.
+Hound Protocol works as a contract network: contributors come and go, and the project must not depend on any one person. It runs on **a solid hierarchy, open communication and transparency**.
+
+## Chain of command
+Authority comes in three kinds and only flows down the keycard levels, within its kind ([HP-POL-007](guides/HP-POL-007-chain-of-command.md), [ADR 0013](decisions/0013-chain-of-command.md)).
+
+| Role | Social | Technical | Organizational |
+|---|---|---|---|
+| Owner (LV7) | Final say | Final say | Final say |
+| Administration (LV6) | Yes | Yes | Yes, up to LV5 |
+| Moderator (LV6) | Yes | No | No |
+| Development (LV5) | No | Yes | No |
+| Quality (LV4), Contractor (LV3), Member (LV2) | No | No | No |
+
+Anyone can talk to anyone, in public by default. Decisions are written down with who made them and why.
 
 ## Decision making
-- Day-to-day decisions are made in pull requests and issues. If nobody objects within 72 hours, the change can proceed (lazy consensus).
-- Disagreements go to the module's owner, then to the project lead, who has the final say.
+- Day-to-day decisions are made in pull requests and issues, by whoever holds that kind of authority.
+- Disagreements and appeals go one level up within the same kind of authority. The project lead has the final say.
 - Decisions with lasting effect are recorded in `docs/decisions/`.
 
 ## Seats
@@ -31,8 +44,8 @@ Claude, an AI assistant, acts as technical lead for architecture, code and docum
 ## Departments
 The project has four departments: Administration, Development, Quality and Contractor ([departments.md](departments.md), [ADR 0009](decisions/0009-departments-and-ranks.md)). Seats belong to Administration, except the technical lead delegate (Development) and release signers (Quality).
 
-## Contractor ranks
-Contractors are ranked A, A+, A++, S, S+ and S++ by the number of completed contracts. Ranks unlock larger contracts and review rights. Seat holders and department members are chosen from experienced contractors (S+ and up) or appointed by the project lead.
+## Contractor grades
+Contractors are graded E to S++ in each field, like Mother Base staff in each unit ([departments.md](departments.md)). Grades unlock review rights and department invitations, never authority over people. Seat holders and department members are chosen from experienced contractors (S+ and up) or appointed by the project lead.
 
 ## Money
 No donations before 0.1 ([ADR 0010](decisions/0010-funding.md)). After that, funds go through a fiscal host, every expense is published, and money never buys influence over decisions.

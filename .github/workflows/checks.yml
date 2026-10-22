@@ -26,6 +26,8 @@ jobs:
         run: python3 tools/guides_index.py --check
       - name: Contract specs are generated from the data
         run: python3 tools/contracts_md.py --check
+      - name: CSS fallbacks for older browsers
+        run: python3 tools/css_compat.py --check
       - name: Check relative links in docs
         run: python3 tools/check_links.py
       - name: Docs library entries exist

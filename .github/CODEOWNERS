@@ -1,3 +1,6 @@
+# Code owners follow the chain of command (docs/guides/HP-POL-007-chain-of-command.md):
+# technical paths are approved by Development, organizational and social documents by Administration.
+# Until those teams have members, the owner approves everything.
 # Default reviewers. Add seat holders here as they join (see docs/governance.md).
 *                 @Forge77
 /docs/decisions/  @Forge77

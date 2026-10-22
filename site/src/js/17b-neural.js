@@ -5,7 +5,8 @@
   var NW_COLORS = { Project: "#c9a24a", Technical: "#6fb7c9", Decisions: "#d77a6e", Research: "#8fbf7f", Community: "#a99be0", Legal: "#b7c2c6", Handbook: "#e6dcc0" };
   var NW_BUILD_MS = 3000, NW_MAX_DOCS = 5;
   var NW = null;
-  function docsMode() { return store.get("jo-docs-mode", "neural") === "classic" ? "classic" : "neural"; }
+  // The neural web needs pointer events and canvas; older browsers get the classic list
+  function docsMode() { if (!window.PointerEvent || !document.createElement("canvas").getContext) return "classic"; return store.get("jo-docs-mode", "neural") === "classic" ? "classic" : "neural"; }
   function setDocsMode(m) { store.set("jo-docs-mode", m); }
   function nwColor(g) { return NW_COLORS[g] || "#c9d0d2"; }
   function rgba(hex, a) { var n = parseInt(hex.slice(1), 16); return "rgba(" + (n >> 16) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")"; }

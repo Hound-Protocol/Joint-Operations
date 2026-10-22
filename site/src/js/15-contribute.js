@@ -1,7 +1,20 @@
   /* Contribute */
   var MODULES = { launcher: "Launcher / Injector", hooks: "Game Hooks", session: "Session / Host", net: "Networking", modapi: "Mod API", lobby: "Lobby App", web: "Web", docs: "Docs", testing: "Testing", legal: "Legal" };
   // Contractor ranks, Mother Base style, by completed contracts (docs/departments.md)
-  var RANKS = [["—", 0, "Take any contract, {{easy:Easy}} to {{hard:Hard}}"], ["A", 1, "Listed on the contributor wall, contractor role on Discord"], ["A+", 3, "Hold two contracts at once"], ["A++", 6, "Review {{easy:Easy}} contracts with Quality"], ["S", 10, "Review {{medium:Medium}} contracts with Quality"], ["S+", 20, "Review {{hard:Hard}} contracts, invitation into a department"], ["S++", 35, "Vote on priorities, seat candidate"]];
+  // Contractor grades follow Mother Base staff grades (E to S++). As in MGSV, a contractor holds a grade in every field
+  // (like a unit), earned from contract points in that field; the thresholds climb steeply. See docs/departments.md.
+  var GRADES = [
+    ["E", 1, "Contractor role on Discord, listed on the contributor wall"],
+    ["D", 4, ""], ["C", 8, ""],
+    ["B", 14, "Hold two contracts at once"],
+    ["A", 22, "Review {{easy:Easy}} contracts in this field, as advice to Quality"],
+    ["A+", 32, "Review {{medium:Medium}} contracts in this field"],
+    ["A++", 50, "Mentor new contractors in this field"],
+    ["S", 80, "Review {{hard:Hard}} contracts in this field"],
+    ["S+", 125, "Can be invited into a department"],
+    ["S++", 200, "Candidate for a lead position"]
+  ];
+  var CP = { easy: 2, medium: 5, hard: 10 }; // contract points per completed contract
   // Contract difficulty (docs/departments.md): information only, never a gate. Name, short label, and what makes it this hard
   var DIFF = {
     easy: ["Easy", "Good first contract", "Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools."],
@@ -31,7 +44,23 @@
     var p = data.contracts && data.contracts.contracts;
     return (p || []).map(function (c) { return Object.assign({ status: "planned", by: [], live: false }, c); });
   }
-  function rankFor(p) { var r = RANKS[0]; RANKS.forEach(function (x) { if (p >= x[1]) r = x; }); return r; }
+  function gradeFor(p) { var r = null; GRADES.forEach(function (x) { if (p >= x[1]) r = x; }); return r; }
+  function gradeIdx(g) { return g ? GRADES.indexOf(g) : -1; }
+  function fieldOf(module) { var f = FIELDS.filter(function (x) { return x[3].indexOf(module) > -1; })[0]; return f ? f[0] : "code"; }
+  // items: [{ login, name, difficulty, module }] -> sorted [{ login, name, n, f: {field: points}, best: grade }]
+  function tallyGrades(items) {
+    var by = {};
+    items.forEach(function (it) {
+      var u = by[it.login] = by[it.login] || { login: it.login, name: it.name, n: 0, f: {} }, k = fieldOf(it.module);
+      u.n++; if (it.name) u.name = it.name;
+      u.f[k] = (u.f[k] || 0) + (CP[it.difficulty] || CP.easy);
+    });
+    return Object.keys(by).map(function (k) {
+      var u = by[k], best = null;
+      Object.keys(u.f).forEach(function (f) { var g = gradeFor(u.f[f]); if (gradeIdx(g) > gradeIdx(best)) best = g; });
+      u.best = best; return u;
+    }).sort(function (a, b) { return gradeIdx(b.best) - gradeIdx(a.best) || b.n - a.n || a.login.localeCompare(b.login); });
+  }
   function viewContribute() {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Contribute", loading("Loading the contract board"));
@@ -93,9 +122,9 @@
       return { k: k, n: l.length, d: d };
     }).filter(function (m) { return m.n; });
     // Leaderboard from completed live contracts
-    var pts = {};
-    list.forEach(function (c) { if (c.status === "done") (c.by || []).forEach(function (u) { pts[u] = pts[u] || { n: 0 }; pts[u].n++; }); });
-    var ops = Object.keys(pts).sort(function (a, b) { return pts[b].n - pts[a].n || a.localeCompare(b); });
+    var items = [];
+    list.forEach(function (c) { if (c.status === "done") (c.by || []).forEach(function (u) { items.push({ login: u, difficulty: c.difficulty, module: c.module }); }); });
+    var ops = tallyGrades(items);
     var opt = function (val, cur, txt) { return '<option value="' + val + '"' + (cur === val ? " selected" : "") + ">" + txt + "</option>"; };
     $("#vb").innerHTML =
       '<div class="tabs" role="tablist">' + [["board", "Contract board"], ["how", "How it works"], ["ranks", "Contractor ranks"]].map(function (t) {
@@ -131,14 +160,18 @@
           return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
         }).join("") + "</div>",
       ranks:
-        '<p class="sub">Contractors are ranked like Mother Base staff, by the number of completed contracts. Each one also earns a <a href="#/verify">signed contributor record</a>.</p>' +
-        '<div class="ranks">' + RANKS.slice(1).map(function (r, k) { return '<div class="rank" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " contract" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + tint(r[2]) + "</span></div>"; }).join("") + "</div>" +
+        '<p class="sub">Contractors are graded like Mother Base staff, from <b>E</b> to <b>S++</b>. As in the game, you hold a grade in <b>each field</b>, the way staff hold a grade in each unit. Every completed contract earns points in its field: <b class="tint easy">Easy</b> ' + CP.easy + ', <b class="tint medium">Medium</b> ' + CP.medium + ', <b class="tint hard">Hard</b> ' + CP.hard + '. Each grade needs more points than the last, so the top grades take real work. Your best grade is your rank on Discord.</p>' +
+        '<div class="ranks">' + GRADES.map(function (r, k) { return '<div class="rank' + (r[2] ? "" : " quiet") + '" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " point" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + (r[2] ? tint(r[2]) : "Experience in the field") + "</span></div>"; }).join("") + "</div>" +
+        '<ul class="notes"><li><b>Commendations</b> work like medals: Administration can award one for exceptional work. It adds ' + CP.medium + ' points to every field and is listed publicly with the reason.</li>' +
+        '<li>Grades never go down. Leaving and coming back is normal.</li>' +
+        '<li>Grades give no authority over other people. Reviews are advice: Quality and Development still decide. See <a href="#/team">the chain of command</a>.</li></ul>' +
         '<div class="label">Contract difficulty</div>' +
         '<div class="tw"><table><tr><th>Difficulty</th><th>What makes it this hard</th></tr>' + DIFF_ORDER.map(function (k) { return '<tr><td><span class="pill diff ' + k + '">' + DIFF[k][0] + "</span></td><td>" + DIFF[k][2] + "</td></tr>"; }).join("") +
         '<tr><td><span class="pill diff core">Core</span></td><td>On the 0.1 critical path, at any difficulty. Reserved for the Development Department until 0.1.</td></tr></table></div>' +
         '<div class="label">Contractors</div>' +
-        (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Rank</th></tr>' + ops.map(function (u) {
-          return '<tr><td><a href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u) + '</a></td><td class="num">' + pts[u].n + "</td><td>" + esc(rankFor(pts[u].n)[0]) + "</td></tr>";
+        (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Rank</th>' + FIELDS.map(function (f) { return "<th>" + esc(f[1]) + "</th>"; }).join("") + "</tr>" + ops.map(function (u) {
+          return '<tr><td><a href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer">' + esc(u.login) + '</a></td><td class="num">' + u.n + "</td><td><b>" + esc(u.best ? u.best[0] : "–") + "</b></td>" +
+            FIELDS.map(function (f) { var g = gradeFor(u.f[f[0]] || 0); return '<td class="num">' + (g ? esc(g[0]) : "–") + "</td>"; }).join("") + "</tr>";
         }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Contractors appear here when contracts are closed on GitHub.</small></div>')
     };
     $("#ctab").innerHTML = tabHtml[conTab];

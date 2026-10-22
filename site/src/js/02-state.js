@@ -11,7 +11,8 @@
   var docCache = {};
 
   var OPT_KEY = "hp-jo-options";
-  var DEFAULT_OPTS = { glitch: true, grid: true, motion: true, ledFx: true, contrast: false, sound: false, size: "1" };
+  var PREFERS_LESS_MOTION = (function () { try { return !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) { return false; } })();
+  var DEFAULT_OPTS = { glitch: !PREFERS_LESS_MOTION, grid: true, motion: !PREFERS_LESS_MOTION, ledFx: true, emblem: true, contrast: false, sound: false, size: "1" };
   var opts = Object.assign({}, DEFAULT_OPTS, store.get(OPT_KEY, {}));
   function applyOpts() {
     var c = document.body.classList;
@@ -20,5 +21,6 @@
     c.toggle("no-motion", !opts.motion);
     c.toggle("no-led", !opts.ledFx);
     c.toggle("hi-contrast", !!opts.contrast);
+    c.toggle("no-emblem", opts.emblem === false);
     document.documentElement.style.setProperty("--fs", opts.size);
   }

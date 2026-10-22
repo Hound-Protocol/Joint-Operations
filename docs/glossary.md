@@ -7,7 +7,8 @@
 | Alert status | The one session-wide state, hidden, searched for or detected, that players join (ADR 0012) |
 | Client | A player other than the host, playing a Mother Base staff member |
 | Contract | A task on the contract board: a GitHub issue labeled `contract` |
-| Contractor rank | A, A+, A++, S, S+ or S++, by number of completed contracts |
+| Contractor grade | E, D, C, B, A, A+, A++, S, S+ or S++ in each field, from contract points, like Mother Base staff grades per unit. A contractor's rank is their best grade |
+| Chain of command | Who may decide what over whom: social, technical and organizational authority ([HP-POL-007](guides/HP-POL-007-chain-of-command.md)) |
 | Contributor record | A signed statement that a person completed a contract, checked on the Verify page |
 | `.dat`, `.fpk` | Game archive and pack formats |
 | Deliverable | The file or result a contract must produce, named in its spec |
