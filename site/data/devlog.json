@@ -2,6 +2,12 @@
   "note": "Manual dev log entries, merged with commits and releases read from GitHub. Fields: date (YYYY-MM-DD), title, body, tag.",
   "entries": [
     {
+      "date": "2026-10-22",
+      "tag": "Milestone",
+      "title": "Website live and Discord open",
+      "body": "The site is live on GitHub Pages and the Hound Protocol Discord server is open: https://discord.gg/QTpJ89kMCM"
+    },
+    {
       "date": "2026-10-21",
       "tag": "Milestone",
       "title": "Pre-development plan and research published",
