@@ -202,6 +202,11 @@ td.num { text-align: right; white-space: nowrap; }
 .card .id { font: 400 11px/1 var(--mono); letter-spacing: .14em; color: var(--dim); }
 .card .meta { font: 400 12px/1.4 var(--mono); color: var(--dim); }
 .card .blocked { color: var(--bad); }
+.card .goal { margin: 0; font: 300 14px/1.45 var(--ui); color: var(--dim); }
+.card .spec summary { cursor: pointer; font: 400 11px/1.6 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.card .spec summary:hover, .card .spec[open] summary { color: var(--fg); }
+.card .spec ul { margin: 8px 0 0; padding-left: 18px; font: 300 13px/1.5 var(--ui); }
+.card .spec .meta { margin-top: 8px; }
 .card .actions { margin-top: auto; display: flex; gap: 14px; flex-wrap: wrap; padding: 0 9px; }
 .status { font: 400 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 .status.open { color: var(--ok); }
