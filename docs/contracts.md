@@ -470,7 +470,7 @@ Module: hooks · Difficulty: 🔴 Hard · Skills: Reverse engineering, Lua · De
 - States whether per-player targeting with one shared alert (ADR 0012) looks possible, with evidence
 - Clean-room: notes in our own words, no game files
 
-Background: [adr-0012](decisions/0012-shared-alert.md), [R3](phase1-research-plan.md), [R4](phase1-research-plan.md)
+Background: [r-ai](../research/ai-system.md), [adr-0012](decisions/0012-shared-alert.md), [R3](phase1-research-plan.md), [R4](phase1-research-plan.md)
 
 ## C29
 **Mission flow and checkpoint notes**  

@@ -176,6 +176,12 @@
       "path": "research/game-and-engine.md"
     },
     {
+      "id": "r-ai",
+      "title": "Enemy AI",
+      "group": "Research",
+      "path": "research/ai-system.md"
+    },
+    {
       "id": "r-modding",
       "title": "Modding Ecosystem",
       "group": "Research",

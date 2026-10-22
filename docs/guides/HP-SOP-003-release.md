@@ -13,7 +13,7 @@ The website shows the version in the build bar as `version.build`, where build i
 
 ## Steps
 1. **Prepare.** Update `CHANGELOG.md` with a new section: version, date, highlights, then Added, Changed, Fixed.
-2. **Bump.** Set `"version"` in `site/data/config.json`.
+2. **Bump and roadmap.** Set `"version"` in `site/data/config.json`, and update `ROADMAP.md`: tick finished items, add new ones. The release check fails if the version changes without a roadmap update.
 3. **Pull request.** Everything for the release goes in one pull request, titled `Release vX.Y.Z: <name>`.
 4. **Quality gate.** All checks green. For game builds: the checklist in [HP-POL-006](HP-POL-006-quality-policy.md) section 3.
 5. **Merge.** The site deploys automatically.

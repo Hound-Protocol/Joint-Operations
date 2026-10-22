@@ -8,40 +8,56 @@
  "how": [
   [
    "host",
-   "The host runs the missions",
-   "The host's game runs the missions, the enemies and the world, so there is one version of events and every client sees the same thing. The host also holds every command position: the helicopter seat, the Command Center, briefings and radio, cutscenes and Mother Base command."
+   "The host runs the session",
+   "The host is the absolute authority of the session ({{host-authoritative}} architecture). For now the host is always a player running MGS V; a dedicated server is a research topic for later, because the game itself has to run. The host makes the decisions, progresses missions and sets the direction of the in-game flow. Mission state, enemies and the world are then synchronized with every client."
   ],
   [
    "client",
    "Clients share the session",
-   "Every client controls their own character and camera. Their moves go to the host, and the world comes back to them."
+   "Clients run the same mission in their own game and receive the host's state: enemies, alert status, events and the other players. Their game is kept in line with the host, so the scene matches on every screen. Each client controls their own character and camera, which respond instantly, and the host confirms the result."
   ],
   [
    "link",
    "Connect through Steam",
-   "No ports to open, no extra accounts and no Konami servers. A direct connection is there as a backup."
+   "Connection is facilitated via Steam directly. No need for port forwarding, third-party software or additional setup. Navigate to the {{Session Browser}}, pick your session and hit Join. Simple and clean."
   ]
  ],
- "alert": {
-  "title": "One shared alert",
-  "text": "Enemies react to each player on their own, by distance and by who they actually see. The alert is shared: there is one status for the whole session, and players join it.",
-  "states": [
-   [
-    "hidden",
-    "Hidden",
-    "Not noticed. Most players stay here while someone else is in trouble."
-   ],
-   [
-    "search",
-    "Searched for",
-    "Enemies are looking. A player who draws suspicion joins the search."
-   ],
-   [
-    "detected",
-    "Detected",
-    "Spotted. A detected player joins the one detection pipeline, and every player spotted after them joins the same one."
-   ]
+ "faq": [
+  [
+   "Is it free?",
+   "Yes. Joint Operations is free and open source, and it always will be."
   ],
-  "foot": "So if one player is detected, only that player is hunted. If a second player is spotted, they join the same alert, not a new one."
- }
+  [
+   "Do I need my own copy of the game?",
+   "Yes, Metal Gear Solid V: The Phantom Pain on Steam. We never share game files."
+  ],
+  [
+   "Does it touch Konami's servers?",
+   "No. It does not use Konami's online services, MGO or anti-cheat. Sessions connect between players through Steam."
+  ],
+  [
+   "How many players?",
+   "Up to 16 per session: one host and up to 15 clients."
+  ],
+  [
+   "When can I play?",
+   "From version 0.1, the first playable release. Follow the roadmap and the dev log to see where we are."
+  ],
+  [
+   "Does it work on Linux or Steam Deck?",
+   "Yes, through Proton. The Linux and Proton Guide covers the one launch option you need, including Bazzite."
+  ],
+  [
+   "What happens if the host leaves?",
+   "The session ends for everyone. Moving the session to another player (host migration) is planned after 0.1."
+  ],
+  [
+   "How does detection work?",
+   "The session has one detection status: Hidden, Searching or Detected. A player who is spotted joins it; everyone else stays Hidden unless they are spotted too."
+  ],
+  [
+   "How can I help?",
+   "Testers, reviewers and moderators are wanted now. Open Contribute, or say hello on Discord."
+  ]
+ ]
 }

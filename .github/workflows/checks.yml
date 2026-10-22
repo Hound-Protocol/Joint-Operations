@@ -28,6 +28,16 @@ jobs:
         run: python3 tools/contracts_md.py --check
       - name: CSS fallbacks for older browsers
         run: python3 tools/css_compat.py --check
+      - name: Roadmap updated with every release (HP-SOP-003)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          git fetch -q --depth=50 origin "$BASE"
+          if git diff "origin/$BASE" -- site/data/config.json | grep -q '^[-+].*"version"'; then
+            if git diff --quiet "origin/$BASE" -- ROADMAP.md; then echo "The version changed but ROADMAP.md was not updated (HP-SOP-003)."; exit 1; fi
+          fi
+          echo "Roadmap check passed."
       - name: Infraction record is valid
         run: python3 tools/infractions.py verify
       - name: AI agent detection

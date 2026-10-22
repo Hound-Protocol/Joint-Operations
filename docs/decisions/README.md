@@ -17,7 +17,7 @@ Status values: **Proposed** (waiting for the project lead), **Accepted**, **Supe
 | [0009](0009-departments-and-ranks.md) | Four departments (Administration, Development, Quality, Contractor), contractor ranks A to S++, 0.1 built by the project lead | Accepted |
 | [0010](0010-funding.md) | Donations open at version 0.1, through a fiscal host | Accepted |
 | [0011](0011-keycard-access.md) | Keycard access levels LV1 to LV7, GitHub teams as the source, server-side checks, matching Discord roles | Accepted (design) |
-| [0012](0012-shared-alert.md) | Enemies target players individually; one shared alert status (hidden, searched for, detected) that players join | Accepted |
+| [0012](0012-shared-alert.md) | One session detection status (Hidden, Searching, Detected); spotted players join it, others stay hidden; per-outpost phases underneath (proposed) | Accepted, revised |
 | [0013](0013-chain-of-command.md) | Chain of command: social, technical and organizational authority, open communication, transparency | Accepted |
 | [0014](0014-quiet-until-0-1.md) | Quiet development until 0.1: no promotion, quiet recruiting, public launch with 0.1 | Accepted |
 | [0015](0015-ai-agents-and-attribution.md) | AI agents are contractors' tools; work credited to the person with the agent named, detected from commit trailers | Accepted |

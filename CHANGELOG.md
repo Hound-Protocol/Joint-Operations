@@ -2,6 +2,14 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.15 · Field notes · 2026-10-23
+- **About:** clearer host and client text (host-authoritative; the host is a player's game for now, a dedicated server is later research; clients follow the host's state and control their own character), the new Steam connection text, and an FAQ at the bottom. The shared-alert section moved into the FAQ.
+- **Research:** how the enemy AI notices, reports and hunts ([research/ai-system.md](research/ai-system.md)). ADR 0012 revised to one session detection status that spotted players join, with two proposed additions.
+- **Roadmap:** brought up to date (license, organization, brand, handbook) with open questions; the release check now fails if the version changes without a roadmap update.
+- **Contribute:** completed contracts are crossed out with a line texture; each field column has its own space and divider.
+- **Team:** contractors active in the last 7 days show as live badges, from signed records.
+- **Guides:** every document has a printed frame in its type's color (Policy red, Procedure blue, Guide gold).
+
 ## v0.0.14 · Badge backdrop · 2026-10-22
 - The main menu background is now the Joint Operations badge, large and faint behind the menu (Options → Background logo turns it off).
 
