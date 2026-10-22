@@ -19,6 +19,8 @@ Gates and sequence are in docs/pre-development.md.
 
 ## Phase 1: Research (see docs/phase1-research-plan.md)
 - [x] Summarize networking playbook into research/ in our own words
+- [x] Desk research: Steam interfaces (R13), file formats and tools, Proton on Bazzite
+- [x] Contract specs with acceptance criteria for all Phase 1 work (docs/contracts.md)
 - [ ] Engine session spike: 3 or more players in one session (R12)
 - [ ] Steam interfaces reachable from the game process (R13)
 - [ ] Document how MGSV launches and how a second player can be introduced
