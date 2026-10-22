@@ -24,7 +24,7 @@ AUDIENCE = {  # who the website lists each document for
     "HP-GDE-003": "Contributors", "HP-GDE-005": "Contributors", "HP-POL-001": "Contributors", "HP-POL-002": "Contributors",
     "HP-POL-003": "Contributors", "HP-SOP-001": "Contributors", "HP-SOP-002": "Contributors",
     "HP-GDE-004": "Quality", "HP-POL-006": "Quality", "HP-SOP-003": "Quality", "HP-SOP-005": "Quality",
-    "HP-GDE-006": "Administration", "HP-POL-004": "Administration", "HP-POL-005": "Administration", "HP-SOP-004": "Administration",
+    "HP-GDE-006": "Administration", "HP-POL-007": "Everyone", "HP-POL-004": "Administration", "HP-POL-005": "Administration", "HP-SOP-004": "Administration",
     "HP-SOP-006": "Administration", "HP-SOP-007": "Administration", "HP-SOP-008": "Administration", "HP-SOP-009": "Administration",
 }
 SUMMARY = {  # one line for the Guides page
@@ -40,6 +40,7 @@ SUMMARY = {  # one line for the Guides page
     "HP-POL-004": "Two-factor authentication, secrets, least access and safe releases.",
     "HP-POL-005": "Community standards, the enforcement ladder, logging and appeals.",
     "HP-POL-006": "Definition of done, release gates and bug severity.",
+    "HP-POL-007": "Who decides what: social, technical and organizational authority, open communication and appeals.",
     "HP-SOP-001": "A contract from draft to signed record: publish, claim, deliver, review, record.",
     "HP-SOP-002": "Opening, checking, reviewing and merging pull requests.",
     "HP-SOP-003": "Version numbers, changelog, tags and GitHub releases.",

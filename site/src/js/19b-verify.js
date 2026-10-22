@@ -41,7 +41,7 @@
   function viewVerify(rid) {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Verify", loading("Loading contributor records"));
-    Promise.all([loadLocal("records"), loadLocal("records-key"), loadLocal("staff")]).then(function (res) {
+    Promise.all([loadLocal("records"), loadLocal("records-key"), loadLocal("staff"), loadLocal("contracts")]).then(function (res) {
       if (currentView !== "verify") return;
       var recs = (res[0] && res[0].records) || [], keys = (res[1] && res[1].keys) || [], staff = (res[2] && res[2].staff) || [];
       var key = keys[keys.length - 1];
@@ -59,14 +59,14 @@
         return;
       }
       // Contributor wall
-      var by = {};
-      recs.forEach(function (r) { var u = by[r.login] = by[r.login] || { login: r.login, name: r.name, n: 0 }; u.n++; if (r.name) u.name = r.name; });
-      var wall = Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return b.n - a.n || a.login.localeCompare(b.login); });
+      // Grades per field, from each record's difficulty and its contract's module (data/contracts.json)
+      var specs = {}; ((data.contracts && data.contracts.contracts) || []).forEach(function (c) { specs[c.id] = c; });
+      var wall = tallyGrades(recs.map(function (r) { return { login: r.login, name: r.name, difficulty: r.difficulty, module: (specs[r.contract] || {}).module }; }));
       $("#vb").innerHTML =
         '<p class="sub">Every completed contract earns a contributor record, signed with the project\'s key. This page checks each signature in your browser. Hand-written and AI-assisted work earn the same record.</p>' +
         '<div class="label">Contributor wall</div>' +
         (wall.length ? '<div class="wall">' + wall.map(function (u, n) {
-          var grade = rankFor(u.n)[0];
+          var grade = u.best ? u.best[0] : "–";
           return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(grade) + "</span><b>" + esc(u.name || u.login) + "</b><small>Rank " + esc(grade) + " · " + u.n + " contract" + (u.n === 1 ? "" : "s") + "</small></a>";
         }).join("") + "</div>" : '<div class="empty">No records yet<small>The wall fills as contracts are completed and signed.</small></div>') +
         '<div class="label">Records</div>' +

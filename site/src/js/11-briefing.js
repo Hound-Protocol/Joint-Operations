@@ -5,54 +5,20 @@
     client: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="6" r="3"/><path d="M4 18c0-4 2.7-6 6-6s6 2 6 6"/></svg>',
     link: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 7h13l-3-3M18 13H5l3 3"/></svg>'
   };
-  /* Architecture diagram: host PC, connection, client PCs, and what flows each way */
-  function howDiagram() {
-    var narrow = window.matchMedia && matchMedia("(max-width: 700px)").matches;
-    function box(x, y, w, h, title, sub, rows, cls, k) {
-      var o = '<g class="dn ' + cls + '" style="--k:' + k + '"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>' +
-        '<path class="tick" d="M' + x + ' ' + (y + 10) + 'V' + y + 'H' + (x + 10) + '"/>' +
-        '<text class="t" x="' + (x + 16) + '" y="' + (y + 26) + '">' + title + '</text><text class="s" x="' + (x + 16) + '" y="' + (y + 42) + '">' + sub + "</text>";
-      rows.forEach(function (r, i) { o += '<rect class="row" x="' + (x + 16) + '" y="' + (y + 56 + i * 26) + '" width="' + (w - 32) + '" height="20"/><text class="r" x="' + (x + 26) + '" y="' + (y + 70 + i * 26) + '">' + r + "</text>"; });
-      return o + "</g>";
-    }
-    if (narrow) {
-      var v = '<svg class="how narrow" viewBox="0 0 340 600" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; client PCs send movement and actions; the host sends world state back.">';
-      v += box(10, 10, 320, 180, "HOST PC", "Runs the session", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
-      v += '<g class="dn lane" style="--k:1"><text class="lt" x="170" y="222" text-anchor="middle">STEAM RELAY · DIRECT IP</text>' +
-        '<line class="rail" x1="120" y1="236" x2="120" y2="362"/><line class="pkt up" x1="120" y1="362" x2="120" y2="236"/><path class="arrow" d="M114 244l6-8 6 8"/><text class="lb" x="110" y="304" text-anchor="end">movement</text><text class="lb" x="110" y="318" text-anchor="end">actions</text>' +
-        '<line class="rail" x1="220" y1="236" x2="220" y2="362"/><line class="pkt down" x1="220" y1="236" x2="220" y2="362"/><path class="arrow" d="M214 354l6 8 6-8"/><text class="lb" x="230" y="296">world state</text><text class="lb" x="230" y="310">AI</text><text class="lb" x="230" y="324">events</text></g>';
-      [0, 1].forEach(function (i) { v += '<g class="dn ghost" style="--k:' + (3 + i) + '"><rect x="' + (26 - i * 8) + '" y="' + (382 + i * 8) + '" width="304" height="160"/></g>'; });
-      v += box(10, 398, 304, 160, "CLIENT PC", "Up to 15 clients", ["Own movement", "Own camera", "Local view of world"], "clientbox", 2);
-      return v + '<text class="foot" x="170" y="592" text-anchor="middle">ONE HOST DECIDES · ALL SEE THE SAME WORLD</text></svg>';
-    }
-    var svg = '<svg class="how" viewBox="0 30 760 270" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; client PCs send movement and actions; the host sends world state back through Steam relay or a direct connection.">';
-    svg += box(10, 40, 230, 200, "HOST PC", "Runs the session", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
-    [0, 1, 2].forEach(function (i) { svg += '<g class="dn ghost" style="--k:' + (3 + i) + '"><rect x="' + (536 - i * 8) + '" y="' + (40 + i * 8) + '" width="214" height="200"/></g>'; });
-    svg += box(520, 56, 214, 200, "CLIENT PC", "Up to 15 clients", ["Own movement", "Own camera", "Local view of world"], "clientbox", 2);
-    svg += '<g class="dn lane" style="--k:1">' +
-      '<text class="lt" x="380" y="70" text-anchor="middle">STEAM RELAY · DIRECT IP</text>' +
-      '<line class="rail" x1="250" y1="120" x2="510" y2="120"/><line class="pkt up" x1="510" y1="120" x2="250" y2="120"/>' +
-      '<path class="arrow" d="M258 114l-8 6 8 6"/><text class="lb" x="380" y="108" text-anchor="middle">movement · actions</text>' +
-      '<line class="rail" x1="250" y1="180" x2="510" y2="180"/><line class="pkt down" x1="250" y1="180" x2="510" y2="180"/>' +
-      '<path class="arrow" d="M502 174l8 6-8 6"/><text class="lb" x="380" y="204" text-anchor="middle">world state · AI · events</text></g>';
-    svg += '<text class="foot" x="380" y="292" text-anchor="middle">UP TO 16 PLAYERS · ONE HOST DECIDES · EVERYONE SEES THE SAME WORLD</text></svg>';
-    return svg;
-  }
   function viewBriefing() {
     var v = $("#view");
     v.innerHTML = shell("Overview", "About Joint Operations", loading("Loading"));
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
-      var b = data.briefing || {}, host = b.host || { places: [] };
+      var b = data.briefing || {};
       $("#vb").innerHTML = '<div class="bf">' +
         '<section class="bf-sec bf-hero"><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
         (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
         '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Guides</a></div></section>' +
-        '<section class="bf-sec"><div class="label">How a session works</div>' + howDiagram() +
-        '<div class="bf-how">' + (b.how || []).map(function (h, k) {
-          return '<div class="bf-pt" style="--k:' + k + '"><h4>' + (ICONS[h[0]] || "") + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div>";
-        }).join("") + "</div></section>" +
-        '<section class="bf-sec bf-hostline"><p>' + ICONS.host + hl(host.text || "") + '</p><ul class="chips">' + (host.places || []).map(function (pl, k) { return '<li style="--k:' + k + '">' + esc(pl) + "</li>"; }).join("") + "</ul></section>" +
+        '<section class="bf-sec"><div class="label">How a session works</div>' +
+        '<ol class="bf-steps">' + (b.how || []).map(function (h, k) {
+          return '<li style="--k:' + k + '"><span class="st-n">' + (ICONS[h[0]] || k + 1) + '</span><div><h4>' + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div></li>";
+        }).join("") + "</ol></section>" +
         (b.alert ? '<section class="bf-sec"><div class="label">' + esc(b.alert.title) + '</div><p class="bf-lead">' + hl(b.alert.text) + '</p><div class="alerts">' + (b.alert.states || []).map(function (s, k) {
           return '<div class="al ' + esc(s[0]) + '" style="--k:' + k + '"><b>' + esc(s[1]) + "</b><p>" + hl(s[2]) + "</p></div>";
         }).join("") + '</div><p class="source">' + hl(b.alert.foot || "") + ' · <a href="#/docs/adr-0012">ADR 0012</a></p></section>' : "") +

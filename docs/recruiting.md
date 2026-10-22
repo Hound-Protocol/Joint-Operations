@@ -32,7 +32,7 @@ Hound Protocol is a community development team building **MGSV: Joint Operations
 
 **Where we are:** early. Phase 0 (structure and documentation) is almost done, and Phase 1 research is starting. Nothing is playable yet, and we won't give a release date.
 
-**How it works:** Hound Protocol runs like Mother Base, with four departments: Administration, Development, Quality and Contractor. We run as a contract network. Every task is a contract with a clear goal and acceptance criteria. Take one, deliver it, leave whenever you like. Hand-written and AI-assisted work count the same: what matters is that it meets the criteria and passes review. Completed contracts earn a contractor rank from A to S++ and a signed contributor record.
+**How it works:** Hound Protocol runs like Mother Base, with four departments: Administration, Development, Quality and Contractor. We run as a contract network. Every task is a contract with a clear goal and acceptance criteria. Take one, deliver it, leave whenever you like. Hand-written and AI-assisted work count the same: what matters is that it meets the criteria and passes review. Completed contracts earn a contractor grade, E to S++, and a signed contributor record.
 
 **Who we need**
 - Reverse engineering and game hooks (C++, x64, debuggers)

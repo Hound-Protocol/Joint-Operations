@@ -44,18 +44,30 @@ Status on the board:
 ## Leaving a contract
 Leaving is fine. Before you go, post a short handoff note on the issue: what is done, what is not, and where the work is. A maintainer then unassigns the contract.
 
-## Ranks
-Contractors are ranked like Mother Base staff, by the number of completed contracts. Each completed contract also earns a signed [contributor record](docs/contributor-records.md), and ranks are counted from those records.
+## Grades
+Contractors are graded like Mother Base staff, from E to S++, in each field. Each completed contract also earns a signed [contributor record](docs/contributor-records.md), and grades are counted from those records.
 
-| Rank | Completed contracts | Unlocks |
+Every completed contract (delivered, reviewed by Quality and merged) earns **points in its field**: 🟢 Easy 2, 🟡 Medium 5, 🔴 Hard 10. The fields are the board's columns: Programming, Reverse engineering, Testing, Design and web, Docs and legal.
+
+- Like Mother Base staff, who hold a grade in each unit, you hold a **grade in each field**. Your **rank** is your best grade, and that is the role you get on Discord.
+- Each grade needs more points than the last, as in the game, so the S grades take sustained, serious work.
+- **Commendations** work like medals: Administration can award one for exceptional work. It adds 5 points to every field and is listed publicly with the reason.
+- A contract shared by several people gives full points to each of them. Hand-written and AI-assisted work count the same.
+- Grades never go down. Leaving and coming back is normal.
+- **Grades give no authority over other people** ([HP-POL-007](docs/guides/HP-POL-007-chain-of-command.md)). Reviews by graded contractors are advice: Quality checks and Development decides.
+
+| Grade | Points in the field | Unlocks |
 |---|---|---|
-| — | 0 | Take any contract |
-| A | 1 | Contributor wall, contractor role on Discord |
-| A+ | 3 | Hold two contracts at once |
-| A++ | 6 | Review Easy contracts with Quality |
-| S | 10 | Review Medium contracts with Quality |
-| S+ | 20 | Review Hard contracts, invitation into a department, own a module area |
-| S++ | 35 | Vote on priorities, seat candidate |
+| **E** | 1 | Contractor role on Discord, listed on the contributor wall |
+| **D** | 4 | Experience in the field |
+| **C** | 8 | Experience in the field |
+| **B** | 14 | Hold two contracts at once |
+| **A** | 22 | Review Easy contracts in this field, as advice to Quality |
+| **A+** | 32 | Review Medium contracts in this field |
+| **A++** | 50 | Mentor new contractors in this field |
+| **S** | 80 | Review Hard contracts in this field |
+| **S+** | 125 | Can be invited into a department |
+| **S++** | 200 | Candidate for a lead position |
 
 Each contract has a **difficulty**, 🟢 **Easy**, 🟡 **Medium** or 🔴 **Hard**, so you know what you are about to take on. It is information, not a gate: anyone can take any contract. Contracts marked **Core** are on the 0.1 critical path and stay with the Development Department. The full structure, with the four departments, is in [departments.md](docs/departments.md).
 

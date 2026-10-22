@@ -30,7 +30,21 @@
       "name": "LV6 · Administration",
       "color": "#e9edee",
       "hoist": true,
-      "permissions": [],
+      "permissions": [
+        "view",
+        "send",
+        "history",
+        "react",
+        "embed",
+        "attach",
+        "manage_messages",
+        "kick",
+        "ban",
+        "moderate",
+        "manage_threads",
+        "connect",
+        "speak"
+      ],
       "was": [
         "Administration Dept"
       ]
@@ -78,8 +92,6 @@
         "react",
         "embed",
         "attach",
-        "manage_messages",
-        "manage_threads",
         "connect",
         "speak"
       ],
@@ -138,6 +150,30 @@
     {
       "name": "Rank A",
       "color": "#808b8f",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank B",
+      "color": "#6f7a7d",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank C",
+      "color": "#646e71",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank D",
+      "color": "#5a6366",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank E",
+      "color": "#50585b",
       "hoist": false,
       "permissions": []
     },
@@ -430,11 +466,11 @@
   ],
   "messages": {
     "welcome": "**Welcome to MGSV: Joint Operations, by Hound Protocol.**\nWe are building a multiplayer mod for Metal Gear Solid V on PC: online play for up to 16 players in the single-player world, for Windows and Linux through Proton.\n\n1. Read <#rules>.\n2. Check the live roadmap in <#roadmap>.\n3. Hound Protocol runs like Mother Base: **Administration**, **Development**, **Quality** and the **Contractor** department.\n4. Want to help? Testers are welcome now. Contracts open after 0.1: https://hound-protocol.github.io/Joint-Operations/#/contribute\n\nThis is an unofficial fan project, not affiliated with or endorsed by Konami.",
-    "rules": "**Rules**\n1. MGSV: Joint Operations is an unofficial fan project by Hound Protocol. It is not affiliated with or endorsed by Konami.\n2. Own your copy of MGSV. No piracy, cracks or game-file sharing.\n3. No cheating in other people's multiplayer, and nothing that touches Konami's online services or anti-cheat.\n4. Be respectful. No harassment, hate or spam.\n5. Keep discussion in the right channel. Credit your sources.\n6. Bug reports use the template in <#bug-reports>.\n7. Never share passwords, tokens or keys.\n8. Moderators have the final say.\n\nFull code of conduct: https://hound-protocol.github.io/Joint-Operations/#/docs/conduct",
+    "rules": "**Rules**\n1. MGSV: Joint Operations is an unofficial fan project by Hound Protocol. It is not affiliated with or endorsed by Konami.\n2. Own your copy of MGSV. No piracy, cracks or game-file sharing.\n3. No cheating in other people's multiplayer, and nothing that touches Konami's online services or anti-cheat.\n4. Be respectful. No harassment, hate or spam.\n5. Keep discussion in the right channel. Credit your sources.\n6. Bug reports use the template in <#bug-reports>.\n7. Never share passwords, tokens or keys.\n8. Moderators and Administration decide on conduct. Development decides on technical matters. Anyone can talk to anyone, and you can appeal one level up.\n   Chain of command: https://hound-protocol.github.io/Joint-Operations/#/guides/hp-pol-007\n\nFull code of conduct: https://hound-protocol.github.io/Joint-Operations/#/docs/conduct",
     "roadmap": "**Roadmap**\nThe live roadmap is on the website and updates with every change: https://hound-protocol.github.io/Joint-Operations/#/roadmap\nWe are in **Phase 0: Foundation**.",
     "announcements": "**Hound Protocol is open.**\nThe website, documentation and contract board are live: https://hound-protocol.github.io/Joint-Operations/\nThe project is in its foundation phase. Read the briefing, check the roadmap, and join the hound.",
     "bug-reports": "**Bug report template**\nCopy this and fill it in:\n```\nGame build (title screen and exe):\nOS: Windows / Linux with Proton (version: )\nJoint Operations version:\nPlayers in session:\nWhat happened:\nWhat you expected:\nSteps to reproduce:\nLogs (never game files):\n```",
     "faq": "**FAQ**\n**Is it playable?** Not yet. See the roadmap.\n**Is it co-op?** It is a multiplayer mod: online play for up to 16 players in the single-player world.\n**Do I need the game?** Yes, your own copy of MGSV on Steam.\n**Linux?** Yes, through Proton.\n**How do I help?** https://hound-protocol.github.io/Joint-Operations/#/contribute",
-    "contract-board": "**Contract board**\nContracts are tasks with a goal and acceptance criteria. Take one, deliver it, leave whenever you like. Hand-written and AI-assisted work count the same.\n\n**Contractor ranks** (completed contracts): A 1 · A+ 3 · A++ 6 · S 10 · S+ 20 · S++ 35.\nEvery completed contract earns a signed record: https://hound-protocol.github.io/Joint-Operations/#/verify\n\nContracts open after version 0.1. Board: https://hound-protocol.github.io/Joint-Operations/#/contribute"
+    "contract-board": "**Contract board**\nContracts are tasks with a goal and acceptance criteria. Take one, deliver it, leave whenever you like. Hand-written and AI-assisted work count the same.\n\n**Contractor grades**, like Mother Base staff: E · D · C · B · A · A+ · A++ · S · S+ · S++, held per field. Contracts earn points in their field (Easy 2 · Medium 5 · Hard 10). Your best grade is your Rank role. Grades show experience, not authority.\nEvery completed contract earns a signed record: https://hound-protocol.github.io/Joint-Operations/#/verify\n\nContracts open after version 0.1. Board: https://hound-protocol.github.io/Joint-Operations/#/contribute"
   }
 }

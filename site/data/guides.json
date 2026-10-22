@@ -158,6 +158,19 @@
       "path": "docs/guides/HP-POL-006-quality-policy.md"
     },
     {
+      "id": "hp-pol-007",
+      "code": "HP-POL-007",
+      "title": "Chain of Command and Open Communication",
+      "type": "Policy",
+      "audience": "Everyone",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "everyone in Hound Protocol, on GitHub, Discord and the website",
+      "summary": "Who decides what: social, technical and organizational authority, open communication and appeals.",
+      "path": "docs/guides/HP-POL-007-chain-of-command.md"
+    },
+    {
       "id": "hp-sop-001",
       "code": "HP-SOP-001",
       "title": "Contract Lifecycle",

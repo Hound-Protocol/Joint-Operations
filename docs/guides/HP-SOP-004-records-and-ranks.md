@@ -19,7 +19,7 @@ Commit `site/data/records-key.json` in a pull request. Back up the private key (
 
 ## Rank roles on Discord
 1. Check the contractor's rank on the Verify page.
-2. Give them **LV3 · Contractor** and the matching **Rank** role (Rank A to Rank S++). Remove the old rank role.
+2. Give them **LV3 · Contractor** and the **Rank** role for their best grade (Rank E to Rank S++). Remove the old rank role.
 3. Post a short note in #contract-board for promotions to S and above.
 
 ## Mistakes

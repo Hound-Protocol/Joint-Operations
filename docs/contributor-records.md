@@ -2,7 +2,7 @@
 
 Status: DRAFT, waiting for the project lead's approval and signing key.
 
-Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, difficulty and a link to the merged pull request. Contractor ranks (A to S++, see [departments.md](departments.md)) are counted from these records. Records are public on the website's [Verify page](https://hound-protocol.github.io/Joint-Operations/#/verify), and anyone can check them.
+Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, difficulty and a link to the merged pull request. Contractor grades (E to S++, see [departments.md](departments.md)) are counted from these records. Records are public on the website's [Verify page](https://hound-protocol.github.io/Joint-Operations/#/verify), and anyone can check them.
 
 Hand-written and AI-assisted work earn the same record. What counts is that the contract's acceptance criteria are met and the work passed review.
 

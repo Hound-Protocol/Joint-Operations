@@ -5,7 +5,7 @@
     { id: "download", title: "Download", desc: "Get the mod for Windows or Linux", tab: "Download" },
     { id: "sessions", title: "Session Browser", desc: "Browse, Create & Join active Joint Operations", tab: "Sessions" },
     { id: "contribute", title: "Contribute", desc: "Take part in development & Become a Hound Member", tab: "Contribute" },
-    { id: "team", title: "Team", desc: "The people behind Hound Protocol", tab: "Team", tabOnly: true },
+    { id: "team", title: "Team", desc: "Chain of command and the people behind Hound Protocol", tab: "Team", tabOnly: true },
     { id: "mods", title: "Mods", desc: "Upload, Download & Browse Re-Engineered mods curated to function with Joint Operations", tab: "Mods" },
     { id: "devlog", title: "Dev Log", desc: "News, decisions and releases", tab: "Dev Log" },
     { id: "guides", title: "Guides", desc: "How to play, help, test and run the project", tab: "Guides" },

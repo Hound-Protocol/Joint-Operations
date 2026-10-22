@@ -1,5 +1,5 @@
 {
- "note": "Team page. Images live in site/assets/img/team/. Departments follow docs/departments.md, seats follow docs/governance.md.",
+ "note": "Team page. Images live in site/assets/img/team/. The chain of command follows docs/guides/HP-POL-007 (ADR 0013), departments follow docs/departments.md, seats follow docs/governance.md.",
  "members": [
   {
    "name": "TrueMan",
@@ -104,12 +104,151 @@
    "id": "con",
    "name": "Contractor",
    "code": "CON",
-   "job": "Outside contributors who take contracts, deliver and leave whenever they like. Ranked A to S++.",
+   "job": "Outside contributors who take contracts, deliver and leave whenever they like. Graded E to S++ in each field.",
    "units": [
     "Open to any skill"
    ],
    "members": [],
    "open": "Opens after 0.1"
+  }
+ ],
+ "principles": [
+  [
+   "Solid hierarchy",
+   "Everyone knows who decides what. Authority only flows down, and only in its own kind."
+  ],
+  [
+   "Open communication",
+   "Anyone can talk to anyone, at any level. Public by default."
+  ],
+  [
+   "Transparency",
+   "Decisions are written down with who and why. Moderation is logged. Roles are public."
+  ]
+ ],
+ "authority": {
+  "social": [
+   "Social",
+   "Conduct, moderation, community spaces, disputes between people"
+  ],
+  "technical": [
+   "Technical",
+   "Architecture, code, merges, contract scope, releases"
+  ],
+  "organizational": [
+   "Organizational",
+   "Roles, keycards, seats, recruiting, funding, legal stance"
+  ]
+ },
+ "hierarchy": [
+  {
+   "card": "LV7",
+   "nodes": [
+    {
+     "title": "Owner",
+     "sub": "Project lead",
+     "dept": "admin",
+     "authority": [
+      "social",
+      "technical",
+      "organizational"
+     ],
+     "holders": [
+      "TrueMan"
+     ],
+     "job": "Final say in every kind of authority, and the last step of every appeal."
+    }
+   ]
+  },
+  {
+   "card": "LV6",
+   "nodes": [
+    {
+     "title": "Administration",
+     "sub": "Department",
+     "dept": "admin",
+     "authority": [
+      "social",
+      "technical",
+      "organizational"
+     ],
+     "holders": [
+      "TrueMan"
+     ],
+     "job": "Runs the project: direction, accounts, recruiting, funding. Grants keycards up to LV5.",
+     "open": "Discord admins"
+    },
+    {
+     "title": "Moderators",
+     "sub": "Administration",
+     "dept": "admin",
+     "authority": [
+      "social"
+     ],
+     "holders": [],
+     "job": "Keep the community safe. Decide on conduct and disputes, and log every action.",
+     "open": "2 seats"
+    }
+   ]
+  },
+  {
+   "card": "LV5",
+   "nodes": [
+    {
+     "title": "Development",
+     "sub": "Department",
+     "dept": "dev",
+     "authority": [
+      "technical"
+     ],
+     "holders": [
+      "TrueMan",
+      "Claude (technical lead, AI)"
+     ],
+     "job": "Builds Joint Operations. Decides architecture, code, merges and contract scope.",
+     "open": "Technical lead delegate"
+    }
+   ]
+  },
+  {
+   "card": "LV4",
+   "nodes": [
+    {
+     "title": "Quality",
+     "sub": "Department",
+     "dept": "qa",
+     "authority": [],
+     "holders": [],
+     "job": "Tests and checks every delivery against its acceptance criteria. A failed check stops a release until it is fixed.",
+     "open": "Testers and reviewers wanted now"
+    }
+   ]
+  },
+  {
+   "card": "LV3",
+   "nodes": [
+    {
+     "title": "Contractors",
+     "sub": "Contractor Department",
+     "dept": "con",
+     "authority": [],
+     "holders": [],
+     "job": "Take contracts and deliver them. Graded E to S++ in each field; grades show experience, not authority.",
+     "open": "Opens after 0.1"
+    }
+   ]
+  },
+  {
+   "card": "LV2",
+   "nodes": [
+    {
+     "title": "Members",
+     "sub": "Signed in",
+     "authority": [],
+     "holders": [],
+     "job": "Everyone in the community. Can talk to anyone, follow sessions and report problems."
+    }
+   ]
   }
  ]
 }

@@ -34,16 +34,18 @@ The server mirrors the project's four departments ([departments.md](departments.
 | Role | Who | Access |
 |---|---|---|
 | **LV7 · Owner** | The project lead | Everything (Administrator for setup only) |
-| **LV6 · Administration** | Seat holders, admins | ADMINISTRATION and all department channels |
-| **LV6 · Moderator** | Trusted community members | Manage messages, timeout, kick; ADMINISTRATION |
+| **LV6 · Administration** | Seat holders, admins | ADMINISTRATION and all department channels; manage messages, timeout, kick, ban (social authority) |
+| **LV6 · Moderator** | Trusted community members | Manage messages, timeout, kick; ADMINISTRATION (social authority) |
 | **LV5 · Development** | Core developers | DEVELOPMENT, QUALITY, CONTRACTORS |
-| **LV5 · Technical Lead** | Technical direction (Claude, through the human delegate) | All department channels, manage messages |
+| **LV5 · Technical Lead** | Technical direction (Claude, through the human delegate) | All department channels. No moderation: technical authority only |
 | **LV4 · Quality** | Testers, reviewers, release QA | QUALITY, CONTRACTORS |
 | **LV3 · Contractor** | Anyone who has completed a contract | DEVELOPMENT, QUALITY, CONTRACTORS |
-| Rank S++ · S+ · S · A++ · A+ · A | Contractor rank by completed contracts | Cosmetic: shows rank in the member list |
+| Rank S++ · S+ · S · A++ · A+ · A · B · C · D · E | Contractor rank: best grade in any field | Cosmetic: shows rank in the member list. No permissions, no authority |
 | RE / Hooks · Networking · Web / App · Docs | Development units | DEVELOPMENT |
 | Windows Tester · Proton Tester · Reviewer | Quality units | QUALITY |
 | **LV2 · Member** | Everyone who joins | COMMUNITY, MODDING, VOICE Lobby |
+
+Only LV6 and LV7 roles can moderate, matching the chain of command ([HP-POL-007](guides/HP-POL-007-chain-of-command.md)). Quality, Contractor and Rank roles have no moderation or management permissions.
 
 Keycard roles are shown separately in the member list, so the server reads like Mother Base. A contractor gets **LV3 · Contractor** plus their **Rank** role. Ranks are updated by hand from the Verify page until a bot does it.
 
@@ -79,7 +81,7 @@ Keycard roles are shown separately in the member list, so the server reads like 
 4. Be respectful. No harassment, hate, or spam.
 5. Keep discussion in the right channel. Credit your sources.
 6. Bug reports use the template in #bug-reports.
-7. Moderators have the final say.
+7. Moderators and Administration decide on conduct, Development on technical matters. Anyone can talk to anyone and appeal one level up ([HP-POL-007](guides/HP-POL-007-chain-of-command.md)).
 
 ## Welcome message (post in #welcome)
 Welcome to MGSV: Joint Operations, by Hound Protocol. We are building a multiplayer mod that brings online play for up to 16 players into the single-player world of Metal Gear Solid V on PC, for Windows and Linux via Proton. This is an unofficial fan project. Read #rules, check #roadmap, and pick a role in #welcome.

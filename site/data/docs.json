@@ -362,6 +362,12 @@
       "path": "docs/guides/HP-POL-006-quality-policy.md"
     },
     {
+      "id": "hp-pol-007",
+      "title": "HP-POL-007 Chain of Command and Open Communication",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-007-chain-of-command.md"
+    },
+    {
       "id": "hp-sop-001",
       "title": "HP-SOP-001 Contract Lifecycle",
       "group": "Handbook",

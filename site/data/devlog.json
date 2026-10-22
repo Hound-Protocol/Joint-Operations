@@ -3,6 +3,12 @@
  "entries": [
   {
    "date": "2026-10-22",
+   "tag": "Organization",
+   "title": "Chain of command and MGSV grades",
+   "body": "Hound Protocol now runs on a solid hierarchy, open communication and transparency. Moderators and Administration decide social matters, Development and Administration decide technical ones, and Quality and contractors have no authority over others. Contractor grades now follow MGSV exactly: E to S++, held per field like staff per unit."
+  },
+  {
+   "date": "2026-10-22",
    "tag": "Release",
    "title": "Security, keycards and Hound IDs",
    "body": "Weekly encrypted backups, keycard access levels LV1 to LV7, verifiable staff identities (Hound IDs), Discord integration, and a clear AI policy: AI can operate tools, but generative AI art is not accepted."

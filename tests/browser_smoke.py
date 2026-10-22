@@ -40,8 +40,19 @@ async def check(browser, name, size):
         if await page.evaluate("document.documentElement.scrollWidth > innerWidth + 1"):
             failures.append(f"{v}: horizontal overflow")
     await page.goto(BASE + "#/briefing"); await page.wait_for_timeout(900)
-    if not await page.locator("svg.how").count():
-        failures.append("briefing: diagram missing")
+    if await page.locator(".bf-steps li").count() < 3:
+        failures.append("briefing: session steps missing")
+    await page.goto(BASE + "#/team"); await page.wait_for_timeout(900)
+    if await page.locator(".chain .tier").count() < 6:
+        failures.append("team: chain of command missing")
+    await page.goto(BASE + "#/contribute"); await page.wait_for_timeout(900)
+    await page.click('[data-tab="ranks"]'); await page.wait_for_timeout(300)
+    if await page.locator(".ranks .rank").count() != 10:
+        failures.append("contribute: expected 10 grades, E to S++")
+    await page.goto(BASE + "#/devlog"); await page.wait_for_timeout(900)
+    await page.fill("#lq", "zzzz-no-match"); await page.wait_for_timeout(500)
+    if not await page.locator(".empty").count():
+        failures.append("devlog: search did not filter")
     await page.goto(BASE + "#/roadmap"); await page.wait_for_timeout(900)
     if await page.locator(".bf-road .ph").count() < 3:
         failures.append("roadmap: phases missing")
@@ -59,9 +70,20 @@ async def check(browser, name, size):
     await page.click('[data-opt="grid"]')
     if "no-grid" not in (await page.evaluate("document.body.className")):
         failures.append("options: toggle did not apply")
+    await page.click('[data-preset="light"]')
+    if "no-motion" not in (await page.evaluate("document.body.className")):
+        failures.append("options: performance preset did not apply")
+    await page.click('[data-preset="full"]')
     if errors:
         failures.append("script errors: " + "; ".join(errors))
     await page.close()
+    # Old browsers: without CSS variables support the plain fallback page shows instead of the app
+    old_page = await browser.new_page(viewport=size)
+    await old_page.add_init_script("window.CSS = undefined;")
+    await old_page.goto(BASE); await old_page.wait_for_timeout(600)
+    if not await old_page.locator("#legacy").is_visible():
+        failures.append("legacy: fallback page not shown")
+    await old_page.close()
     return failures
 
 
