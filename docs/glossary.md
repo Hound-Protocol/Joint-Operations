@@ -24,3 +24,5 @@
 | Sortie Prep | The game's pre-deployment screen: equipment, buddy, time and landing zone |
 | Spike | A time-boxed experiment to answer one technical question |
 | Strategy A / B | Engine-native multiplayer / our own netcode (ADR 0002) |
+| Join ticket | Short-lived token from the session registry that reserves a slot for one player (ADR 0008, proposed) |
+| Session registry | Proposed public API that lists live Joint Operations sessions for the website (ADR 0008) |

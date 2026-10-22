@@ -110,6 +110,12 @@
       "path": "docs/decisions/0007-host-authority.md"
     },
     {
+      "id": "adr-0008",
+      "title": "0008 Server Browser and Join",
+      "group": "Decisions",
+      "path": "docs/decisions/0008-browser-launch.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",
@@ -150,6 +156,12 @@
       "title": "File Formats and Tools",
       "group": "Research",
       "path": "research/file-formats-and-tools.md"
+    },
+    {
+      "id": "r-browser-launch",
+      "title": "Browser Launch",
+      "group": "Research",
+      "path": "research/browser-launch.md"
     },
     {
       "id": "r-legal",

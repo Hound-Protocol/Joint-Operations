@@ -19,3 +19,6 @@ Likelihood and impact: High, Medium, Low.
 | 11 | Key person leaves | Medium | Medium | Two holders per seat, documentation, handoff notes | Seat holders |
 | 12 | Proton-specific failures | Medium | Low | Linux tester, documented launch options | Proton tester |
 | 13 | Konami shuts down online services | Low | Low | We do not depend on them (ADR 0006) | — |
+| 14 | Session registry API abused (spam listings, fake servers) | Medium | Medium | Rate limits, heartbeats, report button, moderator removal (ADR 0008, if accepted) | Technical lead |
+| 15 | Session registry down or unpaid | Low | Medium | Steam lobby search fallback in launcher and game; project-owned account; free tier (ADR 0008) | Project lead |
+| 16 | Launch arguments do not reach the game through Konami's launcher | Medium | Medium | Hand-off file read by our plugin instead of arguments (R14) | Technical lead |

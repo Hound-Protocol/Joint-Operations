@@ -18,15 +18,15 @@ Decided by the Phase 1 spike R12 ([ADR 0002](decisions/0002-integration-strategy
 ## 3. Components
 | # | Component | Language | Notes |
 |---|---|---|---|
-| 1 | Installer and launcher | to be decided | Places files, backs up saves, checks game build and Proton launch option. |
+| 1 | Installer and launcher | to be decided | Places files, backs up saves, checks game build and the Proton launch option. Proposed: handles `jointops://` join links from the website ([ADR 0008](decisions/0008-browser-launch.md)) |
 | 2 | Loader | C++ | IHHook plugin first, own `dinput8.dll` proxy fallback ([ADR 0004](decisions/0004-loader.md)); version check against build 1.0.15.4 |
 | 3 | Hook layer | C++ | Native hooks for systems Lua cannot reach (for example AI targeting). Address tables per game build. Isolated from networking |
 | 4 | Lua layer | Lua | Mission, player, marker and session logic in the game's own scripting |
 | 5 | Session layer | C++ / Lua | Player slots 1 to 16, join and leave, host authority, late-join snapshots |
 | 6 | Transport | C++ | Steam path through the game's Steam API; direct path through open-source GNS ([ADR 0003](decisions/0003-transport.md)) |
-| 7 | Matchmaking | — | Steam lobbies and friend invites. Never Konami's ([ADR 0006](decisions/0006-no-konami-services.md)). Our own server only if needed |
+| 7 | Matchmaking | — | Steam lobbies and friend invites. Never Konami's ([ADR 0006](decisions/0006-no-konami-services.md)). Proposed: a small session registry API so the website can list and join servers, with Steam lobby search as fallback ([ADR 0008](decisions/0008-browser-launch.md)) |
 | 8 | Config and mod API | Lua / data | Settings now; extension points in Phase 4 |
-| 9 | Apps and web | Web | Website now; lobby app later. Outside the game process |
+| 9 | Apps and web | Web | Website now. Proposed: the Servers page becomes a live server browser with one-click join (ADR 0008). Outside the game process |
 
 ## 4. Session model
 - Slot 1 is the host, who takes Venom Snake's place: helicopter seat, Aerial Command Center, briefings, radio calls, cutscenes and Mother Base command all belong to the host. Slots 2 to 16 are soldiers from the host's Mother Base roster.
