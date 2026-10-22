@@ -38,6 +38,12 @@
       "path": "docs/phase1-research-plan.md"
     },
     {
+      "id": "contracts",
+      "title": "Contract Specs",
+      "group": "Technical",
+      "path": "docs/contracts.md"
+    },
+    {
       "id": "process",
       "title": "Development Process",
       "group": "Technical",
