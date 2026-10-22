@@ -104,6 +104,12 @@
       "path": "docs/decisions/0007-host-authority.md"
     },
     {
+      "id": "adr-0008",
+      "title": "0008 Browser Launch",
+      "group": "Decisions",
+      "path": "docs/decisions/0008-browser-launch.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",
@@ -132,6 +138,12 @@
       "title": "Linux and Proton",
       "group": "Research",
       "path": "research/proton.md"
+    },
+    {
+      "id": "r-browser-launch",
+      "title": "Browser Launch",
+      "group": "Research",
+      "path": "research/browser-launch.md"
     },
     {
       "id": "r-legal",

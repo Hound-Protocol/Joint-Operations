@@ -29,6 +29,7 @@ Learn what is needed to run a 16-player session in MGSV, and prove the networkin
 | R11 | Networking reference summary | Summarize the Co-op Anything networking playbook in our own words | Docs | research/networking-playbook-summary.md (**done**) |
 | R12 | Engine session spike | Start a mission or free roam as an engine multiplayer session. Can 3 or more players join? What blocks it? Time-boxed | RE / Hooks, Networking | research/engine-session-spike.md, decides ADR 0002 |
 | R13 | Steam interfaces | From inside the game process, can we reach current Steam networking and matchmaking interfaces through the game's older Steam API? | Networking | research/steam-interfaces.md, decides ADR 0003 |
+| R14 | Joining from outside the game | Do Steam lobby links and launch arguments reach the game through Konami's launcher? Do `steam://` and `jointops://` links work from Flatpak browsers on Bazzite? | Networking, Proton Tester | research/browser-launch.md, informs ADR 0008 |
 
 ## Background reading
 Start with the desk research in research/: game-and-engine.md, modding-ecosystem.md, steam-networking.md, proton.md and prior-art/dynamite.md.
