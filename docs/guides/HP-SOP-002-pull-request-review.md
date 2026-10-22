@@ -13,7 +13,7 @@ Data files valid · site script built from its modules · script syntax · contr
 ## Merging
 | Change | Merge |
 |---|---|
-| Changes by the technical lead or project lead | Auto-merge once checks pass (the lead's standing instruction) |
+| Changes by the project lead, including work done with an AI agent on the lead's behalf | Auto-merge once checks pass (the lead's standing instruction) |
 | Contractor work | After Quality review, then auto-merge |
 | Decision records | Status stays **Proposed** until the project lead accepts it |
 

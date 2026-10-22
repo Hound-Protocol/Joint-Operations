@@ -18,7 +18,7 @@
    ]
   },
   {
-   "seat": "Technical lead delegate",
+   "seat": "Technical lead",
    "need": 1,
    "holders": []
   },
@@ -50,7 +50,7 @@
   "Proton testers (Quality)",
   "Reviewers (Quality)",
   "Moderators (Administration)",
-  "Technical lead delegate (Development)"
+  "Technical lead (Development)"
  ],
  "departments": [
   {
@@ -81,10 +81,9 @@
     "Web"
    ],
    "members": [
-    "TrueMan",
-    "Claude (technical lead, AI)"
+    "TrueMan"
    ],
-   "open": "Technical lead delegate"
+   "open": "Technical lead"
   },
   {
    "id": "qa",
@@ -104,11 +103,13 @@
    "id": "con",
    "name": "Contractor",
    "code": "CON",
-   "job": "Outside contributors who take contracts, deliver and leave whenever they like. Graded E to S++ in each field.",
+   "job": "Outside contributors who take contracts, deliver and leave whenever they like. Graded E to S++ in each field. AI agents work here as tools of the person using them.",
    "units": [
     "Open to any skill"
    ],
-   "members": [],
+   "members": [
+    "Claude (AI agent, used by TrueMan)"
+   ],
    "open": "Opens after 0.1"
   }
  ],
@@ -202,11 +203,10 @@
       "technical"
      ],
      "holders": [
-      "TrueMan",
-      "Claude (technical lead, AI)"
+      "TrueMan"
      ],
      "job": "Builds Joint Operations. Decides architecture, code, merges and contract scope.",
-     "open": "Technical lead delegate"
+     "open": "Technical lead"
     }
    ]
   },
@@ -232,8 +232,10 @@
      "sub": "Contractor Department",
      "dept": "con",
      "authority": [],
-     "holders": [],
-     "job": "Take contracts and deliver them. Graded E to S++ in each field; grades show experience, not authority.",
+     "holders": [
+      "Claude (AI agent, used by TrueMan)"
+     ],
+     "job": "Take contracts and deliver them. Graded E to S++ in each field; grades show experience, not authority. AI agents are contractors' tools: work is credited to the person, with the agent named.",
      "open": "Opens after 0.1"
     }
    ]

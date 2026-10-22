@@ -1,6 +1,6 @@
 # Starting the game from a website
 
-Author: Claude (technical lead) · Date: 2026-10-22 · Status: desk research · Supports ADR 0008 (server browser and one-click join)
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-22 · Status: desk research · Supports ADR 0008 (server browser and one-click join)
 
 ## Findings
 | Fact | Detail | Confidence | Source |

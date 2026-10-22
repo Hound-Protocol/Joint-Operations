@@ -12,6 +12,7 @@ Commands:
   keygen [--key-id ID]          create a signing key, publish its public half
   add --login LOGIN --contract CXX --pr N [--commit SHA] [--name NAME]
       [--title T --difficulty easy|medium|hard] [--date YYYY-MM-DD] [--key-id ID]
+      [--assisted-by "Claude"]   (AI agents used; detected from the pull request when left out)
                                 sign and append a record
   staff-add --login LOGIN --card LV3..LV7 --department NAME [--name NAME] [--discord-id ID]
                                 issue a signed staff card with a permanent Hound ID (HND-NNNN)
@@ -36,7 +37,7 @@ STAFF_FIELDS = {"id", "kind", "login", "github_id", "name", "discord_id", "card"
 STAFF_REQUIRED = {"id", "kind", "login", "github_id", "card", "department", "since", "status", "key", "sig"}
 KEY_DIR = pathlib.Path(os.environ.get("HP_RECORDS_KEY_DIR", pathlib.Path.home() / ".config/hound-protocol"))
 DIFFICULTIES = ("easy", "medium", "hard")
-FIELDS = {"id", "kind", "login", "name", "contract", "title", "difficulty", "pr", "commit", "date", "key", "sig"}
+FIELDS = {"id", "kind", "login", "name", "contract", "title", "difficulty", "pr", "commit", "date", "assisted", "key", "sig"}
 REQUIRED = {"id", "kind", "login", "contract", "title", "difficulty", "pr", "date", "key", "sig"}
 RE_LOGIN = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
 
@@ -128,6 +129,19 @@ def cmd_add(a):
         rec["name"] = a.name
     if a.commit:
         rec["commit"] = a.commit
+    # AI agents used: credited as the person's tool (ADR 0015). Detected from the PR's commit trailers unless given.
+    if a.assisted_by is not None:
+        agents = [x.strip() for x in a.assisted_by.split(",") if x.strip()]
+    else:
+        try:
+            sys.path.insert(0, str(ROOT / "tools"))
+            import agents as agent_detect
+            repo = load(ROOT / "site/data/config.json", {}).get("repo")
+            agents = agent_detect.detect_commits(agent_detect.pr_commits(a.pr, repo))
+        except SystemExit as e:
+            sys.exit(f"{e}\nCould not detect AI agents automatically. Pass --assisted-by NAME (or --assisted-by '' for none).")
+    if agents:
+        rec["assisted"] = agents
     priv = private_key(kid)
     raw = priv.public_key().public_bytes(ser.Encoding.Raw, ser.PublicFormat.Raw)
     if base64.b64encode(raw).decode() != pub["public"]:
@@ -135,7 +149,7 @@ def cmd_add(a):
     rec["sig"] = base64.b64encode(priv.sign(canonical(rec))).decode()
     recs["records"].append(rec)
     save(RECORDS, recs)
-    print(f"Added {rec['id']}: {a.login} · {a.contract} {title} · {diff}")
+    print(f"Added {rec['id']}: {a.login} · {a.contract} {title} · {diff}" + (" · with " + ", ".join(agents) if agents else ""))
 
 
 def signer(kid=None):
@@ -227,6 +241,8 @@ def cmd_verify(a):
         seen.add(rid)
         if r["difficulty"] not in DIFFICULTIES:
             errors.append(f"{rid}: unknown difficulty {r['difficulty']}")
+        if "assisted" in r and not (isinstance(r["assisted"], list) and all(isinstance(x, str) and x for x in r["assisted"])):
+            errors.append(f"{rid}: assisted must be a list of agent names")
         k = keys.get(r["key"])
         if not k:
             errors.append(f"{rid}: unknown key {r['key']}")
@@ -282,6 +298,7 @@ def main():
     d = sub.add_parser("add")
     d.add_argument("--login", required=True); d.add_argument("--contract", required=True); d.add_argument("--pr", type=int, required=True)
     d.add_argument("--commit"); d.add_argument("--name"); d.add_argument("--title"); d.add_argument("--difficulty"); d.add_argument("--date"); d.add_argument("--key-id")
+    d.add_argument("--assisted-by", help="AI agents used, comma separated. Default: detected from the pull request's commits")
     sa = sub.add_parser("staff-add")
     sa.add_argument("--login", required=True); sa.add_argument("--card", required=True); sa.add_argument("--department", required=True)
     sa.add_argument("--name"); sa.add_argument("--discord-id"); sa.add_argument("--github-id", type=int); sa.add_argument("--since"); sa.add_argument("--key-id")

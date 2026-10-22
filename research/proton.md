@@ -1,6 +1,6 @@
 # Linux and Proton
 
-Author: Claude (technical lead) · Date: 2026-10-21 · Status: desk research
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-21 · Status: desk research
 
 ## How a proxy DLL loads under Proton
 Wine prefers its own built-in `dinput8.dll`, so a mod's proxy DLL is ignored unless the user overrides it. The standard Steam launch option is:

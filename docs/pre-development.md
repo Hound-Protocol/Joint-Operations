@@ -28,7 +28,7 @@ Development of 0.1 (Phase 2) starts only when every gate is **closed** or explic
 
 ### G2 People and governance
 - [ ] At least two holders for each critical seat: GitHub owner, Discord admin, release signer ([governance](governance.md))
-- [ ] A **human** technical lead delegate who can approve merges and releases (Claude is a tool and cannot hold accounts or accountability)
+- [ ] A **human** technical lead who can approve merges and releases (Claude is an AI agent, a tool, and cannot hold accounts or accountability)
 - [ ] Minimum crew to start Phase 1: one reverse engineer (C++, x64), one networking developer, one Windows tester, one Linux and Proton tester
 - [ ] Code of conduct and security policy adopted (`CODE_OF_CONDUCT.md`, `SECURITY.md`)
 

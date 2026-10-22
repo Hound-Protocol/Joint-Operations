@@ -26,9 +26,10 @@ Authority means the right to make a decision that others must follow. There are 
 Rules:
 1. **Authority only flows down.** A role can decide over people with a lower keycard, and only in its own kinds of authority. Development cannot moderate; moderators cannot decide on code.
 2. **Quality, contractors and members have no authority over anyone.** Quality's job is to check work against its acceptance criteria and to test it. A failed check stops that delivery or release until it is fixed, which is a quality gate, not authority over people. Development decides how to fix it.
-3. **Contractor grades give no authority.** A grade (E to S++) shows experience. Reviews by graded contractors are advice to Quality and Development.
-4. **The owner has the final say** in every kind of authority, and is the last step of every appeal.
-5. **Nobody decides their own case.** A person with authority hands a dispute they are part of to someone else with the same authority, or one level up.
+3. **AI agents have no authority.** An agent is a tool of the person using it, listed under Contractors, and its work is credited to that person ([ADR 0015](../decisions/0015-ai-agents-and-attribution.md)).
+4. **Contractor grades give no authority.** A grade (E to S++) shows experience. Reviews by graded contractors are advice to Quality and Development.
+5. **The owner has the final say** in every kind of authority, and is the last step of every appeal.
+6. **Nobody decides their own case.** A person with authority hands a dispute they are part of to someone else with the same authority, or one level up.
 
 ## 3. Open communication
 - **Anyone can talk to anyone**, at any level, about anything. You do not need permission to raise a concern with the owner.

@@ -8,7 +8,7 @@ Hound Protocol is organized like Mother Base: four departments, each with a clea
 | Department | Job | Units | Who |
 |---|---|---|---|
 | **Administration** | Direction, decisions, legal stance, funding, accounts, community and moderation, recruiting | Command · Community · Legal and Funding | Project lead, seat holders, moderators |
-| **Development** | Building Joint Operations: architecture, game hooks, networking, session, launcher, tools, website | Hooks and RE · Networking · Session · Tools and Launcher · Web | Technical lead, technical lead delegate, core developers |
+| **Development** | Building Joint Operations: architecture, game hooks, networking, session, launcher, tools, website | Hooks and RE · Networking · Session · Tools and Launcher · Web | Technical lead, core developers |
 | **Quality** | Making sure what ships works: testing on Windows and Proton, reviews against acceptance criteria, bug triage, release sign-off | Windows Testing · Proton Testing · Review · Release QA | Testers, reviewers |
 | **Contractor** | Outside contributors who take contracts, deliver and leave whenever they like | Open to any skill | Anyone who has completed a contract |
 
@@ -70,4 +70,4 @@ Every contract has a difficulty, shown in color everywhere. Difficulty is **info
 | GitHub | Department owners in CODEOWNERS as departments fill; contract labels by module |
 
 ## Version 0.1
-Version 0.1 is built by the project lead with the technical lead ([ADR 0009](decisions/0009-departments-and-ranks.md)). The contract board shows the plan in the meantime, and contracts open to contractors after 0.1.
+Version 0.1 is built by the project lead, with Claude as an AI agent ([ADR 0009](decisions/0009-departments-and-ranks.md)). The contract board shows the plan in the meantime, and contracts open to contractors after 0.1.

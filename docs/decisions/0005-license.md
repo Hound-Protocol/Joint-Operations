@@ -1,5 +1,5 @@
 # 0005: Project license
-Status: Accepted · Date: 2026-10-22 · Deciders: project lead (delegated the choice to the technical lead)
+Status: Accepted · Date: 2026-10-22 · Deciders: project lead (choice prepared with Claude, AI agent)
 
 ## Context
 The lead wants: anyone may fork, nobody may claim the work as their own. The draft chose GPL-3.0. Our native code will call the proprietary Steamworks SDK and run inside the game, which a plain GPL-3.0 likely does not permit. See `research/legal-landscape.md`.

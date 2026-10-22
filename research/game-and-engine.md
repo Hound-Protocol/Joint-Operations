@@ -1,6 +1,6 @@
 # MGSV game and engine facts
 
-Author: Claude (technical lead) · Date: 2026-10-21 · Status: desk research, not yet verified on a test rig
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-21 · Status: desk research, not yet verified on a test rig
 
 Confidence key: **confirmed** (primary source or multiple sources), **likely** (one credible source), **unknown** (needs testing).
 

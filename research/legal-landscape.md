@@ -1,6 +1,6 @@
 # Legal landscape
 
-Author: Claude (technical lead) · Date: 2026-10-21 · Status: desk research. **This is not legal advice.** Get a qualified opinion before accepting money or distributing builds widely.
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-21 · Status: desk research. **This is not legal advice.** Get a qualified opinion before accepting money or distributing builds widely.
 
 ## 1. Reverse engineering in the EU
 The project lead is based in the EU, so EU law is the main reference.

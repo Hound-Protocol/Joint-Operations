@@ -37,7 +37,7 @@ The server mirrors the project's four departments ([departments.md](departments.
 | **LV6 · Administration** | Seat holders, admins | ADMINISTRATION and all department channels; manage messages, timeout, kick, ban (social authority) |
 | **LV6 · Moderator** | Trusted community members | Manage messages, timeout, kick; ADMINISTRATION (social authority) |
 | **LV5 · Development** | Core developers | DEVELOPMENT, QUALITY, CONTRACTORS |
-| **LV5 · Technical Lead** | Technical direction (Claude, through the human delegate) | All department channels. No moderation: technical authority only |
+| **LV5 · Technical Lead** | The technical lead (a person; open seat) | All department channels. No moderation: technical authority only |
 | **LV4 · Quality** | Testers, reviewers, release QA | QUALITY, CONTRACTORS |
 | **LV3 · Contractor** | Anyone who has completed a contract | DEVELOPMENT, QUALITY, CONTRACTORS |
 | Rank S++ · S+ · S · A++ · A+ · A · B · C · D · E | Contractor rank: best grade in any field | Cosmetic: shows rank in the member list. No permissions, no authority |

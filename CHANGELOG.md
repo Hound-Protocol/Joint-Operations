@@ -2,6 +2,14 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.9 · Agent attribution · 2026-10-22
+Who did it, and with what.
+
+- **Claude is a contractor:** listed in the Contractor Department as an AI agent used by the project lead, with no seat or authority. The **technical lead** is now a seat for a person ([ADR 0015](docs/decisions/0015-ai-agents-and-attribution.md)).
+- **Automatic credit for AI agents:** `tools/agents.py` detects agents from commit trailers (Claude, GitHub Copilot, OpenAI Codex, Cursor, Gemini, Devin, Aider). Merged pull requests get an `agent: <name>` label and a credit comment ("Credited to @Forge77, with Claude").
+- **Records list the agent:** `tools/records.py add` detects agents from the pull request and signs them into the record. The Verify page shows "with Claude" on records and the contributor wall.
+- AI Use Policy, chain of command, governance, Team page, Discord roles and the pull request template updated to match. Research notes are now signed "TrueMan, with Claude".
+
 ## v0.0.8 · Brand colors and license · 2026-10-22
 New brand colors, a chosen license, a smoother site and a sharper contract board.
 

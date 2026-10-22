@@ -1,0 +1,41 @@
+name: Agent attribution
+
+# Work done with an AI agent is credited to the person, with the agent named (ADR 0015).
+# When a pull request is merged, this reads its commit trailers with tools/agents.py,
+# labels the pull request "agent: <name>" and posts one credit comment.
+# It runs the base branch's copy of the tool and never runs code from the pull request.
+on:
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  credit:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - name: Detect agents and credit them
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          agents=$(python3 tools/agents.py --pr "$PR" --repo "$REPO" --json | python3 -c "import json,sys; print('\n'.join(json.load(sys.stdin)['agents']))")
+          if [ -z "$agents" ]; then echo "No AI agent detected."; exit 0; fi
+          names=""
+          while IFS= read -r a; do
+            label="agent: $a"
+            gh label create "$label" --repo "$REPO" --color 6fb7c9 --description "Work done with $a (ADR 0015)" 2>/dev/null || true
+            gh pr edit "$PR" --repo "$REPO" --add-label "$label"
+            names="${names:+$names, }$a"
+          done <<< "$agents"
+          gh pr comment "$PR" --repo "$REPO" --body "Credited to @$AUTHOR, with $names. Detected from the commit trailers ([ADR 0015](https://github.com/$REPO/blob/main/docs/decisions/0015-ai-agents-and-attribution.md))."

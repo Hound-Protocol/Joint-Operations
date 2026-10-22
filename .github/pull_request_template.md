@@ -10,7 +10,8 @@ Closes #
 - [ ] In-game on Linux with Proton (Proton version: )
 
 ## AI assistance ([HP-POL-002](https://github.com/Hound-Protocol/Joint-Operations/blob/main/docs/guides/HP-POL-002-ai-use-policy.md))
-- [ ] AI-assisted. Tool and what it was used for:
+- [ ] AI-assisted. Agent and what it was used for:
+  (Keep the agent's `Co-Authored-By` commit trailers. The agent is detected from them and credited next to your name.)
 - [ ] I have run, reviewed and understood all of it
 - [ ] No generative AI images, artwork, music or voices are included
 

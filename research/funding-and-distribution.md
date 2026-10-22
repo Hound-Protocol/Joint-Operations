@@ -1,6 +1,6 @@
 # Funding and distribution
 
-Author: Claude (technical lead) · Date: 2026-10-21 · Status: desk research. Not legal or tax advice.
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-21 · Status: desk research. Not legal or tax advice.
 
 ## Funding
 - A volunteer project is not a legal entity, so donations paid to a person become that person's income. A **fiscal host** holds money for the project instead and handles the paperwork.
