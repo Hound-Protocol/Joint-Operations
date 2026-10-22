@@ -13,7 +13,7 @@ Status values: **Proposed** (waiting for the project lead), **Accepted**, **Supe
 | [0005](0005-license.md) | License that allows linking with Steamworks and the game | Proposed |
 | [0006](0006-no-konami-services.md) | Never use Konami online services; matchmaking by Steam or our own server | Accepted |
 | [0007](0007-host-authority.md) | Host (Venom Snake) is authoritative; players join as Mother Base soldiers | Accepted |
-| [0008](0008-browser-launch.md) | Join from the website in stages: Steam invite links first, our `jointops://` launcher second, session browser last | Proposed |
+| [0008](0008-browser-launch.md) | Server browser on the website and one-click join, Battlelog-style: session registry API, `jointops://` launcher, straight to equipment, then deploy | Proposed |
 
 ## Template
 ```

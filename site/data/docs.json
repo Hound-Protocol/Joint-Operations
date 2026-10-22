@@ -105,7 +105,7 @@
     },
     {
       "id": "adr-0008",
-      "title": "0008 Browser Launch",
+      "title": "0008 Server Browser and Join",
       "group": "Decisions",
       "path": "docs/decisions/0008-browser-launch.md"
     },
