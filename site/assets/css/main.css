@@ -722,7 +722,7 @@ mark.key { background: none; color: var(--amb); }
   background: conic-gradient(from 0deg, rgba(201,162,74,.9), transparent 12%, transparent); animation: nwSweep 9s linear infinite; border-radius: 50%; }
 .no-motion .nw-graph::after { animation: none; display: none; }
 @keyframes nwSweep { to { transform: translate(-50%, -50%) rotate(360deg); } }
-.nw-graph canvas { position: relative; z-index: 1; display: block; touch-action: none; }
+.nw-graph canvas { position: absolute; left: 0; top: 0; z-index: 1; display: block; width: 100%; height: 100%; touch-action: none; }
 .nw-graph { box-shadow: inset 0 0 120px rgba(0,0,0,.75); }
 .nw-hud { position: absolute; z-index: 2; top: 12px; right: 12px; display: flex; gap: 8px; align-items: center; }
 .nw-hud .field { width: 220px; width: min(220px, 40vw); background: rgba(7,10,11,.8); }

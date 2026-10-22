@@ -102,11 +102,16 @@
       if (!NW) return;
       var r = g.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
       NW.w = r.width; NW.h = r.height; NW.dpr = dpr; NW.k = Math.max(0.5, Math.min(1.35, Math.min(r.width, r.height) / 720));
-      c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
-      c.style.width = r.width + "px"; c.style.height = r.height + "px";
+      // The canvas is sized by CSS (it fills the graph box), so only its pixel buffer changes here.
+      // Setting its CSS size from inside the observer would feed back into layout (ResizeObserver loop).
+      var w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+      if (c.width !== w) c.width = w;
+      if (c.height !== h) c.height = h;
     }
     size();
-    if (window.ResizeObserver) { NW.ro = new ResizeObserver(size); NW.ro.observe(g); } else window.addEventListener("resize", size);
+    var queued = 0;
+    function later() { if (queued) return; queued = requestAnimationFrame(function () { queued = 0; size(); }); }
+    if (window.ResizeObserver) { NW.ro = new ResizeObserver(later); NW.ro.observe(g); } else window.addEventListener("resize", later);
     function at(e) { var r = c.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
     function pick(p) {
       var best = null, bd = 1e9;
