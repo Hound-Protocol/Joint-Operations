@@ -24,7 +24,7 @@
               '<button class="btn small" id="nwClassic">Classic view</button></div>' +
             '<div class="nw-legend" id="nwLegend"></div>' +
             '<div class="nw-hint" id="nwHint">Point at a neuron to see it. Click to open.</div>' +
-            '<div class="nw-tip" id="nwTip" hidden></div>' +
+            '<div class="nw-tip" id="nwTip" aria-hidden="true"></div>' +
             '<ul class="sr-only" id="nwList"></ul></div>' +
           '<div class="nw-stage" id="nwStage" aria-live="polite"></div>' +
           '<div class="nw-dock" id="nwDock" aria-label="Minimized documents"></div>' +
@@ -89,7 +89,7 @@
     function size() {
       if (!NW) return;
       var r = g.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
-      NW.w = r.width; NW.h = r.height; NW.dpr = dpr; NW.k = Math.max(0.5, Math.min(1, Math.min(r.width, r.height) / 720));
+      NW.w = r.width; NW.h = r.height; NW.dpr = dpr; NW.k = Math.max(0.5, Math.min(1.35, Math.min(r.width, r.height) / 720));
       c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
       c.style.width = r.width + "px"; c.style.height = r.height + "px";
     }
@@ -133,14 +133,28 @@
   function nwTip(n) {
     var tip = $("#nwTip");
     if (!tip) return;
-    if (!n || n.kind === "core") { tip.hidden = true; return; }
-    tip.hidden = false;
+    if (n === NW.tipN) return;
+    NW.tipN = n;
+    if (!n || n.kind === "core") { tip.classList.remove("on"); return; }
+    var fresh = !tip.classList.contains("on");
     tip.style.setProperty("--c", nwColor(n.group));
     tip.innerHTML = n.kind === "hub"
       ? "<b>" + esc(n.label) + "</b><span>" + plural(NW.nodes.filter(function (x) { return x.group === n.group && x.kind === "doc"; }).length, "document") + " · click to focus</span>"
       : "<b>" + esc(n.label) + "</b><span>" + esc(n.group) + " · click to open</span>";
-    tip.style.left = Math.min(NW.w - 240, Math.max(8, n.x + 16)) + "px";
-    tip.style.top = Math.max(8, n.y - 46) + "px";
+    if (fresh) { NW.tx = null; nwTipMove(true); }
+    tip.classList.add("on");
+  }
+  // The tip glides after its neuron instead of jumping
+  function nwTipMove(snap) {
+    var tip = $("#nwTip"), n = NW.tipN;
+    if (!tip || !n || n.kind === "core") return;
+    var w = tip.offsetWidth || 220, r = n.r * (NW.k || 1) * n.s;
+    var right = n.x + r + 18 + w < NW.w - 8;
+    var x = right ? n.x + r + 18 : n.x - r - 18 - w, y = Math.max(8, Math.min(NW.h - 60, n.y - 24));
+    if (snap || NW.tx == null || !opts.motion) { NW.tx = x; NW.ty = y; }
+    else { NW.tx += (x - NW.tx) * 0.18; NW.ty += (y - NW.ty) * 0.18; }
+    tip.style.transform = "translate(" + NW.tx.toFixed(1) + "px," + NW.ty.toFixed(1) + "px)";
+    NW.tipBox = { x: NW.tx, y: NW.ty, w: w, h: tip.offsetHeight || 44 };
   }
 
   function nwBuild() {
@@ -162,13 +176,13 @@
   }
 
   function nwStep() {
-    var N = NW.nodes, K = NW.k || 1, cx = NW.w / 2, cy = NW.h / 2, R = Math.min(NW.w, NW.h) * 0.34, i, j;
+    var N = NW.nodes, K = NW.k || 1, cx = NW.w / 2, cy = NW.h / 2, R = Math.min(NW.w, NW.h) * 0.36, i, j;
     for (i = 0; i < N.length; i++) {
       var a = N[i]; if (!a.on) continue;
       for (j = i + 1; j < N.length; j++) {
         var b = N[j]; if (!b.on) continue;
         var dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy + 0.01, d = Math.sqrt(d2);
-        var gap = ((a.kind === "doc" && b.kind === "doc") ? 9 : 22) * K, min = (a.r + b.r) * K + gap;
+        var gap = ((a.kind === "doc" && b.kind === "doc") ? 14 : 24) * K, min = (a.r + b.r) * K + gap;
         var f = 0;
         if (d < min) f = (min - d) * 0.25;                       // collision: keep space
         else if (d < 260 * K) f = 520 * K * K / d2;               // soft repulsion
@@ -178,7 +192,7 @@
     NW.edges.forEach(function (e) {
       var a = e.a, b = e.b; if (!a.on || !b.on) return;
       var dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy) + 0.01;
-      var L = e.kind === "trunk" ? R : e.kind === "branch" ? (46 + Math.sqrt(a.kids || 1) * 9) * K : 150 * K;
+      var L = e.kind === "trunk" ? R : e.kind === "branch" ? (58 + Math.sqrt(a.kids || 1) * 15) * K : 150 * K;
       var k = e.kind === "syn" ? 0.0016 : 0.03, f = (d - L) * k, ux = dx / d, uy = dy / d;
       if (a.kind !== "core") { a.vx += ux * f; a.vy += uy * f; }
       b.vx -= ux * f; b.vy -= uy * f;
@@ -208,14 +222,14 @@
       var target = n === NW.hover ? 1.1 : 1;
       if (!opts.motion) { n.s = target; return; }
       var age = (now - n.born) / 420;
-      n.s = age < 1 ? (function (t) { var c = 1.70158; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); })(age) * target : n.s + (target - n.s) * 0.2;
+      n.s = age < 1 ? (function (t) { var c = 1.70158; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); })(age) * target : n.s + (target - n.s) * 0.1;
     });
     if (opts.motion && NW.ready && Math.random() < 0.18) {
       var live = NW.edges.filter(function (e) { return e.a.on && e.b.on; });
       if (live.length) NW.pulses.push({ e: live[Math.floor(Math.random() * live.length)], t: 0, rev: Math.random() < 0.5 });
     }
     nwDraw(now);
-    if (NW.hover) nwTip(NW.hover);
+    nwTipMove(false);
     NW.raf = requestAnimationFrame(nwFrame);
   }
 
@@ -226,7 +240,7 @@
     return set;
   }
   function nwDraw(now) {
-    var c = NW.ctx, dpr = NW.dpr, rel = nwRelated(NW.hover), q = NW.q, iso = NW.iso;
+    var c = NW.ctx, dpr = NW.dpr, rel = nwRelated(NW.hover), q = NW.q, iso = NW.iso, ease = opts.motion ? 0.12 : 1;
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.clearRect(0, 0, NW.w, NW.h);
     function lit(n) {
@@ -235,18 +249,22 @@
       if (q) return n.kind !== "doc" || n.label.toLowerCase().indexOf(q) > -1 || n.group.toLowerCase().indexOf(q) > -1;
       return true;
     }
+    // Everything fades towards its state instead of switching: n.a is how lit a neuron is, NW.focus how strong the hover is
+    NW.focus = (NW.focus || 0) + ((rel ? 1 : 0) - (NW.focus || 0)) * ease;
+    NW.nodes.forEach(function (n) { var t = lit(n) ? 1 : 0; n.a = n.a == null ? t : n.a + (t - n.a) * ease; });
     function curve(e) {
       var a = e.a, b = e.b, mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y, k = e.kind === "syn" ? 0.18 : 0.06;
       return { x: mx - dy * k, y: my + dx * k };
     }
+    function mix(a, b, t) { return a + (b - a) * t; }
     // Synapses
     NW.edges.forEach(function (e) {
       if (!e.a.on || !e.b.on) return;
-      var on = lit(e.a) && lit(e.b), col = nwColor(e.b.group || e.a.group), grow = Math.min(1, (now - Math.max(e.b.born || 0, e.born || 0)) / 260);
+      var on = Math.min(e.a.a, e.b.a), f = NW.focus, col = nwColor(e.b.group || e.a.group), grow = Math.min(1, (now - Math.max(e.b.born || 0, e.born || 0)) / 260);
       if (!opts.motion) grow = 1;
       var ctl = curve(e), ex = e.a.x + (e.b.x - e.a.x) * grow, ey = e.a.y + (e.b.y - e.a.y) * grow;
       c.beginPath(); c.moveTo(e.a.x, e.a.y); c.quadraticCurveTo(e.a.x + (ctl.x - e.a.x) * grow, e.a.y + (ctl.y - e.a.y) * grow, ex, ey);
-      c.strokeStyle = e.kind === "syn" ? rgba(col, on ? (rel ? 0.55 : 0.16) : 0.04) : rgba(col, on ? (rel ? 0.85 : 0.42) : 0.07);
+      c.strokeStyle = e.kind === "syn" ? rgba(col, mix(0.04, mix(0.16, 0.55, f), on)) : rgba(col, mix(0.07, mix(0.42, 0.85, f), on));
       c.lineWidth = e.kind === "trunk" ? 1.6 : e.kind === "branch" ? 1.1 : 0.8;
       if (e.kind === "syn") c.setLineDash([2, 4]); else c.setLineDash([]);
       c.stroke();
@@ -254,19 +272,19 @@
     c.setLineDash([]);
     // Signals travelling along synapses
     NW.pulses = NW.pulses.filter(function (p) {
-      p.t += 0.022; if (p.t >= 1) return false;
+      p.t += 0.018; if (p.t >= 1) return false;
       var e = p.e, t = p.rev ? 1 - p.t : p.t, ctl = curve(e), u = 1 - t;
       var x = u * u * e.a.x + 2 * u * t * ctl.x + t * t * e.b.x, y = u * u * e.a.y + 2 * u * t * ctl.y + t * t * e.b.y;
-      var col = nwColor(e.b.group || e.a.group), on = lit(e.a) && lit(e.b);
-      c.beginPath(); c.arc(x, y, 1.8, 0, Math.PI * 2); c.fillStyle = rgba(col, on ? 0.95 : 0.2);
-      c.shadowColor = col; c.shadowBlur = on ? 10 : 0; c.fill(); c.shadowBlur = 0;
+      var col = nwColor(e.b.group || e.a.group), on = Math.min(e.a.a, e.b.a);
+      c.beginPath(); c.arc(x, y, 1.8, 0, Math.PI * 2); c.fillStyle = rgba(col, mix(0.2, 0.95, on));
+      c.shadowColor = col; c.shadowBlur = on > 0.5 ? 10 : 0; c.fill(); c.shadowBlur = 0;
       return true;
     });
     // Neurons, drawn back to front so the hovered one sits on top
     NW.nodes.slice().sort(function (a, b) { return (a === NW.hover) - (b === NW.hover); }).forEach(function (n) {
       if (!n.on || n.s <= 0.01) return;
-      var col = n.kind === "core" ? "#ffffff" : nwColor(n.group), on = lit(n), r = n.r * (NW.k || 1) * n.s, hov = n === NW.hover;
-      c.globalAlpha = on ? 1 : 0.22;
+      var col = n.kind === "core" ? "#ffffff" : nwColor(n.group), r = n.r * (NW.k || 1) * n.s, hov = n === NW.hover;
+      c.globalAlpha = mix(0.22, 1, n.a);
       if (hov) { c.beginPath(); c.arc(n.x + 3, n.y + 6, r * 1.05, 0, Math.PI * 2); c.fillStyle = "rgba(0,0,0,.45)"; c.shadowColor = "rgba(0,0,0,.6)"; c.shadowBlur = 16; c.fill(); }
       var g = c.createRadialGradient(n.x - r * 0.35, n.y - r * 0.35, r * 0.1, n.x, n.y, r);
       g.addColorStop(0, rgba(col, 0.95)); g.addColorStop(0.6, rgba(col, n.kind === "doc" ? 0.55 : 0.35)); g.addColorStop(1, rgba(col, 0.12));
@@ -278,14 +296,48 @@
         c.beginPath(); c.arc(n.x, n.y, r + 6, rot, rot + Math.PI * 1.4); c.strokeStyle = rgba(col, 0.55); c.lineWidth = 1; c.stroke();
         if (n.kind === "core") { c.beginPath(); c.arc(n.x, n.y, r + 12, -rot, -rot + Math.PI * 0.8); c.strokeStyle = rgba("#c9a24a", 0.6); c.stroke(); }
         c.font = (n.kind === "core" ? "500 12px " : "400 11px ") + "'Share Tech Mono', monospace";
-        c.textAlign = "center"; c.fillStyle = rgba(n.kind === "core" ? "#ffffff" : col, 0.95);
+        c.textAlign = "center"; c.textBaseline = "alphabetic"; c.fillStyle = rgba(n.kind === "core" ? "#ffffff" : col, 0.95);
         c.fillText(n.label.toUpperCase().split("").join(String.fromCharCode(8202)), n.x, n.y + r + (n.kind === "core" ? 28 : 20));
-      } else if (rel && rel[n.id] && !hov) {
-        c.font = "400 11px 'Barlow Semi Condensed', sans-serif"; c.textAlign = "center"; c.fillStyle = "rgba(233,237,238,.85)";
-        c.fillText(n.label.length > 28 ? n.label.slice(0, 27) + "…" : n.label, n.x, n.y - r - 7);
       }
       c.globalAlpha = 1;
     });
+    nwLabels(c, rel, ease);
+  }
+
+  // Labels for the neighbours of the hovered neuron. Each label sits on the far side of its neuron,
+  // is only shown where it does not overlap another label, a hub name or the tip, and fades in and out.
+  function nwLabels(c, rel, ease) {
+    var taken = [], h = NW.hover, K = NW.k || 1;
+    if (NW.tipBox && NW.tipN) taken.push(NW.tipBox);
+    NW.nodes.forEach(function (n) {
+      if (n.on && n.kind !== "doc") { var r = n.r * K * n.s; taken.push({ x: n.x - 70, y: n.y - r - 4, w: 140, h: r * 2 + 34 }); }
+    });
+    c.font = "400 12px 'Barlow Semi Condensed', sans-serif"; c.textBaseline = "middle";
+    var cand = NW.nodes.filter(function (n) { return n.on && n.kind === "doc" && rel && rel[n.id] && n !== h; });
+    // Labels already showing keep their place first, so nothing flickers while the web moves
+    cand.sort(function (a, b) { return (b.la || 0) - (a.la || 0) || Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(b.x - h.x, b.y - h.y); });
+    var show = {};
+    cand.forEach(function (n) {
+      var txt = n.label.length > 30 ? n.label.slice(0, 29) + "…" : n.label, w = c.measureText(txt).width + 12, r = n.r * K * n.s;
+      var dx = n.x - h.x, dy = n.y - h.y, d = Math.hypot(dx, dy) || 1, right = dx >= 0;
+      var ax = n.x + (dx / d) * (r + 6), ay = n.y + (dy / d) * (r + 6);
+      var box = { x: right ? ax : ax - w, y: ay - 9, w: w, h: 18 };
+      if (box.x < 4 || box.x + w > NW.w - 4 || box.y < 4 || box.y + 18 > NW.h - 4) return;
+      if (taken.some(function (t) { return box.x < t.x + t.w && box.x + box.w > t.x && box.y < t.y + t.h && box.y + box.h > t.y; })) return;
+      taken.push(box); show[n.id] = 1; n.lbox = box; n.ltxt = txt;
+    });
+    NW.nodes.forEach(function (n) {
+      if (n.kind !== "doc") return;
+      var t = show[n.id] ? 1 : 0; n.la = (n.la || 0) + (t - (n.la || 0)) * ease;
+      if (n.la < 0.02 || !n.lbox) return;
+      var b = n.lbox, col = nwColor(n.group);
+      c.globalAlpha = n.la;
+      c.fillStyle = "rgba(7,10,11,.82)"; c.fillRect(b.x, b.y, b.w, b.h);
+      c.fillStyle = col; c.fillRect(b.x, b.y, 2, b.h);
+      c.fillStyle = "rgba(233,237,238,.92)"; c.textAlign = "left"; c.fillText(n.ltxt, b.x + 7, b.y + b.h / 2 + 0.5);
+      c.globalAlpha = 1;
+    });
+    c.textBaseline = "alphabetic";
   }
 
   /* ---- Document windows: stack, minimize to dock, restore ---- */
