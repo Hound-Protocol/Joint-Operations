@@ -1,0 +1,305 @@
+{
+  "note": "Discord server blueprint used by tools/discord/setup.py. Edit here, then re-run the script; existing roles and channels are matched by name and left in place.",
+  "server_name": "MGSV: Joint Operations | Hound Protocol",
+  "roles": [
+    {
+      "name": "Lead",
+      "color": "#ffffff",
+      "hoist": true,
+      "permissions": [
+        "view",
+        "send",
+        "history",
+        "react",
+        "embed",
+        "attach",
+        "manage_messages",
+        "kick",
+        "ban",
+        "moderate",
+        "manage_threads",
+        "mention_everyone",
+        "connect",
+        "speak"
+      ]
+    },
+    {
+      "name": "Technical Lead",
+      "color": "#c9a24a",
+      "hoist": true,
+      "permissions": [
+        "view",
+        "send",
+        "history",
+        "react",
+        "embed",
+        "attach",
+        "manage_messages",
+        "manage_threads",
+        "connect",
+        "speak"
+      ]
+    },
+    {
+      "name": "Moderator",
+      "color": "#7fbf8a",
+      "hoist": true,
+      "permissions": [
+        "view",
+        "send",
+        "history",
+        "react",
+        "embed",
+        "attach",
+        "manage_messages",
+        "kick",
+        "moderate",
+        "manage_threads",
+        "connect",
+        "speak"
+      ]
+    },
+    {
+      "name": "Core Dev",
+      "color": "#9fb3c8",
+      "hoist": true,
+      "permissions": []
+    },
+    {
+      "name": "RE / Hooks",
+      "color": "#8b9599",
+      "permissions": []
+    },
+    {
+      "name": "Networking",
+      "color": "#8b9599",
+      "permissions": []
+    },
+    {
+      "name": "Web / App",
+      "color": "#8b9599",
+      "permissions": []
+    },
+    {
+      "name": "Docs",
+      "color": "#8b9599",
+      "permissions": []
+    },
+    {
+      "name": "Proton Tester",
+      "color": "#6f8f9f",
+      "permissions": []
+    },
+    {
+      "name": "Tester",
+      "color": "#6f8f9f",
+      "permissions": []
+    },
+    {
+      "name": "Member",
+      "color": "#5d6668",
+      "permissions": []
+    }
+  ],
+  "categories": [
+    {
+      "name": "INFO",
+      "access": "read_only",
+      "channels": [
+        {
+          "name": "welcome",
+          "topic": "Start here. Read the rules and pick your role."
+        },
+        {
+          "name": "rules",
+          "topic": "Server rules. Read before posting."
+        },
+        {
+          "name": "announcements",
+          "topic": "Project news from the team."
+        },
+        {
+          "name": "roadmap",
+          "topic": "Where the project stands. Live roadmap: https://hound-protocol.github.io/Joint-Operations/#/roadmap"
+        },
+        {
+          "name": "faq",
+          "topic": "Common questions."
+        }
+      ]
+    },
+    {
+      "name": "COMMUNITY",
+      "access": "open",
+      "channels": [
+        {
+          "name": "general",
+          "topic": "Talk about Joint Operations and MGSV."
+        },
+        {
+          "name": "showcase",
+          "topic": "Screenshots, clips and builds you are proud of."
+        },
+        {
+          "name": "suggestions",
+          "topic": "Ideas for the project. One idea per message."
+        },
+        {
+          "name": "off-topic",
+          "topic": "Everything else."
+        }
+      ]
+    },
+    {
+      "name": "DEVELOPMENT",
+      "access": "roles",
+      "roles": [
+        "Core Dev",
+        "RE / Hooks",
+        "Networking",
+        "Web / App",
+        "Docs",
+        "Technical Lead",
+        "Lead",
+        "Moderator"
+      ],
+      "channels": [
+        {
+          "name": "dev-log",
+          "topic": "Short updates: done, blocked, next."
+        },
+        {
+          "name": "architecture",
+          "topic": "Design discussion. Decisions go in docs/decisions."
+        },
+        {
+          "name": "reverse-engineering",
+          "topic": "Game research. Findings go in research/, in our own words."
+        },
+        {
+          "name": "networking",
+          "topic": "Sessions, sync and transport."
+        },
+        {
+          "name": "hooks",
+          "topic": "Loader and native hooks."
+        },
+        {
+          "name": "web-and-app",
+          "topic": "Website, launcher and lobby app."
+        },
+        {
+          "name": "legal-and-funding",
+          "topic": "License, rights and funding questions."
+        }
+      ]
+    },
+    {
+      "name": "TESTING",
+      "access": "roles",
+      "roles": [
+        "Tester",
+        "Proton Tester",
+        "Core Dev",
+        "RE / Hooks",
+        "Networking",
+        "Web / App",
+        "Docs",
+        "Technical Lead",
+        "Lead",
+        "Moderator"
+      ],
+      "channels": [
+        {
+          "name": "test-sessions",
+          "topic": "Organize test sessions."
+        },
+        {
+          "name": "windows",
+          "topic": "Windows test results."
+        },
+        {
+          "name": "proton-linux",
+          "topic": "Linux and Proton test results. Include your Proton version."
+        },
+        {
+          "name": "bug-reports",
+          "topic": "Use the template pinned in this channel."
+        }
+      ]
+    },
+    {
+      "name": "MODDING",
+      "access": "open",
+      "channels": [
+        {
+          "name": "mod-api",
+          "topic": "Building mods on top of Joint Operations."
+        },
+        {
+          "name": "mod-showcase",
+          "topic": "Share mods for review."
+        }
+      ]
+    },
+    {
+      "name": "VOICE",
+      "access": "open",
+      "voice": [
+        {
+          "name": "Lobby"
+        },
+        {
+          "name": "Dev Standup",
+          "roles": [
+            "Core Dev",
+            "RE / Hooks",
+            "Networking",
+            "Web / App",
+            "Docs",
+            "Technical Lead",
+            "Lead",
+            "Moderator"
+          ]
+        },
+        {
+          "name": "Test Session",
+          "roles": [
+            "Tester",
+            "Proton Tester",
+            "Core Dev",
+            "RE / Hooks",
+            "Networking",
+            "Web / App",
+            "Docs",
+            "Technical Lead",
+            "Lead",
+            "Moderator"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "STAFF",
+      "access": "roles",
+      "roles": [
+        "Lead",
+        "Moderator"
+      ],
+      "channels": [
+        {
+          "name": "mod-log",
+          "topic": "Moderation actions. Staff only."
+        }
+      ]
+    }
+  ],
+  "messages": {
+    "welcome": "**Welcome to MGSV: Joint Operations, by Hound Protocol.**\nWe are building a multiplayer mod for Metal Gear Solid V on PC: online play for up to 16 players in the single-player world, for Windows and Linux through Proton.\n\n1. Read <#rules>.\n2. Check the live roadmap in <#roadmap>.\n3. Want to help? Open contracts are on the website: https://hound-protocol.github.io/Joint-Operations/#/contribute\n\nThis is an unofficial fan project, not affiliated with or endorsed by Konami.",
+    "rules": "**Rules**\n1. MGSV: Joint Operations is an unofficial fan project by Hound Protocol. It is not affiliated with or endorsed by Konami.\n2. Own your copy of MGSV. No piracy, cracks or game-file sharing.\n3. No cheating in other people's multiplayer, and nothing that touches Konami's online services or anti-cheat.\n4. Be respectful. No harassment, hate or spam.\n5. Keep discussion in the right channel. Credit your sources.\n6. Bug reports use the template in <#bug-reports>.\n7. Never share passwords, tokens or keys.\n8. Moderators have the final say.\n\nFull code of conduct: https://hound-protocol.github.io/Joint-Operations/#/docs/conduct",
+    "roadmap": "**Roadmap**\nThe live roadmap is on the website and updates with every change: https://hound-protocol.github.io/Joint-Operations/#/roadmap\nWe are in **Phase 0: Foundation**.",
+    "announcements": "**Hound Protocol is open.**\nThe website, documentation and contract board are live: https://hound-protocol.github.io/Joint-Operations/\nThe project is in its foundation phase. Read the briefing, check the roadmap, and join the hound.",
+    "bug-reports": "**Bug report template**\nCopy this and fill it in:\n```\nGame build (title screen and exe):\nOS: Windows / Linux with Proton (version: )\nJoint Operations version:\nPlayers in session:\nWhat happened:\nWhat you expected:\nSteps to reproduce:\nLogs (never game files):\n```",
+    "faq": "**FAQ**\n**Is it playable?** Not yet. See the roadmap.\n**Is it co-op?** It is a multiplayer mod: online play for up to 16 players in the single-player world.\n**Do I need the game?** Yes, your own copy of MGSV on Steam.\n**Linux?** Yes, through Proton.\n**How do I help?** https://hound-protocol.github.io/Joint-Operations/#/contribute"
+  }
+}
