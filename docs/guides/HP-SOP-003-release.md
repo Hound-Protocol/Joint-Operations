@@ -17,7 +17,7 @@ The website shows the version in the build bar as `version.build`, where build i
 3. **Pull request.** Everything for the release goes in one pull request, titled `Release vX.Y.Z: <name>`.
 4. **Quality gate.** All checks green. For game builds: the checklist in [HP-POL-006](HP-POL-006-quality-policy.md) section 3.
 5. **Merge.** The site deploys automatically.
-6. **Tag and publish.** Create tag `vX.Y.Z` on the merge commit and a GitHub release with the changelog section as notes. Versions below 0.1 are marked **pre-release**.
+6. **Tag and publish (automatic).** The Release workflow sees the new version on `main`, creates tag `vX.Y.Z` on the merge commit, and publishes a GitHub release with the changelog section as notes. Versions below 0.1 are marked **pre-release**. If it fails, run it again from the Actions tab (Release → Run workflow).
 7. **Announce.** Short post in #announcements with the release link. The site's Dev Log shows the release automatically.
 
 ## Game builds (from 0.1)
