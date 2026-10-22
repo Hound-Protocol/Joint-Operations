@@ -42,7 +42,7 @@ Status on the board:
 Leaving is fine. Before you go, post a short handoff note on the issue: what is done, what is not, and where the work is. A maintainer then unassigns the contract.
 
 ## Ranks
-Points per completed contract: S = 1, M = 3, L = 5.
+Points per completed contract: S = 1, M = 3, L = 5. Each completed contract also earns a signed [contributor record](docs/contributor-records.md).
 
 | Rank | Points | Unlocks |
 |---|---|---|
