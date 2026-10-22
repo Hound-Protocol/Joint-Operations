@@ -53,7 +53,7 @@ It is a **multiplayer mod**, not a co-op add-on, and it never touches Konami's o
 Full details: [ROADMAP.md](ROADMAP.md).
 
 ## Hound Protocol
-Hound Protocol is a non-commercial community development team, organized like Mother Base:
+Hound Protocol is a non-commercial, community-focused organization. We build ambitious projects, one of them being Joint Operations. It is organized like Mother Base:
 
 | Department | Role |
 |---|---|

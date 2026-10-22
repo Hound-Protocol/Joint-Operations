@@ -7,7 +7,7 @@
       t = t || { members: [], seats: [], roles: [], departments: [] };
       var still = !opts.motion;
       $("#vb").innerHTML = '<div class="bf">' +
-        '<section class="bf-sec team-brand"><div class="tb-mark">' + BRAND.hpColor + '</div><div><div class="tb-name">Hound Protocol</div><p>A community development team, organized like Mother Base. We build <b>Joint Operations</b> in the open.</p></div><div class="tb-mark jo"><img src="assets/brand/joint-operations-emblem.svg" alt="Joint Operations emblem"></div></section>' +
+        '<section class="bf-sec team-brand"><div class="tb-mark">' + BRAND.hpColor + '</div><div><div class="tb-name">Hound Protocol</div><p>A community-focused organization. We build ambitious projects, one of them being <b>Joint Operations</b>.</p></div><div class="tb-mark jo"><img src="assets/brand/joint-operations-mark.svg" alt="Joint Operations"></div></section>' +
         '<section class="bf-sec team-members">' + t.members.map(function (m) {
           return '<article class="member"><div class="portrait"><picture>' +
             (m.still ? '<source srcset="' + esc(m.still) + '" media="(prefers-reduced-motion: reduce)">' : "") +
@@ -15,12 +15,7 @@
             '<div><div class="m-role">' + esc(m.role) + '</div><h3 class="m-name">' + esc(m.name) + '</h3><p>' + esc(m.bio) + "</p></div></article>";
         }).join("") + "</section>" +
         (t.hierarchy ? teamChain(t) : "") +
-        '<section class="bf-sec"><div class="label">Seats</div><div class="seats">' + t.seats.map(function (s, k) {
-          var open = Math.max(0, s.need - s.holders.length);
-          return '<div class="seat" style="--k:' + k + '"><div class="s-name">' + esc(s.seat) + '</div><div class="s-who">' + (s.holders.length ? esc(s.holders.join(", ")) : "Vacant") + '</div><span class="pill ' + (open ? "warn" : "ok") + '">' + (open ? open + " open" : "Filled") + "</span></div>";
-        }).join("") + '</div><p class="source">Seats are roles with a term and at least two holders where possible. See <a href="#/docs/governance">governance</a>.</p></section>' +
-        '<section class="bf-sec"><div class="label">Wanted</div><ul class="chips">' + t.roles.map(function (r, k) { return '<li style="--k:' + k + '">' + esc(r) + "</li>"; }).join("") + '</ul>' +
-        '<div class="toolbar" style="margin-top:18px"><a class="btn primary" href="#/contribute">Join the Hound</a></div></section></div>';
+        (t.positions ? teamPositions(t.positions) : "") + "</div>";
       revealSections();
     });
   }
@@ -36,11 +31,34 @@
           var d = n.dept && /Department/.test(n.sub || "") ? depts[n.dept] : null;
           return '<article class="node' + (n.authority.length ? "" : " plain") + '"><header><h3>' + esc(n.title) + "</h3><small>" + esc(n.sub || "") + "</small></header>" +
             "<p>" + esc(n.job) + "</p>" +
-            '<div class="auth">' + (n.authority.length ? n.authority.map(function (a) { return '<span class="au ' + a + '" title="' + esc((A[a] || [a, ""])[1]) + '">' + esc((A[a] || [a])[0]) + "</span>"; }).join("") : '<span class="au none">No authority over others</span>') + "</div>" +
+            (n.authority.length ? '<div class="auth">' : '<div class="auth" hidden>') + n.authority.map(function (a) { return '<span class="au ' + a + '" title="' + esc((A[a] || [a, ""])[1]) + '">' + esc((A[a] || [a])[0]) + "</span>"; }).join("") + "</div>" +
             (d && d.units && d.units.length ? '<ul class="chips small">' + d.units.map(function (u) { return "<li>" + esc(u) + "</li>"; }).join("") + "</ul>" : "") +
             '<div class="d-who">' + (n.holders.length ? esc(n.holders.join(" · ")) : "No one yet") + (n.open ? ' <span class="pill warn">' + esc(n.open) + "</span>" : "") + "</div></article>";
         }).join("") + "</div></div>";
       }).join("") + "</div>" +
       '<div class="auth-key">' + Object.keys(A).map(function (k) { return '<span><i class="au ' + k + '">' + esc(A[k][0]) + "</i>" + esc(A[k][1]) + "</span>"; }).join("") + "</div>" +
       '<p class="source">Authority only flows down, and only in its own kind. Anyone can talk to anyone. See <a href="#/guides/hp-pol-007">HP-POL-007 Chain of Command</a> and <a href="#/docs/departments">departments and grades</a>.</p></section>';
+  }
+
+  // Open positions, grouped by department: seats show filled slots; open roles take anyone
+  function teamPositions(list) {
+    var depts = [];
+    list.forEach(function (p) { if (depts.indexOf(p.dept) < 0) depts.push(p.dept); });
+    var open = list.reduce(function (n, p) { return n + (p.kind === "seat" ? Math.max(0, p.need - p.holders.length) : p.kind === "open" ? 1 : 0); }, 0);
+    return '<section class="bf-sec"><div class="label">Positions</div>' +
+      '<p class="sub">' + plural(open, "position") + " open now. Seats have a set number of holders; open roles take anyone who wants to help. Ask on Discord or see <a href=\"#/guides/hp-gde-008\">how roles are given</a>.</p>" +
+      '<div class="posgrid">' + depts.map(function (d) {
+        var rows = list.filter(function (p) { return p.dept === d; });
+        return '<section class="posdept"><header><h3>' + esc(d) + "</h3><small>" + plural(rows.length, "position") + "</small></header>" + rows.map(function (p) {
+          var state, pips = "";
+          if (p.kind === "seat") {
+            var free = Math.max(0, p.need - p.holders.length);
+            for (var i = 0; i < p.need; i++) pips += '<i class="' + (i < p.holders.length ? "on" : "") + '"></i>';
+            state = free ? '<span class="pill warn">' + free + " open</span>" : '<span class="pill ok">Filled</span>';
+          } else state = p.kind === "open" ? '<span class="pill warn">Open</span>' : '<span class="pill">After 0.1</span>';
+          return '<div class="pos k-' + esc(p.kind) + '"><div class="pos-main"><b>' + esc(p.title) + "</b><span>" + esc(p.about) + "</span></div>" +
+            '<div class="pos-who">' + (p.holders.length ? esc(p.holders.join(", ")) : p.kind === "seat" ? "Vacant" : "Anyone") + (pips ? '<span class="pips" aria-label="' + p.holders.length + " of " + p.need + ' filled">' + pips + "</span>" : "") + "</div>" + state + "</div>";
+        }).join("") + "</section>";
+      }).join("") + "</div>" +
+      '<div class="toolbar" style="margin-top:18px"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/docs/governance">How seats work</a></div></section>';
   }

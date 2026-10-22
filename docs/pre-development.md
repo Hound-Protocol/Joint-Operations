@@ -8,7 +8,7 @@ This is the master plan for everything that must be in place **before** developm
 | Area | State |
 |---|---|
 | Goal and scope | Set: multiplayer mod bringing online functionality into the single-player world, up to 16 players ([ADR 0001](decisions/0001-multiplayer-scope.md)) |
-| Team and name | Hound Protocol, community development team; contract-based contribution ([governance](governance.md)) |
+| Team and name | Hound Protocol, a community-focused organization; contract-based contribution ([governance](governance.md)) |
 | Repository and website | Built, in review as pull request #1; GitHub Pages ready to enable |
 | Research | Desk research done for engine, modding tools, Steam, Proton, law, funding and prior art ([research index](../research/README.md)) |
 | Architecture | Drafted, with two candidate strategies ([ADR 0002](decisions/0002-integration-strategy.md)) |

@@ -45,6 +45,8 @@ Rules:
 - **Money is public** once donations open ([ADR 0010](../decisions/0010-funding.md)).
 
 ## 5. Appeals
+The same applies to infractions and suspensions under [HP-POL-009](HP-POL-009-accountability.md), which hold role holders and leads to account the same way as contributors.
+
 1. Ask the person who decided to explain the decision, in public where possible.
 2. If you still disagree, appeal one level up in the same kind of authority: a moderator's decision goes to Administration, Development's to the technical lead, then to Administration.
 3. The owner's decision is final.

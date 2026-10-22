@@ -440,6 +440,12 @@
       "path": "docs/guides/HP-POL-008-licensing-and-attribution.md"
     },
     {
+      "id": "hp-pol-009",
+      "title": "HP-POL-009 Accountability and Infractions Policy",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-009-accountability.md"
+    },
+    {
       "id": "hp-sop-001",
       "title": "HP-SOP-001 Contract Lifecycle",
       "group": "Handbook",
@@ -498,6 +504,12 @@
       "title": "HP-SOP-010 Publishing Contracts as GitHub Issues",
       "group": "Handbook",
       "path": "docs/guides/HP-SOP-010-publishing-contracts.md"
+    },
+    {
+      "id": "hp-sop-011",
+      "title": "HP-SOP-011 Issuing Infractions and Handling Appeals",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-011-infractions-and-appeals.md"
     }
   ]
 }

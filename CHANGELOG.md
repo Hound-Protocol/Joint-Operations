@@ -2,6 +2,13 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.13 · Insignia and accountability · 2026-10-22
+- **New logos:** Hound Protocol is a geometric hound over a red slash, with a heavy HOUND / PROTOCOL wordmark. Joint Operations is a unit badge with a sixteen-point star around the host diamond, plus a wordmark with the star inside the O. Full color, one color and light versions, avatars, favicon and link banner. Drawn in code (`tools/brand/logos.py`); the old emblem is retired.
+- **Accountability** ([HP-POL-009](docs/guides/HP-POL-009-accountability.md), [ADR 0016](docs/decisions/0016-accountability.md)): infractions for careless work (contributor track) and duty breaches (role holders, leads included). Three active infractions suspend; five clean deliveries clear one; appeals any time. Never for speed or inactivity: no time limits.
+- **Enforcement:** `tools/infractions.py` keeps the record, a **Contributor standing** check blocks merges by suspended contributors, `/claim` refuses them with the appeal link, and a **Broken main** issue opens when checks fail on main (not an infraction by itself). Procedure: [HP-SOP-011](docs/guides/HP-SOP-011-infractions-and-appeals.md). New Appeal issue template.
+- **Team page:** Seats and Wanted are one **Positions** board, grouped by department, with filled slots shown. The "no authority" tags are gone.
+- **Hound Protocol description:** a community-focused organization that builds ambitious projects, one of them being Joint Operations.
+
 ## v0.0.12 · Handbook expansion · 2026-10-22
 Nine new handbook documents, so everything in the docs has a practical guide (31 in total):
 

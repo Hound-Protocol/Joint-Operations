@@ -20,7 +20,7 @@ OUT = ROOT / "site/data/guides.json"
 DOCS = ROOT / "site/data/docs.json"
 TYPES = {"POL": "Policy", "SOP": "Procedure", "GDE": "Guide"}
 AUDIENCE = {  # who the website lists each document for
-    "HP-GDE-001": "Players", "HP-GDE-002": "Players", "HP-GDE-007": "Players", "HP-GDE-008": "Everyone", "HP-GDE-009": "Contributors", "HP-GDE-010": "Contributors", "HP-GDE-011": "Everyone", "HP-GDE-012": "Contributors", "HP-GDE-013": "Contributors", "HP-POL-008": "Everyone", "HP-SOP-010": "Administration",
+    "HP-GDE-001": "Players", "HP-GDE-002": "Players", "HP-GDE-007": "Players", "HP-GDE-008": "Everyone", "HP-GDE-009": "Contributors", "HP-GDE-010": "Contributors", "HP-GDE-011": "Everyone", "HP-GDE-012": "Contributors", "HP-GDE-013": "Contributors", "HP-POL-008": "Everyone", "HP-POL-009": "Everyone", "HP-SOP-011": "Administration", "HP-SOP-010": "Administration",
     "HP-GDE-003": "Contributors", "HP-GDE-005": "Contributors", "HP-POL-001": "Contributors", "HP-POL-002": "Contributors",
     "HP-POL-003": "Contributors", "HP-SOP-001": "Contributors", "HP-SOP-002": "Contributors",
     "HP-GDE-004": "Quality", "HP-POL-006": "Quality", "HP-SOP-003": "Quality", "HP-SOP-005": "Quality",
@@ -50,6 +50,8 @@ SUMMARY = {  # one line for the Guides page
     "HP-GDE-013": "How to write clean-room research notes: header, structure, evidence and sources.",
     "HP-POL-008": "Our licenses, credit for people and AI agents, third-party material and forks.",
     "HP-SOP-010": "Turning planned contracts into GitHub issues when contracts open at 0.1.",
+    "HP-POL-009": "Infractions for careless work and duty breaches, three suspend, clearing by good work, appeals. No time limits.",
+    "HP-SOP-011": "Handling broken main, issuing infractions fairly, recording clean work and deciding appeals.",
     "HP-SOP-001": "A contract from draft to signed record: publish, claim, deliver, review, record.",
     "HP-SOP-002": "Opening, checking, reviewing and merging pull requests.",
     "HP-SOP-003": "Version numbers, changelog, tags and GitHub releases.",
