@@ -46,7 +46,8 @@ def inline(text, base):
 
 
 def markdown(md, base):
-    lines, out, para, i = md.replace("\r\n", "\n").split("\n"), [], [], 0
+    lines = [l for l in md.replace("\r\n", "\n").split("\n") if not re.match(r"^\s*</?[a-z][^>]*>", l, re.I)]
+    out, para, i = [], [], 0
 
     def flush():
         if para:
@@ -99,7 +100,7 @@ def markdown(md, base):
 def description(md):
     for line in md.split("\n"):
         s = line.strip()
-        if s and not s.startswith(("#", "|", "-", "*", "`", ">")) and not s.lower().startswith(("status:", "author:")):
+        if s and not s.startswith(("#", "|", "-", "*", "`", ">", "<")) and not s.lower().startswith(("status:", "author:", "code:")):
             return re.sub(r"[*`\[\]]|\(http[^)]*\)", "", s)[:180]
     return f"{config['project']} documentation"
 

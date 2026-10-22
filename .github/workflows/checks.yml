@@ -22,6 +22,10 @@ jobs:
         run: python3 tools/build_js.py --check
       - name: Check site script syntax
         run: node -e "new Function(require('fs').readFileSync('site/assets/js/app.js','utf8'))"
+      - name: Handbook index is generated from docs/guides
+        run: python3 tools/guides_index.py --check
+      - name: Contract specs are generated from the data
+        run: python3 tools/contracts_md.py --check
       - name: Check relative links in docs
         run: python3 tools/check_links.py
       - name: Docs library entries exist

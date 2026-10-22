@@ -8,6 +8,7 @@
     { id: "team", title: "Team", desc: "The people behind Hound Protocol", tab: "Team", tabOnly: true },
     { id: "mods", title: "Mods", desc: "Compatible mods and mods with known issues", tab: "Mods" },
     { id: "devlog", title: "Dev Log", desc: "Recent changes, decisions and releases", tab: "Dev Log" },
+    { id: "guides", title: "Guides", desc: "Handbook for players, contributors, quality and admins", tab: "Guides" },
     { id: "docs", title: "Documentation", desc: "Library of project documentation", tab: "Docs" },
     { id: "options", title: "Options", desc: "Interface and data settings", tab: "Options" }
   ];
@@ -27,8 +28,8 @@
         return n2 ? plural(n2, "entry", "entries") : "Dev log";
       case "download":
         if (data.releases === undefined) return "Checking releases";
-        if (data.releases && data.releases.length) return "Latest " + (data.releases[0].tag_name || "") + " · " + fmtDate(data.releases[0].published_at);
-        return buildLabel() + " · " + cfg.stage + " · No public release yet";
+        if (playableReleases().length) return "Latest " + (playableReleases()[0].tag_name || "") + " · " + fmtDate(playableReleases()[0].published_at);
+        return buildLabel() + " · " + cfg.stage + " · No playable release yet";
       case "sessions":
         var n = data.servers ? (data.servers.servers || []).length : 0;
         return n ? plural(n, "session") + " listed" : "No sessions online";

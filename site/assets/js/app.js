@@ -10,6 +10,7 @@
  *   data/devlog.json     manual dev log entries
  *   data/records.json    signed contributor records (tools/records.py), checked on the Verify page
  *   data/records-key.json public keys for those records
+ *   data/guides.json     handbook index (tools/guides_index.py), shown on the Guides page
  *   GitHub API           releases, contract issues and commits, read live
  *
  * Hooks (for the future session service or tools)
@@ -110,6 +111,9 @@
     return repoUrl("/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body) + (labels ? "&labels=" + encodeURIComponent(labels) : ""));
   }
 
+  // Playable releases start at 0.1; 0.0.x are foundation releases (docs/guides/HP-SOP-003)
+  function isPlayable(r) { var m = /^v?(\d+)\.(\d+)/.exec((r && r.tag_name) || ""); return !!m && (+m[1] > 0 || +m[2] >= 1); }
+  function playableReleases() { return (data.releases || []).filter(isPlayable); }
   function loadReleases() {
     if (data.releases !== undefined) return Promise.resolve(data.releases);
     return gh("/repos/" + cfg.repo + "/releases?per_page=10").then(function (list) {
@@ -118,7 +122,6 @@
     }, function () { data.releases = null; return null; });
   }
 
-  var SIZE_PTS = { S: 1, M: 3, L: 5 };
   function loadContracts() {
     if (data.issues !== undefined) return Promise.resolve(data.issues);
     return gh("/repos/" + cfg.repo + "/issues?labels=contract&state=all&per_page=100").then(function (list) {
@@ -127,16 +130,16 @@
       issues.forEach(function (i) { byNum[i.number] = i; });
       data.issues = issues.map(function (i) {
         var labels = (i.labels || []).map(function (l) { return typeof l === "string" ? l : l.name; });
-        var mod = "", size = "";
+        var mod = "", diff = "";
         labels.forEach(function (l) {
           if (l.indexOf("module:") === 0) mod = l.slice(7);
-          if (l.indexOf("size:") === 0) size = l.slice(5).toUpperCase();
+          if (l.indexOf("difficulty:") === 0) diff = l.slice(11).toLowerCase();
         });
         var deps = [], m = /depends on\s+((?:#\d+[\s,]*(?:and\s+)?)+)/i.exec(i.body || "");
         if (m) m[1].replace(/#(\d+)/g, function (_, n) { deps.push(+n); });
         var st = i.state === "closed" ? "done" : labels.indexOf("status:review") > -1 ? "review" : (i.assignees && i.assignees.length) ? "claimed" : "open";
         return {
-          id: "#" + i.number, num: i.number, title: i.title, module: mod, size: size, skills: "",
+          id: "#" + i.number, num: i.number, title: i.title, module: mod, difficulty: diff, skills: "",
           depends: deps.map(function (n) { return "#" + n; }),
           blocked: deps.some(function (n) { return byNum[n] && byNum[n].state !== "closed"; }) || labels.indexOf("blocked") > -1,
           status: st, by: (i.assignees || []).map(function (a) { return a.login; }), url: i.html_url, live: true
@@ -215,7 +218,8 @@
     return out;
   }
   function markdown(md, basePath) {
-    var lines = String(md).replace(/\r\n?/g, "\n").split("\n"), html = "", i = 0, para = [];
+    // Raw HTML lines (the README's centered banner and badges) are skipped: this renderer never emits raw HTML
+    var lines = String(md).replace(/\r\n?/g, "\n").split("\n").filter(function (l) { return !/^\s*<\/?[a-z][^>]*>/i.test(l); }), html = "", i = 0, para = [];
     function flush() { if (para.length) { html += "<p>" + inline(para.join(" "), basePath) + "</p>"; para = []; } }
     function cells(l) { return l.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map(function (c) { return c.trim(); }); }
     while (i < lines.length) {
@@ -272,6 +276,7 @@
     { id: "team", title: "Team", desc: "The people behind Hound Protocol", tab: "Team", tabOnly: true },
     { id: "mods", title: "Mods", desc: "Compatible mods and mods with known issues", tab: "Mods" },
     { id: "devlog", title: "Dev Log", desc: "Recent changes, decisions and releases", tab: "Dev Log" },
+    { id: "guides", title: "Guides", desc: "Handbook for players, contributors, quality and admins", tab: "Guides" },
     { id: "docs", title: "Documentation", desc: "Library of project documentation", tab: "Docs" },
     { id: "options", title: "Options", desc: "Interface and data settings", tab: "Options" }
   ];
@@ -291,8 +296,8 @@
         return n2 ? plural(n2, "entry", "entries") : "Dev log";
       case "download":
         if (data.releases === undefined) return "Checking releases";
-        if (data.releases && data.releases.length) return "Latest " + (data.releases[0].tag_name || "") + " · " + fmtDate(data.releases[0].published_at);
-        return buildLabel() + " · " + cfg.stage + " · No public release yet";
+        if (playableReleases().length) return "Latest " + (playableReleases()[0].tag_name || "") + " · " + fmtDate(playableReleases()[0].published_at);
+        return buildLabel() + " · " + cfg.stage + " · No playable release yet";
       case "sessions":
         var n = data.servers ? (data.servers.servers || []).length : 0;
         return n ? plural(n, "session") + " listed" : "No sessions online";
@@ -541,7 +546,7 @@
     var out = [];
     ((data.devlog && data.devlog.entries) || []).forEach(function (e) { out.push(Object.assign({ kind: "note" }, e)); });
     (data.commits || []).forEach(function (c) { out.push(Object.assign({ kind: "commit" }, c)); });
-    (data.releases || []).forEach(function (r) { out.push({ kind: "release", tag: "Release", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url }); });
+    (data.releases || []).forEach(function (r) { out.push({ kind: "release", tag: isPlayable(r) ? "Release" : "Foundation", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url }); });
     return out.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
   }
   function viewDevlog() {
@@ -573,7 +578,7 @@
     v.innerHTML = shell("Releases", "Download", loading("Checking releases on GitHub"));
     loadReleases().then(function (rel) {
       if (currentView !== "download") return;
-      var latest = rel && rel[0], body = "", pre = "";
+      var latest = playableReleases()[0], body = "", pre = "";
       body += '<div class="cols">';
       if (latest) {
         body += '<div class="panel"><div class="label">Latest release</div>' +
@@ -675,8 +680,12 @@
 
   /* Contribute */
   var MODULES = { launcher: "Launcher / Injector", hooks: "Game Hooks", session: "Session / Host", net: "Networking", modapi: "Mod API", lobby: "Lobby App", web: "Web", docs: "Docs", testing: "Testing", legal: "Legal" };
-  var RANKS = [["Recruit", 0, "Claim small contracts"], ["Operative", 3, "Claim medium contracts, review small ones"], ["Specialist", 10, "Claim large contracts, review medium ones, own a module area"], ["Squad Lead", 25, "Approve contracts, vote on priorities"], ["Commander", 50, "Seat holder candidate, approve releases"]];
-  var conState = { module: "all", status: "all", size: "all", q: "" };
+  // Contractor ranks, Mother Base style, by completed contracts (docs/departments.md)
+  var RANKS = [["—", 0, "Claim Basic contracts"], ["A", 1, "Contributor wall, contractor role on Discord"], ["A+", 3, "Claim Standard contracts"], ["A++", 6, "Review Basic contracts with Quality"], ["S", 10, "Claim Advanced contracts, review Standard contracts"], ["S+", 20, "Claim Expert contracts, invitation into a department, own a module area"], ["S++", 35, "Vote on priorities, seat candidate"]];
+  // Contract difficulty: who may claim it (docs/departments.md)
+  var DIFF = { basic: ["Basic", "Anyone"], standard: ["Standard", "Rank A+"], advanced: ["Advanced", "Rank S"], expert: ["Expert", "Rank S+"], core: ["Core", "Development Dept"] };
+  var DIFF_ORDER = ["basic", "standard", "advanced", "expert", "core"];
+  var conState = { module: "all", status: "all", diff: "all", q: "" };
   function contractList() {
     if (data.issues && data.issues.length) return data.issues;
     var p = data.contracts && data.contracts.contracts;
@@ -696,7 +705,7 @@
     var shown = list.filter(function (c) {
       if (conState.module !== "all" && c.module !== conState.module) return false;
       if (conState.status !== "all" && c.status !== conState.status) return false;
-      if (conState.size !== "all" && c.size !== conState.size) return false;
+      if (conState.diff !== "all" && c.difficulty !== conState.diff) return false;
       if (conState.q && (c.id + " " + c.title + " " + (c.skills || "") + " " + (c.goal || "")).toLowerCase().indexOf(conState.q.toLowerCase()) < 0) return false;
       return true;
     });
@@ -704,10 +713,11 @@
       var label = { planned: "Planned", open: c.blocked ? "Blocked" : "Open", claimed: "Claimed", review: "In review", done: "Done" }[c.status];
       var action = "";
       if (c.live) action = '<a class="btn small' + (c.status === "open" && !c.blocked ? " primary" : "") + '" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">' + (c.status === "open" && !c.blocked ? "Claim on GitHub" : "View on GitHub") + "</a>";
-      else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nSize: " + c.size + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",size:" + c.size)) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
+      else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nDifficulty: " + ((DIFF[c.difficulty] || [c.difficulty])[0]) + (c.effort ? "\nEffort: " + c.effort : "") + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",difficulty:" + c.difficulty)) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
       return '<article class="card" style="--i:' + n + '"><div class="id">' + esc(c.id) + '</div><h3>' + esc(c.title) + "</h3><div>" +
         (c.module ? '<span class="pill">' + esc(MODULES[c.module] || c.module) + "</span>" : "") +
-        (c.size ? '<span class="pill">' + esc(c.size) + " · " + (SIZE_PTS[c.size] || 0) + " pts</span>" : "") +
+        (c.difficulty ? '<span class="pill diff ' + esc(c.difficulty) + '" title="' + esc(DIFF[c.difficulty] ? "Who can claim it: " + DIFF[c.difficulty][1] : "") + '">' + esc((DIFF[c.difficulty] || [c.difficulty])[0]) + "</span>" : "") +
+        (c.effort ? '<span class="pill">' + esc(c.effort) + "</span>" : "") +
         (c.skills ? '<span class="pill">' + esc(c.skills) + "</span>" : "") + "</div>" +
         '<div class="status ' + (c.blocked && c.status === "open" ? "claimed" : c.status) + '">' + label + (c.by && c.by.length ? " · " + esc(c.by.join(", ")) : "") + "</div>" +
         (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">Depends on ' + esc(c.depends.join(", ")) + "</div>" : "") +
@@ -724,24 +734,24 @@
     }).filter(function (m) { return m.n; });
     // Leaderboard from completed live contracts
     var pts = {};
-    list.forEach(function (c) { if (c.status === "done") (c.by || []).forEach(function (u) { pts[u] = pts[u] || { p: 0, n: 0 }; pts[u].p += SIZE_PTS[c.size] || 0; pts[u].n++; }); });
-    var ops = Object.keys(pts).sort(function (a, b) { return pts[b].p - pts[a].p; });
+    list.forEach(function (c) { if (c.status === "done") (c.by || []).forEach(function (u) { pts[u] = pts[u] || { n: 0 }; pts[u].n++; }); });
+    var ops = Object.keys(pts).sort(function (a, b) { return pts[b].n - pts[a].n || a.localeCompare(b); });
     var opt = function (val, cur, txt) { return '<option value="' + val + '"' + (cur === val ? " selected" : "") + ">" + txt + "</option>"; };
     $("#vb").innerHTML =
-      '<div class="tabs" role="tablist">' + [["board", "Contract board"], ["how", "How it works"], ["ranks", "Ranks and operatives"]].map(function (t) {
+      '<div class="tabs" role="tablist">' + [["board", "Contract board"], ["how", "How it works"], ["ranks", "Contractor ranks"]].map(function (t) {
         return '<button role="tab" data-tab="' + t[0] + '" aria-selected="' + (conTab === t[0]) + '">' + t[1] + "</button>";
       }).join("") + "</div>" +
       '<div id="ctab"></div>';
     var tabHtml = {
       board:
-        (live ? "" : '<p class="note">These are the planned Phase 1 contracts. They are not on GitHub yet. Use "Open as issue" to publish one, with the labels described in Contributing.</p>') +
+        (live ? "" : '<p class="note">This is the plan. Version 0.1 is being built by the project lead, and contracts open to the Contractor Department after 0.1. Testers are welcome now: join the Discord.</p>') +
         '<div class="stats">' + (live
           ? '<div class="stat"><b>' + counts.open + '</b><span>Open</span></div><div class="stat"><b>' + counts.claimed + '</b><span>Claimed</span></div><div class="stat"><b>' + counts.review + '</b><span>In review</span></div><div class="stat"><b>' + counts.done + "</b><span>Done</span></div>"
           : '<div class="stat"><b>' + counts.planned + '</b><span>Planned</span></div><div class="stat"><b>' + mods.length + '</b><span>Modules</span></div><div class="stat"><b>' + counts.done + '</b><span>Done</span></div>') + "</div>" +
         '<div class="toolbar"><input class="field grow" id="cq" type="search" placeholder="Search contracts" value="' + esc(conState.q) + '" aria-label="Search contracts">' +
         '<select class="field" id="cm" aria-label="Module">' + opt("all", conState.module, "All modules") + Object.keys(MODULES).map(function (k) { return opt(k, conState.module, MODULES[k]); }).join("") + "</select>" +
         '<select class="field" id="cs" aria-label="Status">' + opt("all", conState.status, "All statuses") + (live ? opt("open", conState.status, "Open") + opt("claimed", conState.status, "Claimed") + opt("review", conState.status, "In review") + opt("done", conState.status, "Done") : opt("planned", conState.status, "Planned")) + "</select>" +
-        '<select class="field" id="cz" aria-label="Size">' + opt("all", conState.size, "All sizes") + opt("S", conState.size, "Small") + opt("M", conState.size, "Medium") + opt("L", conState.size, "Large") + "</select></div>" +
+        '<select class="field" id="cz" aria-label="Difficulty">' + opt("all", conState.diff, "All difficulties") + DIFF_ORDER.map(function (k) { return opt(k, conState.diff, DIFF[k][0]); }).join("") + "</select></div>" +
         (board ? '<div class="cards' + (cardsAnim ? " anim" : "") + '">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
         '<p class="source">Source: ' + (live ? "GitHub issues labeled contract, live" : data.issues === null ? "data/contracts.json · GitHub could not be reached" : "data/contracts.json") + "</p>",
       how:
@@ -754,12 +764,14 @@
           return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
         }).join("") + "</div>",
       ranks:
-        '<div class="tw"><table><tr><th>Rank</th><th>Points</th><th>Unlocks</th></tr>' + RANKS.map(function (r) { return "<tr><td>" + r[0] + '</td><td class="num">' + r[1] + "</td><td>" + r[2] + "</td></tr>"; }).join("") + "</table></div>" +
-        '<p class="sub" style="margin-top:10px">Points per completed contract: small 1, medium 3, large 5. Each completed contract also earns a <a href="#/verify">signed contributor record</a>.</p>' +
-        '<div class="label">Operatives</div>' +
-        (ops.length ? '<div class="tw"><table><tr><th>Operative</th><th>Contracts</th><th>Points</th><th>Rank</th></tr>' + ops.map(function (u) {
-          return '<tr><td><a href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u) + '</a></td><td class="num">' + pts[u].n + '</td><td class="num">' + pts[u].p + "</td><td>" + rankFor(pts[u].p)[0] + "</td></tr>";
-        }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Operatives appear here when contracts are closed on GitHub.</small></div>')
+        '<p class="sub">Contractors are ranked like Mother Base staff, by the number of completed contracts. Each one also earns a <a href="#/verify">signed contributor record</a>.</p>' +
+        '<div class="ranks">' + RANKS.slice(1).map(function (r, k) { return '<div class="rank" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " contract" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + esc(r[2]) + "</span></div>"; }).join("") + "</div>" +
+        '<div class="label">Contract difficulty</div>' +
+        '<div class="tw"><table><tr><th>Difficulty</th><th>Who can claim it</th></tr>' + DIFF_ORDER.map(function (k) { return '<tr><td><span class="pill diff ' + k + '">' + DIFF[k][0] + "</span></td><td>" + DIFF[k][1] + "</td></tr>"; }).join("") + "</table></div>" +
+        '<div class="label">Contractors</div>' +
+        (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Rank</th></tr>' + ops.map(function (u) {
+          return '<tr><td><a href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u) + '</a></td><td class="num">' + pts[u].n + "</td><td>" + esc(rankFor(pts[u].n)[0]) + "</td></tr>";
+        }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Contractors appear here when contracts are closed on GitHub.</small></div>')
     };
     $("#ctab").innerHTML = tabHtml[conTab];
     cardsAnim = false;
@@ -768,7 +780,7 @@
       $("#cq").addEventListener("input", function (e) { conState.q = e.target.value; var p = e.target.selectionStart; drawContribute(); var n = $("#cq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ } });
       $("#cm").addEventListener("change", function (e) { conState.module = e.target.value; drawContribute(); });
       $("#cs").addEventListener("change", function (e) { conState.status = e.target.value; drawContribute(); });
-      $("#cz").addEventListener("change", function (e) { conState.size = e.target.value; drawContribute(); });
+      $("#cz").addEventListener("change", function (e) { conState.diff = e.target.value; drawContribute(); });
     }
   }
   var conTab = "board", cardsAnim = true;
@@ -925,7 +937,7 @@
     v.innerHTML = shell("Hound Protocol", "Team", loading("Loading team"));
     loadLocal("team").then(function (t) {
       if (currentView !== "team") return;
-      t = t || { members: [], seats: [], roles: [] };
+      t = t || { members: [], seats: [], roles: [], departments: [] };
       var still = !opts.motion;
       $("#vb").innerHTML = '<div class="bf">' +
         '<section class="bf-sec team-members">' + t.members.map(function (m) {
@@ -934,6 +946,12 @@
             '<img src="' + esc(still && m.still ? m.still : m.image) + '" alt="' + esc(m.name) + '" width="168" height="168" loading="lazy"></picture><i class="pc tl"></i><i class="pc br"></i></div>' +
             '<div><div class="m-role">' + esc(m.role) + '</div><h3 class="m-name">' + esc(m.name) + '</h3><p>' + esc(m.bio) + "</p></div></article>";
         }).join("") + "</section>" +
+        ((t.departments || []).length ? '<section class="bf-sec"><div class="label">Departments</div><div class="depts">' + t.departments.map(function (d, k) {
+          return '<article class="dept" style="--k:' + k + '"><div class="d-head"><span class="d-code">' + esc(d.code) + '</span><h3>' + esc(d.name) + '</h3></div><p>' + esc(d.job) + "</p>" +
+            '<ul class="chips small">' + (d.units || []).map(function (u) { return "<li>" + esc(u) + "</li>"; }).join("") + "</ul>" +
+            '<div class="d-who">' + ((d.members || []).length ? esc(d.members.join(" · ")) : "No members yet") + "</div>" +
+            (d.open ? '<span class="pill warn">' + esc(d.open) + "</span>" : "") + "</article>";
+        }).join("") + '</div><p class="source">Organized like Mother Base. See <a href="#/docs/departments">departments and ranks</a>.</p></section>' : "") +
         '<section class="bf-sec"><div class="label">Seats</div><div class="seats">' + t.seats.map(function (s, k) {
           var open = Math.max(0, s.need - s.holders.length);
           return '<div class="seat" style="--k:' + k + '"><div class="s-name">' + esc(s.seat) + '</div><div class="s-who">' + (s.holders.length ? esc(s.holders.join(", ")) : "Vacant") + '</div><span class="pill ' + (open ? "warn" : "ok") + '">' + (open ? open + " open" : "Filled") + "</span></div>";
@@ -971,7 +989,7 @@
     return '<article class="card rec" style="--i:' + (n || 0) + '" data-rid="' + esc(r.id) + '"><div class="id">' + esc(r.id) + " · " + esc(fmtDate(r.date)) + "</div>" +
       "<h3>" + esc(r.contract) + " · " + esc(r.title) + "</h3><div>" +
       '<span class="pill">' + esc(r.name ? r.name + " (" + r.login + ")" : r.login) + "</span>" +
-      '<span class="pill">' + esc(r.size) + " · " + esc(r.points) + " pts</span></div>" +
+      '<span class="pill">' + esc((DIFF[r.difficulty] || [r.difficulty])[0]) + "</span></div>" +
       '<div class="vs">' + vBadge("wait") + "</div>" +
       '<div class="actions"><a class="btn small" href="#/verify/' + encodeURIComponent(r.id) + '">Details</a>' +
       (r.pr ? '<a class="btn small" href="' + esc(repoUrl("/pull/" + r.pr)) + '" target="_blank" rel="noopener noreferrer">Pull request</a>' : "") +
@@ -1006,14 +1024,14 @@
       }
       // Contributor wall
       var by = {};
-      recs.forEach(function (r) { var u = by[r.login] = by[r.login] || { login: r.login, name: r.name, p: 0, n: 0 }; u.p += r.points || 0; u.n++; if (r.name) u.name = r.name; });
-      var wall = Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return b.p - a.p || a.login.localeCompare(b.login); });
+      recs.forEach(function (r) { var u = by[r.login] = by[r.login] || { login: r.login, name: r.name, n: 0 }; u.n++; if (r.name) u.name = r.name; });
+      var wall = Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return b.n - a.n || a.login.localeCompare(b.login); });
       $("#vb").innerHTML =
         '<p class="sub">Every completed contract earns a contributor record, signed with the project\'s key. This page checks each signature in your browser. Hand-written and AI-assisted work earn the same record.</p>' +
         '<div class="label">Contributor wall</div>' +
         (wall.length ? '<div class="wall">' + wall.map(function (u, n) {
-          var init = (u.name || u.login).replace(/[^A-Za-z0-9]/g, "").slice(0, 2).toUpperCase();
-          return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(init) + "</span><b>" + esc(u.name || u.login) + "</b><small>" + esc(rankFor(u.p)[0]) + " · " + u.p + (u.p === 1 ? " pt · " : " pts · ") + u.n + " contract" + (u.n === 1 ? "" : "s") + "</small></a>";
+          var grade = rankFor(u.n)[0];
+          return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(grade) + "</span><b>" + esc(u.name || u.login) + "</b><small>Rank " + esc(grade) + " · " + u.n + " contract" + (u.n === 1 ? "" : "s") + "</small></a>";
         }).join("") + "</div>" : '<div class="empty">No records yet<small>The wall fills as contracts are completed and signed.</small></div>') +
         '<div class="label">Records</div>' +
         (recs.length ? '<div class="cards">' + recs.slice().reverse().map(recordCard).join("") + "</div>" : "") +
@@ -1037,8 +1055,73 @@
     });
   }
 
+  /* Guides: the handbook (guides, policies, procedures) as A4 documents */
+  var GUIDE_AUD = ["All", "Players", "Contributors", "Quality", "Administration"];
+  var guideAud = "All";
+  function viewGuides(id) {
+    var v = $("#view");
+    v.innerHTML = shell("Handbook", "Guides", loading("Loading the handbook"));
+    Promise.all([loadLocal("guides"), loadLocal("docs")]).then(function (res) {
+      if (currentView !== "guides") return;
+      var list = (res[0] && res[0].guides) || [];
+      if (id) return drawGuide(list, id);
+      drawGuideList(list);
+    });
+  }
+  function drawGuideList(list) {
+    var shown = list.filter(function (g) { return guideAud === "All" || g.audience === guideAud; });
+    var byType = { Guide: [], Policy: [], Procedure: [] };
+    shown.forEach(function (g) { (byType[g.type] = byType[g.type] || []).push(g); });
+    var section = function (type, label, note) {
+      var l = byType[type] || [];
+      if (!l.length) return "";
+      return '<div class="label">' + label + '</div><p class="sub">' + note + '</p><div class="sheets">' + l.map(function (g, n) {
+        return '<a class="mini" style="--i:' + n + '" href="#/guides/' + esc(g.id) + '"><span class="m-top"><b>' + esc(g.code) + "</b><i>v" + esc(g.version) + "</i></span>" +
+          '<span class="m-title">' + esc(g.title) + '</span><span class="m-sum">' + esc(g.summary) + "</span>" +
+          '<span class="m-foot">' + esc(g.type) + " · " + esc(g.owner) + " Dept</span></a>";
+      }).join("") + "</div>";
+    };
+    $("#vb").innerHTML =
+      '<p class="sub">Everything you need to play, contribute, test and run Hound Protocol, written down. Every document is versioned, owned by a department and printable on A4.</p>' +
+      '<div class="tabs" role="tablist">' + GUIDE_AUD.map(function (a) { return '<button role="tab" data-aud="' + a + '" aria-selected="' + (guideAud === a) + '">' + a + "</button>"; }).join("") + "</div>" +
+      section("Guide", "Guides", "How-to help for each audience.") +
+      section("Policy", "Policies", "Rules everyone follows.") +
+      section("Procedure", "Standard operating procedures", "Step by step, the same way every time.") +
+      (shown.length ? "" : '<div class="empty">No documents for this audience yet</div>') +
+      '<p class="source">Source: docs/guides/ · index generated by tools/guides_index.py</p>';
+    $$("[data-aud]").forEach(function (b) { b.addEventListener("click", function () { guideAud = b.dataset.aud; drawGuideList(list); }); });
+  }
+  function drawGuide(list, id) {
+    var g = list.filter(function (x) { return x.id === id; })[0];
+    if (!g) { $("#vb").innerHTML = '<div class="empty">No document ' + esc(id) + '<small><a href="#/guides">Back to the handbook</a></small></div>'; return; }
+    $("#vb").innerHTML = loading("Opening " + g.code);
+    loadDoc({ path: g.path }).then(function (src) {
+      if (currentView !== "guides") return;
+      // The sheet header carries the title and metadata, so drop them from the body
+      var body = src.replace(/^# .*\n/, "").replace(/^Code: .*\n/, "");
+      var html = markdown(body, g.path).replace(/href="#\/docs\/(hp-(?:pol|sop|gde)-\d{3})"/g, 'href="#/guides/$1"');
+      var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guides/" + g.id;
+      $("#vb").innerHTML =
+        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">All documents</a><button class="btn small" id="gprint">Print or save as PDF</button>' +
+        '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
+        '<article class="sheet" aria-label="' + esc(g.code + " " + g.title) + '">' +
+          '<header class="sh-head"><div class="sh-org"><img src="assets/img/emblem.svg" alt="" width="34" height="34"><span><b>Hound Protocol</b><i>MGSV: Joint Operations</i></span></div>' +
+          '<div class="sh-code"><b>' + esc(g.code) + "</b><i>" + esc(g.type) + "</i></div></header>" +
+          '<h1 class="sh-title">' + esc(g.title) + "</h1>" +
+          '<dl class="sh-meta"><div><dt>Version</dt><dd>' + esc(g.version) + "</dd></div><div><dt>Effective</dt><dd>" + esc(g.effective) + "</dd></div>" +
+          "<div><dt>Owner</dt><dd>" + esc(g.owner) + " Dept</dd></div><div><dt>For</dt><dd>" + esc(g.for) + "</dd></div><div><dt>Classification</dt><dd>Public</dd></div></dl>" +
+          '<div class="sh-body">' + html + "</div>" +
+          '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
+        "</article>";
+      $("#gprint").addEventListener("click", function () { window.print(); });
+      document.title = g.code + " " + g.title + " · " + cfg.project;
+    }, function () {
+      $("#vb").innerHTML = '<div class="empty">Could not load ' + esc(g.code) + '<small><a href="#/guides">Back to the handbook</a></small></div>';
+    });
+  }
+
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");

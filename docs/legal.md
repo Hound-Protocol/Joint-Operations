@@ -36,7 +36,7 @@ Status: DRAFT, pending project lead review. Not legal advice.
 
 ## 8. Donations and funding
 - Donations are intended for website hosting and development.
-- Recommended: no donations before 0.1. Afterwards, use a fiscal host such as Open Collective Europe, connected to GitHub Sponsors. See [funding research](../research/funding-and-distribution.md).
+- Decided: no donations before 0.1 ([ADR 0010](decisions/0010-funding.md)). Afterwards, use a fiscal host such as Open Collective Europe, connected to GitHub Sponsors. See [funding research](../research/funding-and-distribution.md).
 - Before accepting donations: confirm the platform's terms, tax obligations, and how funds are reported.
 - Publish where money goes, and how much, in docs/funding.md.
 - Donations do not change decision-making authority in the project.

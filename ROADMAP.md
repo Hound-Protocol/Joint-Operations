@@ -11,7 +11,8 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Docs reviewed and pull request #1 merged
 - [ ] License chosen (ADR 0005)
 - [ ] Steam App ID position recorded (legal.md)
-- [ ] Donation and hosting policy decided (legal.md)
+- [x] Donation policy decided: donations open at 0.1 (ADR 0010)
+- [x] Departments and contractor ranks set up (ADR 0009)
 - [ ] Critical seats filled, human technical delegate appointed (governance.md)
 - [ ] Proton test environment defined
 - [x] Discord structure set up (see docs/discord.md)

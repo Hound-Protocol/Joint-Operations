@@ -1,7 +1,11 @@
   /* Contribute */
   var MODULES = { launcher: "Launcher / Injector", hooks: "Game Hooks", session: "Session / Host", net: "Networking", modapi: "Mod API", lobby: "Lobby App", web: "Web", docs: "Docs", testing: "Testing", legal: "Legal" };
-  var RANKS = [["Recruit", 0, "Claim small contracts"], ["Operative", 3, "Claim medium contracts, review small ones"], ["Specialist", 10, "Claim large contracts, review medium ones, own a module area"], ["Squad Lead", 25, "Approve contracts, vote on priorities"], ["Commander", 50, "Seat holder candidate, approve releases"]];
-  var conState = { module: "all", status: "all", size: "all", q: "" };
+  // Contractor ranks, Mother Base style, by completed contracts (docs/departments.md)
+  var RANKS = [["—", 0, "Claim Basic contracts"], ["A", 1, "Contributor wall, contractor role on Discord"], ["A+", 3, "Claim Standard contracts"], ["A++", 6, "Review Basic contracts with Quality"], ["S", 10, "Claim Advanced contracts, review Standard contracts"], ["S+", 20, "Claim Expert contracts, invitation into a department, own a module area"], ["S++", 35, "Vote on priorities, seat candidate"]];
+  // Contract difficulty: who may claim it (docs/departments.md)
+  var DIFF = { basic: ["Basic", "Anyone"], standard: ["Standard", "Rank A+"], advanced: ["Advanced", "Rank S"], expert: ["Expert", "Rank S+"], core: ["Core", "Development Dept"] };
+  var DIFF_ORDER = ["basic", "standard", "advanced", "expert", "core"];
+  var conState = { module: "all", status: "all", diff: "all", q: "" };
   function contractList() {
     if (data.issues && data.issues.length) return data.issues;
     var p = data.contracts && data.contracts.contracts;
@@ -21,7 +25,7 @@
     var shown = list.filter(function (c) {
       if (conState.module !== "all" && c.module !== conState.module) return false;
       if (conState.status !== "all" && c.status !== conState.status) return false;
-      if (conState.size !== "all" && c.size !== conState.size) return false;
+      if (conState.diff !== "all" && c.difficulty !== conState.diff) return false;
       if (conState.q && (c.id + " " + c.title + " " + (c.skills || "") + " " + (c.goal || "")).toLowerCase().indexOf(conState.q.toLowerCase()) < 0) return false;
       return true;
     });
@@ -29,10 +33,11 @@
       var label = { planned: "Planned", open: c.blocked ? "Blocked" : "Open", claimed: "Claimed", review: "In review", done: "Done" }[c.status];
       var action = "";
       if (c.live) action = '<a class="btn small' + (c.status === "open" && !c.blocked ? " primary" : "") + '" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">' + (c.status === "open" && !c.blocked ? "Claim on GitHub" : "View on GitHub") + "</a>";
-      else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nSize: " + c.size + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",size:" + c.size)) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
+      else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nDifficulty: " + ((DIFF[c.difficulty] || [c.difficulty])[0]) + (c.effort ? "\nEffort: " + c.effort : "") + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",difficulty:" + c.difficulty)) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
       return '<article class="card" style="--i:' + n + '"><div class="id">' + esc(c.id) + '</div><h3>' + esc(c.title) + "</h3><div>" +
         (c.module ? '<span class="pill">' + esc(MODULES[c.module] || c.module) + "</span>" : "") +
-        (c.size ? '<span class="pill">' + esc(c.size) + " · " + (SIZE_PTS[c.size] || 0) + " pts</span>" : "") +
+        (c.difficulty ? '<span class="pill diff ' + esc(c.difficulty) + '" title="' + esc(DIFF[c.difficulty] ? "Who can claim it: " + DIFF[c.difficulty][1] : "") + '">' + esc((DIFF[c.difficulty] || [c.difficulty])[0]) + "</span>" : "") +
+        (c.effort ? '<span class="pill">' + esc(c.effort) + "</span>" : "") +
         (c.skills ? '<span class="pill">' + esc(c.skills) + "</span>" : "") + "</div>" +
         '<div class="status ' + (c.blocked && c.status === "open" ? "claimed" : c.status) + '">' + label + (c.by && c.by.length ? " · " + esc(c.by.join(", ")) : "") + "</div>" +
         (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">Depends on ' + esc(c.depends.join(", ")) + "</div>" : "") +
@@ -49,24 +54,24 @@
     }).filter(function (m) { return m.n; });
     // Leaderboard from completed live contracts
     var pts = {};
-    list.forEach(function (c) { if (c.status === "done") (c.by || []).forEach(function (u) { pts[u] = pts[u] || { p: 0, n: 0 }; pts[u].p += SIZE_PTS[c.size] || 0; pts[u].n++; }); });
-    var ops = Object.keys(pts).sort(function (a, b) { return pts[b].p - pts[a].p; });
+    list.forEach(function (c) { if (c.status === "done") (c.by || []).forEach(function (u) { pts[u] = pts[u] || { n: 0 }; pts[u].n++; }); });
+    var ops = Object.keys(pts).sort(function (a, b) { return pts[b].n - pts[a].n || a.localeCompare(b); });
     var opt = function (val, cur, txt) { return '<option value="' + val + '"' + (cur === val ? " selected" : "") + ">" + txt + "</option>"; };
     $("#vb").innerHTML =
-      '<div class="tabs" role="tablist">' + [["board", "Contract board"], ["how", "How it works"], ["ranks", "Ranks and operatives"]].map(function (t) {
+      '<div class="tabs" role="tablist">' + [["board", "Contract board"], ["how", "How it works"], ["ranks", "Contractor ranks"]].map(function (t) {
         return '<button role="tab" data-tab="' + t[0] + '" aria-selected="' + (conTab === t[0]) + '">' + t[1] + "</button>";
       }).join("") + "</div>" +
       '<div id="ctab"></div>';
     var tabHtml = {
       board:
-        (live ? "" : '<p class="note">These are the planned Phase 1 contracts. They are not on GitHub yet. Use "Open as issue" to publish one, with the labels described in Contributing.</p>') +
+        (live ? "" : '<p class="note">This is the plan. Version 0.1 is being built by the project lead, and contracts open to the Contractor Department after 0.1. Testers are welcome now: join the Discord.</p>') +
         '<div class="stats">' + (live
           ? '<div class="stat"><b>' + counts.open + '</b><span>Open</span></div><div class="stat"><b>' + counts.claimed + '</b><span>Claimed</span></div><div class="stat"><b>' + counts.review + '</b><span>In review</span></div><div class="stat"><b>' + counts.done + "</b><span>Done</span></div>"
           : '<div class="stat"><b>' + counts.planned + '</b><span>Planned</span></div><div class="stat"><b>' + mods.length + '</b><span>Modules</span></div><div class="stat"><b>' + counts.done + '</b><span>Done</span></div>') + "</div>" +
         '<div class="toolbar"><input class="field grow" id="cq" type="search" placeholder="Search contracts" value="' + esc(conState.q) + '" aria-label="Search contracts">' +
         '<select class="field" id="cm" aria-label="Module">' + opt("all", conState.module, "All modules") + Object.keys(MODULES).map(function (k) { return opt(k, conState.module, MODULES[k]); }).join("") + "</select>" +
         '<select class="field" id="cs" aria-label="Status">' + opt("all", conState.status, "All statuses") + (live ? opt("open", conState.status, "Open") + opt("claimed", conState.status, "Claimed") + opt("review", conState.status, "In review") + opt("done", conState.status, "Done") : opt("planned", conState.status, "Planned")) + "</select>" +
-        '<select class="field" id="cz" aria-label="Size">' + opt("all", conState.size, "All sizes") + opt("S", conState.size, "Small") + opt("M", conState.size, "Medium") + opt("L", conState.size, "Large") + "</select></div>" +
+        '<select class="field" id="cz" aria-label="Difficulty">' + opt("all", conState.diff, "All difficulties") + DIFF_ORDER.map(function (k) { return opt(k, conState.diff, DIFF[k][0]); }).join("") + "</select></div>" +
         (board ? '<div class="cards' + (cardsAnim ? " anim" : "") + '">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
         '<p class="source">Source: ' + (live ? "GitHub issues labeled contract, live" : data.issues === null ? "data/contracts.json · GitHub could not be reached" : "data/contracts.json") + "</p>",
       how:
@@ -79,12 +84,14 @@
           return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
         }).join("") + "</div>",
       ranks:
-        '<div class="tw"><table><tr><th>Rank</th><th>Points</th><th>Unlocks</th></tr>' + RANKS.map(function (r) { return "<tr><td>" + r[0] + '</td><td class="num">' + r[1] + "</td><td>" + r[2] + "</td></tr>"; }).join("") + "</table></div>" +
-        '<p class="sub" style="margin-top:10px">Points per completed contract: small 1, medium 3, large 5. Each completed contract also earns a <a href="#/verify">signed contributor record</a>.</p>' +
-        '<div class="label">Operatives</div>' +
-        (ops.length ? '<div class="tw"><table><tr><th>Operative</th><th>Contracts</th><th>Points</th><th>Rank</th></tr>' + ops.map(function (u) {
-          return '<tr><td><a href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u) + '</a></td><td class="num">' + pts[u].n + '</td><td class="num">' + pts[u].p + "</td><td>" + rankFor(pts[u].p)[0] + "</td></tr>";
-        }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Operatives appear here when contracts are closed on GitHub.</small></div>')
+        '<p class="sub">Contractors are ranked like Mother Base staff, by the number of completed contracts. Each one also earns a <a href="#/verify">signed contributor record</a>.</p>' +
+        '<div class="ranks">' + RANKS.slice(1).map(function (r, k) { return '<div class="rank" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " contract" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + esc(r[2]) + "</span></div>"; }).join("") + "</div>" +
+        '<div class="label">Contract difficulty</div>' +
+        '<div class="tw"><table><tr><th>Difficulty</th><th>Who can claim it</th></tr>' + DIFF_ORDER.map(function (k) { return '<tr><td><span class="pill diff ' + k + '">' + DIFF[k][0] + "</span></td><td>" + DIFF[k][1] + "</td></tr>"; }).join("") + "</table></div>" +
+        '<div class="label">Contractors</div>' +
+        (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Rank</th></tr>' + ops.map(function (u) {
+          return '<tr><td><a href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u) + '</a></td><td class="num">' + pts[u].n + "</td><td>" + esc(rankFor(pts[u].n)[0]) + "</td></tr>";
+        }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Contractors appear here when contracts are closed on GitHub.</small></div>')
     };
     $("#ctab").innerHTML = tabHtml[conTab];
     cardsAnim = false;
@@ -93,7 +100,7 @@
       $("#cq").addEventListener("input", function (e) { conState.q = e.target.value; var p = e.target.selectionStart; drawContribute(); var n = $("#cq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ } });
       $("#cm").addEventListener("change", function (e) { conState.module = e.target.value; drawContribute(); });
       $("#cs").addEventListener("change", function (e) { conState.status = e.target.value; drawContribute(); });
-      $("#cz").addEventListener("change", function (e) { conState.size = e.target.value; drawContribute(); });
+      $("#cz").addEventListener("change", function (e) { conState.diff = e.target.value; drawContribute(); });
     }
   }
   var conTab = "board", cardsAnim = true;

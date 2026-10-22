@@ -4,7 +4,7 @@
     var out = [];
     ((data.devlog && data.devlog.entries) || []).forEach(function (e) { out.push(Object.assign({ kind: "note" }, e)); });
     (data.commits || []).forEach(function (c) { out.push(Object.assign({ kind: "commit" }, c)); });
-    (data.releases || []).forEach(function (r) { out.push({ kind: "release", tag: "Release", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url }); });
+    (data.releases || []).forEach(function (r) { out.push({ kind: "release", tag: isPlayable(r) ? "Release" : "Foundation", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url }); });
     return out.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
   }
   function viewDevlog() {

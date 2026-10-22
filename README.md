@@ -1,51 +1,104 @@
-# MGSV: Joint Operations
+<p align="center">
+  <img src="site/assets/img/og.png" alt="MGSV: Joint Operations by Hound Protocol" width="720">
+</p>
 
-Status: Phase 0, foundation. Not playable yet.
+<h1 align="center">MGSV: Joint Operations</h1>
 
-MGSV: Joint Operations is a multiplayer mod for Metal Gear Solid V: The Phantom Pain (PC). It brings the game's online
-functionality into the single-player world, so up to 16 players share the open world and its missions.
-Venom Snake hosts; the other players join as soldiers from the Mother Base roster.
+<p align="center">
+  <strong>A multiplayer mod for Metal Gear Solid V: The Phantom Pain. Up to 16 players in the open world.</strong><br>
+  Windows and Linux (Proton) · Open source · Unofficial fan project
+</p>
 
-It is a multiplayer mod, not a co-op add-on: the goal is a full multiplayer layer for the single-player game.
+<p align="center">
+  <a href="https://hound-protocol.github.io/Joint-Operations/">Website</a> ·
+  <a href="https://hound-protocol.github.io/Joint-Operations/#/guides">Guides</a> ·
+  <a href="ROADMAP.md">Roadmap</a> ·
+  <a href="https://discord.gg/QTpJ89kMCM">Discord</a> ·
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
 
-- Platforms: Windows, Linux via Proton
-- Transport: GameNetworkingSockets, Steam relay primary, direct IP fallback
-- Requirement: your own legal copy of MGSV. This project does not distribute the game.
+<p align="center">
+  <a href="https://github.com/Hound-Protocol/Joint-Operations/actions/workflows/checks.yml"><img alt="Checks" src="https://github.com/Hound-Protocol/Joint-Operations/actions/workflows/checks.yml/badge.svg"></a>
+  <a href="https://github.com/Hound-Protocol/Joint-Operations/actions/workflows/pages.yml"><img alt="Website" src="https://github.com/Hound-Protocol/Joint-Operations/actions/workflows/pages.yml/badge.svg"></a>
+  <a href="https://github.com/Hound-Protocol/Joint-Operations/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Hound-Protocol/Joint-Operations?include_prereleases&label=release"></a>
+  <a href="https://discord.gg/QTpJ89kMCM"><img alt="Discord" src="https://img.shields.io/badge/discord-join-5865F2"></a>
+</p>
 
-## Team
-Developed by Hound Protocol, a community development team.
+---
 
-## Independent project
-Joint Operations is built independently and does not copy code from other mods. See docs/legal.md.
+## About
+**Joint Operations** brings the game's online functionality into the single-player world. One player hosts from Venom Snake's position (the helicopter, the Command Center, briefings and Mother Base command), and up to 15 others deploy as soldiers from the Mother Base roster. Players arrive and leave through the game's own mechanics.
 
-## Website
-The project site lives in `site/` and is deployed to GitHub Pages by `.github/workflows/pages.yml`.
-It reads releases and contract issues live from this repository, and mods, sessions and the docs library from `site/data/`.
+It is a **multiplayer mod**, not a co-op add-on, and it never touches Konami's online services, FOBs or anti-cheat.
 
-## Docs
-Start with **docs/pre-development.md**: the plan, the gates before development, and the decisions still open.
+> **Status: Foundation (v0.0.x).** The project's organization, documentation, website and research are in place. The first playable build is **0.1** (two players), developed by the project lead. Nothing is playable yet.
 
-- docs/decisions/: decision records (scope, strategy, transport, loader, license, online services, host authority)
-- research/: desk research with sources (engine, modding tools, Steam, Proton, law, funding, prior art)
-- docs/development-process.md: how work flows from issue to release
-- docs/governance.md: seats, terms and decision making
-- docs/risk-register.md: known risks and mitigations
-- docs/glossary.md: terms used in the project
-- docs/github-setup.md: one-time repository and organization settings
-- CODE_OF_CONDUCT.md, SECURITY.md
-- CONTRIBUTING.md: how to take a contract and submit work
-- docs/team.md: roles
-- docs/legal.md: license, clean-room rules, Steam App ID gate
-- docs/architecture.md: components and decisions
-- docs/discord.md: Discord blueprint
-- docs/recruiting.md: recruiting posts
-- docs/phase1-research-plan.md: Phase 1 research plan
-- docs/privacy.md: what the website stores and which services it contacts
-- ROADMAP.md: phases and status
+## Highlights
+| | |
+|---|---|
+| **16 players** | One host, up to 15 soldiers, in free roam and missions |
+| **Windows and Linux** | Native on Windows, Linux through Proton (tested on Bazzite) |
+| **One-click join** | Planned: search servers on the website and deploy straight into the game ([ADR 0008](docs/decisions/0008-browser-launch.md)) |
+| **Built in the open** | Every decision, risk and research note is public |
+
+## Roadmap
+| Phase | Goal | Status |
+|---|---|---|
+| 0 · Foundation | Organization, docs, website, research | Nearly complete |
+| 1 · Research | Engine sessions, Steam networking, loading, state to sync | In progress |
+| 2 · Version 0.1 | Two players on Windows and Proton | Planned |
+| 3 · Scale | 4, 8, then 16 players | Planned |
+| 4 · Experience | Seamless join and leave, mod API, server browser | Planned |
+
+Full details: [ROADMAP.md](ROADMAP.md).
+
+## Hound Protocol
+Hound Protocol is a non-commercial community development team, organized like Mother Base:
+
+| Department | Role |
+|---|---|
+| **Administration** | Direction, decisions, accounts, community |
+| **Development** | Architecture and code |
+| **Quality** | Testing, reviews, release sign-off |
+| **Contractor** | Contributors who take contracts and are ranked A to S++ |
+
+Every completed contract earns a signed contributor record that anyone can verify on the website. See [departments and ranks](docs/departments.md).
+
+## Get involved
+- **Play:** follow the [Player Guide](docs/guides/HP-GDE-001-player-guide.md) when 0.1 is released.
+- **Test:** testers on Windows and Linux are welcome now. Join the [Discord](https://discord.gg/QTpJ89kMCM) and read the [Quality Guide](docs/guides/HP-GDE-004-quality-testing.md).
+- **Build:** contracts open after 0.1. Start with the [Contributor Quick Start](docs/guides/HP-GDE-003-contributor-quick-start.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Hand-written and AI-assisted work are welcome and credited equally, under the [AI Use Policy](docs/guides/HP-POL-002-ai-use-policy.md).
+
+## Documentation
+| Area | Start here |
+|---|---|
+| Handbook: guides, policies, procedures | [docs/guides/](docs/guides/) or the website's **Guides** page |
+| Plan and gates | [docs/pre-development.md](docs/pre-development.md) |
+| Architecture | [docs/architecture.md](docs/architecture.md) |
+| Decisions | [docs/decisions/](docs/decisions/README.md) |
+| Research | [research/](research/README.md) |
+| Contracts | [docs/contracts.md](docs/contracts.md) |
+| Governance and team | [docs/governance.md](docs/governance.md) · [docs/team.md](docs/team.md) |
+| Legal | [docs/legal.md](docs/legal.md) · [Clean-Room and IP Policy](docs/guides/HP-POL-003-clean-room-and-ip.md) |
+| Security | [SECURITY.md](SECURITY.md) |
+
+## Repository layout
+```
+docs/         plans, decisions, governance, and the handbook (docs/guides/)
+research/     sourced research notes
+site/         the website (deployed to GitHub Pages)
+tools/        build, checks, Discord setup, contract and record tools
+.github/      CI workflows, templates, code owners
+```
+
+## Requirements and rules
+- Your own legal copy of MGSV on Steam. This project does not distribute the game or any of its files.
+- No game files, no copied mod code: see the [Clean-Room and IP Policy](docs/guides/HP-POL-003-clean-room-and-ip.md).
 
 ## License
-See LICENSE. Forks are welcome. Attribution is required, and no one may present this work as their own.
+The license is being decided ([ADR 0005](docs/decisions/0005-license.md)). Until it is accepted, all rights are reserved, and the code may not be reused. Attribution is always required.
 
 ## Disclaimer
-MGSV: Joint Operations is an unofficial, fan-made community project. It is not affiliated with,
-endorsed by, or sponsored by Konami. Metal Gear Solid and related names are trademarks of their owners.
+MGSV: Joint Operations is an unofficial, fan-made, non-commercial project. It is not affiliated with, endorsed by or sponsored by Konami. *Metal Gear*, *Metal Gear Solid* and related names are trademarks of their respective owners.

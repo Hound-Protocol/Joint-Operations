@@ -30,7 +30,8 @@
     return out;
   }
   function markdown(md, basePath) {
-    var lines = String(md).replace(/\r\n?/g, "\n").split("\n"), html = "", i = 0, para = [];
+    // Raw HTML lines (the README's centered banner and badges) are skipped: this renderer never emits raw HTML
+    var lines = String(md).replace(/\r\n?/g, "\n").split("\n").filter(function (l) { return !/^\s*<\/?[a-z][^>]*>/i.test(l); }), html = "", i = 0, para = [];
     function flush() { if (para.length) { html += "<p>" + inline(para.join(" "), basePath) + "</p>"; para = []; } }
     function cells(l) { return l.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map(function (c) { return c.trim(); }); }
     while (i < lines.length) {

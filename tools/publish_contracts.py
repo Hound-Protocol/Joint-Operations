@@ -20,7 +20,8 @@ REPO = json.loads((ROOT / "site/data/config.json").read_text(encoding="utf-8")).
 SITE = "https://hound-protocol.github.io/Joint-Operations/"
 MODULES = {"launcher": "Launcher / Injector", "hooks": "Game Hooks", "session": "Session / Host", "net": "Networking", "modapi": "Mod API",
            "lobby": "Lobby App", "web": "Web", "docs": "Docs", "testing": "Testing", "legal": "Legal"}
-LABEL_COLORS = {"contract": "c9a24a", "module": "4a6b7a", "size": "6b6b6b"}
+LABEL_COLORS = {"contract": "c9a24a", "module": "4a6b7a", "difficulty": "6b6b6b"}
+DIFF = {"basic": "Basic (anyone)", "standard": "Standard (rank A+)", "advanced": "Advanced (rank S)", "expert": "Expert (rank S+)", "core": "Core (Development Department)"}
 
 
 def gh(*args, body=None):
@@ -32,7 +33,7 @@ def gh(*args, body=None):
 
 
 def issue_body(c, numbers, docs):
-    lines = [f"Module: {MODULES.get(c['module'], c['module'])}", f"Size: {c['size']}", f"Skills: {c.get('skills', '')}"]
+    lines = [f"Module: {MODULES.get(c['module'], c['module'])}", f"Difficulty: {DIFF[c['difficulty']]}", f"Effort: {c.get('effort', '')}", f"Skills: {c.get('skills', '')}"]
     deps = [f"#{numbers[d]}" if d in numbers else d for d in c.get("depends") or []]
     if deps:
         lines.append("Depends on " + ", ".join(deps))
@@ -59,7 +60,7 @@ def main():
     print(f"Repository: {REPO}  ({'APPLY' if apply else 'DRY RUN: nothing will change'})\n")
 
     have = {l["name"] for l in gh(f"repos/{REPO}/labels?per_page=100")}
-    want = {"contract"} | {f"module:{c['module']}" for c in contracts} | {f"size:{c['size']}" for c in contracts}
+    want = {"contract"} | {f"module:{c['module']}" for c in contracts} | {f"difficulty:{c['difficulty']}" for c in contracts}
     for name in sorted(want - have):
         print(f"  create label  {name}")
         if apply:
@@ -90,7 +91,7 @@ def main():
         title = f"[{c['id']}] {c['title']}"
         print(f"  create issue  {title}")
         if apply:
-            labels = ["contract", f"module:{c['module']}", f"size:{c['size']}"]
+            labels = ["contract", f"module:{c['module']}", f"difficulty:{c['difficulty']}"]
             r = gh(f"repos/{REPO}/issues", "--method", "POST", "--input", "-",
                    body={"title": title, "body": issue_body(c, numbers, docs), "labels": labels})
             numbers[c["id"]] = r["number"]

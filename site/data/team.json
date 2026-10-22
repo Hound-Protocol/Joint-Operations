@@ -1,21 +1,115 @@
 {
-  "note": "Team page. Images live in site/assets/img/team/. Seats follow docs/governance.md.",
-  "members": [
-    {
-      "name": "TrueMan",
-      "role": "Founder · Project lead",
-      "image": "assets/img/team/trueman.webp",
-      "still": "assets/img/team/trueman.jpg",
-      "bio": "Founded Hound Protocol and Joint Operations. Sets the direction, the priorities and the final decisions."
-    }
-  ],
-  "seats": [
-    { "seat": "Project lead", "need": 1, "holders": ["TrueMan"] },
-    { "seat": "Technical lead delegate", "need": 1, "holders": [] },
-    { "seat": "GitHub organization owner", "need": 2, "holders": ["TrueMan"] },
-    { "seat": "Discord admin", "need": 2, "holders": [] },
-    { "seat": "Release signer", "need": 2, "holders": [] },
-    { "seat": "Moderator", "need": 2, "holders": [] }
-  ],
-  "roles": ["Reverse engineering and hooks", "Networking", "Windows testing", "Linux and Proton testing", "Docs and community", "Web and app"]
+ "note": "Team page. Images live in site/assets/img/team/. Departments follow docs/departments.md, seats follow docs/governance.md.",
+ "members": [
+  {
+   "name": "TrueMan",
+   "role": "Founder · Project lead",
+   "image": "assets/img/team/trueman.webp",
+   "still": "assets/img/team/trueman.jpg",
+   "bio": "Founded Hound Protocol and Joint Operations. Sets the direction, the priorities and the final decisions."
+  }
+ ],
+ "seats": [
+  {
+   "seat": "Project lead",
+   "need": 1,
+   "holders": [
+    "TrueMan"
+   ]
+  },
+  {
+   "seat": "Technical lead delegate",
+   "need": 1,
+   "holders": []
+  },
+  {
+   "seat": "GitHub organization owner",
+   "need": 2,
+   "holders": [
+    "TrueMan"
+   ]
+  },
+  {
+   "seat": "Discord admin",
+   "need": 2,
+   "holders": []
+  },
+  {
+   "seat": "Release signer",
+   "need": 2,
+   "holders": []
+  },
+  {
+   "seat": "Moderator",
+   "need": 2,
+   "holders": []
+  }
+ ],
+ "roles": [
+  "Windows testers (Quality)",
+  "Proton testers (Quality)",
+  "Reviewers (Quality)",
+  "Moderators (Administration)",
+  "Technical lead delegate (Development)"
+ ],
+ "departments": [
+  {
+   "id": "admin",
+   "name": "Administration",
+   "code": "ADM",
+   "job": "Direction, decisions, legal stance, funding, accounts, community and moderation.",
+   "units": [
+    "Command",
+    "Community",
+    "Legal and Funding"
+   ],
+   "members": [
+    "TrueMan"
+   ],
+   "open": "Discord admins, moderators"
+  },
+  {
+   "id": "dev",
+   "name": "Development",
+   "code": "DEV",
+   "job": "Builds Joint Operations: architecture, game hooks, networking, session, launcher, tools and website.",
+   "units": [
+    "Hooks and RE",
+    "Networking",
+    "Session",
+    "Tools and Launcher",
+    "Web"
+   ],
+   "members": [
+    "TrueMan",
+    "Claude (technical lead, AI)"
+   ],
+   "open": "Technical lead delegate"
+  },
+  {
+   "id": "qa",
+   "name": "Quality",
+   "code": "QA",
+   "job": "Tests on Windows and Proton, reviews every contract against its acceptance criteria, signs off releases.",
+   "units": [
+    "Windows Testing",
+    "Proton Testing",
+    "Review",
+    "Release QA"
+   ],
+   "members": [],
+   "open": "Testers and reviewers wanted now"
+  },
+  {
+   "id": "con",
+   "name": "Contractor",
+   "code": "CON",
+   "job": "Outside contributors who take contracts, deliver and leave whenever they like. Ranked A to S++.",
+   "units": [
+    "Open to any skill"
+   ],
+   "members": [],
+   "open": "Opens after 0.1"
+  }
+ ]
 }

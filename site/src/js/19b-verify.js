@@ -25,7 +25,7 @@
     return '<article class="card rec" style="--i:' + (n || 0) + '" data-rid="' + esc(r.id) + '"><div class="id">' + esc(r.id) + " · " + esc(fmtDate(r.date)) + "</div>" +
       "<h3>" + esc(r.contract) + " · " + esc(r.title) + "</h3><div>" +
       '<span class="pill">' + esc(r.name ? r.name + " (" + r.login + ")" : r.login) + "</span>" +
-      '<span class="pill">' + esc(r.size) + " · " + esc(r.points) + " pts</span></div>" +
+      '<span class="pill">' + esc((DIFF[r.difficulty] || [r.difficulty])[0]) + "</span></div>" +
       '<div class="vs">' + vBadge("wait") + "</div>" +
       '<div class="actions"><a class="btn small" href="#/verify/' + encodeURIComponent(r.id) + '">Details</a>' +
       (r.pr ? '<a class="btn small" href="' + esc(repoUrl("/pull/" + r.pr)) + '" target="_blank" rel="noopener noreferrer">Pull request</a>' : "") +
@@ -60,14 +60,14 @@
       }
       // Contributor wall
       var by = {};
-      recs.forEach(function (r) { var u = by[r.login] = by[r.login] || { login: r.login, name: r.name, p: 0, n: 0 }; u.p += r.points || 0; u.n++; if (r.name) u.name = r.name; });
-      var wall = Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return b.p - a.p || a.login.localeCompare(b.login); });
+      recs.forEach(function (r) { var u = by[r.login] = by[r.login] || { login: r.login, name: r.name, n: 0 }; u.n++; if (r.name) u.name = r.name; });
+      var wall = Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return b.n - a.n || a.login.localeCompare(b.login); });
       $("#vb").innerHTML =
         '<p class="sub">Every completed contract earns a contributor record, signed with the project\'s key. This page checks each signature in your browser. Hand-written and AI-assisted work earn the same record.</p>' +
         '<div class="label">Contributor wall</div>' +
         (wall.length ? '<div class="wall">' + wall.map(function (u, n) {
-          var init = (u.name || u.login).replace(/[^A-Za-z0-9]/g, "").slice(0, 2).toUpperCase();
-          return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(init) + "</span><b>" + esc(u.name || u.login) + "</b><small>" + esc(rankFor(u.p)[0]) + " · " + u.p + (u.p === 1 ? " pt · " : " pts · ") + u.n + " contract" + (u.n === 1 ? "" : "s") + "</small></a>";
+          var grade = rankFor(u.n)[0];
+          return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(grade) + "</span><b>" + esc(u.name || u.login) + "</b><small>Rank " + esc(grade) + " · " + u.n + " contract" + (u.n === 1 ? "" : "s") + "</small></a>";
         }).join("") + "</div>" : '<div class="empty">No records yet<small>The wall fills as contracts are completed and signed.</small></div>') +
         '<div class="label">Records</div>' +
         (recs.length ? '<div class="cards">' + recs.slice().reverse().map(recordCard).join("") + "</div>" : "") +

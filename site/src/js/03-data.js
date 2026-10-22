@@ -12,6 +12,9 @@
     return repoUrl("/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body) + (labels ? "&labels=" + encodeURIComponent(labels) : ""));
   }
 
+  // Playable releases start at 0.1; 0.0.x are foundation releases (docs/guides/HP-SOP-003)
+  function isPlayable(r) { var m = /^v?(\d+)\.(\d+)/.exec((r && r.tag_name) || ""); return !!m && (+m[1] > 0 || +m[2] >= 1); }
+  function playableReleases() { return (data.releases || []).filter(isPlayable); }
   function loadReleases() {
     if (data.releases !== undefined) return Promise.resolve(data.releases);
     return gh("/repos/" + cfg.repo + "/releases?per_page=10").then(function (list) {
@@ -20,7 +23,6 @@
     }, function () { data.releases = null; return null; });
   }
 
-  var SIZE_PTS = { S: 1, M: 3, L: 5 };
   function loadContracts() {
     if (data.issues !== undefined) return Promise.resolve(data.issues);
     return gh("/repos/" + cfg.repo + "/issues?labels=contract&state=all&per_page=100").then(function (list) {
@@ -29,16 +31,16 @@
       issues.forEach(function (i) { byNum[i.number] = i; });
       data.issues = issues.map(function (i) {
         var labels = (i.labels || []).map(function (l) { return typeof l === "string" ? l : l.name; });
-        var mod = "", size = "";
+        var mod = "", diff = "";
         labels.forEach(function (l) {
           if (l.indexOf("module:") === 0) mod = l.slice(7);
-          if (l.indexOf("size:") === 0) size = l.slice(5).toUpperCase();
+          if (l.indexOf("difficulty:") === 0) diff = l.slice(11).toLowerCase();
         });
         var deps = [], m = /depends on\s+((?:#\d+[\s,]*(?:and\s+)?)+)/i.exec(i.body || "");
         if (m) m[1].replace(/#(\d+)/g, function (_, n) { deps.push(+n); });
         var st = i.state === "closed" ? "done" : labels.indexOf("status:review") > -1 ? "review" : (i.assignees && i.assignees.length) ? "claimed" : "open";
         return {
-          id: "#" + i.number, num: i.number, title: i.title, module: mod, size: size, skills: "",
+          id: "#" + i.number, num: i.number, title: i.title, module: mod, difficulty: diff, skills: "",
           depends: deps.map(function (n) { return "#" + n; }),
           blocked: deps.some(function (n) { return byNum[n] && byNum[n].state !== "closed"; }) || labels.indexOf("blocked") > -1,
           status: st, by: (i.assignees || []).map(function (a) { return a.login; }), url: i.html_url, live: true
