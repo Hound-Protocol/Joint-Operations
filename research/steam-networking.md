@@ -1,6 +1,6 @@
 # Steam networking, lobbies and App ID
 
-Author: Claude (technical lead) · Date: 2026-10-21 · Status: desk research
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-21 · Status: desk research
 
 ## Facts
 | Fact | Detail | Source |

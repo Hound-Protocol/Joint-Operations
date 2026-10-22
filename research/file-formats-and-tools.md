@@ -1,6 +1,6 @@
 # File formats and modding tools
 
-Author: Claude (technical lead) · Date: 2026-10-22 · Status: desk research · Game build: 1.0.15.4
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-22 · Status: desk research · Game build: 1.0.15.4
 
 ## Why this matters
 The game's Lua scripts, mission data and assets live inside packed archives. Phase 1 work on players, the roster and missions (R3, R5, R6) starts with reading those files on our own machines. This note lists the tools, what each handles, and whether we may reuse it.

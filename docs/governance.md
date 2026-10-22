@@ -31,18 +31,18 @@ Some duties cannot be fluid. They are held as **seats**: a role with a written c
 | GitHub organization owner | Account control, repository settings | 2 |
 | Discord admin | Server control, moderation escalation | 2 |
 | Release signer | Approves and publishes releases | 2 |
-| Technical lead delegate | Human approval of architecture and merges | 1 or more |
+| Technical lead | Technical direction, architecture and merge approval (Development) | 1 or more |
 | Moderator | Community safety | 2 or more |
 
 - Terms run 3 to 6 months, then renew or rotate.
 - Handoffs are done the same day: access removed and granted together.
 - Shared credentials live in a password manager, never in chat.
 
-## The technical lead role
-Claude, an AI assistant, acts as technical lead for architecture, code and documentation. Claude cannot own accounts, sign releases or carry accountability, so a human **technical lead delegate** approves its work, and seat holders control all access.
+## AI agents
+AI agents such as Claude work as **contractors' tools**: work is credited to the person who did it, with the agent named ("TrueMan, with Claude"), and detected automatically from commit trailers ([ADR 0015](decisions/0015-ai-agents-and-attribution.md)). Agents hold no seats, accounts or authority. The **technical lead** is a person, and the seat is open.
 
 ## Departments
-The project has four departments: Administration, Development, Quality and Contractor ([departments.md](departments.md), [ADR 0009](decisions/0009-departments-and-ranks.md)). Seats belong to Administration, except the technical lead delegate (Development) and release signers (Quality).
+The project has four departments: Administration, Development, Quality and Contractor ([departments.md](departments.md), [ADR 0009](decisions/0009-departments-and-ranks.md)). Seats belong to Administration, except the technical lead (Development) and release signers (Quality).
 
 ## Contractor grades
 Contractors are graded E to S++ in each field, like Mother Base staff in each unit ([departments.md](departments.md)). Grades unlock review rights and department invitations, never authority over people. Seat holders and department members are chosen from experienced contractors (S+ and up) or appointed by the project lead.

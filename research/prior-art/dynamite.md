@@ -1,6 +1,6 @@
 # Prior art: Dynamite
 
-Author: Claude (technical lead) · Date: 2026-10-21 · Method: reading the public repository and its documentation. No code was copied, and none may be copied (see "License").
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-21 · Method: reading the public repository and its documentation. No code was copied, and none may be copied (see "License").
 
 Dynamite is a public, open-source multiplayer mod for MGSV:TPP. It is the closest existing work to ours, so its documented findings are the most useful prior art available. This note records what it publicly documents, in our own words, and what we learn from it.
 

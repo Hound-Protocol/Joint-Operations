@@ -1,6 +1,6 @@
 # Networking playbook summary (R11)
 
-Author: Claude (technical lead) · Date: 2026-10-21 · Source: Co-op Anything networking playbook (MIT), summarized in our own words.
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-21 · Source: Co-op Anything networking playbook (MIT), summarized in our own words.
 
 ## Sync models
 - **Deterministic lockstep** sends only inputs, but needs bit-exact simulation on every machine. A mod cannot guarantee that, so it is not realistic for MGSV.

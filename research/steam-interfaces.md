@@ -1,6 +1,6 @@
 # Steam interfaces from inside the game (R13)
 
-Author: Claude (technical lead) · Date: 2026-10-22 · Status: desk research, not yet tested on a rig · Game build: 1.0.15.4 (title 1.15)
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-22 · Status: desk research, not yet tested on a rig · Game build: 1.0.15.4 (title 1.15)
 
 ## The question
 MGSV ships its own `steam_api64.dll` from 2015. The networking interfaces we want (`ISteamNetworkingMessages`, `ISteamNetworkingSockets`, `ISteamNetworkingUtils`) are newer than that. Can our code, running inside the game process, still reach them? This decides ADR 0003.

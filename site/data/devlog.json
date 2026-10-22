@@ -3,6 +3,12 @@
  "entries": [
   {
    "date": "2026-10-22",
+   "tag": "Organization",
+   "title": "AI agents are credited, not ranked",
+   "body": "Claude now works as a contractor's tool instead of technical lead, which becomes a seat for a person. Work done with an AI agent is credited to the person with the agent named, for example \"Forge77, with Claude\", detected automatically from commit trailers."
+  },
+  {
+   "date": "2026-10-22",
    "tag": "Decision",
    "title": "License chosen, and quiet until 0.1",
    "body": "Code is GPL-3.0 with a permission to run inside MGSV and use Steam; docs are CC BY-SA 4.0; the brand stays ours. Forks are welcome but must stay open and keep the credits. Until 0.1 we build quietly: no promotion, recruiting by invitation."

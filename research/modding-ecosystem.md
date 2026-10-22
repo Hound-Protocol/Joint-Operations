@@ -1,6 +1,6 @@
 # MGSV modding ecosystem
 
-Author: Claude (technical lead) · Date: 2026-10-21 · Status: desk research
+Author: TrueMan, with Claude (AI agent) · Date: 2026-10-21 · Status: desk research
 
 ## Tools and mods that matter to us
 | Project | What it is | License / terms | Relevance |

@@ -2,7 +2,7 @@
 Code: HP-POL-002 · Version 1.1 · Effective 2026-10-22 · Owner: Administration · Applies to: all contributions
 
 ## 1. Position
-Hound Protocol welcomes AI-assisted work. The technical lead is an AI assistant. Hand-written and AI-assisted contributions are reviewed the same way and earn the same records and ranks. The one hard limit is art: **generative AI images, artwork, music and voices are not accepted** (section 5). **What counts is that the work is correct, original, licensed and checked.**
+Hound Protocol welcomes AI-assisted work. Claude, an AI agent, works on the project as a contractor's tool. Hand-written and AI-assisted contributions are reviewed the same way and earn the same records and ranks. The one hard limit is art: **generative AI images, artwork, music and voices are not accepted** (section 5). **What counts is that the work is correct, original, licensed and checked.**
 
 ## 2. You are responsible
 - You are the author of what you submit, whatever tools you used. You must understand it well enough to explain and fix it.
@@ -49,3 +49,9 @@ Hound Protocol welcomes AI-assisted work. The technical lead is an AI assistant.
 
 ## 8. Breaches
 Unreviewed or copied AI output is treated like any other copied or broken work under [HP-POL-001](HP-POL-001-contributor-policy.md) and [HP-POL-003](HP-POL-003-clean-room-and-ip.md).
+
+## Attribution: who did it, and with what
+- Work done with an AI agent is **credited to you, with the agent named**: for example "Forge77, with Claude". You are responsible for it, as with any tool.
+- Keep the agent's commit trailers (for example `Co-Authored-By: Claude <noreply@anthropic.com>`) and name the agent in the pull request template. Removing trailers on purpose breaks this policy.
+- Agents are detected automatically from those trailers (`tools/agents.py`). Merged pull requests get an `agent: <name>` label and a credit comment, and signed contributor records list the agent, which the website shows as "with Claude" ([ADR 0015](../decisions/0015-ai-agents-and-attribution.md)).
+- Agents are never graded and hold no authority. Your grade counts your work, whatever tools you used.
