@@ -12,7 +12,7 @@ out = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else root / "hound-protocol.
 def safe(text):
     return text.replace("</", "<\\/")
 
-data = {n: json.loads((site / "data" / f"{n}.json").read_text()) for n in ["config", "servers", "mods", "docs", "contracts", "briefing", "devlog"]}
+data = {n: json.loads((site / "data" / f"{n}.json").read_text()) for n in ["config", "servers", "mods", "docs", "contracts", "briefing", "devlog", "team"]}
 import subprocess
 def _git(*a):
     return subprocess.run(["git", *a], cwd=root, capture_output=True, text=True).stdout.strip()
@@ -32,6 +32,10 @@ def data_uri(path, mime):
 import subprocess as _sp
 _sp.run([sys.executable, str(root / "tools" / "build_js.py")], check=True)
 html = (site / "index.html").read_text()
+for m in data["team"].get("members", []):
+    for key, mime in (("image", "image/webp"), ("still", "image/jpeg")):
+        if m.get(key):
+            m[key] = data_uri(site / m[key], mime)
 html = re.sub(r'<link rel="preload"[^>]*>\n', "", html)  # fonts are inlined below
 for name in ["emblem.svg", "favicon.svg"]:
     html = html.replace(f"assets/img/{name}", data_uri(site / "assets/img" / name, "image/svg+xml"))

@@ -1,5 +1,5 @@
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");

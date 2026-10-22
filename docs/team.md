@@ -7,7 +7,7 @@ Status: DRAFT
 
 | Role | Responsibility |
 |---|---|
-| Project lead | Decisions, priorities, final approval, license and donations |
+| Project lead: **TrueMan** (founder) | Decisions, priorities, final approval, license and donations |
 | Technical lead (Claude, AI assistant) | Architecture, coding, docs, reviews. Work is approved by a human technical delegate |
 | Technical delegate | Human approval of merges, architecture and releases |
 | RE / hooks | Game launch and state research, hook layer |

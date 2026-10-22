@@ -5,6 +5,7 @@
     { id: "download", title: "Download", desc: "Available for Windows and Linux using Proton", tab: "Download" },
     { id: "sessions", title: "Session Overview", desc: "Browse sessions, details, status and ping", tab: "Sessions" },
     { id: "contribute", title: "Contribute", desc: "Become a part of the Protocol", tab: "Contribute" },
+    { id: "team", title: "Team", desc: "The people behind Hound Protocol", tab: "Team", tabOnly: true },
     { id: "mods", title: "Mods", desc: "Compatible mods and mods with known issues", tab: "Mods" },
     { id: "devlog", title: "Dev Log", desc: "Recent changes, decisions and releases", tab: "Dev Log" },
     { id: "docs", title: "Documentation", desc: "Library of project documentation", tab: "Docs" },
@@ -19,6 +20,8 @@
         return ph ? "Current: Phase " + ph.n + " · " + ph.title + " · " + ph.done + " of " + ph.total + " done" : "Project overview";
       case "roadmap":
         return "Roadmap";
+      case "team":
+        return "Team";
       case "devlog":
         var n2 = devlogEntries().length;
         return n2 ? plural(n2, "entry", "entries") : "Dev log";

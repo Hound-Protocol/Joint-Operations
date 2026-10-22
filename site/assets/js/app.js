@@ -267,6 +267,7 @@
     { id: "download", title: "Download", desc: "Available for Windows and Linux using Proton", tab: "Download" },
     { id: "sessions", title: "Session Overview", desc: "Browse sessions, details, status and ping", tab: "Sessions" },
     { id: "contribute", title: "Contribute", desc: "Become a part of the Protocol", tab: "Contribute" },
+    { id: "team", title: "Team", desc: "The people behind Hound Protocol", tab: "Team", tabOnly: true },
     { id: "mods", title: "Mods", desc: "Compatible mods and mods with known issues", tab: "Mods" },
     { id: "devlog", title: "Dev Log", desc: "Recent changes, decisions and releases", tab: "Dev Log" },
     { id: "docs", title: "Documentation", desc: "Library of project documentation", tab: "Docs" },
@@ -281,6 +282,8 @@
         return ph ? "Current: Phase " + ph.n + " · " + ph.title + " · " + ph.done + " of " + ph.total + " done" : "Project overview";
       case "roadmap":
         return "Roadmap";
+      case "team":
+        return "Team";
       case "devlog":
         var n2 = devlogEntries().length;
         return n2 ? plural(n2, "entry", "entries") : "Dev log";
@@ -910,8 +913,33 @@
     $("#orst").addEventListener("click", function () { opts = Object.assign({}, DEFAULT_OPTS); store.set(OPT_KEY, opts); applyOpts(); viewOptions(); status("Settings reset"); });
   }
 
+  /* Team */
+  function viewTeam() {
+    var v = $("#view");
+    v.innerHTML = shell("Hound Protocol", "Team", loading("Loading team"));
+    loadLocal("team").then(function (t) {
+      if (currentView !== "team") return;
+      t = t || { members: [], seats: [], roles: [] };
+      var still = !opts.motion;
+      $("#vb").innerHTML = '<div class="bf">' +
+        '<section class="bf-sec team-members">' + t.members.map(function (m) {
+          return '<article class="member"><div class="portrait"><picture>' +
+            (m.still ? '<source srcset="' + esc(m.still) + '" media="(prefers-reduced-motion: reduce)">' : "") +
+            '<img src="' + esc(still && m.still ? m.still : m.image) + '" alt="' + esc(m.name) + '" width="168" height="168" loading="lazy"></picture><i class="pc tl"></i><i class="pc br"></i></div>' +
+            '<div><div class="m-role">' + esc(m.role) + '</div><h3 class="m-name">' + esc(m.name) + '</h3><p>' + esc(m.bio) + "</p></div></article>";
+        }).join("") + "</section>" +
+        '<section class="bf-sec"><div class="label">Seats</div><div class="seats">' + t.seats.map(function (s, k) {
+          var open = Math.max(0, s.need - s.holders.length);
+          return '<div class="seat" style="--k:' + k + '"><div class="s-name">' + esc(s.seat) + '</div><div class="s-who">' + (s.holders.length ? esc(s.holders.join(", ")) : "Vacant") + '</div><span class="pill ' + (open ? "warn" : "ok") + '">' + (open ? open + " open" : "Filled") + "</span></div>";
+        }).join("") + '</div><p class="source">Seats are roles with a term and at least two holders where possible. See <a href="#/docs/governance">governance</a>.</p></section>' +
+        '<section class="bf-sec"><div class="label">Wanted</div><ul class="chips">' + t.roles.map(function (r, k) { return '<li style="--k:' + k + '">' + esc(r) + "</li>"; }).join("") + '</ul>' +
+        '<div class="toolbar" style="margin-top:18px"><a class="btn primary" href="#/contribute">Join the Hound</a></div></section></div>';
+      revealSections();
+    });
+  }
+
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");
@@ -1009,7 +1037,7 @@
     }
   }
   function preload() {
-    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("devlog"), loadRoadmap(), loadReleases(), loadContracts(), loadCommits()]).then(function () {
+    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("devlog"), loadLocal("team"), loadRoadmap(), loadReleases(), loadContracts(), loadCommits()]).then(function () {
       refreshInfo();
       if (data.releases === null || data.issues === null) status("GitHub unreachable · showing bundled data");
     });
