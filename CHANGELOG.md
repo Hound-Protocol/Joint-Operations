@@ -2,6 +2,14 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.6 · Official emblem · 2026-10-22
+Official emblem, a 16:9 layout and a smoother interface.
+
+- **Joint Operations emblem:** three operatives inside a ring of sixteen marks (sixteen players), with the host marker over the centre operative. Original vector art built in code (`tools/brand/emblem.py`), in full colour, one colour and white. Used on the team page, the lockup, the avatar and the site background.
+- **16:9 layout:** the page now lays out inside a 16:9 frame on any screen. Contribute, Sessions and Mods use the full width, so all five contract columns fit side by side.
+- **Neural docs:** the web fills 80% of the frame. Labels no longer pile up: each sits beside its neuron, only shows where it has room, and fades in and out.
+- **Smoother interface:** highlights, hover effects and the tooltip ease in and glide instead of snapping. Hover and state changes across the site are slower and calmer.
+
 ## v0.0.5 · Neural docs · 2026-10-22
 The documentation becomes a living map, and the Contribute board gets columns.
 

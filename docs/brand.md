@@ -8,7 +8,8 @@ Two marks, one family. **Hound Protocol** is the team. **Joint Operations** is t
 | Mark | Meaning | Files (`site/assets/brand/`) |
 |---|---|---|
 | **Hound Protocol**: a hexagon insignia with a hound in profile | The team: watchful, loyal, organized like a unit | `hound-protocol-mark.svg`, `-mono.svg`, `-light.svg`, `-lockup.svg`, `-avatar.png` |
-| **Joint Operations**: sixteen marks around a gold diamond, with four routes converging | Sixteen players around one host, coming together | `joint-operations-mark.svg`, `-mono.svg`, `-light.svg`, `-lockup.svg`, `-avatar.png` |
+| **Joint Operations emblem** (official logo): three operatives inside a ring of sixteen marks, a gold host marker over the centre operative, the name on the ring | A joint operation: the host and clients, sixteen players | `joint-operations-emblem.svg`, `-emblem-mono.svg`, `-emblem-white.svg`, `-lockup.svg`, `-avatar.png` |
+| **Joint Operations mark** (small sizes, favicon): sixteen marks around a gold diamond, with four routes converging | Sixteen players around one host, coming together | `joint-operations-mark.svg`, `-mono.svg`, `-light.svg` |
 
 Also: `site/assets/img/favicon.svg` (simplified mark for small sizes) and `site/assets/img/og.png` (link previews and the README banner).
 

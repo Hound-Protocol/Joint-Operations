@@ -7,10 +7,13 @@ the same everywhere. See docs/brand.md for usage rules.
 
 Usage: python3 tools/brand/build_brand.py   (writes site/assets/brand/*.svg and site/assets/img/favicon.svg)
 """
-import math, pathlib
+import math, pathlib, sys
 from fontTools.ttLib import TTFont
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import emblem as jo_emblem  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 OUT = ROOT / "site/assets/brand"
@@ -40,6 +43,27 @@ def text_path(text, font="barlow-semi-condensed-light.woff", size=40, tracking=0
             d.append(pen.getCommands())
         cx += a + tracking * size
     return " ".join(d), width
+
+
+def glyphs(text, size, tracking, font="barlow-semi-condensed-medium.woff"):
+    """Measured glyphs for arc text: [(draw(matrix, dx) -> path d, advance)]."""
+    f = TTFont(FONTS / font)
+    cmap, gs, upm = f.getBestCmap(), f.getGlyphSet(), f["head"].unitsPerEm
+    sc, out = size / upm, []
+    for ch in text:
+        g = cmap.get(ord(ch))
+        adv = (gs[g].width * sc if g else size * 0.3) + tracking * size
+
+        def draw(m, dx, g=g, ch=ch):
+            if not g or ch == " ":
+                return ""
+            a, b, c, d, e, f_ = m
+            dx += tracking * size / 2
+            pen = SVGPathPen(gs)
+            gs[g].draw(TransformPen(pen, (a * sc, b * sc, -c * sc, -d * sc, a * dx + e, b * dx + f_)))
+            return pen.getCommands()
+        out.append((draw, adv))
+    return out
 
 
 def hex_points(cx, cy, r):
@@ -82,6 +106,11 @@ def main():
         "hound-protocol-mark-light.svg": svg(200, 200, hound_mark(fg=INK, acc="#a07c2c", cut="#f3efe6"), "Hound Protocol"),
         "joint-operations-mark-light.svg": svg(200, 200, ops_mark().replace(WHITE, INK), "Joint Operations"),
     }
+    # Official Joint Operations emblem: three operatives, sixteen marks, the host marker
+    files["joint-operations-emblem.svg"] = svg(400, 400, jo_emblem.emblem(glyphs), "Joint Operations")
+    files["joint-operations-emblem-mono.svg"] = svg(400, 400, jo_emblem.emblem(glyphs, mono=True), "Joint Operations")
+    # Light one-colour version for dark pages (the site background); an <img> cannot inherit currentColor
+    files["joint-operations-emblem-white.svg"] = files["joint-operations-emblem-mono.svg"].replace("currentColor", WHITE)
     # Lockups: mark plus outlined wordmark
     hp1, w1 = text_path("HOUND", size=64, tracking=0.32, x=236, y=96)
     hp2, w2 = text_path("PROTOCOL", size=64, tracking=0.32, x=236, y=172)
@@ -90,7 +119,7 @@ def main():
     files["hound-protocol-lockup.svg"] = svg(int(wl), 230, f'<g>{hound_mark()}</g><path d="{hp1} {hp2}" fill="{WHITE}"/><path d="{hp3}" fill="{AMBER}"/>', "Hound Protocol")
     jo1, wj = text_path("JOINT OPERATIONS", size=60, tracking=0.3, x=232, y=120)
     jo2, _ = text_path("MGSV MULTIPLAYER MOD", font="share-tech-mono-regular.woff", size=18, tracking=0.55, x=236, y=162)
-    files["joint-operations-lockup.svg"] = svg(int(232 + wj + 20), 200, f'<g>{ops_mark()}</g><path d="{jo1}" fill="{WHITE}"/><path d="{jo2}" fill="{AMBER}"/>', "Joint Operations")
+    files["joint-operations-lockup.svg"] = svg(int(232 + wj + 20), 200, f'<g transform="scale(.5)">{jo_emblem.emblem(glyphs, mid="jo-ops-l")}</g><path d="{jo1}" fill="{WHITE}"/><path d="{jo2}" fill="{AMBER}"/>', "Joint Operations")
     for name, body in files.items():
         (OUT / name).write_text(body, encoding="utf-8")
     # Site icons: favicon (bold for small sizes) and the faint background emblem
