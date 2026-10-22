@@ -29,6 +29,15 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | C19 | Engine session spike: can 3+ players join? | session | 🔴 Hard · Core | C04 | planned |
 | C20 | Steam interfaces from inside the game (rig test) | net | 🟡 Medium · Core | C04 | planned |
 | C21 | Join links: Steam lobby links and launch arguments | launcher | 🟡 Medium | C20 | planned |
+| C22 | Website accessibility pass | web | 🟢 Easy | — | planned |
+| C23 | HUD design for the shared alert | lobby | 🟡 Medium | — | planned |
+| C24 | Session Browser against a mock registry | web | 🟡 Medium | — | planned |
+| C25 | Player FAQ | docs | 🟢 Easy | — | planned |
+| C26 | Engine terms glossary | docs | 🟡 Medium | C03 | planned |
+| C27 | Steam Deck and Bazzite test checklist | testing | 🟡 Medium | C02 | planned |
+| C28 | Alert phases and enemy perception notes | hooks | 🔴 Hard | C03 | planned |
+| C29 | Mission flow and checkpoint notes | hooks | 🟡 Medium | C03 | planned |
+| C30 | Third-party notices | legal | 🟢 Easy | — | planned |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -353,3 +362,142 @@ Module: launcher · Difficulty: 🟡 Medium · Skills: Testing, Linux · Depends
 - Results feed ADR 0008
 
 Background: [R14](phase1-research-plan.md), [r-browser-launch](../research/browser-launch.md), [adr-0008](decisions/0008-browser-launch.md)
+
+## C22
+**Website accessibility pass**  
+Module: web · Difficulty: 🟢 Easy · Skills: HTML, CSS, screen readers
+
+**Goal.** Make every page of the website usable by keyboard and screen reader, with readable contrast.
+
+**Deliverable.** Pull request with fixes, and a short report in research/accessibility.md
+
+**Acceptance criteria**
+- Every page and control reachable and usable with the keyboard alone
+- Text contrast meets WCAG AA on all pages
+- Tested with one screen reader (NVDA, Orca or VoiceOver); findings written down
+- No visual regressions in the browser smoke test
+
+Background: [brand](brand.md)
+
+## C23
+**HUD design for the shared alert**  
+Module: lobby · Difficulty: 🟡 Medium · Skills: UI design, MGSV
+
+**Goal.** Design how each player sees the one shared alert status and whether they are part of it.
+
+**Deliverable.** Mockups (vector or hand-built, no generative AI art) and notes in docs/design/alert-hud.md
+
+**Acceptance criteria**
+- Shows Hidden, Searched for and Detected, and which players are in the alert
+- Fits the game's own HUD style without copying Konami assets
+- Readable at 1080p and on Steam Deck
+- Reviewed against ADR 0012
+
+Background: [adr-0012](decisions/0012-shared-alert.md)
+
+## C24
+**Session Browser against a mock registry**  
+Module: web · Difficulty: 🟡 Medium · Skills: JavaScript, JSON
+
+**Goal.** Make the website's Session Browser read sessions from a mock of the planned session registry API.
+
+**Deliverable.** A mock registry JSON and the Session Browser changes, behind the existing data hook
+
+**Acceptance criteria**
+- Mock follows the registry sketch in ADR 0008
+- Search, region filter, sorting and Hide full work on mock data
+- Empty and error states stay calm and clear
+- Smoke test passes in all three engines
+
+Background: [adr-0008](decisions/0008-browser-launch.md), [r-browser-launch](../research/browser-launch.md)
+
+## C25
+**Player FAQ**  
+Module: docs · Difficulty: 🟢 Easy · Skills: Writing
+
+**Goal.** Answer the questions new players will ask, in plain words.
+
+**Deliverable.** docs/faq.md, linked from the Player Guide
+
+**Acceptance criteria**
+- At least 15 questions: install, hosting, joining, saves, Linux, safety, Konami servers
+- Answers match the Player Guide and the ADRs
+- Follows the documentation style guide (HP-GDE-005)
+
+Background: [glossary](glossary.md)
+
+## C26
+**Engine terms glossary**  
+Module: docs · Difficulty: 🟡 Medium · Skills: Research, writing · Depends on: C03
+
+**Goal.** Explain the Fox Engine and MGSV terms the project uses, in our own words.
+
+**Deliverable.** New section in docs/glossary.md
+
+**Acceptance criteria**
+- Covers file formats, mission phases, Mother Base units and the terms used in research notes
+- Every entry written in our own words, sources linked
+- No copied text from other projects
+
+Background: [r-engine](../research/game-and-engine.md), [r-formats](../research/file-formats-and-tools.md)
+
+## C27
+**Steam Deck and Bazzite test checklist**  
+Module: testing · Difficulty: 🟡 Medium · Skills: Linux, Steam Deck · Depends on: C02
+
+**Goal.** A repeatable checklist for testing on Steam Deck and Bazzite.
+
+**Deliverable.** Section in docs/guides/HP-GDE-004 (Quality and Testing Guide)
+
+**Acceptance criteria**
+- Covers install, launch option, controller, performance overlay and suspend/resume
+- Run once on real hardware, results recorded
+- Known issues listed with workarounds
+
+Background: [r-proton](../research/proton.md)
+
+## C28
+**Alert phases and enemy perception notes**  
+Module: hooks · Difficulty: 🔴 Hard · Skills: Reverse engineering, Lua · Depends on: C03
+
+**Goal.** Find how the game's alert phases and enemy perception work, and whether they can be driven per player.
+
+**Deliverable.** `research/alert-system.md`
+
+**Acceptance criteria**
+- Describes how alert phases change and what triggers them
+- Finds where enemy perception picks its target
+- States whether per-player targeting with one shared alert (ADR 0012) looks possible, with evidence
+- Clean-room: notes in our own words, no game files
+
+Background: [adr-0012](decisions/0012-shared-alert.md), [R3](phase1-research-plan.md), [R4](phase1-research-plan.md)
+
+## C29
+**Mission flow and checkpoint notes**  
+Module: hooks · Difficulty: 🟡 Medium · Skills: Reverse engineering, MGSV · Depends on: C03
+
+**Goal.** Map how a mission starts, checkpoints, fails and ends, so the host can drive it for everyone.
+
+**Deliverable.** `research/mission-flow.md`
+
+**Acceptance criteria**
+- Covers deploy, checkpoints, mission fail, extraction and results screen
+- Notes which steps a client must follow and which only the host runs
+- Clean-room: own words, no game files
+
+Background: [adr-0007](decisions/0007-host-authority.md), [r-engine](../research/game-and-engine.md)
+
+## C30
+**Third-party notices**  
+Module: legal · Difficulty: 🟢 Easy · Skills: Licenses
+
+**Goal.** List every third-party component we ship and its license.
+
+**Deliverable.** THIRD_PARTY_NOTICES.md
+
+**Acceptance criteria**
+- Covers fonts, libraries and tools that end up in releases or on the website
+- Each entry has name, version, license and link
+- Checked against the project license decision (ADR 0005)
+
+Background: [adr-0005](decisions/0005-license.md), [legal](legal.md)

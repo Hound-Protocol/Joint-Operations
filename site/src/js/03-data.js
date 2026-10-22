@@ -40,6 +40,7 @@
       var issues = (list || []).filter(function (i) { return !i.pull_request; });
       var byNum = {};
       issues.forEach(function (i) { byNum[i.number] = i; });
+      data.issuesAt = Date.now();
       data.issues = issues.map(function (i) {
         var labels = (i.labels || []).map(function (l) { return typeof l === "string" ? l : l.name; });
         var mod = "", diff = "";

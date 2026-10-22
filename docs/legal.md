@@ -4,8 +4,8 @@ Status: DRAFT, pending project lead review. Not legal advice.
 
 ## 1. Project license
 - Forks are allowed. Attribution is required. Nobody may present this work as their own.
-- The draft choice was GPL-3.0. Research found that plain GPL-3.0 likely conflicts with linking the proprietary Steamworks SDK inside the game. Options and the recommendation are in [ADR 0005](decisions/0005-license.md): GPL-3.0 with a linking permission, MPL-2.0, or MIT.
-- Until decided: the LICENSE file stays a placeholder and no binaries are published.
+- **Decided** ([ADR 0005](decisions/0005-license.md)): code is GPL-3.0-only with an additional permission to link with the Steamworks SDK and run inside MGSV; documentation is CC BY-SA 4.0; the brand is reserved. Summary in [LICENSING.md](../LICENSING.md).
+- Plain GPL-3.0 would likely conflict with linking the proprietary Steamworks SDK inside the game; the section 7 permission solves that while keeping forks open.
 
 ## 2. Independent development
 - Joint Operations is an independent project. It does not fork, copy, or vendor code from other mods.
@@ -42,7 +42,7 @@ Status: DRAFT, pending project lead review. Not legal advice.
 - Donations do not change decision-making authority in the project.
 
 ## 9. Open items for the project lead
-- Choose the license (ADR 0005).
+- ~~Choose the license (ADR 0005).~~ Done: see LICENSING.md.
 - Approve the Steam App ID position.
 - Confirm the donation platform and reporting plan.
 - Decide whether to seek a legal opinion before donations or distribution begin.

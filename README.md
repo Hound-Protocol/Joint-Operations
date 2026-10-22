@@ -98,7 +98,7 @@ tools/        build, checks, Discord setup, contract and record tools
 - No game files, no copied mod code: see the [Clean-Room and IP Policy](docs/guides/HP-POL-003-clean-room-and-ip.md).
 
 ## License
-The license is being decided ([ADR 0005](docs/decisions/0005-license.md)). Until it is accepted, all rights are reserved, and the code may not be reused. Attribution is always required.
+Code is **GPL-3.0-only**, with a permission to run inside MGSV and link with the Steamworks SDK. Documentation is **CC BY-SA 4.0**. The Hound Protocol and Joint Operations names and logos are reserved. Forks are welcome; they must stay open, keep the credits and use their own name. Details: [LICENSING.md](LICENSING.md) and [ADR 0005](docs/decisions/0005-license.md).
 
 ## Disclaimer
 MGSV: Joint Operations is an unofficial, fan-made, non-commercial project. It is not affiliated with, endorsed by or sponsored by Konami. *Metal Gear*, *Metal Gear Solid* and related names are trademarks of their respective owners.

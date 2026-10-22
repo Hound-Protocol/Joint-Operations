@@ -1,439 +1,620 @@
 {
-  "note": "Planned contracts with difficulty (easy, medium, hard), goals and acceptance criteria. core: true marks 0.1 critical-path work for the Development Department only (docs/departments.md). Shown when no GitHub issues carry the contract label yet. docs/contracts.md is generated from this file by tools/contracts_md.py.",
-  "contracts": [
-    {
-      "id": "C01",
-      "title": "Pin game build and set up Windows test rig",
-      "module": "testing",
-      "difficulty": "easy",
-      "skills": "Windows, docs",
-      "depends": [],
-      "goal": "Have one Windows machine that runs the exact game build we target, set up the same way every time.",
-      "deliverable": "research/environment.md (Windows section)",
-      "acceptance": [
-        "Game build 1.0.15.4 confirmed: exe file version and SHA-256 of mgsvtpp.exe recorded",
-        "Steam auto-update risk noted, and how to stay on the pinned build",
-        "Clean setup steps from install to main menu, reproducible by a second person",
-        "No game files or extracted assets in the repository"
-      ],
-      "refs": [
-        "phase1:R1"
-      ]
-    },
-    {
-      "id": "C02",
-      "title": "Proton test rig and setup guide",
-      "module": "testing",
-      "difficulty": "medium",
-      "skills": "Linux, Proton",
-      "depends": [
-        "C01"
-      ],
-      "goal": "Have a Linux machine with Proton that runs the same build, with a setup guide.",
-      "deliverable": "research/environment.md (Proton section)",
-      "acceptance": [
-        "Distro, Steam client build and Proton version recorded",
-        "Rig checklist in research/proton.md completed, results written down",
-        "A dummy dinput8.dll writes a log line under Proton with the documented launch option",
-        "Proton Experimental and latest GE-Proton both tried, differences noted"
-      ],
-      "refs": [
-        "phase1:R1",
-        "r-proton"
-      ]
-    },
-    {
-      "id": "C03",
-      "title": "Survey public MGSV modding tools and docs",
-      "module": "hooks",
-      "difficulty": "medium",
-      "skills": "Research",
-      "depends": [],
-      "goal": "Confirm on a rig the tool list from desk research, and find the community docs we can learn from.",
-      "deliverable": "research/file-formats-and-tools.md (rig-verified)",
-      "acceptance": [
-        "Each listed tool opened on build 1.0.15.4, with tool version and result",
-        "License of each tool recorded (reuse allowed, use only, or unknown)",
-        "Locations of mission scripts and player-related Lua listed (archive paths only, no content)"
-      ],
-      "refs": [
-        "r-formats",
-        "r-modding"
-      ]
-    },
-    {
-      "id": "C04",
-      "title": "Document mod loading path (Windows)",
-      "module": "launcher",
-      "difficulty": "hard",
-      "core": true,
-      "skills": "Reverse engineering, C++",
-      "depends": [
-        "C03"
-      ],
-      "goal": "Know exactly how our native code gets into the game on Windows, alone and alongside IHHook.",
-      "deliverable": "research/loading.md",
-      "acceptance": [
-        "A test DLL loads as a dinput8 proxy and logs its start",
-        "A test plugin loads through IHHook's plugins folder (if the interface is suitable), or the reason it is not",
-        "Load order and timing relative to the game's Lua start recorded",
-        "Recommendation for ADR 0004 with evidence"
-      ],
-      "refs": [
-        "phase1:R2",
-        "adr-0004"
-      ]
-    },
-    {
-      "id": "C05",
-      "title": "Document mod loading path (Proton)",
-      "module": "launcher",
-      "difficulty": "medium",
-      "core": true,
-      "skills": "Reverse engineering, Linux",
-      "depends": [
-        "C04"
-      ],
-      "goal": "The same loading path, confirmed under Proton.",
-      "deliverable": "research/loading.md (Proton section)",
-      "acceptance": [
-        "Both load paths from C04 tested under Proton",
-        "Any differences in timing, file paths or logging recorded",
-        "Exact launch options players need, ready to paste"
-      ],
-      "refs": [
-        "phase1:R2",
-        "r-proton"
-      ]
-    },
-    {
-      "id": "C06",
-      "title": "Player and companion representation notes",
-      "module": "hooks",
-      "difficulty": "hard",
-      "core": true,
-      "skills": "Reverse engineering",
-      "depends": [
-        "C04"
-      ],
-      "goal": "Understand how the player character and companions are created and controlled, and whether more controllable characters can exist.",
-      "deliverable": "research/players.md",
-      "acceptance": [
-        "Lua and native entry points involved in player and buddy spawn listed (names and archive paths, no copied code)",
-        "Whether a second controllable character can exist in free roam: yes, no or unknown, with evidence",
-        "How FOB and MGO create additional players, as far as observable",
-        "Confidence marked for every claim"
-      ],
-      "refs": [
-        "phase1:R3",
-        "adr-0007"
-      ]
-    },
-    {
-      "id": "C07",
-      "title": "Mother Base roster notes",
-      "module": "hooks",
-      "difficulty": "medium",
-      "skills": "Reverse engineering",
-      "depends": [
-        "C04"
-      ],
-      "goal": "Understand how Mother Base staff are stored and selected, so clients can join as roster staff.",
-      "deliverable": "research/roster.md",
-      "acceptance": [
-        "Where roster data lives at runtime and in the save, as far as observable",
-        "How a staff member is chosen for deployment and what defines their look and skills",
-        "Proposal for mapping client slots to roster staff"
-      ],
-      "refs": [
-        "phase1:R5",
-        "adr-0007"
-      ]
-    },
-    {
-      "id": "C08",
-      "title": "State inventory and sync priorities",
-      "module": "session",
-      "difficulty": "medium",
-      "skills": "Netcode, research",
-      "depends": [
-        "C06"
-      ],
-      "goal": "List every piece of state that must sync, ranked by cost and value.",
-      "deliverable": "research/state-inventory.md",
-      "acceptance": [
-        "Table of state items: owner (host or client), update rate, size estimate, priority",
-        "Covers players, enemies, vehicles, world objects, mission flags, time and weather, plus the shared alert status and who has joined it (ADR 0012)",
-        "Bandwidth estimate per player at 16 players",
-        "Reviewed by the networking module owner"
-      ],
-      "refs": [
-        "phase1:R4",
-        "r-netcode"
-      ]
-    },
-    {
-      "id": "C09",
-      "title": "Spike: GameNetworkingSockets, Steam Messages vs Sockets",
-      "module": "net",
-      "difficulty": "hard",
-      "skills": "C++, networking",
-      "depends": [],
-      "goal": "Prove the transport outside the game: open-source GameNetworkingSockets and Steam networking side by side.",
-      "deliverable": "tools/spikes/net/ and research/networking-spike.md",
-      "acceptance": [
-        "Builds on Windows and Linux from a clean checkout with written steps",
-        "Reliable and unreliable messages between two machines on both paths",
-        "Messages vs Sockets compared: API fit, NAT behavior, latency",
-        "Recommendation for ADR 0003"
-      ],
-      "refs": [
-        "phase1:R7",
-        "adr-0003",
-        "r-steam"
-      ]
-    },
-    {
-      "id": "C10",
-      "title": "Simulate 16 clients and measure bandwidth",
-      "module": "net",
-      "difficulty": "medium",
-      "skills": "C++, tooling",
-      "depends": [
-        "C09"
-      ],
-      "goal": "Measure what 16 clients cost.",
-      "deliverable": "research/performance.md",
-      "acceptance": [
-        "Simulator runs 1 host and 15 clients on one machine",
-        "Bandwidth and CPU at 2, 4, 8 and 16 players, with the state model from C08",
-        "Results under the bad-network profiles from C12"
-      ],
-      "refs": [
-        "phase1:R9"
-      ]
-    },
-    {
-      "id": "C11",
-      "title": "Mock Steam DLL for one-PC testing",
-      "module": "testing",
-      "difficulty": "hard",
-      "skills": "C++",
-      "depends": [],
-      "goal": "Test multiplayer on one PC without real Steam accounts.",
-      "deliverable": "tools/mocksteam/ and research/test-harness.md",
-      "acceptance": [
-        "Mock DLL answers the Steam calls our code uses, written from public docs only",
-        "Two game instances can talk through it on one machine",
-        "Clear warning that it is for development only, never shipped"
-      ],
-      "refs": [
-        "phase1:R8"
-      ]
-    },
-    {
-      "id": "C12",
-      "title": "Bad-network test profiles (clumsy, tc netem)",
-      "module": "testing",
-      "difficulty": "easy",
-      "skills": "Tooling",
-      "depends": [],
-      "goal": "Repeatable bad-network conditions for testing.",
-      "deliverable": "tools/netprofiles/",
-      "acceptance": [
-        "Profiles for good, average and bad connections (latency, jitter, loss)",
-        "Scripts for clumsy (Windows) and tc netem (Linux)",
-        "One-line usage in research/test-harness.md"
-      ],
-      "refs": [
-        "phase1:R8"
-      ]
-    },
-    {
-      "id": "C13",
-      "title": "Summarize networking playbook in our own words",
-      "module": "docs",
-      "difficulty": "easy",
-      "skills": "Writing",
-      "depends": [],
-      "goal": "Summarize the networking playbook in our own words.",
-      "deliverable": "research/networking-playbook-summary.md",
-      "acceptance": [
-        "Done. Kept here as an example of a finished small contract"
-      ],
-      "refs": [
-        "r-netcode"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "C14",
-      "title": "Draft Steam App ID and rights position",
-      "module": "legal",
-      "difficulty": "medium",
-      "skills": "Research",
-      "depends": [],
-      "goal": "A written position on using MGSV's Steam App ID, our license and donations.",
-      "deliverable": "docs/legal.md update",
-      "acceptance": [
-        "Position on App ID 287700 with sources, and the question drafted for Valve support",
-        "License recommendation matched to ADR 0005",
-        "Donation policy matched to the funding stance",
-        "Marked clearly as not legal advice"
-      ],
-      "refs": [
-        "phase1:R10",
-        "adr-0005",
-        "r-legal"
-      ]
-    },
-    {
-      "id": "C15",
-      "title": "Publish Phase 1 contracts as GitHub issues",
-      "module": "web",
-      "difficulty": "easy",
-      "skills": "GitHub",
-      "depends": [],
-      "goal": "Move the planned contracts onto GitHub so people can claim them.",
-      "deliverable": "GitHub issues with labels",
-      "acceptance": [
-        "One issue per contract with goal, deliverable and acceptance checklist",
-        "Labels contract, module:<name> and size:<S/M/L> set",
-        "Dependencies linked by issue number",
-        "The website board switches to live issues"
-      ],
-      "refs": [
-        "contributing"
-      ]
-    },
-    {
-      "id": "C16",
-      "title": "Lobby app wireframes",
-      "module": "lobby",
-      "difficulty": "medium",
-      "skills": "UI design",
-      "depends": [],
-      "goal": "Wireframes for the lobby and session screens.",
-      "deliverable": "docs/design/lobby/ (images plus notes)",
-      "acceptance": [
-        "Host flow: create session, invite, start",
-        "Player flow: join, gear selection, deploy",
-        "Fits ADR 0008 stage 1 (invite links)",
-        "Works with keyboard and gamepad"
-      ],
-      "refs": [
-        "adr-0008"
-      ]
-    },
-    {
-      "id": "C17",
-      "title": "Mod API draft v0",
-      "module": "modapi",
-      "difficulty": "hard",
-      "skills": "API design",
-      "depends": [
-        "C08"
-      ],
-      "goal": "First draft of the API other mods use to work with Joint Operations.",
-      "deliverable": "docs/modapi.md",
-      "acceptance": [
-        "Events, sync hooks and versioning rules drafted",
-        "Two example use cases written out",
-        "Compatibility stance on Infinite Heaven"
-      ],
-      "refs": [
-        "r-modding"
-      ]
-    },
-    {
-      "id": "C18",
-      "title": "Join and leave feasibility notes",
-      "module": "hooks",
-      "difficulty": "hard",
-      "skills": "Reverse engineering",
-      "depends": [
-        "C06"
-      ],
-      "goal": "Can players join and leave mid-session in a way that fits the game world?",
-      "deliverable": "research/join-leave.md",
-      "acceptance": [
-        "In-game arrival and departure mechanisms listed (helicopter, Fulton, others)",
-        "Feasibility for mid-mission join and leave, with known unknowns",
-        "What happens to a leaving client's staff member"
-      ],
-      "refs": [
-        "phase1:R6"
-      ]
-    },
-    {
-      "id": "C19",
-      "title": "Engine session spike: can 3+ players join?",
-      "module": "session",
-      "difficulty": "hard",
-      "core": true,
-      "skills": "Reverse engineering, networking",
-      "depends": [
-        "C04"
-      ],
-      "goal": "Find out whether the engine's own multiplayer layer can run a free-roam session with three or more players. This decides ADR 0002.",
-      "deliverable": "research/engine-session-spike.md",
-      "acceptance": [
-        "Time-boxed to two weeks, with a result either way",
-        "Whether a session with 3+ players starts: yes, no or partly, with logs",
-        "What blocks it, if anything",
-        "No Konami online services contacted at any point"
-      ],
-      "refs": [
-        "phase1:R12",
-        "adr-0002",
-        "r-engine"
-      ]
-    },
-    {
-      "id": "C20",
-      "title": "Steam interfaces from inside the game (rig test)",
-      "module": "net",
-      "difficulty": "medium",
-      "core": true,
-      "skills": "C++, Steamworks",
-      "depends": [
-        "C04"
-      ],
-      "goal": "Run the R13 rig test: confirm that current Steam networking interfaces are reachable from inside the game on Windows and Proton.",
-      "deliverable": "research/steam-interfaces.md (results section)",
-      "acceptance": [
-        "All six test steps in the note run on Windows and Proton",
-        "Pass or fail recorded per step, with Steam client and Proton versions",
-        "Which callback approach works",
-        "ADR 0003 updated with the result"
-      ],
-      "refs": [
-        "phase1:R13",
-        "r-steam-interfaces",
-        "adr-0003"
-      ]
-    },
-    {
-      "id": "C21",
-      "title": "Join links: Steam lobby links and launch arguments",
-      "module": "launcher",
-      "difficulty": "medium",
-      "skills": "Testing, Linux",
-      "depends": [
-        "C20"
-      ],
-      "goal": "Run the R14 rig tests for joining from a website.",
-      "deliverable": "research/browser-launch.md (results section)",
-      "acceptance": [
-        "Whether launch arguments reach the game through Konami's launcher",
-        "steam:// and a dummy jointops:// link tested from native and Flatpak browsers on Linux",
-        "Results feed ADR 0008"
-      ],
-      "refs": [
-        "phase1:R14",
-        "r-browser-launch",
-        "adr-0008"
-      ]
-    }
-  ]
+ "note": "Planned contracts with difficulty (easy, medium, hard), goals and acceptance criteria. core: true marks 0.1 critical-path work for the Development Department only (docs/departments.md). Shown when no GitHub issues carry the contract label yet. docs/contracts.md is generated from this file by tools/contracts_md.py.",
+ "contracts": [
+  {
+   "id": "C01",
+   "title": "Pin game build and set up Windows test rig",
+   "module": "testing",
+   "difficulty": "easy",
+   "skills": "Windows, docs",
+   "depends": [],
+   "goal": "Have one Windows machine that runs the exact game build we target, set up the same way every time.",
+   "deliverable": "research/environment.md (Windows section)",
+   "acceptance": [
+    "Game build 1.0.15.4 confirmed: exe file version and SHA-256 of mgsvtpp.exe recorded",
+    "Steam auto-update risk noted, and how to stay on the pinned build",
+    "Clean setup steps from install to main menu, reproducible by a second person",
+    "No game files or extracted assets in the repository"
+   ],
+   "refs": [
+    "phase1:R1"
+   ]
+  },
+  {
+   "id": "C02",
+   "title": "Proton test rig and setup guide",
+   "module": "testing",
+   "difficulty": "medium",
+   "skills": "Linux, Proton",
+   "depends": [
+    "C01"
+   ],
+   "goal": "Have a Linux machine with Proton that runs the same build, with a setup guide.",
+   "deliverable": "research/environment.md (Proton section)",
+   "acceptance": [
+    "Distro, Steam client build and Proton version recorded",
+    "Rig checklist in research/proton.md completed, results written down",
+    "A dummy dinput8.dll writes a log line under Proton with the documented launch option",
+    "Proton Experimental and latest GE-Proton both tried, differences noted"
+   ],
+   "refs": [
+    "phase1:R1",
+    "r-proton"
+   ]
+  },
+  {
+   "id": "C03",
+   "title": "Survey public MGSV modding tools and docs",
+   "module": "hooks",
+   "difficulty": "medium",
+   "skills": "Research",
+   "depends": [],
+   "goal": "Confirm on a rig the tool list from desk research, and find the community docs we can learn from.",
+   "deliverable": "research/file-formats-and-tools.md (rig-verified)",
+   "acceptance": [
+    "Each listed tool opened on build 1.0.15.4, with tool version and result",
+    "License of each tool recorded (reuse allowed, use only, or unknown)",
+    "Locations of mission scripts and player-related Lua listed (archive paths only, no content)"
+   ],
+   "refs": [
+    "r-formats",
+    "r-modding"
+   ]
+  },
+  {
+   "id": "C04",
+   "title": "Document mod loading path (Windows)",
+   "module": "launcher",
+   "difficulty": "hard",
+   "core": true,
+   "skills": "Reverse engineering, C++",
+   "depends": [
+    "C03"
+   ],
+   "goal": "Know exactly how our native code gets into the game on Windows, alone and alongside IHHook.",
+   "deliverable": "research/loading.md",
+   "acceptance": [
+    "A test DLL loads as a dinput8 proxy and logs its start",
+    "A test plugin loads through IHHook's plugins folder (if the interface is suitable), or the reason it is not",
+    "Load order and timing relative to the game's Lua start recorded",
+    "Recommendation for ADR 0004 with evidence"
+   ],
+   "refs": [
+    "phase1:R2",
+    "adr-0004"
+   ]
+  },
+  {
+   "id": "C05",
+   "title": "Document mod loading path (Proton)",
+   "module": "launcher",
+   "difficulty": "medium",
+   "core": true,
+   "skills": "Reverse engineering, Linux",
+   "depends": [
+    "C04"
+   ],
+   "goal": "The same loading path, confirmed under Proton.",
+   "deliverable": "research/loading.md (Proton section)",
+   "acceptance": [
+    "Both load paths from C04 tested under Proton",
+    "Any differences in timing, file paths or logging recorded",
+    "Exact launch options players need, ready to paste"
+   ],
+   "refs": [
+    "phase1:R2",
+    "r-proton"
+   ]
+  },
+  {
+   "id": "C06",
+   "title": "Player and companion representation notes",
+   "module": "hooks",
+   "difficulty": "hard",
+   "core": true,
+   "skills": "Reverse engineering",
+   "depends": [
+    "C04"
+   ],
+   "goal": "Understand how the player character and companions are created and controlled, and whether more controllable characters can exist.",
+   "deliverable": "research/players.md",
+   "acceptance": [
+    "Lua and native entry points involved in player and buddy spawn listed (names and archive paths, no copied code)",
+    "Whether a second controllable character can exist in free roam: yes, no or unknown, with evidence",
+    "How FOB and MGO create additional players, as far as observable",
+    "Confidence marked for every claim"
+   ],
+   "refs": [
+    "phase1:R3",
+    "adr-0007"
+   ]
+  },
+  {
+   "id": "C07",
+   "title": "Mother Base roster notes",
+   "module": "hooks",
+   "difficulty": "medium",
+   "skills": "Reverse engineering",
+   "depends": [
+    "C04"
+   ],
+   "goal": "Understand how Mother Base staff are stored and selected, so clients can join as roster staff.",
+   "deliverable": "research/roster.md",
+   "acceptance": [
+    "Where roster data lives at runtime and in the save, as far as observable",
+    "How a staff member is chosen for deployment and what defines their look and skills",
+    "Proposal for mapping client slots to roster staff"
+   ],
+   "refs": [
+    "phase1:R5",
+    "adr-0007"
+   ]
+  },
+  {
+   "id": "C08",
+   "title": "State inventory and sync priorities",
+   "module": "session",
+   "difficulty": "medium",
+   "skills": "Netcode, research",
+   "depends": [
+    "C06"
+   ],
+   "goal": "List every piece of state that must sync, ranked by cost and value.",
+   "deliverable": "research/state-inventory.md",
+   "acceptance": [
+    "Table of state items: owner (host or client), update rate, size estimate, priority",
+    "Covers players, enemies, vehicles, world objects, mission flags, time and weather, plus the shared alert status and who has joined it (ADR 0012)",
+    "Bandwidth estimate per player at 16 players",
+    "Reviewed by the networking module owner"
+   ],
+   "refs": [
+    "phase1:R4",
+    "r-netcode"
+   ]
+  },
+  {
+   "id": "C09",
+   "title": "Spike: GameNetworkingSockets, Steam Messages vs Sockets",
+   "module": "net",
+   "difficulty": "hard",
+   "skills": "C++, networking",
+   "depends": [],
+   "goal": "Prove the transport outside the game: open-source GameNetworkingSockets and Steam networking side by side.",
+   "deliverable": "tools/spikes/net/ and research/networking-spike.md",
+   "acceptance": [
+    "Builds on Windows and Linux from a clean checkout with written steps",
+    "Reliable and unreliable messages between two machines on both paths",
+    "Messages vs Sockets compared: API fit, NAT behavior, latency",
+    "Recommendation for ADR 0003"
+   ],
+   "refs": [
+    "phase1:R7",
+    "adr-0003",
+    "r-steam"
+   ]
+  },
+  {
+   "id": "C10",
+   "title": "Simulate 16 clients and measure bandwidth",
+   "module": "net",
+   "difficulty": "medium",
+   "skills": "C++, tooling",
+   "depends": [
+    "C09"
+   ],
+   "goal": "Measure what 16 clients cost.",
+   "deliverable": "research/performance.md",
+   "acceptance": [
+    "Simulator runs 1 host and 15 clients on one machine",
+    "Bandwidth and CPU at 2, 4, 8 and 16 players, with the state model from C08",
+    "Results under the bad-network profiles from C12"
+   ],
+   "refs": [
+    "phase1:R9"
+   ]
+  },
+  {
+   "id": "C11",
+   "title": "Mock Steam DLL for one-PC testing",
+   "module": "testing",
+   "difficulty": "hard",
+   "skills": "C++",
+   "depends": [],
+   "goal": "Test multiplayer on one PC without real Steam accounts.",
+   "deliverable": "tools/mocksteam/ and research/test-harness.md",
+   "acceptance": [
+    "Mock DLL answers the Steam calls our code uses, written from public docs only",
+    "Two game instances can talk through it on one machine",
+    "Clear warning that it is for development only, never shipped"
+   ],
+   "refs": [
+    "phase1:R8"
+   ]
+  },
+  {
+   "id": "C12",
+   "title": "Bad-network test profiles (clumsy, tc netem)",
+   "module": "testing",
+   "difficulty": "easy",
+   "skills": "Tooling",
+   "depends": [],
+   "goal": "Repeatable bad-network conditions for testing.",
+   "deliverable": "tools/netprofiles/",
+   "acceptance": [
+    "Profiles for good, average and bad connections (latency, jitter, loss)",
+    "Scripts for clumsy (Windows) and tc netem (Linux)",
+    "One-line usage in research/test-harness.md"
+   ],
+   "refs": [
+    "phase1:R8"
+   ]
+  },
+  {
+   "id": "C13",
+   "title": "Summarize networking playbook in our own words",
+   "module": "docs",
+   "difficulty": "easy",
+   "skills": "Writing",
+   "depends": [],
+   "goal": "Summarize the networking playbook in our own words.",
+   "deliverable": "research/networking-playbook-summary.md",
+   "acceptance": [
+    "Done. Kept here as an example of a finished small contract"
+   ],
+   "refs": [
+    "r-netcode"
+   ],
+   "status": "done"
+  },
+  {
+   "id": "C14",
+   "title": "Draft Steam App ID and rights position",
+   "module": "legal",
+   "difficulty": "medium",
+   "skills": "Research",
+   "depends": [],
+   "goal": "A written position on using MGSV's Steam App ID, our license and donations.",
+   "deliverable": "docs/legal.md update",
+   "acceptance": [
+    "Position on App ID 287700 with sources, and the question drafted for Valve support",
+    "License recommendation matched to ADR 0005",
+    "Donation policy matched to the funding stance",
+    "Marked clearly as not legal advice"
+   ],
+   "refs": [
+    "phase1:R10",
+    "adr-0005",
+    "r-legal"
+   ]
+  },
+  {
+   "id": "C15",
+   "title": "Publish Phase 1 contracts as GitHub issues",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "GitHub",
+   "depends": [],
+   "goal": "Move the planned contracts onto GitHub so people can claim them.",
+   "deliverable": "GitHub issues with labels",
+   "acceptance": [
+    "One issue per contract with goal, deliverable and acceptance checklist",
+    "Labels contract, module:<name> and size:<S/M/L> set",
+    "Dependencies linked by issue number",
+    "The website board switches to live issues"
+   ],
+   "refs": [
+    "contributing"
+   ]
+  },
+  {
+   "id": "C16",
+   "title": "Lobby app wireframes",
+   "module": "lobby",
+   "difficulty": "medium",
+   "skills": "UI design",
+   "depends": [],
+   "goal": "Wireframes for the lobby and session screens.",
+   "deliverable": "docs/design/lobby/ (images plus notes)",
+   "acceptance": [
+    "Host flow: create session, invite, start",
+    "Player flow: join, gear selection, deploy",
+    "Fits ADR 0008 stage 1 (invite links)",
+    "Works with keyboard and gamepad"
+   ],
+   "refs": [
+    "adr-0008"
+   ]
+  },
+  {
+   "id": "C17",
+   "title": "Mod API draft v0",
+   "module": "modapi",
+   "difficulty": "hard",
+   "skills": "API design",
+   "depends": [
+    "C08"
+   ],
+   "goal": "First draft of the API other mods use to work with Joint Operations.",
+   "deliverable": "docs/modapi.md",
+   "acceptance": [
+    "Events, sync hooks and versioning rules drafted",
+    "Two example use cases written out",
+    "Compatibility stance on Infinite Heaven"
+   ],
+   "refs": [
+    "r-modding"
+   ]
+  },
+  {
+   "id": "C18",
+   "title": "Join and leave feasibility notes",
+   "module": "hooks",
+   "difficulty": "hard",
+   "skills": "Reverse engineering",
+   "depends": [
+    "C06"
+   ],
+   "goal": "Can players join and leave mid-session in a way that fits the game world?",
+   "deliverable": "research/join-leave.md",
+   "acceptance": [
+    "In-game arrival and departure mechanisms listed (helicopter, Fulton, others)",
+    "Feasibility for mid-mission join and leave, with known unknowns",
+    "What happens to a leaving client's staff member"
+   ],
+   "refs": [
+    "phase1:R6"
+   ]
+  },
+  {
+   "id": "C19",
+   "title": "Engine session spike: can 3+ players join?",
+   "module": "session",
+   "difficulty": "hard",
+   "core": true,
+   "skills": "Reverse engineering, networking",
+   "depends": [
+    "C04"
+   ],
+   "goal": "Find out whether the engine's own multiplayer layer can run a free-roam session with three or more players. This decides ADR 0002.",
+   "deliverable": "research/engine-session-spike.md",
+   "acceptance": [
+    "Time-boxed to two weeks, with a result either way",
+    "Whether a session with 3+ players starts: yes, no or partly, with logs",
+    "What blocks it, if anything",
+    "No Konami online services contacted at any point"
+   ],
+   "refs": [
+    "phase1:R12",
+    "adr-0002",
+    "r-engine"
+   ]
+  },
+  {
+   "id": "C20",
+   "title": "Steam interfaces from inside the game (rig test)",
+   "module": "net",
+   "difficulty": "medium",
+   "core": true,
+   "skills": "C++, Steamworks",
+   "depends": [
+    "C04"
+   ],
+   "goal": "Run the R13 rig test: confirm that current Steam networking interfaces are reachable from inside the game on Windows and Proton.",
+   "deliverable": "research/steam-interfaces.md (results section)",
+   "acceptance": [
+    "All six test steps in the note run on Windows and Proton",
+    "Pass or fail recorded per step, with Steam client and Proton versions",
+    "Which callback approach works",
+    "ADR 0003 updated with the result"
+   ],
+   "refs": [
+    "phase1:R13",
+    "r-steam-interfaces",
+    "adr-0003"
+   ]
+  },
+  {
+   "id": "C21",
+   "title": "Join links: Steam lobby links and launch arguments",
+   "module": "launcher",
+   "difficulty": "medium",
+   "skills": "Testing, Linux",
+   "depends": [
+    "C20"
+   ],
+   "goal": "Run the R14 rig tests for joining from a website.",
+   "deliverable": "research/browser-launch.md (results section)",
+   "acceptance": [
+    "Whether launch arguments reach the game through Konami's launcher",
+    "steam:// and a dummy jointops:// link tested from native and Flatpak browsers on Linux",
+    "Results feed ADR 0008"
+   ],
+   "refs": [
+    "phase1:R14",
+    "r-browser-launch",
+    "adr-0008"
+   ]
+  },
+  {
+   "id": "C22",
+   "title": "Website accessibility pass",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "HTML, CSS, screen readers",
+   "depends": [],
+   "goal": "Make every page of the website usable by keyboard and screen reader, with readable contrast.",
+   "deliverable": "Pull request with fixes, and a short report in research/accessibility.md",
+   "acceptance": [
+    "Every page and control reachable and usable with the keyboard alone",
+    "Text contrast meets WCAG AA on all pages",
+    "Tested with one screen reader (NVDA, Orca or VoiceOver); findings written down",
+    "No visual regressions in the browser smoke test"
+   ],
+   "refs": [
+    "brand"
+   ]
+  },
+  {
+   "id": "C23",
+   "title": "HUD design for the shared alert",
+   "module": "lobby",
+   "difficulty": "medium",
+   "skills": "UI design, MGSV",
+   "depends": [],
+   "goal": "Design how each player sees the one shared alert status and whether they are part of it.",
+   "deliverable": "Mockups (vector or hand-built, no generative AI art) and notes in docs/design/alert-hud.md",
+   "acceptance": [
+    "Shows Hidden, Searched for and Detected, and which players are in the alert",
+    "Fits the game's own HUD style without copying Konami assets",
+    "Readable at 1080p and on Steam Deck",
+    "Reviewed against ADR 0012"
+   ],
+   "refs": [
+    "adr-0012"
+   ]
+  },
+  {
+   "id": "C24",
+   "title": "Session Browser against a mock registry",
+   "module": "web",
+   "difficulty": "medium",
+   "skills": "JavaScript, JSON",
+   "depends": [],
+   "goal": "Make the website's Session Browser read sessions from a mock of the planned session registry API.",
+   "deliverable": "A mock registry JSON and the Session Browser changes, behind the existing data hook",
+   "acceptance": [
+    "Mock follows the registry sketch in ADR 0008",
+    "Search, region filter, sorting and Hide full work on mock data",
+    "Empty and error states stay calm and clear",
+    "Smoke test passes in all three engines"
+   ],
+   "refs": [
+    "adr-0008",
+    "r-browser-launch"
+   ]
+  },
+  {
+   "id": "C25",
+   "title": "Player FAQ",
+   "module": "docs",
+   "difficulty": "easy",
+   "skills": "Writing",
+   "depends": [],
+   "goal": "Answer the questions new players will ask, in plain words.",
+   "deliverable": "docs/faq.md, linked from the Player Guide",
+   "acceptance": [
+    "At least 15 questions: install, hosting, joining, saves, Linux, safety, Konami servers",
+    "Answers match the Player Guide and the ADRs",
+    "Follows the documentation style guide (HP-GDE-005)"
+   ],
+   "refs": [
+    "glossary"
+   ]
+  },
+  {
+   "id": "C26",
+   "title": "Engine terms glossary",
+   "module": "docs",
+   "difficulty": "medium",
+   "skills": "Research, writing",
+   "depends": [
+    "C03"
+   ],
+   "goal": "Explain the Fox Engine and MGSV terms the project uses, in our own words.",
+   "deliverable": "New section in docs/glossary.md",
+   "acceptance": [
+    "Covers file formats, mission phases, Mother Base units and the terms used in research notes",
+    "Every entry written in our own words, sources linked",
+    "No copied text from other projects"
+   ],
+   "refs": [
+    "r-engine",
+    "r-formats"
+   ]
+  },
+  {
+   "id": "C27",
+   "title": "Steam Deck and Bazzite test checklist",
+   "module": "testing",
+   "difficulty": "medium",
+   "skills": "Linux, Steam Deck",
+   "depends": [
+    "C02"
+   ],
+   "goal": "A repeatable checklist for testing on Steam Deck and Bazzite.",
+   "deliverable": "Section in docs/guides/HP-GDE-004 (Quality and Testing Guide)",
+   "acceptance": [
+    "Covers install, launch option, controller, performance overlay and suspend/resume",
+    "Run once on real hardware, results recorded",
+    "Known issues listed with workarounds"
+   ],
+   "refs": [
+    "r-proton"
+   ]
+  },
+  {
+   "id": "C28",
+   "title": "Alert phases and enemy perception notes",
+   "module": "hooks",
+   "difficulty": "hard",
+   "skills": "Reverse engineering, Lua",
+   "depends": [
+    "C03"
+   ],
+   "goal": "Find how the game's alert phases and enemy perception work, and whether they can be driven per player.",
+   "deliverable": "research/alert-system.md",
+   "acceptance": [
+    "Describes how alert phases change and what triggers them",
+    "Finds where enemy perception picks its target",
+    "States whether per-player targeting with one shared alert (ADR 0012) looks possible, with evidence",
+    "Clean-room: notes in our own words, no game files"
+   ],
+   "refs": [
+    "adr-0012",
+    "phase1:R3",
+    "phase1:R4"
+   ]
+  },
+  {
+   "id": "C29",
+   "title": "Mission flow and checkpoint notes",
+   "module": "hooks",
+   "difficulty": "medium",
+   "skills": "Reverse engineering, MGSV",
+   "depends": [
+    "C03"
+   ],
+   "goal": "Map how a mission starts, checkpoints, fails and ends, so the host can drive it for everyone.",
+   "deliverable": "research/mission-flow.md",
+   "acceptance": [
+    "Covers deploy, checkpoints, mission fail, extraction and results screen",
+    "Notes which steps a client must follow and which only the host runs",
+    "Clean-room: own words, no game files"
+   ],
+   "refs": [
+    "adr-0007",
+    "r-engine"
+   ]
+  },
+  {
+   "id": "C30",
+   "title": "Third-party notices",
+   "module": "legal",
+   "difficulty": "easy",
+   "skills": "Licenses",
+   "depends": [],
+   "goal": "List every third-party component we ship and its license.",
+   "deliverable": "THIRD_PARTY_NOTICES.md",
+   "acceptance": [
+    "Covers fonts, libraries and tools that end up in releases or on the website",
+    "Each entry has name, version, license and link",
+    "Checked against the project license decision (ADR 0005)"
+   ],
+   "refs": [
+    "adr-0005",
+    "legal"
+   ]
+  }
+ ],
+ "updated": "2026-10-22"
 }

@@ -1,6 +1,6 @@
 # Recruiting kit
 
-Status: DRAFT. Nothing here is posted yet. The project lead decides when and where to post.
+Status: DRAFT. Nothing here is posted before version 0.1: the project stays quiet until then ([ADR 0014](decisions/0014-quiet-until-0-1.md)). Before 0.1, recruiting is by personal invitation only. The project lead decides when and where to post.
 
 **Two waves.** Before 0.1, the project lead builds the core ([ADR 0009](decisions/0009-departments-and-ranks.md)), so we recruit for the **Quality** and **Administration** departments (testers, reviewers, moderators) and build a following. After 0.1, contracts open and we recruit **contractors** for development.
 

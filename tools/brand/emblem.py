@@ -132,13 +132,13 @@ def arc_text(text_glyphs, r, centre_deg, top=True, cx=200, cy=200):
 
 def emblem(glyphs, mono=False, mid="jo-ops"):
     """glyphs(text, size, tracking) -> list of (draw(matrix, dx) -> path d, advance)."""
-    WHITE, AMBER, INK = "#e9edee", "#c9a24a", "#0b0e10"
+    WHITE, AMBER, INK = "#e9edee", "#f28c28", "#0b0e10"  # Joint Operations: orange and white
     fg, acc = ("currentColor", "currentColor") if mono else (WHITE, AMBER)
     parts = []
     if not mono:
         parts.append(f'<circle cx="200" cy="200" r="197" fill="{INK}"/>')
     parts.append(f'<circle cx="200" cy="200" r="194" fill="none" stroke="{fg}" stroke-width="4"/>')
-    parts.append(f'<circle cx="200" cy="200" r="160" fill="none" stroke="{acc}" stroke-width="1.6"/>')
+    parts.append(f'<circle cx="200" cy="200" r="160" fill="none" stroke="{acc}" stroke-width="3"/>')
     parts.append(f'<circle cx="200" cy="200" r="154" fill="none" stroke="{fg}" stroke-width="1" stroke-opacity=".5"/>')
     # Sixteen marks: sixteen players. The top one is the host, drawn as a diamond.
     for i in range(16):

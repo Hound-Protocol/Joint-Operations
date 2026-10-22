@@ -19,6 +19,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 OUT = ROOT / "site/assets/brand"
 FONTS = ROOT / "site/assets/fonts"
 WHITE, AMBER, INK = "#e9edee", "#c9a24a", "#0b0e10"
+# Brand colours: Joint Operations is orange and white, Hound Protocol is white, black and red
+ORANGE, RED, PAPER = "#f28c28", "#d0303a", "#f3efe6"
 
 # Hound head in profile, facing right, on a 100 x 100 grid: pointed ear, long muzzle, cut neck.
 HOUND = "M40 8 L50 29 L61 35 L84 42 L93 47 L90 53 L74 56 L63 60 L55 70 L54 92 L23 95 L28 58 L31 34 L35 24 Z"
@@ -70,20 +72,29 @@ def hex_points(cx, cy, r):
     return " ".join(f"{cx + r * math.cos(math.radians(a)):.2f},{cy + r * math.sin(math.radians(a)):.2f}" for a in range(-90, 270, 60))
 
 
-def hound_mark(mono=False, fg=WHITE, acc=AMBER, cut=INK):
-    """Hound Protocol: hexagon insignia with the hound."""
+def hound_mark(mono=False, fg=WHITE, acc=RED, fill=INK):
+    """Hound Protocol: a black hexagon insignia, white hound with a red collar and eye, red inner ring."""
     if mono:
         fg = acc = "currentColor"
     # Eye, inner ear and mouth are cut out of the head (even-odd fill), so the mark works in any single colour
     head = HOUND + " " + " ".join(HOUND_CUTS)
-    return (f'<polygon points="{hex_points(100, 100, 92)}" fill="none" stroke="{fg}" stroke-width="5"/>'
-            f'<polygon points="{hex_points(100, 100, 78)}" fill="none" stroke="{acc}" stroke-width="1.6"/>'
-            f'<g transform="translate(46 42) scale(1.1)"><path d="{head}" fill="{fg}" fill-rule="evenodd"/></g>')
+    collar = "M24.8 81 L54.5 80 L54.3 87.5 L24 88.5 Z"
+    body = ""
+    if not mono:
+        body += f'<polygon points="{hex_points(100, 100, 92)}" fill="{fill}"/>'
+    body += (f'<polygon points="{hex_points(100, 100, 92)}" fill="none" stroke="{fg}" stroke-width="6"/>'
+             f'<polygon points="{hex_points(100, 100, 79)}" fill="none" stroke="{acc}" stroke-width="3"/>'
+             f'<g transform="translate(46 42) scale(1.1)"><path d="{head}" fill="{fg}" fill-rule="evenodd"/>')
+    if mono:
+        body += "</g>"  # one colour: no collar, the eye stays cut out
+    else:
+        body += f'<path d="{HOUND_CUTS[0]}" fill="{acc}"/><path d="{collar}" fill="{acc}"/></g>'
+    return body
 
 
 def ops_mark(mono=False, bold=False):
     """Joint Operations: sixteen marks (sixteen players) around the host, four routes converging."""
-    fg, acc = ("currentColor", "currentColor") if mono else (WHITE, AMBER)
+    fg, acc = ("currentColor", "currentColor") if mono else (WHITE, ORANGE)
     w = 9 if bold else 5
     ticks = "".join(
         f'<line x1="{100 + math.cos(a) * 70:.2f}" y1="{100 + math.sin(a) * 70:.2f}" x2="{100 + math.cos(a) * 90:.2f}" y2="{100 + math.sin(a) * 90:.2f}" stroke="{fg}" stroke-width="{w}"/>'
@@ -103,7 +114,7 @@ def main():
         "hound-protocol-mark-mono.svg": svg(200, 200, hound_mark(True), "Hound Protocol"),
         "joint-operations-mark.svg": svg(200, 200, ops_mark(), "Joint Operations"),
         "joint-operations-mark-mono.svg": svg(200, 200, ops_mark(True), "Joint Operations"),
-        "hound-protocol-mark-light.svg": svg(200, 200, hound_mark(fg=INK, acc="#a07c2c", cut="#f3efe6"), "Hound Protocol"),
+        "hound-protocol-mark-light.svg": svg(200, 200, hound_mark(fg=INK, acc=RED, fill=PAPER), "Hound Protocol"),
         "joint-operations-mark-light.svg": svg(200, 200, ops_mark().replace(WHITE, INK), "Joint Operations"),
     }
     # Official Joint Operations emblem: three operatives, sixteen marks, the host marker
@@ -116,10 +127,10 @@ def main():
     hp2, w2 = text_path("PROTOCOL", size=64, tracking=0.32, x=236, y=172)
     hp3, _ = text_path("DEVELOPMENT TEAM", font="share-tech-mono-regular.woff", size=18, tracking=0.55, x=240, y=214)
     wl = 236 + max(w1, w2) + 20
-    files["hound-protocol-lockup.svg"] = svg(int(wl), 230, f'<g>{hound_mark()}</g><path d="{hp1} {hp2}" fill="{WHITE}"/><path d="{hp3}" fill="{AMBER}"/>', "Hound Protocol")
+    files["hound-protocol-lockup.svg"] = svg(int(wl), 230, f'<g>{hound_mark()}</g><path d="{hp1} {hp2}" fill="{WHITE}"/><path d="{hp3}" fill="{RED}"/>', "Hound Protocol")
     jo1, wj = text_path("JOINT OPERATIONS", size=60, tracking=0.3, x=232, y=120)
     jo2, _ = text_path("MGSV MULTIPLAYER MOD", font="share-tech-mono-regular.woff", size=18, tracking=0.55, x=236, y=162)
-    files["joint-operations-lockup.svg"] = svg(int(232 + wj + 20), 200, f'<g transform="scale(.5)">{jo_emblem.emblem(glyphs, mid="jo-ops-l")}</g><path d="{jo1}" fill="{WHITE}"/><path d="{jo2}" fill="{AMBER}"/>', "Joint Operations")
+    files["joint-operations-lockup.svg"] = svg(int(232 + wj + 20), 200, f'<g transform="scale(.5)">{jo_emblem.emblem(glyphs, mid="jo-ops-l")}</g><path d="{jo1}" fill="{WHITE}"/><path d="{jo2}" fill="{ORANGE}"/>', "Joint Operations")
     for name, body in files.items():
         (OUT / name).write_text(body, encoding="utf-8")
     # Site icons: favicon (bold for small sizes) and the faint background emblem
@@ -127,12 +138,14 @@ def main():
     fav = "".join(
         f'<line x1="{100 + math.cos(a) * 62:.1f}" y1="{100 + math.sin(a) * 62:.1f}" x2="{100 + math.cos(a) * 88:.1f}" y2="{100 + math.sin(a) * 88:.1f}" stroke="{WHITE}" stroke-width="16"/>'
         for a in (i / 8 * 2 * math.pi - math.pi / 2 for i in range(8)))
-    (ROOT / "site/assets/img/favicon.svg").write_text(svg(200, 200, f'<rect width="200" height="200" rx="34" fill="{INK}"/>{fav}<polygon points="100,58 142,100 100,142 58,100" fill="{AMBER}"/>', "Joint Operations"), encoding="utf-8")
+    (ROOT / "site/assets/img/favicon.svg").write_text(svg(200, 200, f'<rect width="200" height="200" rx="34" fill="{INK}"/>{fav}<polygon points="100,58 142,100 100,142 58,100" fill="{ORANGE}"/>', "Joint Operations"), encoding="utf-8")
     # Inline marks for the site script (one colour, follows the text colour)
     js = ("  /* Brand marks, generated by tools/brand/build_brand.py. Do not edit by hand. */\n"
           "  var BRAND = {\n"
           f"    hp: '<svg class=\"bm\" viewBox=\"0 0 200 200\" aria-hidden=\"true\">{hound_mark(True)}</svg>',\n"
-          f"    jo: '<svg class=\"bm\" viewBox=\"0 0 200 200\" aria-hidden=\"true\">{ops_mark(True)}</svg>'\n"
+          f"    jo: '<svg class=\"bm\" viewBox=\"0 0 200 200\" aria-hidden=\"true\">{ops_mark(True)}</svg>',\n"
+          f"    hpColor: '<svg class=\"bm\" viewBox=\"0 0 200 200\" aria-hidden=\"true\">{hound_mark()}</svg>',\n"
+          f"    joColor: '<svg class=\"bm\" viewBox=\"0 0 200 200\" aria-hidden=\"true\">{ops_mark()}</svg>'\n"
           "  };\n")
     (ROOT / "site/src/js/04b-brand.js").write_text(js, encoding="utf-8")
     print("Wrote", ", ".join(files), "+ favicon.svg, site/src/js/04b-brand.js")

@@ -2,6 +2,17 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.8 · Brand colors and license · 2026-10-22
+New brand colors, a chosen license, a smoother site and a sharper contract board.
+
+- **Logos:** Joint Operations is now orange and white; Hound Protocol is white, black and red, with a red collar and eye on the hound. New emblem, marks, lockups, avatars, favicon and link banner ([brand guide](docs/brand.md)).
+- **License** ([ADR 0005](docs/decisions/0005-license.md), [LICENSING.md](LICENSING.md)): code GPL-3.0-only with a permission to link with the Steamworks SDK and run inside MGSV; documentation CC BY-SA 4.0; names and logos reserved. Forks are welcome, must stay open and keep the credits.
+- **Quiet until 0.1** ([ADR 0014](docs/decisions/0014-quiet-until-0-1.md)): no promotion before 0.1, recruiting by invitation, public launch with 0.1.
+- **Contribute:** labeled separators between rows; columns renamed **Code** and **Architecture Research**; bigger counts; "Select your difficulty to apply filters" with a clear "Filter on" state; **How it works** as a large centered button with its own caption; last update time; Acceptance criteria and Open as issue as real buttons. Nine new contracts (C22 to C30).
+- **Docs:** the neural web builds twice as fast; a "Don't like the neural interface? Switch back to classic" bar above it; a guide beside it that explains what you can do.
+- **Readability:** small text across the site is a size larger.
+- **Smooth interface:** pages and tabs rise in gently, cards stagger in, hovers and state changes ease instead of snapping.
+
 ## v0.0.7 · Chain of command · 2026-10-22
 A solid hierarchy, grades that match the game, a calmer interface and support for older browsers.
 
