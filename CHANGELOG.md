@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.10 · Salute · 2026-10-22
+- **New background artwork:** a line of saluting operatives with their commander standing behind them. Original vector art drawn in code (`tools/brand/salute.py`), one color, faint behind every page. The commander is our own figure, not an existing character. Options → Background artwork turns it off.
+- **Download stands out:** orange in the main menu and the section bar, in Joint Operations colors.
+- **Download is about the game only:** the mod's status, its current roadmap phase and progress toward 0.1, install steps and requirements. Website and foundation updates moved out (they are in the Dev Log). "Help test" is now "Contribute to Joint Operations".
+
 ## v0.0.9 · Agent attribution · 2026-10-22
 Who did it, and with what.
 
