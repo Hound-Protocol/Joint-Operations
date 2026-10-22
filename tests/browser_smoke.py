@@ -56,7 +56,13 @@ async def check(browser, name, size):
     await page.goto(BASE + "#/roadmap"); await page.wait_for_timeout(900)
     if await page.locator(".bf-road .ph").count() < 3:
         failures.append("roadmap: phases missing")
-    await page.goto(BASE + "#/docs/plan"); await page.wait_for_timeout(3600)
+    await page.goto(BASE + "#/docs/plan")
+    # Wait for the neural web to finish building (about 3 s), with headroom for slower engines
+    try:
+        await page.wait_for_function("window.JO && JO.docsGraph() && JO.docsGraph().ready", timeout=12000)
+    except Exception:
+        pass
+    await page.wait_for_timeout(800)
     if len(await page.inner_text("#nwBody")) < 200:
         failures.append("docs: plan did not open in the neural web")
     graph = await page.evaluate("JO.docsGraph()")
