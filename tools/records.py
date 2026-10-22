@@ -16,6 +16,10 @@ Commands:
                                 sign and append a record
   staff-add --login LOGIN --card LV3..LV7 --department NAME [--name NAME] [--discord-id ID]
                                 issue a signed staff card with a permanent Hound ID (HND-NNNN)
+  staff-add ... --ssh-key SHA256:...
+                                also pin the holder's SSH signing key (ssh-keygen -lf KEY.pub)
+  staff-pin --id HND-NNNN --ssh-key SHA256:...
+                                pin or change the SSH signing key on a card (re-signed)
   staff-revoke --id HND-NNNN --reason TEXT
                                 mark a staff card as revoked (re-signed, never deleted)
   verify                        check every record and staff card (used by CI)
@@ -33,7 +37,7 @@ CONTRACTS = ROOT / "site/data/contracts.json"
 STAFF = ROOT / "site/data/staff.json"
 CARDS = ("LV3", "LV4", "LV5", "LV6", "LV7")
 DEPARTMENTS = ("Administration", "Development", "Quality", "Contractor")
-STAFF_FIELDS = {"id", "kind", "login", "github_id", "name", "discord_id", "card", "department", "since", "status", "revoked", "reason", "key", "sig"}
+STAFF_FIELDS = {"id", "kind", "login", "github_id", "name", "discord_id", "ssh_key", "card", "department", "since", "status", "revoked", "reason", "key", "sig"}
 STAFF_REQUIRED = {"id", "kind", "login", "github_id", "card", "department", "since", "status", "key", "sig"}
 KEY_DIR = pathlib.Path(os.environ.get("HP_RECORDS_KEY_DIR", pathlib.Path.home() / ".config/hound-protocol"))
 DIFFICULTIES = ("easy", "medium", "hard")
@@ -201,10 +205,32 @@ def cmd_staff_add(a):
         card_rec["name"] = a.name
     if a.discord_id:
         card_rec["discord_id"] = a.discord_id
+    if a.ssh_key:
+        card_rec["ssh_key"] = ssh_fp(a.ssh_key)
     card_rec["sig"] = base64.b64encode(priv.sign(canonical(card_rec))).decode()
     staff["staff"].append(card_rec)
     save(STAFF, staff)
     print(f"Issued {card_rec['id']}: {a.login} (GitHub ID {gid}) · {card} · {dept}")
+
+
+def ssh_fp(v):
+    if not re.fullmatch(r"SHA256:[A-Za-z0-9+/]{43}", v or ""):
+        sys.exit("--ssh-key must be a key fingerprint like SHA256:abc... (run: ssh-keygen -lf ~/.ssh/id_ed25519.pub)")
+    return v
+
+
+def cmd_staff_pin(a):
+    staff = load(STAFF, {"version": 1, "staff": []})
+    s = next((x for x in staff["staff"] if x["id"] == a.id), None)
+    if not s or s["status"] != "active":
+        sys.exit("No active staff card with that ID.")
+    kid, priv = signer(a.key_id)
+    s["ssh_key"] = ssh_fp(a.ssh_key)
+    s["key"] = kid
+    s.pop("sig", None)
+    s["sig"] = base64.b64encode(priv.sign(canonical(s))).decode()
+    save(STAFF, staff)
+    print(f"Pinned {a.ssh_key} to {a.id}.")
 
 
 def cmd_staff_revoke(a):
@@ -301,12 +327,13 @@ def main():
     d.add_argument("--assisted-by", help="AI agents used, comma separated. Default: detected from the pull request's commits")
     sa = sub.add_parser("staff-add")
     sa.add_argument("--login", required=True); sa.add_argument("--card", required=True); sa.add_argument("--department", required=True)
-    sa.add_argument("--name"); sa.add_argument("--discord-id"); sa.add_argument("--github-id", type=int); sa.add_argument("--since"); sa.add_argument("--key-id")
+    sa.add_argument("--name"); sa.add_argument("--discord-id"); sa.add_argument("--github-id", type=int); sa.add_argument("--since"); sa.add_argument("--key-id"); sa.add_argument("--ssh-key")
+    sp = sub.add_parser("staff-pin"); sp.add_argument("--id", required=True); sp.add_argument("--ssh-key", required=True); sp.add_argument("--key-id")
     sr = sub.add_parser("staff-revoke"); sr.add_argument("--id", required=True); sr.add_argument("--reason", required=True); sr.add_argument("--key-id")
     sub.add_parser("verify")
     s = sub.add_parser("show"); s.add_argument("id")
     a = p.parse_args()
-    {"keygen": cmd_keygen, "add": cmd_add, "staff-add": cmd_staff_add, "staff-revoke": cmd_staff_revoke, "verify": cmd_verify, "show": cmd_show}[a.cmd](a)
+    {"keygen": cmd_keygen, "add": cmd_add, "staff-add": cmd_staff_add, "staff-pin": cmd_staff_pin, "staff-revoke": cmd_staff_revoke, "verify": cmd_verify, "show": cmd_show}[a.cmd](a)
 
 
 if __name__ == "__main__":

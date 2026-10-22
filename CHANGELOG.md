@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.17 · Keycards · 2026-10-23
+- **Keycards:** staff cards on Verify are drawn as security cards (original design): level, clearance color, department, Hound ID, grade and a live signature check. Each has its own profile page (`#/verify/HND-0001`). Until the first card is issued, a specimen shows the design.
+- **Prove a Hound ID** ([ADR 0017](docs/decisions/0017-hound-id-sign-in.md)): a card can be copied, so the holder proves it by signing a one-time challenge with the SSH signing key on their GitHub account. Checked in the browser (ed25519, RSA, ECDSA), no passwords or tokens. Cards can pin one key (`records.py staff-pin`). How to: [HP-GDE-009](docs/guides/HP-GDE-009-grades-records-hound-ids.md).
+- **Decided:** sign-in with GitHub, with restricted documents in a private repository so GitHub enforces clearance (ADR 0017). Build next.
+
 ## v0.0.16 · Base construction · 2026-10-23
 - **Roadmap:** rebuilt as a base under construction, seen from above. Phase 0 is the command platform in the centre, each later phase a platform on its own bridge. Each platform fills up like a gauge with the share of its tasks done, color coded (complete green, under construction amber, planned blueprint blue), with the percentage above it. Point at a platform to light it orange, click it to see its tasks on the right. Boats, crews, cranes and a helicopter keep the base busy (off with Options → Animations).
 - **Guides:** stronger color per document type (Guide ochre, Policy red, Procedure blue) on paper, headings and borders, with a type stripe 20% in from the right edge that names the type. Background patterns are fainter so the text stands out.

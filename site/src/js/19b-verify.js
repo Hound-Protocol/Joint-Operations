@@ -51,6 +51,24 @@
             return "<tr><td>" + esc(k.id) + '</td><td><code>' + esc(k.fingerprint) + "</code>" + "</td><td>" + esc(k.owner) + "</td><td>" + esc(fmtDate(k.added)) + "</td></tr>";
           }).join("") + "</table></div>"
         : '<div class="empty">No signing key published yet<small>The project lead creates it before the first record is issued.</small></div>';
+      if (rid && /^HND-/i.test(rid)) {
+        var sc = staff.filter(function (x) { return x.id.toUpperCase() === rid.toUpperCase(); })[0];
+        var specimen = !sc && rid.toUpperCase() === "HND-0000";
+        if (!sc && !specimen) { $("#vb").innerHTML = '<div class="empty">No staff card ' + esc(rid) + '<small><a href="#/verify">Back to Verify</a></small></div>'; return; }
+        var c = sc || KC_SPECIMEN;
+        $("#vb").innerHTML = '<p class="sub"><a href="#/verify">All staff and records</a></p>' +
+          '<div class="kc-profile">' + keycard(c, { big: true, specimen: specimen }) +
+          '<dl class="kc-facts"><div><dt>Hound ID</dt><dd>' + esc(c.id) + "</dd></div><div><dt>GitHub</dt><dd>" + (specimen ? "–" : '<a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id)) + "</dd></div>" +
+          "<div><dt>Clearance</dt><dd>" + esc(c.card) + " · " + esc((KC_LV[c.card] || ["?"])[0]) + "</dd></div><div><dt>Department</dt><dd>" + esc(c.department) + "</dd></div>" +
+          (c.discord_id ? "<div><dt>Discord ID</dt><dd>" + esc(c.discord_id) + "</dd></div>" : "") +
+          "<div><dt>Owner key</dt><dd>" + (c.ssh_key ? "<code>" + esc(c.ssh_key) + "</code> (pinned)" : "Any SSH signing key on the GitHub account") + "</dd></div>" +
+          "<div><dt>Status</dt><dd>" + (c.status === "revoked" ? "Revoked " + esc(fmtDate(c.revoked)) + (c.reason ? " · " + esc(c.reason) : "") : specimen ? "Specimen, not a real card" : "Active") + "</dd></div></dl></div>" +
+          '<div class="label">Prove this card</div>' + kcProofHtml(c.id) +
+          (specimen ? "" : '<div class="label">Signed data</div><pre class="code">' + esc(JSON.stringify(c, null, 2)) + "</pre>");
+        if (sc && sc.status !== "revoked") markVerified([sc], keys);
+        kcProofBind(staff, keys);
+        return;
+      }
       if (rid) {
         var r = recs.filter(function (x) { return x.id === rid; })[0];
         $("#vb").innerHTML = r
@@ -78,9 +96,11 @@
         '<div class="label">Hound staff</div>' +
         '<p class="sub">Every staff member has a permanent <b class="tint key">Hound ID</b>, tied to their GitHub account number, which never changes even if they rename the account. Check anyone who claims to be staff here.</p>' +
         '<div class="toolbar"><input class="field grow" id="sfind" type="search" placeholder="Hound ID, GitHub name or Discord ID" aria-label="Find staff"><span id="sres"></span></div>' +
-        (staff.length ? '<div class="tw"><table><tr><th>Hound ID</th><th>Name</th><th>Card</th><th>Department</th><th>Since</th><th>Check</th></tr>' + staff.map(function (s) {
-          return '<tr data-rid="' + esc(s.id) + '"' + (s.status === "revoked" ? ' class="revoked"' : "") + '><td><code>' + esc(s.id) + "</code></td><td>" + esc(s.name ? s.name + " (" + s.login + ")" : s.login) + '</td><td><span class="card-lv lv' + esc(String(s.card).slice(2)) + '">' + esc(s.card) + "</span></td><td>" + esc(s.department) + "</td><td>" + esc(fmtDate(s.since)) + '</td><td class="vs">' + (s.status === "revoked" ? '<span class="status bad">Revoked ' + esc(fmtDate(s.revoked)) + "</span>" : vBadge("wait")) + "</td></tr>";
-        }).join("") + "</table></div>" : '<div class="empty">No staff cards issued yet<small>The owner issues them once the signing key exists.</small></div>') +
+        '<div class="kcs">' + (staff.length ? staff.map(function (s, n) { return keycard(s, { link: true, i: n }); }).join("") :
+          keycard(KC_SPECIMEN, { link: true, specimen: true }) + '<div class="empty">No staff cards issued yet<small>This is a specimen. The owner issues real cards once the signing key exists.</small></div>') + "</div>" +
+        '<div class="label">Prove a Hound ID</div>' +
+        '<p class="sub">A card can be copied, so it only shows what someone claims. To check that a person really holds a Hound ID, give them a challenge to sign with the SSH key on their GitHub account. You can try it now with any GitHub name.</p>' +
+        kcProofHtml("") +
         '<div class="label">Check a record</div>' +
         '<p class="sub">Paste a record someone shared with you.</p>' +
         '<textarea class="field" id="vpaste" rows="5" spellcheck="false" aria-label="Record JSON" placeholder="{&quot;id&quot;: &quot;HP-0001&quot;, ...}"></textarea>' +
@@ -89,6 +109,7 @@
         '<p class="source">Source: data/records.json · checked with tools/records.py in CI</p>';
       markVerified(recs, keys);
       markVerified(staff.filter(function (s) { return s.status !== "revoked"; }), keys);
+      kcProofBind(staff, keys);
       $("#sfind").addEventListener("input", function (e) {
         var q = e.target.value.trim().toLowerCase(), out = $("#sres");
         if (!q) { out.innerHTML = ""; return; }
