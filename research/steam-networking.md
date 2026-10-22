@@ -24,7 +24,7 @@ Both paths sit behind one internal transport interface. See ADR 0003.
 - **Status:** still a gate before any public build. Needed: a written position in `docs/legal.md`, and ideally a question to Valve support.
 
 ## Technical risk: old Steam API in the game
-MGSV was released in 2015 and ships its own `steam_api64.dll`, which may predate the current networking interfaces (the exact version is not yet checked). Interfaces are served by the installed Steam client, so they may still be reachable by their versioned interface names even through an old loader. This is **unverified** and is a Phase 1 test (R13).
+MGSV was released in 2015 and ships its own `steam_api64.dll`, which may predate the current networking interfaces (the exact version is not yet checked). Interfaces are served by the installed Steam client, so they may still be reachable by their versioned interface names even through an old loader. This is **unverified** and is a Phase 1 test (R13). Desk findings and the rig test plan are in [steam-interfaces.md](steam-interfaces.md): likely workable, with callbacks as the main risk.
 
 ## Matchmaking without Konami
 The game's own multiplayer normally uses Konami's servers for matchmaking. Our rule is that nothing touches Konami's online services. Options:

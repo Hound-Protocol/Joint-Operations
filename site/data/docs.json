@@ -128,10 +128,22 @@
       "path": "research/steam-networking.md"
     },
     {
+      "id": "r-steam-interfaces",
+      "title": "Steam Interfaces (R13)",
+      "group": "Research",
+      "path": "research/steam-interfaces.md"
+    },
+    {
       "id": "r-proton",
       "title": "Linux and Proton",
       "group": "Research",
       "path": "research/proton.md"
+    },
+    {
+      "id": "r-formats",
+      "title": "File Formats and Tools",
+      "group": "Research",
+      "path": "research/file-formats-and-tools.md"
     },
     {
       "id": "r-legal",
