@@ -2,7 +2,20 @@
 
 Status: DRAFT. Server name: MGSV: Joint Operations | Hound Protocol
 
-## Setup order
+## Automated setup
+The server can be built automatically from `tools/discord/blueprint.json` (roles, categories, channels, permissions and starter messages).
+
+1. Create an empty server. Turn on **Developer Mode** (User Settings → Advanced), right-click the server icon and **Copy Server ID**.
+2. In the Discord Developer Portal, create an application, open **Bot**, and **Reset Token**. Keep the token private.
+3. **OAuth2 → URL Generator:** scope `bot`, permission **Administrator** (temporary). Open the generated link and add the bot to the server.
+4. Run, with Python 3.8 or newer:
+   - Windows (PowerShell): `$env:DISCORD_BOT_TOKEN="<token>"; python tools/discord/setup.py <server id>`
+   - Linux: `DISCORD_BOT_TOKEN=<token> python3 tools/discord/setup.py <server id>`
+   This is a dry run that shows what will change. Add `--apply` to make the changes.
+5. Afterwards: kick the bot from the server, and **Reset Token** again in the portal so the old token is useless.
+6. In Server Settings, enable **Community**, set **#rules** as the rules channel, and set up **Onboarding** so new members can pick Tester, Proton Tester or Developer roles.
+
+## Setup order (manual)
 1. Create server from scratch. Name as above. Upload icon only after it is checked for Konami artwork (none allowed).
 2. Enable Community features. Verification level: Medium. Explicit media filter on.
 3. Require 2FA for moderator actions (Server Settings, Safety).
