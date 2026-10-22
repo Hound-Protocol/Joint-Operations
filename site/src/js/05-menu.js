@@ -64,11 +64,12 @@
   /* Home side panels: the project on the left, Hound Protocol on the right (config.about) */
   function renderAbout() {
     var a = cfg.about || {};
-    [["#aboutProject", a.project, "briefing"], ["#aboutTeam", a.team, "team"]].forEach(function (s) {
+    [["#aboutProject", a.project, BRAND.jo], ["#aboutTeam", a.team, BRAND.hp]].forEach(function (s) {
       var el = $(s[0]), p = s[1];
       if (!el) return;
-      if (!p) { el.hidden = true; return; }
-      el.innerHTML = '<div class="s-label">' + menuIcon(s[2]) + esc(p.label) + "</div>" +
+      el.hidden = !p;   // the menu renders before config loads, so this must also un-hide
+      if (!p) return;
+      el.innerHTML = '<div class="s-mark">' + s[2] + '</div><div class="s-label">' + esc(p.label) + "</div>" +
         '<h2 class="s-title">' + esc(p.title) + "</h2>" +
         '<p class="s-text">' + esc(p.text) + "</p>" +
         ((p.facts || []).length ? '<dl class="s-facts">' + p.facts.map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>"; }).join("") + "</dl>" : "") +
@@ -83,6 +84,7 @@
   }
   function renderMenu() {
     renderAbout();
+    if ($("#hdMark")) $("#hdMark").innerHTML = BRAND.hp;
     $("#menu").innerHTML = MENU.map(function (it, n) {
       return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + menuIcon(it.id) + '<span>' + esc(it.title) + '</span></span><span class="win' + (it.desc.length > 56 ? " long" : "") + '" aria-hidden="true"><span class="d"></span></span></a>';
     }).join("");

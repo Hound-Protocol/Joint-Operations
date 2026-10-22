@@ -20,9 +20,15 @@ The documentation becomes a living map, and the Contribute board gets columns.
 - **About: one shared alert** ([ADR 0012](docs/decisions/0012-shared-alert.md)). Enemies target players individually by distance and detection, but the session has one status, hidden, searched for or detected, that players join.
 - **Session Browser empty state:** a faster, flashier area scan with a green grid radar, sweep, pings, enemy blips, static bursts, frequency tuning and a glitching "No sessions detected" alert.
 
+- **Brand marks:** the Hound Protocol insignia (a hound in a hexagon) and the Joint Operations mark (sixteen marks around a gold host diamond), with lockups, light and one-colour versions, a new favicon, a new link-preview banner and avatars for Discord and GitHub. All original vector work drawn in code, with clear rules on taking inspiration without imitating ([docs/brand.md](docs/brand.md)). They appear on the home page, the side panels and the Team page.
+
 ### Changed
 - **Contract difficulty is information, not a gate.** Anyone can take any contract. Ranks now give claim capacity and review rights instead.
 - Time estimates are removed from contracts.
+
+### Fixed
+- Home page on large screens: the menu now stays centered and both side panels show, even when the site settings load slowly.
+- Home page on phones: the layout no longer grows wider than the screen.
 - Wording: the host runs the missions, clients share the session. "Friends" is gone.
 
 ## v0.0.4 · Security and keycards · 2026-10-22

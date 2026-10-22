@@ -230,6 +230,12 @@
       "path": "docs/departments.md"
     },
     {
+      "id": "brand",
+      "title": "Brand",
+      "group": "Community",
+      "path": "docs/brand.md"
+    },
+    {
       "id": "governance",
       "title": "Governance",
       "group": "Community",
