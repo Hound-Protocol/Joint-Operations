@@ -22,20 +22,24 @@
       if (conState.module !== "all" && c.module !== conState.module) return false;
       if (conState.status !== "all" && c.status !== conState.status) return false;
       if (conState.size !== "all" && c.size !== conState.size) return false;
-      if (conState.q && (c.id + " " + c.title + " " + (c.skills || "")).toLowerCase().indexOf(conState.q.toLowerCase()) < 0) return false;
+      if (conState.q && (c.id + " " + c.title + " " + (c.skills || "") + " " + (c.goal || "")).toLowerCase().indexOf(conState.q.toLowerCase()) < 0) return false;
       return true;
     });
     var board = shown.map(function (c, n) {
       var label = { planned: "Planned", open: c.blocked ? "Blocked" : "Open", claimed: "Claimed", review: "In review", done: "Done" }[c.status];
       var action = "";
       if (c.live) action = '<a class="btn small' + (c.status === "open" && !c.blocked ? " primary" : "") + '" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">' + (c.status === "open" && !c.blocked ? "Claim on GitHub" : "View on GitHub") + "</a>";
-      else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nSize: " + c.size + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Definition of done\n- \n", "contract,module:" + c.module + ",size:" + c.size)) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
+      else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nSize: " + c.size + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",size:" + c.size)) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
       return '<article class="card" style="--i:' + n + '"><div class="id">' + esc(c.id) + '</div><h3>' + esc(c.title) + "</h3><div>" +
         (c.module ? '<span class="pill">' + esc(MODULES[c.module] || c.module) + "</span>" : "") +
         (c.size ? '<span class="pill">' + esc(c.size) + " · " + (SIZE_PTS[c.size] || 0) + " pts</span>" : "") +
         (c.skills ? '<span class="pill">' + esc(c.skills) + "</span>" : "") + "</div>" +
         '<div class="status ' + (c.blocked && c.status === "open" ? "claimed" : c.status) + '">' + label + (c.by && c.by.length ? " · " + esc(c.by.join(", ")) : "") + "</div>" +
         (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">Depends on ' + esc(c.depends.join(", ")) + "</div>" : "") +
+        (c.goal ? '<p class="goal">' + esc(c.goal) + "</p>" : "") +
+        ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary>Acceptance criteria</summary>' +
+          (c.deliverable ? '<div class="meta">Deliverable: ' + esc(c.deliverable) + "</div>" : "") +
+          (c.acceptance && c.acceptance.length ? "<ul>" + c.acceptance.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>" : "") + "</details>" : "") +
         '<div class="actions">' + action + "</div></article>";
     }).join("");
     // Module progress
@@ -58,7 +62,7 @@
         (live ? "" : '<p class="note">These are the planned Phase 1 contracts. They are not on GitHub yet. Use "Open as issue" to publish one, with the labels described in Contributing.</p>') +
         '<div class="stats">' + (live
           ? '<div class="stat"><b>' + counts.open + '</b><span>Open</span></div><div class="stat"><b>' + counts.claimed + '</b><span>Claimed</span></div><div class="stat"><b>' + counts.review + '</b><span>In review</span></div><div class="stat"><b>' + counts.done + "</b><span>Done</span></div>"
-          : '<div class="stat"><b>' + counts.planned + '</b><span>Planned</span></div><div class="stat"><b>' + mods.length + '</b><span>Modules</span></div><div class="stat"><b>0</b><span>Done</span></div>') + "</div>" +
+          : '<div class="stat"><b>' + counts.planned + '</b><span>Planned</span></div><div class="stat"><b>' + mods.length + '</b><span>Modules</span></div><div class="stat"><b>' + counts.done + '</b><span>Done</span></div>') + "</div>" +
         '<div class="toolbar"><input class="field grow" id="cq" type="search" placeholder="Search contracts" value="' + esc(conState.q) + '" aria-label="Search contracts">' +
         '<select class="field" id="cm" aria-label="Module">' + opt("all", conState.module, "All modules") + Object.keys(MODULES).map(function (k) { return opt(k, conState.module, MODULES[k]); }).join("") + "</select>" +
         '<select class="field" id="cs" aria-label="Status">' + opt("all", conState.status, "All statuses") + (live ? opt("open", conState.status, "Open") + opt("claimed", conState.status, "Claimed") + opt("review", conState.status, "In review") + opt("done", conState.status, "Done") : opt("planned", conState.status, "Planned")) + "</select>" +
