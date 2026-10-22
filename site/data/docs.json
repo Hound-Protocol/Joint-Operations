@@ -134,6 +134,12 @@
       "path": "docs/decisions/0010-funding.md"
     },
     {
+      "id": "adr-0011",
+      "title": "0011 Keycard Access",
+      "group": "Decisions",
+      "path": "docs/decisions/0011-keycard-access.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",
@@ -390,6 +396,12 @@
       "title": "HP-SOP-008 Discord Administration",
       "group": "Handbook",
       "path": "docs/guides/HP-SOP-008-discord-administration.md"
+    },
+    {
+      "id": "hp-sop-009",
+      "title": "HP-SOP-009 Backup and Restore",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-009-backup-and-restore.md"
     }
   ]
 }

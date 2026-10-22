@@ -25,7 +25,7 @@ AUDIENCE = {  # who the website lists each document for
     "HP-POL-003": "Contributors", "HP-SOP-001": "Contributors", "HP-SOP-002": "Contributors",
     "HP-GDE-004": "Quality", "HP-POL-006": "Quality", "HP-SOP-003": "Quality", "HP-SOP-005": "Quality",
     "HP-GDE-006": "Administration", "HP-POL-004": "Administration", "HP-POL-005": "Administration", "HP-SOP-004": "Administration",
-    "HP-SOP-006": "Administration", "HP-SOP-007": "Administration", "HP-SOP-008": "Administration",
+    "HP-SOP-006": "Administration", "HP-SOP-007": "Administration", "HP-SOP-008": "Administration", "HP-SOP-009": "Administration",
 }
 SUMMARY = {  # one line for the Guides page
     "HP-GDE-001": "What you need, how to install, host and join, and how to stay safe.",
@@ -35,7 +35,7 @@ SUMMARY = {  # one line for the Guides page
     "HP-GDE-005": "How we write: plain English, sources, structure and handbook codes.",
     "HP-GDE-006": "Settings, regular duties, decisions, funding and incidents for Administration.",
     "HP-POL-001": "The rules every contributor accepts: sign-off, ownership, what never to do, leaving.",
-    "HP-POL-002": "AI-assisted code and content are welcome, with responsibility, disclosure and clear limits.",
+    "HP-POL-002": "AI-assisted code and tools are welcome. Generative AI art, music and voices are not.",
     "HP-POL-003": "No game files, no copied mod code, research in our own words.",
     "HP-POL-004": "Two-factor authentication, secrets, least access and safe releases.",
     "HP-POL-005": "Community standards, the enforcement ladder, logging and appeals.",
@@ -48,6 +48,7 @@ SUMMARY = {  # one line for the Guides page
     "HP-SOP-006": "Revoke first: what to do when a secret leaks or something goes wrong.",
     "HP-SOP-007": "Giving and removing access, the same day, every time.",
     "HP-SOP-008": "Running the Discord server from its blueprint, safely.",
+    "HP-SOP-009": "Weekly encrypted backups on the owner's computer and Google Drive, and how to restore.",
 }
 META = re.compile(r"^Code: (HP-(POL|SOP|GDE)-\d{3}) · Version ([\d.]+) · Effective (\d{4}-\d{2}-\d{2}) · Owner: ([^·]+?) · (?:For|Applies to|Used by): (.+)$")
 

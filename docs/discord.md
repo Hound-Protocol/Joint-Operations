@@ -16,7 +16,7 @@ The server can be built automatically from `tools/discord/blueprint.json` (roles
 6. In Server Settings, enable **Community**, set **#rules** as the rules channel, and set up **Onboarding** so new members can pick Windows Tester or Proton Tester.
 
 ### Updating an existing server
-The script also brings an existing server in line with the blueprint. It renames roles and categories (for example **Core Dev → Development Dept**, **Tester → Windows Tester**, **TESTING → QUALITY**, **STAFF → ADMINISTRATION**), creates what is missing, moves channels to their category, orders the categories and resets channel permissions to the blueprint. Roles and channels not in the blueprint are listed and left alone.
+The script also brings an existing server in line with the blueprint. It renames roles and categories (for example **Lead → LV7 · Owner**, **Core Dev → LV5 · Development**, **Tester → Windows Tester**, **TESTING → QUALITY**, **STAFF → ADMINISTRATION**), creates what is missing, moves channels to their category, orders the categories and resets channel permissions to the blueprint. Roles and channels not in the blueprint are listed and left alone.
 - Add `--update-messages` to also edit the starter messages the bot posted earlier (for example the welcome text). Only works if it is the same bot application that posted them.
 - Always run the dry run first and read the list before adding `--apply`.
 
@@ -29,23 +29,23 @@ The script also brings an existing server in line with the blueprint. It renames
 6. Invite the first contributors, then open public invite.
 
 ## Roles (top to bottom)
-The server mirrors the project's four departments ([departments.md](departments.md)).
+The server mirrors the project's four departments ([departments.md](departments.md)) and the keycard levels ([ADR 0011](decisions/0011-keycard-access.md)). Every staff role starts with its card level.
 
 | Role | Who | Access |
 |---|---|---|
-| Lead | Project lead | Everything (Administrator for setup only) |
-| Technical Lead | Technical direction (Claude, through the human delegate) | All department channels, manage messages |
-| Moderator | Trusted community members | Manage messages, timeout, kick; ADMINISTRATION |
-| **Administration Dept** | Seat holders, admins | ADMINISTRATION |
-| **Development Dept** | Core developers | DEVELOPMENT, QUALITY, CONTRACTORS |
-| **Quality Dept** | Testers, reviewers, release QA | QUALITY, CONTRACTORS |
-| **Contractor Dept** | Anyone who has completed a contract | DEVELOPMENT, QUALITY, CONTRACTORS |
+| **LV7 · Owner** | The project lead | Everything (Administrator for setup only) |
+| **LV6 · Administration** | Seat holders, admins | ADMINISTRATION and all department channels |
+| **LV6 · Moderator** | Trusted community members | Manage messages, timeout, kick; ADMINISTRATION |
+| **LV5 · Development** | Core developers | DEVELOPMENT, QUALITY, CONTRACTORS |
+| **LV5 · Technical Lead** | Technical direction (Claude, through the human delegate) | All department channels, manage messages |
+| **LV4 · Quality** | Testers, reviewers, release QA | QUALITY, CONTRACTORS |
+| **LV3 · Contractor** | Anyone who has completed a contract | DEVELOPMENT, QUALITY, CONTRACTORS |
 | Rank S++ · S+ · S · A++ · A+ · A | Contractor rank by completed contracts | Cosmetic: shows rank in the member list |
 | RE / Hooks · Networking · Web / App · Docs | Development units | DEVELOPMENT |
 | Windows Tester · Proton Tester · Reviewer | Quality units | QUALITY |
-| Member | Everyone else | COMMUNITY, MODDING, VOICE Lobby |
+| **LV2 · Member** | Everyone who joins | COMMUNITY, MODDING, VOICE Lobby |
 
-Department roles are shown separately in the member list, so the server reads like Mother Base. A contractor gets **Contractor Dept** plus their **Rank** role. Ranks are updated by hand from the Verify page until a bot does it.
+Keycard roles are shown separately in the member list, so the server reads like Mother Base. A contractor gets **LV3 · Contractor** plus their **Rank** role. Ranks are updated by hand from the Verify page until a bot does it.
 
 ## Categories and channels
 **INFO** (read only for Member)
@@ -54,16 +54,16 @@ Department roles are shown separately in the member list, so the server reads li
 **COMMUNITY**
 - #general, #showcase, #suggestions, #off-topic
 
-**ADMINISTRATION** (Administration Dept, Lead, Moderator)
+**ADMINISTRATION** (LV7, LV6)
 - #admin-board, #legal-and-funding, #mod-log
 
-**DEVELOPMENT** (Development Dept, Contractor Dept, development units)
+**DEVELOPMENT** (LV5, LV3, development units)
 - #dev-log, #architecture, #reverse-engineering, #networking, #hooks, #web-and-app
 
-**QUALITY** (Quality Dept, Development Dept, Contractor Dept, quality units)
+**QUALITY** (LV5, LV4, LV3, quality units)
 - #test-sessions, #windows, #proton-linux, #bug-reports, #review-queue, #release-qa
 
-**CONTRACTORS** (Contractor Dept, Development Dept, Quality Dept)
+**CONTRACTORS** (LV5, LV4, LV3)
 - #contract-board, #contractor-lounge, #handoffs
 
 **MODDING**
@@ -96,7 +96,7 @@ Welcome to MGSV: Joint Operations, by Hound Protocol. We are building a multipla
 
 ## Onboarding
 - Role picker (Onboarding): Windows Tester, Proton Tester. These give QUALITY access.
-- Department roles are granted by the Lead. Contractor Dept and Rank roles follow completed contracts.
+- Keycard roles LV4 to LV6 are granted by the owner or Administration. LV3 and Rank roles follow completed contracts.
 - New contributors read docs/legal.md before getting DEVELOPMENT access.
 
 ## Moderation and safety

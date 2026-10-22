@@ -3,7 +3,7 @@
   "server_name": "MGSV: Joint Operations | Hound Protocol",
   "roles": [
     {
-      "name": "Lead",
+      "name": "LV7 · Owner",
       "color": "#ffffff",
       "hoist": true,
       "permissions": [
@@ -21,27 +21,22 @@
         "mention_everyone",
         "connect",
         "speak"
+      ],
+      "was": [
+        "Lead"
       ]
     },
     {
-      "name": "Technical Lead",
-      "color": "#c9a24a",
+      "name": "LV6 · Administration",
+      "color": "#e9edee",
       "hoist": true,
-      "permissions": [
-        "view",
-        "send",
-        "history",
-        "react",
-        "embed",
-        "attach",
-        "manage_messages",
-        "manage_threads",
-        "connect",
-        "speak"
+      "permissions": [],
+      "was": [
+        "Administration Dept"
       ]
     },
     {
-      "name": "Moderator",
+      "name": "LV6 · Moderator",
       "color": "#7fbf8a",
       "hoist": true,
       "permissions": [
@@ -57,32 +52,58 @@
         "manage_threads",
         "connect",
         "speak"
+      ],
+      "was": [
+        "Moderator"
       ]
     },
     {
-      "name": "Administration Dept",
-      "color": "#e9edee",
-      "hoist": true,
-      "permissions": []
-    },
-    {
-      "name": "Development Dept",
-      "was": "Core Dev",
+      "name": "LV5 · Development",
+      "was": [
+        "Development Dept",
+        "Core Dev"
+      ],
       "color": "#9fb3c8",
       "hoist": true,
       "permissions": []
     },
     {
-      "name": "Quality Dept",
-      "color": "#7fbf8a",
-      "hoist": true,
-      "permissions": []
-    },
-    {
-      "name": "Contractor Dept",
+      "name": "LV5 · Technical Lead",
       "color": "#c9a24a",
       "hoist": true,
-      "permissions": []
+      "permissions": [
+        "view",
+        "send",
+        "history",
+        "react",
+        "embed",
+        "attach",
+        "manage_messages",
+        "manage_threads",
+        "connect",
+        "speak"
+      ],
+      "was": [
+        "Technical Lead"
+      ]
+    },
+    {
+      "name": "LV4 · Quality",
+      "color": "#7fbf8a",
+      "hoist": true,
+      "permissions": [],
+      "was": [
+        "Quality Dept"
+      ]
+    },
+    {
+      "name": "LV3 · Contractor",
+      "color": "#c9a24a",
+      "hoist": true,
+      "permissions": [],
+      "was": [
+        "Contractor Dept"
+      ]
     },
     {
       "name": "Rank S++",
@@ -164,10 +185,13 @@
       "permissions": []
     },
     {
-      "name": "Member",
+      "name": "LV2 · Member",
       "color": "#5d6668",
       "permissions": [],
-      "hoist": false
+      "hoist": false,
+      "was": [
+        "Member"
+      ]
     }
   ],
   "categories": [
@@ -223,9 +247,9 @@
       "name": "ADMINISTRATION",
       "access": "roles",
       "roles": [
-        "Administration Dept",
-        "Lead",
-        "Moderator"
+        "LV6 · Administration",
+        "LV7 · Owner",
+        "LV6 · Moderator"
       ],
       "channels": [
         {
@@ -247,15 +271,15 @@
       "name": "DEVELOPMENT",
       "access": "roles",
       "roles": [
-        "Development Dept",
-        "Contractor Dept",
+        "LV5 · Development",
+        "LV3 · Contractor",
         "RE / Hooks",
         "Networking",
         "Web / App",
         "Docs",
-        "Technical Lead",
-        "Lead",
-        "Moderator"
+        "LV5 · Technical Lead",
+        "LV7 · Owner",
+        "LV6 · Moderator"
       ],
       "channels": [
         {
@@ -288,15 +312,15 @@
       "name": "QUALITY",
       "access": "roles",
       "roles": [
-        "Quality Dept",
-        "Development Dept",
-        "Contractor Dept",
+        "LV4 · Quality",
+        "LV5 · Development",
+        "LV3 · Contractor",
         "Windows Tester",
         "Proton Tester",
         "Reviewer",
-        "Technical Lead",
-        "Lead",
-        "Moderator"
+        "LV5 · Technical Lead",
+        "LV7 · Owner",
+        "LV6 · Moderator"
       ],
       "channels": [
         {
@@ -330,12 +354,12 @@
       "name": "CONTRACTORS",
       "access": "roles",
       "roles": [
-        "Contractor Dept",
-        "Development Dept",
-        "Quality Dept",
-        "Technical Lead",
-        "Lead",
-        "Moderator"
+        "LV3 · Contractor",
+        "LV5 · Development",
+        "LV4 · Quality",
+        "LV5 · Technical Lead",
+        "LV7 · Owner",
+        "LV6 · Moderator"
       ],
       "channels": [
         {
@@ -376,29 +400,29 @@
         {
           "name": "Dev Standup",
           "roles": [
-            "Development Dept",
-            "Contractor Dept",
+            "LV5 · Development",
+            "LV3 · Contractor",
             "RE / Hooks",
             "Networking",
             "Web / App",
             "Docs",
-            "Technical Lead",
-            "Lead",
-            "Moderator"
+            "LV5 · Technical Lead",
+            "LV7 · Owner",
+            "LV6 · Moderator"
           ]
         },
         {
           "name": "Test Session",
           "roles": [
-            "Quality Dept",
-            "Development Dept",
-            "Contractor Dept",
+            "LV4 · Quality",
+            "LV5 · Development",
+            "LV3 · Contractor",
             "Windows Tester",
             "Proton Tester",
             "Reviewer",
-            "Technical Lead",
-            "Lead",
-            "Moderator"
+            "LV5 · Technical Lead",
+            "LV7 · Owner",
+            "LV6 · Moderator"
           ]
         }
       ]

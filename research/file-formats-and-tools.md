@@ -35,7 +35,7 @@ The r/moddergearsolid wiki keeps the current list of tools and download links.
 - The game's Lua is **statically compiled**. We cannot load native Lua modules. Native code goes through the hook DLL. *(confirmed, IHHook docs)*
 - Mission scripts and the systems they call are plain Lua inside the archives, readable after extraction. *(confirmed by tool support)*
 - Infinite Heaven shows that large gameplay changes are possible from Lua alone. Its repository has **no software license**, so we **read for understanding only** and copy nothing. *(confirmed, repo README)*
-- **Unknown, for R3/R5/R6 on a rig:** which scripts control player spawn, buddy control and helicopter arrival; whether the soldier roster can be read from Lua; how the FOB and MGO code paths set up extra players.
+- **Unknown, for R3/R5/R6 on a rig:** which scripts control player spawn, buddy control and helicopter arrival; whether the Mother Base staff roster can be read from Lua; how the FOB and MGO code paths set up extra players.
 
 ## Rules for using these tools
 1. Extract on your own machine from your own copy. Extracted files never go into our repository.

@@ -15,7 +15,7 @@
 | Fox Engine | Konami's game engine used by MGSV |
 | `.fox2` | Binary entity definition files used by the Fox Engine |
 | GNS | GameNetworkingSockets, Valve's networking library (open-source version without relay) |
-| Host | The player who runs the session in Venom Snake's place (helicopter seat, Command Center, briefings, cutscenes); authoritative for game state |
+| Host | The player who runs the session and holds every command position (helicopter seat, Command Center, briefings, cutscenes); authoritative for game state |
 | IH | Infinite Heaven, a large MGSV gameplay mod |
 | IHHook | MIT-licensed proxy DLL that extends the game for Infinite Heaven; can load plugins |
 | Join ticket | Short-lived token from the session registry that reserves a slot for one player (ADR 0008, proposed) |
@@ -25,7 +25,7 @@
 | SDR | Steam Datagram Relay, Valve's relay network for game traffic |
 | Seat | A role with duties, a term and at least two holders (see governance) |
 | Session registry | Proposed public API that lists live Joint Operations sessions for the website (ADR 0008) |
-| Soldier | A player other than the host, playing a Mother Base staff member |
+| Client | A player other than the host, playing a Mother Base staff member |
 | Sortie Prep | The game's pre-deployment screen: equipment, buddy, time and landing zone |
 | Spike | A time-boxed experiment to answer one technical question |
 | Strategy A / B | Engine-native multiplayer / our own netcode (ADR 0002) |

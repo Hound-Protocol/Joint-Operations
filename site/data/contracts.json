@@ -145,12 +145,12 @@
       "depends": [
         "C04"
       ],
-      "goal": "Understand how Mother Base soldiers are stored and selected, so players can join as roster soldiers.",
+      "goal": "Understand how Mother Base staff are stored and selected, so clients can join as roster staff.",
       "deliverable": "research/roster.md",
       "acceptance": [
         "Where roster data lives at runtime and in the save, as far as observable",
-        "How a soldier is chosen for deployment and what defines their look and skills",
-        "Proposal for mapping player slots to roster soldiers"
+        "How a staff member is chosen for deployment and what defines their look and skills",
+        "Proposal for mapping client slots to roster staff"
       ],
       "refs": [
         "phase1:R5",
@@ -377,7 +377,7 @@
       "acceptance": [
         "In-game arrival and departure mechanisms listed (helicopter, Fulton, others)",
         "Feasibility for mid-mission join and leave, with known unknowns",
-        "What happens to a leaving player's soldier"
+        "What happens to a leaving client's staff member"
       ],
       "refs": [
         "phase1:R6"

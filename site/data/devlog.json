@@ -3,6 +3,12 @@
  "entries": [
   {
    "date": "2026-10-22",
+   "tag": "Release",
+   "title": "Security, keycards and Hound IDs",
+   "body": "Weekly encrypted backups, keycard access levels LV1 to LV7, verifiable staff identities (Hound IDs), Discord integration, and a clear AI policy: AI can operate tools, but generative AI art is not accepted."
+  },
+  {
+   "date": "2026-10-22",
    "tag": "Decision",
    "title": "Departments and contractor ranks",
    "body": "Hound Protocol now runs like Mother Base: Administration, Development, Quality and Contractor departments. Contractors are ranked A to S++ by completed contracts, each backed by a signed record. Version 0.1 is built by the project lead; donations open at 0.1."

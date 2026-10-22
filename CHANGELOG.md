@@ -2,6 +2,24 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.4 · Security and keycards · 2026-10-22
+Backups, verified staff identities, keycard access levels and clearer wording.
+
+### Added
+- **Weekly backups** for the owner's Bazzite computer: a full git mirror, dated snapshots, and exports of issues, pull requests and releases, with an encrypted copy on Google Drive. Includes an installer, a systemd timer and a restore guide ([HP-SOP-009](docs/guides/HP-SOP-009-backup-and-restore.md)).
+- **Keycard access levels LV1 to LV7** ([ADR 0011](docs/decisions/0011-keycard-access.md)). Discord roles now carry the card level (LV7 · Owner down to LV2 · Member), and the setup script renames existing roles automatically.
+- **Hound IDs:** signed staff cards (`HND-0001`) tied to each person's permanent GitHub account number, checkable by anyone on the Verify page by Hound ID, GitHub name or Discord ID.
+- **Discord integration:** live online count on the home page (once the server widget is on), and new releases posted to Discord automatically (once the webhook secret is set).
+
+### Changed
+- **Host and client** replace "Venom Snake" and "soldiers" across the website and docs. In-game characters are Mother Base staff.
+- **AI Use Policy 1.1:** AI may operate tools (Canva, vector drawing in code, layout, editing). Generative AI images, artwork, music and voices are not accepted.
+- Security Policy 1.1: organization-wide 2FA, passkeys or security keys for LV6 and LV7, signed commits for LV4 and up, backups.
+- Admin handbook and Discord SOP: widget, webhook and backup duties.
+
+### Fixed
+- A Python cache file that had been committed by mistake is removed and now ignored.
+
 ## v0.0.3 · Polish · 2026-10-22
 A cleaner, clearer website for everyone, not only contributors.
 

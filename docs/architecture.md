@@ -3,7 +3,7 @@
 Status: DRAFT · Updated: 2026-10-22 after Phase 1 desk research
 
 ## 1. Overview
-Joint Operations is a multiplayer mod ([ADR 0001](decisions/0001-multiplayer-scope.md)). It brings the game's online multiplayer functionality into the single-player world for up to 16 players. The host takes Venom Snake's place and is authoritative; other players join as Mother Base soldiers ([ADR 0007](decisions/0007-host-authority.md)).
+Joint Operations is a multiplayer mod ([ADR 0001](decisions/0001-multiplayer-scope.md)). It brings the game's online multiplayer functionality into the single-player world for up to 16 players. The host runs the session and is authoritative; other players join as clients ([ADR 0007](decisions/0007-host-authority.md)).
 
 ## 2. Two candidate strategies
 Decided by the Phase 1 spike R12 ([ADR 0002](decisions/0002-integration-strategy.md)).
@@ -29,7 +29,7 @@ Decided by the Phase 1 spike R12 ([ADR 0002](decisions/0002-integration-strategy
 | 9 | Apps and web | Web | Website now. Proposed: the Servers page becomes a live server browser with one-click join (ADR 0008). Outside the game process |
 
 ## 4. Session model
-- Slot 1 is the host, who takes Venom Snake's place: helicopter seat, Aerial Command Center, briefings, radio calls, cutscenes and Mother Base command all belong to the host. Slots 2 to 16 are soldiers from the host's Mother Base roster.
+- Slot 1 is the host, who runs the session: helicopter seat, Aerial Command Center, briefings, radio calls, cutscenes and Mother Base command all belong to the host. Slots 2 to 16 are clients, each playing a staff member from the host's Mother Base roster.
 - Each player owns their own movement and camera. The host owns AI, mission state, world objects, time and weather.
 - Late joiners receive a full snapshot, then updates.
 - If the host leaves, the session ends for 0.1. Host migration comes later.

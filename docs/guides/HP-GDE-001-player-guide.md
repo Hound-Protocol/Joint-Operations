@@ -19,8 +19,8 @@ Code: HP-GDE-001 · Version 1.0 · Effective 2026-10-22 · Owner: Administration
    See [HP-GDE-002](HP-GDE-002-linux-proton.md).
 
 ## Play
-- **Host:** start a session from the in-game menu. You take Venom Snake's position: helicopter, Command Center, briefings, Mother Base.
-- **Join:** pick a server on the website's **Sessions** page or accept a Steam invite. You deploy as a soldier from the host's Mother Base roster, after choosing your equipment.
+- **Host:** start a session from the in-game menu. You run the session and command it: helicopter, Command Center, briefings, Mother Base.
+- **Join:** pick a session in the website's **Session Browser** or accept a Steam invite. You join as a client and deploy as staff from the host's Mother Base roster, after choosing your equipment.
 - Up to 16 players per session.
 
 ## Stay safe

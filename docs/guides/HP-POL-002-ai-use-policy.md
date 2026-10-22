@@ -1,8 +1,8 @@
 # AI Use Policy: Code and Mod Content
-Code: HP-POL-002 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · Applies to: all contributions
+Code: HP-POL-002 · Version 1.1 · Effective 2026-10-22 · Owner: Administration · Applies to: all contributions
 
 ## 1. Position
-Hound Protocol welcomes AI-assisted work. The technical lead is an AI assistant. Hand-written and AI-assisted contributions are reviewed the same way and earn the same records and ranks. **What counts is that the work is correct, original, licensed and checked.**
+Hound Protocol welcomes AI-assisted work. The technical lead is an AI assistant. Hand-written and AI-assisted contributions are reviewed the same way and earn the same records and ranks. The one hard limit is art: **generative AI images, artwork, music and voices are not accepted** (section 5). **What counts is that the work is correct, original, licensed and checked.**
 
 ## 2. You are responsible
 - You are the author of what you submit, whatever tools you used. You must understand it well enough to explain and fix it.
@@ -25,11 +25,19 @@ Hound Protocol welcomes AI-assisted work. The technical lead is an AI assistant.
 - AI output must pass the same checks as any code: CI, review by Quality, and tests where the contract asks for them.
 - Do not include large generated files (lockfiles aside) without a reason in the pull request.
 
-## 5. Mod content (images, audio, text, models)
-- **Original content only.** AI-generated art, audio or text must not imitate Konami's assets, characters' likeness, logos, or the voices of real actors.
-- **No voice cloning** of real people, including the game's cast.
-- AI content must be labeled as AI-generated in its pull request and, for released content, in the credits file.
-- The project lead may refuse AI content that would harm the project's standing, even if it breaks no rule.
+## 5. Graphics, art and mod content
+**The line:** AI may operate tools. AI may not generate art.
+
+| Allowed | Not allowed |
+|---|---|
+| AI working **through tools and connectors**: laying out a design in Canva, drawing vector graphics in code (SVG), editing, resizing, cropping, arranging layouts, exporting files | **Generative AI images and artwork** of any kind: pictures, illustrations, textures, concept art, icons or logos made by an image model |
+| AI helping with text, code, diagrams, charts and data visualizations | **Generative AI music, sound effects or voices**, including voice clones of real people or the game's cast |
+| Using fonts, photos and assets made by people, with a license that allows it | Upscaling or "restyling" someone else's art with AI |
+
+- Hound Protocol does not accept generative AI art. Art comes from people, and we respect the artists whose work these models are built on.
+- Everything visual must be original or properly licensed. It must never imitate Konami's assets, logos or characters.
+- When AI operated a tool (for example "Claude laid this out in Canva" or "Claude drew this SVG"), say so in the pull request, as with code.
+- The project lead may refuse any content that would harm the project's standing, even if it breaks no rule.
 
 ## 6. Data and privacy
 - Never paste into an AI tool: tokens, keys, passwords, private messages, players' personal data, or unreleased security reports.

@@ -41,9 +41,9 @@
   function viewVerify(rid) {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Verify", loading("Loading contributor records"));
-    Promise.all([loadLocal("records"), loadLocal("records-key")]).then(function (res) {
+    Promise.all([loadLocal("records"), loadLocal("records-key"), loadLocal("staff")]).then(function (res) {
       if (currentView !== "verify") return;
-      var recs = (res[0] && res[0].records) || [], keys = (res[1] && res[1].keys) || [];
+      var recs = (res[0] && res[0].records) || [], keys = (res[1] && res[1].keys) || [], staff = (res[2] && res[2].staff) || [];
       var key = keys[keys.length - 1];
       var keyHtml = key
         ? '<div class="tw"><table><tr><th>Key</th><th>Fingerprint</th><th>Owner</th><th>Since</th></tr>' + keys.map(function (k) {
@@ -71,6 +71,12 @@
         }).join("") + "</div>" : '<div class="empty">No records yet<small>The wall fills as contracts are completed and signed.</small></div>') +
         '<div class="label">Records</div>' +
         (recs.length ? '<div class="cards">' + recs.slice().reverse().map(recordCard).join("") + "</div>" : "") +
+        '<div class="label">Hound staff</div>' +
+        '<p class="sub">Every staff member has a permanent <b class="tint key">Hound ID</b>, tied to their GitHub account number, which never changes even if they rename the account. Check anyone who claims to be staff here.</p>' +
+        '<div class="toolbar"><input class="field grow" id="sfind" type="search" placeholder="Hound ID, GitHub name or Discord ID" aria-label="Find staff"><span id="sres"></span></div>' +
+        (staff.length ? '<div class="tw"><table><tr><th>Hound ID</th><th>Name</th><th>Card</th><th>Department</th><th>Since</th><th>Check</th></tr>' + staff.map(function (s) {
+          return '<tr data-rid="' + esc(s.id) + '"' + (s.status === "revoked" ? ' class="revoked"' : "") + '><td><code>' + esc(s.id) + "</code></td><td>" + esc(s.name ? s.name + " (" + s.login + ")" : s.login) + '</td><td><span class="card-lv lv' + esc(String(s.card).slice(2)) + '">' + esc(s.card) + "</span></td><td>" + esc(s.department) + "</td><td>" + esc(fmtDate(s.since)) + '</td><td class="vs">' + (s.status === "revoked" ? '<span class="status bad">Revoked ' + esc(fmtDate(s.revoked)) + "</span>" : vBadge("wait")) + "</td></tr>";
+        }).join("") + "</table></div>" : '<div class="empty">No staff cards issued yet<small>The owner issues them once the signing key exists.</small></div>') +
         '<div class="label">Check a record</div>' +
         '<p class="sub">Paste a record someone shared with you.</p>' +
         '<textarea class="field" id="vpaste" rows="5" spellcheck="false" aria-label="Record JSON" placeholder="{&quot;id&quot;: &quot;HP-0001&quot;, ...}"></textarea>' +
@@ -78,6 +84,16 @@
         '<div class="label">Signing keys</div>' + keyHtml +
         '<p class="source">Source: data/records.json · checked with tools/records.py in CI</p>';
       markVerified(recs, keys);
+      markVerified(staff.filter(function (s) { return s.status !== "revoked"; }), keys);
+      $("#sfind").addEventListener("input", function (e) {
+        var q = e.target.value.trim().toLowerCase(), out = $("#sres");
+        if (!q) { out.innerHTML = ""; return; }
+        var s = staff.filter(function (x) { return x.id.toLowerCase() === q || String(x.login).toLowerCase() === q || String(x.discord_id || "") === q; })[0];
+        if (!s) { out.innerHTML = '<span class="status bad">Not Hound staff</span>'; return; }
+        if (s.status === "revoked") { out.innerHTML = '<span class="status bad">' + esc(s.id) + " · card revoked</span>"; return; }
+        out.innerHTML = vBadge("wait");
+        verifyRecord(s, keys).then(function (st) { out.innerHTML = st === "ok" ? '<span class="status done">' + esc(s.id) + " · " + esc(s.card) + " · " + esc(s.department) + " · verified</span>" : vBadge(st); });
+      });
       $("#vcheck").addEventListener("click", function () {
         var out = $("#vres"), r;
         try { r = JSON.parse($("#vpaste").value); } catch (e) { out.innerHTML = vBadge("bad").replace("Signature invalid", "Not valid JSON"); return; }

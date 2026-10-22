@@ -10,6 +10,7 @@
  *   data/devlog.json     manual dev log entries
  *   data/records.json    signed contributor records (tools/records.py), checked on the Verify page
  *   data/records-key.json public keys for those records
+ *   data/staff.json      signed staff cards with Hound IDs, checked on the Verify page
  *   data/guides.json     handbook index (tools/guides_index.py), shown on the Guides page
  *   GitHub API           releases, contract issues and commits, read live
  *
@@ -114,6 +115,16 @@
   // Playable releases start at 0.1; 0.0.x are foundation releases (docs/guides/HP-SOP-003)
   function isPlayable(r) { var m = /^v?(\d+)\.(\d+)/.exec((r && r.tag_name) || ""); return !!m && (+m[1] > 0 || +m[2] >= 1); }
   function playableReleases() { return (data.releases || []).filter(isPlayable); }
+  // Live Discord numbers from the server widget (Server Settings → Widget must be on). Optional.
+  function loadDiscord() {
+    var id = cfg.links && cfg.links.discordGuildId;
+    if (!id || !/^\d{15,21}$/.test(id)) return Promise.resolve(null);
+    if (data.discord !== undefined) return Promise.resolve(data.discord);
+    return fetchJSON("https://discord.com/api/guilds/" + id + "/widget.json").then(function (w) {
+      data.discord = { online: +w.presence_count || 0, invite: w.instant_invite || "" };
+      return data.discord;
+    }, function () { data.discord = null; return null; });
+  }
   function loadReleases() {
     if (data.releases !== undefined) return Promise.resolve(data.releases);
     return gh("/repos/" + cfg.repo + "/releases?per_page=10").then(function (list) {
@@ -342,6 +353,12 @@
         ((p.facts || []).length ? '<dl class="s-facts">' + p.facts.map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>"; }).join("") + "</dl>" : "") +
         (p.link ? '<a class="s-link" href="' + esc(p.link[1]) + '">' + esc(p.link[0]) + ' <span aria-hidden="true">→</span></a>' : "");
     });
+    // Hound Protocol panel: live Discord count when the widget is available
+    loadDiscord().then(function (d) {
+      var dl = $("#aboutTeam .s-facts");
+      if (!d || !dl || $("#dOnline")) return;
+      dl.insertAdjacentHTML("afterbegin", '<div id="dOnline"><dt>Discord</dt><dd><a href="' + esc(cfg.links.discord || d.invite) + '" target="_blank" rel="noopener noreferrer"><i class="live"></i>' + plural(d.online, "member") + " online</a></dd></div>");
+    });
   }
   function renderMenu() {
     renderAbout();
@@ -471,10 +488,10 @@
   function hl(t) { return esc(t).replace(/\{\{([^}]+)\}\}/g, '<mark class="key">$1</mark>'); }
   var ICONS = {
     host: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2l8 8-8 8-8-8z"/><path d="M10 7l3 3-3 3-3-3z" class="f"/></svg>',
-    soldier: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="6" r="3"/><path d="M4 18c0-4 2.7-6 6-6s6 2 6 6"/></svg>',
+    client: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="6" r="3"/><path d="M4 18c0-4 2.7-6 6-6s6 2 6 6"/></svg>',
     link: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 7h13l-3-3M18 13H5l3 3"/></svg>'
   };
-  /* Architecture diagram: host PC, connection, soldier PCs, and what flows each way */
+  /* Architecture diagram: host PC, connection, client PCs, and what flows each way */
   function howDiagram() {
     var narrow = window.matchMedia && matchMedia("(max-width: 700px)").matches;
     function box(x, y, w, h, title, sub, rows, cls, k) {
@@ -485,19 +502,19 @@
       return o + "</g>";
     }
     if (narrow) {
-      var v = '<svg class="how narrow" viewBox="0 0 340 600" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; soldier PCs send movement and actions; the host sends world state back.">';
-      v += box(10, 10, 320, 180, "HOST PC", "Venom Snake's position", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
+      var v = '<svg class="how narrow" viewBox="0 0 340 600" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; client PCs send movement and actions; the host sends world state back.">';
+      v += box(10, 10, 320, 180, "HOST PC", "Runs the session", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
       v += '<g class="dn lane" style="--k:1"><text class="lt" x="170" y="222" text-anchor="middle">STEAM RELAY · DIRECT IP</text>' +
         '<line class="rail" x1="120" y1="236" x2="120" y2="362"/><line class="pkt up" x1="120" y1="362" x2="120" y2="236"/><path class="arrow" d="M114 244l6-8 6 8"/><text class="lb" x="110" y="304" text-anchor="end">movement</text><text class="lb" x="110" y="318" text-anchor="end">actions</text>' +
         '<line class="rail" x1="220" y1="236" x2="220" y2="362"/><line class="pkt down" x1="220" y1="236" x2="220" y2="362"/><path class="arrow" d="M214 354l6 8 6-8"/><text class="lb" x="230" y="296">world state</text><text class="lb" x="230" y="310">AI</text><text class="lb" x="230" y="324">events</text></g>';
       [0, 1].forEach(function (i) { v += '<g class="dn ghost" style="--k:' + (3 + i) + '"><rect x="' + (26 - i * 8) + '" y="' + (382 + i * 8) + '" width="304" height="160"/></g>'; });
-      v += box(10, 398, 304, 160, "SOLDIER PC", "Up to 15 players", ["Own movement", "Own camera", "Local view of world"], "soldierbox", 2);
+      v += box(10, 398, 304, 160, "CLIENT PC", "Up to 15 clients", ["Own movement", "Own camera", "Local view of world"], "clientbox", 2);
       return v + '<text class="foot" x="170" y="592" text-anchor="middle">ONE HOST DECIDES · ALL SEE THE SAME WORLD</text></svg>';
     }
-    var svg = '<svg class="how" viewBox="0 30 760 270" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; soldier PCs send movement and actions; the host sends world state back through Steam relay or a direct connection.">';
-    svg += box(10, 40, 230, 200, "HOST PC", "Venom Snake's position", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
+    var svg = '<svg class="how" viewBox="0 30 760 270" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; client PCs send movement and actions; the host sends world state back through Steam relay or a direct connection.">';
+    svg += box(10, 40, 230, 200, "HOST PC", "Runs the session", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
     [0, 1, 2].forEach(function (i) { svg += '<g class="dn ghost" style="--k:' + (3 + i) + '"><rect x="' + (536 - i * 8) + '" y="' + (40 + i * 8) + '" width="214" height="200"/></g>'; });
-    svg += box(520, 56, 214, 200, "SOLDIER PC", "Up to 15 players", ["Own movement", "Own camera", "Local view of world"], "soldierbox", 2);
+    svg += box(520, 56, 214, 200, "CLIENT PC", "Up to 15 clients", ["Own movement", "Own camera", "Local view of world"], "clientbox", 2);
     svg += '<g class="dn lane" style="--k:1">' +
       '<text class="lt" x="380" y="70" text-anchor="middle">STEAM RELAY · DIRECT IP</text>' +
       '<line class="rail" x1="250" y1="120" x2="510" y2="120"/><line class="pkt up" x1="510" y1="120" x2="250" y2="120"/>' +
@@ -807,7 +824,7 @@
         '<div class="cols"><div class="panel"><div class="label">Taking a contract</div><ol class="steps">' +
         "<li>Pick an open contract your rank allows. Start with an <b class=\"tint easy\">Easy</b> one.</li><li>Comment on the GitHub issue to claim it. A maintainer assigns you.</li><li>Do the work on a branch in your fork. Sign off every commit.</li><li>Open a pull request that says Closes #number.</li><li><b class=\"tint key\">Quality</b> checks it against the acceptance criteria and merges it. You get a <b class=\"tint key\">signed record</b> and move up in rank.</li></ol></div>" +
         '<div class="panel"><div class="label">Rules</div><ol class="steps">' +
-        "<li>Pull requests only. Nobody pushes to main.</li><li>No game files and no code copied from other mods.</li><li>AI tools are welcome. You review and own what you submit.</li><li>Nothing that touches Konami's servers or anti-cheat.</li><li>Leaving is fine. Post a short handoff note first.</li></ol></div></div>" +
+        "<li>Pull requests only. Nobody pushes to main.</li><li>No game files and no code copied from other mods.</li><li>AI tools are welcome for code and docs. No generative AI art, music or voices.</li><li>Nothing that touches Konami's servers or anti-cheat.</li><li>Leaving is fine. Post a short handoff note first.</li></ol></div></div>" +
         '<div class="toolbar" style="margin-top:14px"><a class="btn primary" href="#/guides/hp-gde-003">Quick start</a><a class="btn" href="#/guides/hp-pol-002">AI Use Policy</a><a class="btn" href="' + repoUrl("/fork") + '" target="_blank" rel="noopener noreferrer">Fork on GitHub</a><a class="btn" href="' + repoUrl("/issues?q=is%3Aopen+label%3Acontract") + '" target="_blank" rel="noopener noreferrer">Contracts on GitHub</a></div>' +
         '<div class="label">Module progress</div><div class="cols">' + mods.map(function (m) {
           return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
@@ -1056,9 +1073,9 @@
   function viewVerify(rid) {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Verify", loading("Loading contributor records"));
-    Promise.all([loadLocal("records"), loadLocal("records-key")]).then(function (res) {
+    Promise.all([loadLocal("records"), loadLocal("records-key"), loadLocal("staff")]).then(function (res) {
       if (currentView !== "verify") return;
-      var recs = (res[0] && res[0].records) || [], keys = (res[1] && res[1].keys) || [];
+      var recs = (res[0] && res[0].records) || [], keys = (res[1] && res[1].keys) || [], staff = (res[2] && res[2].staff) || [];
       var key = keys[keys.length - 1];
       var keyHtml = key
         ? '<div class="tw"><table><tr><th>Key</th><th>Fingerprint</th><th>Owner</th><th>Since</th></tr>' + keys.map(function (k) {
@@ -1086,6 +1103,12 @@
         }).join("") + "</div>" : '<div class="empty">No records yet<small>The wall fills as contracts are completed and signed.</small></div>') +
         '<div class="label">Records</div>' +
         (recs.length ? '<div class="cards">' + recs.slice().reverse().map(recordCard).join("") + "</div>" : "") +
+        '<div class="label">Hound staff</div>' +
+        '<p class="sub">Every staff member has a permanent <b class="tint key">Hound ID</b>, tied to their GitHub account number, which never changes even if they rename the account. Check anyone who claims to be staff here.</p>' +
+        '<div class="toolbar"><input class="field grow" id="sfind" type="search" placeholder="Hound ID, GitHub name or Discord ID" aria-label="Find staff"><span id="sres"></span></div>' +
+        (staff.length ? '<div class="tw"><table><tr><th>Hound ID</th><th>Name</th><th>Card</th><th>Department</th><th>Since</th><th>Check</th></tr>' + staff.map(function (s) {
+          return '<tr data-rid="' + esc(s.id) + '"' + (s.status === "revoked" ? ' class="revoked"' : "") + '><td><code>' + esc(s.id) + "</code></td><td>" + esc(s.name ? s.name + " (" + s.login + ")" : s.login) + '</td><td><span class="card-lv lv' + esc(String(s.card).slice(2)) + '">' + esc(s.card) + "</span></td><td>" + esc(s.department) + "</td><td>" + esc(fmtDate(s.since)) + '</td><td class="vs">' + (s.status === "revoked" ? '<span class="status bad">Revoked ' + esc(fmtDate(s.revoked)) + "</span>" : vBadge("wait")) + "</td></tr>";
+        }).join("") + "</table></div>" : '<div class="empty">No staff cards issued yet<small>The owner issues them once the signing key exists.</small></div>') +
         '<div class="label">Check a record</div>' +
         '<p class="sub">Paste a record someone shared with you.</p>' +
         '<textarea class="field" id="vpaste" rows="5" spellcheck="false" aria-label="Record JSON" placeholder="{&quot;id&quot;: &quot;HP-0001&quot;, ...}"></textarea>' +
@@ -1093,6 +1116,16 @@
         '<div class="label">Signing keys</div>' + keyHtml +
         '<p class="source">Source: data/records.json · checked with tools/records.py in CI</p>';
       markVerified(recs, keys);
+      markVerified(staff.filter(function (s) { return s.status !== "revoked"; }), keys);
+      $("#sfind").addEventListener("input", function (e) {
+        var q = e.target.value.trim().toLowerCase(), out = $("#sres");
+        if (!q) { out.innerHTML = ""; return; }
+        var s = staff.filter(function (x) { return x.id.toLowerCase() === q || String(x.login).toLowerCase() === q || String(x.discord_id || "") === q; })[0];
+        if (!s) { out.innerHTML = '<span class="status bad">Not Hound staff</span>'; return; }
+        if (s.status === "revoked") { out.innerHTML = '<span class="status bad">' + esc(s.id) + " · card revoked</span>"; return; }
+        out.innerHTML = vBadge("wait");
+        verifyRecord(s, keys).then(function (st) { out.innerHTML = st === "ok" ? '<span class="status done">' + esc(s.id) + " · " + esc(s.card) + " · " + esc(s.department) + " · verified</span>" : vBadge(st); });
+      });
       $("#vcheck").addEventListener("click", function () {
         var out = $("#vres"), r;
         try { r = JSON.parse($("#vpaste").value); } catch (e) { out.innerHTML = vBadge("bad").replace("Signature invalid", "Not valid JSON"); return; }

@@ -53,3 +53,16 @@ Title and difficulty come from the contract specs. Then open a pull request with
 - One record per person per contract. Shared contracts get one record for each contributor.
 - Records are never deleted. A record issued by mistake is replaced by a new record and noted in the pull request.
 - Records carry no money value. If donations open later, any payout rules will be published separately, and records are how contributions will be counted.
+
+## Staff cards and Hound IDs
+Staff (keycard LV3 and up, [ADR 0011](decisions/0011-keycard-access.md)) also get a signed **staff card** in `site/data/staff.json`, with a permanent **Hound ID** (`HND-0001`, `HND-0002`, …).
+
+- The card is tied to the person's **numeric GitHub account ID**. Logins can be renamed and later taken by someone else, but the number never changes.
+- It records the keycard level, department, start date and, optionally, the Discord user ID.
+- Anyone can look up a Hound ID, GitHub name or Discord ID on the Verify page and see whether the person is real staff. A copied or edited card fails the check.
+- Cards are revoked, never deleted: `python3 tools/records.py staff-revoke --id HND-0002 --reason "Left the project"`.
+
+Issue a card (owner or Administration, with the signing key):
+```
+python3 tools/records.py staff-add --login <github-user> --card LV5 --department Development --name "Display name" --discord-id <id>
+```

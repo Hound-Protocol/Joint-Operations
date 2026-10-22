@@ -27,7 +27,7 @@
 ---
 
 ## About
-**Joint Operations** brings the game's online functionality into the single-player world. One player hosts from Venom Snake's position (the helicopter, the Command Center, briefings and Mother Base command), and up to 15 others deploy as soldiers from the Mother Base roster. Players arrive and leave through the game's own mechanics.
+**Joint Operations** brings the game's online functionality into the single-player world. One player is the **host**: they run the session and command it from the helicopter, the Command Center and Mother Base. Up to 15 **clients** join the host's session and deploy into the same world. Players arrive and leave through the game's own mechanics.
 
 It is a **multiplayer mod**, not a co-op add-on, and it never touches Konami's online services, FOBs or anti-cheat.
 
@@ -36,7 +36,7 @@ It is a **multiplayer mod**, not a co-op add-on, and it never touches Konami's o
 ## Highlights
 | | |
 |---|---|
-| **16 players** | One host, up to 15 soldiers, in free roam and missions |
+| **16 players** | One host and up to 15 clients, in free roam and missions |
 | **Windows and Linux** | Native on Windows, Linux through Proton (tested on Bazzite) |
 | **One-click join** | Planned: search servers on the website and deploy straight into the game ([ADR 0008](docs/decisions/0008-browser-launch.md)) |
 | **Built in the open** | Every decision, risk and research note is public |
@@ -62,14 +62,14 @@ Hound Protocol is a non-commercial community development team, organized like Mo
 | **Quality** | Testing, reviews, release sign-off |
 | **Contractor** | Contributors who take contracts and are ranked A to S++ |
 
-Every completed contract earns a signed contributor record that anyone can verify on the website. See [departments and ranks](docs/departments.md).
+Access works like keycards, from **LV1** (visitor) to **LV7** (owner), and every staff member has a verifiable **Hound ID**. Every completed contract earns a signed record that anyone can check on the website. See [departments and ranks](docs/departments.md) and [keycard access](docs/decisions/0011-keycard-access.md).
 
 ## Get involved
 - **Play:** follow the [Player Guide](docs/guides/HP-GDE-001-player-guide.md) when 0.1 is released.
 - **Test:** testers on Windows and Linux are welcome now. Join the [Discord](https://discord.gg/QTpJ89kMCM) and read the [Quality Guide](docs/guides/HP-GDE-004-quality-testing.md).
 - **Build:** contracts open after 0.1. Start with the [Contributor Quick Start](docs/guides/HP-GDE-003-contributor-quick-start.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Hand-written and AI-assisted work are welcome and credited equally, under the [AI Use Policy](docs/guides/HP-POL-002-ai-use-policy.md).
+Hand-written and AI-assisted work are welcome and credited equally, under the [AI Use Policy](docs/guides/HP-POL-002-ai-use-policy.md). Generative AI art, music and voices are not accepted.
 
 ## Documentation
 | Area | Start here |

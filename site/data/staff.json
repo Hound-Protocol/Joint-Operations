@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "note": "Signed staff cards with permanent Hound IDs. Written by tools/records.py staff-add, checked by CI and on the Verify page.",
+  "staff": []
+}

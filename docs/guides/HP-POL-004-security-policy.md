@@ -1,10 +1,13 @@
 # Security Policy for Team Members
-Code: HP-POL-004 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · Applies to: department members, seat holders and anyone with access
+Code: HP-POL-004 · Version 1.1 · Effective 2026-10-22 · Owner: Administration · Applies to: department members, seat holders and anyone with access
 
 For reporting a vulnerability as an outsider, see [SECURITY.md](../../SECURITY.md).
 
-## 1. Accounts
-- **Two-factor authentication** on GitHub and Discord is required for every department member and seat holder.
+## 1. Accounts and identity
+- **Two-factor authentication** on GitHub and Discord is required for every department member and seat holder. The GitHub organization enforces it: members without 2FA are removed automatically.
+- **Passkeys or a hardware security key** are required for keycard LV6 and LV7, and strongly recommended for LV4 and LV5 ([ADR 0011](../decisions/0011-keycard-access.md)). An authenticator app is the minimum. Text-message codes are not allowed.
+- **Hound ID:** every staff member gets a signed staff card with a permanent ID (`HND-NNNN`), tied to their numeric GitHub account ID, which never changes. Anyone can check it on the website's Verify page. Staff never need to prove who they are by sharing passwords or codes, and nobody from Hound Protocol will ever ask for them.
+- **Signed commits** for LV4 and up: sign commits with an SSH or GPG key so GitHub marks them as Verified. Set up once: `git config --global gpg.format ssh`, `git config --global user.signingkey ~/.ssh/id_ed25519.pub`, `git config --global commit.gpgsign true`, then add the key on GitHub as a **Signing key**.
 - Use a password manager. Never reuse the project's passwords elsewhere.
 - Shared credentials live only in the project's password manager, never in chat, issues or documents.
 
@@ -24,5 +27,8 @@ For reporting a vulnerability as an outsider, see [SECURITY.md](../../SECURITY.m
 - Releases are built by CI only, never on a personal machine, and published with checksums.
 - Dependencies are kept up to date by Dependabot. Security updates are merged first.
 
-## 5. If something leaks
+## 5. Backups
+The project is backed up every week to the owner's computer and an encrypted Google Drive folder ([HP-SOP-009](HP-SOP-009-backup-and-restore.md)). 2FA recovery codes and the records signing key are kept offline on an encrypted USB stick.
+
+## 6. If something leaks
 Follow [HP-SOP-006](HP-SOP-006-security-incident.md) at once: revoke first, then clean up, then report.

@@ -9,5 +9,5 @@ Joint Operations is a **multiplayer mod**. It brings the online multiplayer func
 
 ## Consequences
 - All documents, the website and recruiting use "multiplayer mod" wording.
-- Scope includes free roam, missions, Mother Base soldiers as player characters, and session join and leave, not just a second player in a mission.
+- Scope includes free roam, missions, Mother Base staff as player characters, and session join and leave, not just a second player in a mission.
 - Strategy work (0002) favors reusing the engine's own online systems.
