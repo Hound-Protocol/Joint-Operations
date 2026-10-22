@@ -1,8 +1,8 @@
 {
   "project": "Joint Operations",
   "team": "Hound Protocol",
-  "tagline": "Multiplayer mod for Metal Gear Solid V for up to 16 players",
-  "version": "0.0.2",
+  "tagline": "Metal Gear Solid V, now with up to 16 players",
+  "version": "0.0.3",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
@@ -18,9 +18,61 @@
     "github": "https://github.com/Hound-Protocol/Joint-Operations"
   },
   "milestones": {
-    "download": "The first playable build is planned for version 0.1, at the end of Phase 2.",
-    "sessions": "The session service arrives with version 0.1 (Phase 2). Sessions will be listed here automatically.",
-    "mods": "The mod repository opens alongside the Mod API in Phase 4. Submissions can be sent for review now."
+    "download": "Nothing to download yet. The first playable version, 0.1, is in development.",
+    "sessions": "Sessions go live with version 0.1. Hosts will list their games here, and players join in one click.",
+    "mods": "The mod list opens with the Mod API. You can already send a mod for review."
   },
-  "cacheMinutes": 10
+  "cacheMinutes": 10,
+  "about": {
+    "project": {
+      "label": "The project",
+      "title": "Joint Operations",
+      "text": "A multiplayer mod for Metal Gear Solid V: The Phantom Pain. One player hosts as the commander of Mother Base. Up to 15 friends deploy beside them as soldiers from the roster.",
+      "facts": [
+        [
+          "Players",
+          "Up to 16"
+        ],
+        [
+          "Platforms",
+          "Windows · Linux"
+        ],
+        [
+          "Price",
+          "Free and open source"
+        ],
+        [
+          "Status",
+          "In development"
+        ]
+      ],
+      "link": [
+        "Learn more",
+        "#/briefing"
+      ]
+    },
+    "team": {
+      "label": "The team",
+      "title": "Hound Protocol",
+      "text": "A community team building Joint Operations in the open. We run like Mother Base: Administration, Development, Quality and Contractors. Take a contract, deliver it, and earn your rank from A to S++.",
+      "facts": [
+        [
+          "Departments",
+          "4"
+        ],
+        [
+          "Contractor ranks",
+          "A to S++"
+        ],
+        [
+          "Testers",
+          "Wanted now"
+        ]
+      ],
+      "link": [
+        "Join the Hound",
+        "#/contribute"
+      ]
+    }
+  }
 }

@@ -1,28 +1,29 @@
 {
   "note": "Text for the Briefing page. Wrap a key term in {{double braces}} to color-code it. Use sparingly.",
-  "headline": "A {{multiplayer mod}} for Metal Gear Solid V, for up to {{16 players}}",
+  "headline": "Bring your squad into {{The Phantom Pain}}. Up to {{16 players}}.",
   "summary": [
-    "Joint Operations brings the game's online functionality into the single-player world. One player hosts, up to fifteen others join, and everyone shares the same open world and missions."
+    "Joint Operations adds online multiplayer to the single-player game. One player hosts. Up to 15 friends join. Everyone shares the same open world, the same missions and the same Mother Base.",
+    "It's free, it's open source, and it never touches Konami's servers."
   ],
   "how": [
     [
       "host",
-      "The host decides",
-      "The host's game runs the mission, the AI and the world. It is the single source of truth, so every player sees the same outcome."
+      "The host runs the mission",
+      "The host's game runs the missions, the enemies and the world. There is one version of events, so everyone sees the same thing."
     ],
     [
       "soldier",
-      "Soldiers act",
-      "Each other player controls their own soldier and camera, and sends their movement and actions to the host."
+      "You control your soldier",
+      "Every other player controls their own soldier and camera. Your moves go to the host, and the world comes back to you."
     ],
     [
       "link",
-      "One connection",
-      "Players connect through Steam's relay network, with a direct connection as fallback. No ports to open and no Konami servers involved."
+      "Connect through Steam",
+      "No ports to open, no extra accounts and no Konami servers. A direct connection is there as a backup."
     ]
   ],
   "host": {
-    "text": "The host takes {{Venom Snake's place}}. Wherever the game puts Snake, the host is there:",
+    "text": "The host takes {{Venom Snake's place}}. Wherever the story puts Snake, the host is there:",
     "places": [
       "Helicopter seat",
       "Command Center",

@@ -40,14 +40,14 @@
   }
   function viewBriefing() {
     var v = $("#view");
-    v.innerHTML = shell("Overview", "Briefing", loading("Loading briefing"));
+    v.innerHTML = shell("Overview", "About Joint Operations", loading("Loading"));
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || {}, host = b.host || { places: [] };
       $("#vb").innerHTML = '<div class="bf">' +
         '<section class="bf-sec bf-hero"><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
         (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
-        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/docs/plan">Read the plan</a></div></section>' +
+        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Guides</a></div></section>' +
         '<section class="bf-sec"><div class="label">How a session works</div>' + howDiagram() +
         '<div class="bf-how">' + (b.how || []).map(function (h, k) {
           return '<div class="bf-pt" style="--k:' + k + '"><h4>' + (ICONS[h[0]] || "") + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div>";
@@ -87,7 +87,7 @@
           var state = p === ph ? "now" : (p.total && p.done === p.total ? "done" : "next");
           return '<a class="ph ' + state + '" href="#rm-' + p.n + '"><div class="n">Phase ' + p.n + (state === "now" ? " · Now" : state === "done" ? " · Done" : "") + '</div><div class="tt">' + esc(p.title) + '</div><div class="c">' + p.done + " / " + p.total + " tasks</div></a>";
         }).join("") + "</div>" +
-        '<p class="source">' + all[0] + " of " + all[1] + ' tasks done · read live from <a href="' + repoUrl("/blob/" + cfg.branch + "/ROADMAP.md") + '" target="_blank" rel="noopener noreferrer">ROADMAP.md</a> · a phase starts when the previous one is complete or deferred by the project lead</p></section>' +
+        '<p class="source">' + all[0] + " of " + all[1] + ' tasks done · read live from <a href="' + repoUrl("/blob/" + cfg.branch + "/ROADMAP.md") + '" target="_blank" rel="noopener noreferrer">ROADMAP.md</a> · each phase starts when the one before it is done</p></section>' +
         '<section class="bf-sec rm-list">' + r.map(function (p) {
           var state = p === ph ? "now" : (p.total && p.done === p.total ? "done" : "next");
           return '<div class="rm-ph ' + state + '" id="rm-' + p.n + '"><div class="rm-h"><span class="n">Phase ' + p.n + '</span><h3>' + esc(p.title) + '</h3><span class="pill ' + (state === "now" ? "warn" : state === "done" ? "ok" : "") + '">' + (state === "now" ? "In progress" : state === "done" ? "Complete" : "Planned") + "</span></div>" +

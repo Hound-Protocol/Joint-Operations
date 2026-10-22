@@ -40,7 +40,7 @@
         if (m) m[1].replace(/#(\d+)/g, function (_, n) { deps.push(+n); });
         var st = i.state === "closed" ? "done" : labels.indexOf("status:review") > -1 ? "review" : (i.assignees && i.assignees.length) ? "claimed" : "open";
         return {
-          id: "#" + i.number, num: i.number, title: i.title, module: mod, difficulty: diff, skills: "",
+          id: "#" + i.number, num: i.number, title: i.title, module: mod, difficulty: diff, core: labels.indexOf("core") > -1, skills: "",
           depends: deps.map(function (n) { return "#" + n; }),
           blocked: deps.some(function (n) { return byNum[n] && byNum[n].state !== "closed"; }) || labels.indexOf("blocked") > -1,
           status: st, by: (i.assignees || []).map(function (a) { return a.login; }), url: i.html_url, live: true

@@ -21,7 +21,8 @@ Contracts are GitHub issues with the `contract` label. The website's Contribute 
 |---|---|
 | `contract` | The issue is a contract on the board |
 | `module:<name>` | Module it belongs to: `launcher`, `hooks`, `session`, `net`, `modapi`, `lobby`, `web`, `docs`, `testing`, `legal` |
-| `difficulty:basic` … `difficulty:core` | Who can claim it: basic (anyone), standard (rank A+), advanced (rank S), expert (rank S+), core (Development Department) |
+| `difficulty:easy`, `difficulty:medium`, `difficulty:hard` | Who can claim it: easy (anyone), medium (rank A+), hard (rank S) |
+| `core` | On the 0.1 critical path. Development Department only |
 | `status:review` | Work is submitted and waiting for review |
 | `blocked` | Waiting on another contract |
 
@@ -48,15 +49,15 @@ Contractors are ranked like Mother Base staff, by the number of completed contra
 
 | Rank | Completed contracts | Unlocks |
 |---|---|---|
-| — | 0 | Claim Basic contracts |
+| — | 0 | Claim Easy contracts |
 | A | 1 | Contributor wall, contractor role on Discord |
-| A+ | 3 | Claim Standard contracts |
-| A++ | 6 | Review Basic contracts with Quality |
-| S | 10 | Claim Advanced contracts, review Standard contracts |
-| S+ | 20 | Claim Expert contracts, invitation into a department, own a module area |
+| A+ | 3 | Claim Medium contracts |
+| A++ | 6 | Review Easy contracts with Quality |
+| S | 10 | Claim Hard contracts, review Medium contracts |
+| S+ | 20 | Review Hard contracts, invitation into a department, own a module area |
 | S++ | 35 | Vote on priorities, seat candidate |
 
-Each contract has a **difficulty** that sets who can claim it: Basic (anyone), Standard (A+), Advanced (S), Expert (S+) and Core (Development Department only). It also has an **effort** estimate in hours or days. The full structure, with the four departments, is in [departments.md](docs/departments.md).
+Each contract has a **difficulty** that sets who can claim it: 🟢 **Easy** (anyone), 🟡 **Medium** (rank A+) and 🔴 **Hard** (rank S). Contracts marked **Core** are on the 0.1 critical path and stay with the Development Department. Each contract also has an **effort** estimate. The full structure, with the four departments, is in [departments.md](docs/departments.md).
 
 ## Submitting a mod to the repository
 Open an issue with the `mod-submission` label. Include the mod name, version, author, link, and what you tested. Reviewed mods are listed as Compatible or Known issues on the website.

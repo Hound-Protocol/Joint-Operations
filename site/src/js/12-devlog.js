@@ -9,7 +9,7 @@
   }
   function viewDevlog() {
     var v = $("#view");
-    v.innerHTML = shell("Intel", "Dev Log", loading("Loading the dev log"));
+    v.innerHTML = shell("News", "Dev Log", loading("Loading the dev log"));
     Promise.all([loadLocal("devlog"), loadCommits(), loadReleases()]).then(function () { if (currentView === "devlog") drawDevlog(); refreshInfo(); });
   }
   function drawDevlog() {

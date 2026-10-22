@@ -28,7 +28,7 @@
   }
   function viewDocs(id) {
     var v = $("#view");
-    if (!$("#docNav")) v.innerHTML = shell("Library", "Documentation", loading("Loading the library"));
+    if (!$("#docNav")) v.innerHTML = shell("Library", "Docs", loading("Loading the library"));
     loadLocal("docs").then(function (man) {
       if (currentView !== "docs") return;
       var docs = (man && man.docs) || [];

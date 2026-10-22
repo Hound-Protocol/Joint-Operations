@@ -1,17 +1,32 @@
   /* ---------------- Menu ---------------- */
   var ITEMS = [
-    { id: "briefing", title: "Briefing", desc: "What Joint Operations is and where it stands", tab: "Briefing" },
-    { id: "roadmap", title: "Roadmap", desc: "Phases, progress and what comes next", tab: "Roadmap", tabOnly: true },
-    { id: "download", title: "Download", desc: "Available for Windows and Linux using Proton", tab: "Download" },
-    { id: "sessions", title: "Session Overview", desc: "Browse sessions, details, status and ping", tab: "Sessions" },
-    { id: "contribute", title: "Contribute", desc: "Become a part of the Protocol", tab: "Contribute" },
+    { id: "briefing", title: "About Joint Operations", desc: "What it is, how it works, and where it stands", tab: "About" },
+    { id: "roadmap", title: "Roadmap", desc: "Where we are and what comes next", tab: "Roadmap", tabOnly: true },
+    { id: "download", title: "Download", desc: "Get the mod for Windows or Linux", tab: "Download" },
+    { id: "sessions", title: "Session Browser", desc: "Browse, Create & Join active Joint Operations", tab: "Sessions" },
+    { id: "contribute", title: "Contribute", desc: "Take part in development & Become a Hound Member", tab: "Contribute" },
     { id: "team", title: "Team", desc: "The people behind Hound Protocol", tab: "Team", tabOnly: true },
-    { id: "mods", title: "Mods", desc: "Compatible mods and mods with known issues", tab: "Mods" },
-    { id: "devlog", title: "Dev Log", desc: "Recent changes, decisions and releases", tab: "Dev Log" },
-    { id: "guides", title: "Guides", desc: "Handbook for players, contributors, quality and admins", tab: "Guides" },
-    { id: "docs", title: "Documentation", desc: "Library of project documentation", tab: "Docs" },
-    { id: "options", title: "Options", desc: "Interface and data settings", tab: "Options" }
+    { id: "mods", title: "Mods", desc: "Upload, Download & Browse Re-Engineered mods curated to function with Joint Operations", tab: "Mods" },
+    { id: "devlog", title: "Dev Log", desc: "News, decisions and releases", tab: "Dev Log" },
+    { id: "guides", title: "Guides", desc: "How to play, help, test and run the project", tab: "Guides" },
+    { id: "docs", title: "Docs", desc: "Plans, decisions and research", tab: "Docs" },
+    { id: "options", title: "Options", desc: "Sound, motion and display settings", tab: "Options" }
   ];
+  /* Menu icons: simple line glyphs drawn for this site, on a 24 x 24 grid */
+  var MENU_ICONS = {
+    briefing: '<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3M9 10h6M9 14h6M9 18h4"/>',
+    roadmap: '<path d="M4 18l5-5 4 3 7-8"/><circle cx="4" cy="18" r="1.5"/><circle cx="20" cy="8" r="1.5"/>',
+    download: '<path d="M12 3v11M7 10l5 5 5-5M4 17v3h16v-3"/>',
+    sessions: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l5.5-5.5M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+    contribute: '<path d="M8 4h8v3H8z"/><path d="M8 5.5H5V21h14V5.5h-3"/><path d="M8.5 13.5l2.5 2.5 4.5-5"/>',
+    team: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M16 5.5a3 3 0 010 5.5M18 14.5c1.8.9 3 2.9 3 5.5"/>',
+    mods: '<path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M3.5 7.3L12 12l8.5-4.7M12 12v9.5"/>',
+    devlog: '<path d="M3 5h18v14H3z"/><path d="M6.5 9.5l3 2.5-3 2.5M11.5 15h6"/>',
+    guides: '<path d="M12 6.5C10 5 7 4.5 3 5v14c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v14"/>',
+    docs: '<path d="M4 6h6l2 2h8v11H4z"/><path d="M4 10h16"/>',
+    options: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>'
+  };
+  function menuIcon(id) { return MENU_ICONS[id] ? '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true">' + MENU_ICONS[id] + "</svg>" : ""; }
   var MENU = ITEMS.filter(function (it) { return !it.tabOnly; });
   var cur = 0;
   function itemInfo(id) {
@@ -46,9 +61,24 @@
     }
     return "";
   }
+  /* Home side panels: the project on the left, Hound Protocol on the right (config.about) */
+  function renderAbout() {
+    var a = cfg.about || {};
+    [["#aboutProject", a.project, "briefing"], ["#aboutTeam", a.team, "team"]].forEach(function (s) {
+      var el = $(s[0]), p = s[1];
+      if (!el) return;
+      if (!p) { el.hidden = true; return; }
+      el.innerHTML = '<div class="s-label">' + menuIcon(s[2]) + esc(p.label) + "</div>" +
+        '<h2 class="s-title">' + esc(p.title) + "</h2>" +
+        '<p class="s-text">' + esc(p.text) + "</p>" +
+        ((p.facts || []).length ? '<dl class="s-facts">' + p.facts.map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>"; }).join("") + "</dl>" : "") +
+        (p.link ? '<a class="s-link" href="' + esc(p.link[1]) + '">' + esc(p.link[0]) + ' <span aria-hidden="true">→</span></a>' : "");
+    });
+  }
   function renderMenu() {
+    renderAbout();
     $("#menu").innerHTML = MENU.map(function (it, n) {
-      return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + esc(it.title) + '</span><span class="win" aria-hidden="true"><span class="d"></span></span></a>';
+      return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + menuIcon(it.id) + '<span>' + esc(it.title) + '</span></span><span class="win' + (it.desc.length > 56 ? " long" : "") + '" aria-hidden="true"><span class="d"></span></span></a>';
     }).join("");
     $$("#menu a").forEach(function (a) {
       var n = +a.dataset.n;

@@ -3,7 +3,7 @@
   function serverList() { return (data.servers && data.servers.servers) || []; }
   function viewSessions() {
     var v = $("#view");
-    v.innerHTML = shell("Server browser", "Session Overview", loading("Loading sessions"));
+    v.innerHTML = shell("Joint Operations", "Session Browser", loading("Looking for sessions"));
     loadLocal("servers").then(function () { if (currentView === "sessions") drawSessions(); });
   }
   function drawSessions() {
@@ -34,11 +34,12 @@
       '<div class="toolbar"><input class="field grow" id="sq" type="search" placeholder="Search sessions" value="' + esc(sessState.q) + '" aria-label="Search sessions">' +
       '<select class="field" id="sr" aria-label="Region"><option value="all">All regions</option>' + Object.keys(regions).sort().map(function (r) { return '<option' + (sessState.region === r ? " selected" : "") + ">" + esc(r) + "</option>"; }).join("") + "</select>" +
       '<button class="btn' + (sessState.hideFull ? " sel" : "") + '" id="sf" aria-pressed="' + sessState.hideFull + '">Hide full</button>' +
-      '<button class="btn" id="srf">Refresh</button></div>' +
+      '<button class="btn" id="srf">Refresh</button>' +
+        '<span class="btn primary off" aria-disabled="true" title="Hosting arrives with version 0.1">Host a session</span></div>' +
       '<div class="tw"><table><tr>' + th("name", "Session") + th("host", "Host") + "<th>Details</th>" + th("players", "Players") + "<th>Status</th>" + th("ping", "Ping") + "</tr>" +
       rows + "</table></div>" +
-      (rows ? "" : all.length ? '<div class="empty" id="noServers">No servers found<small>No sessions match the filters.</small></div>'
-        : '<div class="scanbox" id="noServers"><div class="radar" aria-hidden="true"><i class="sweep"></i><i class="blip"></i></div><div><b>No servers found</b><small>Scanning for sessions. They appear here once the session service is running.</small></div></div>') +
+      (rows ? "" : all.length ? '<div class="empty" id="noServers">No sessions match<small>Try other filters.</small></div>'
+        : '<div class="scanbox" id="noServers"><div class="radar" aria-hidden="true"><i class="sweep"></i><i class="blip"></i></div><div><b>No sessions yet</b><small>Live sessions appear here from version 0.1. Hosts list their game, you pick one and deploy.</small></div></div>') +
       '<p class="source">Source: data/servers.json' + (data.serversHooked ? " · live hook" : "") + "</p>";
     $("#sq").addEventListener("input", function (e) { sessState.q = e.target.value; drawSessionsKeepFocus("#sq"); });
     $("#sr").addEventListener("change", function (e) { sessState.region = e.target.value; drawSessions(); });
