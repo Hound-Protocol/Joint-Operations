@@ -15,6 +15,16 @@
   // Playable releases start at 0.1; 0.0.x are foundation releases (docs/guides/HP-SOP-003)
   function isPlayable(r) { var m = /^v?(\d+)\.(\d+)/.exec((r && r.tag_name) || ""); return !!m && (+m[1] > 0 || +m[2] >= 1); }
   function playableReleases() { return (data.releases || []).filter(isPlayable); }
+  // Live Discord numbers from the server widget (Server Settings → Widget must be on). Optional.
+  function loadDiscord() {
+    var id = cfg.links && cfg.links.discordGuildId;
+    if (!id || !/^\d{15,21}$/.test(id)) return Promise.resolve(null);
+    if (data.discord !== undefined) return Promise.resolve(data.discord);
+    return fetchJSON("https://discord.com/api/guilds/" + id + "/widget.json").then(function (w) {
+      data.discord = { online: +w.presence_count || 0, invite: w.instant_invite || "" };
+      return data.discord;
+    }, function () { data.discord = null; return null; });
+  }
   function loadReleases() {
     if (data.releases !== undefined) return Promise.resolve(data.releases);
     return gh("/repos/" + cfg.repo + "/releases?per_page=10").then(function (list) {

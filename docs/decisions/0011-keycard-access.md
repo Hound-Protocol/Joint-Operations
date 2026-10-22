@@ -1,0 +1,56 @@
+# 0011: Keycard access levels
+Status: Accepted (design) · Date: 2026-10-22 · Deciders: project lead
+
+## Context
+The project lead wants access levels on the website like the keycards in Metal Gear Solid: contributors see contributor tools, administrators get tools to moderate content and people, and the owner has absolute authority. The website is a static site today, so anything it hides or shows in the browser alone can be bypassed. Real access needs a trusted identity and checks done somewhere users cannot change.
+
+## Decision
+### Seven keycard levels
+| Card | Who | Can do |
+|---|---|---|
+| **LV1** | Visitor | Read the public site |
+| **LV2** | Member (signed in) | Profile, report content, follow sessions |
+| **LV3** | Contractor | Claim contracts, upload mods for review |
+| **LV4** | Quality | Review queue, approve or reject mods, triage bugs |
+| **LV5** | Development | Edit contract and site data, manage sessions and the registry |
+| **LV6** | Administration | Moderate people and content, edit pages, grant cards up to LV5 |
+| **LV7** | Owner | Everything. Only LV7 grants LV6 or LV7, publishes releases, and holds the records signing key |
+
+Levels add up: each card includes everything below it. Contractor ranks (A to S++) are separate and sit inside LV3.
+
+### Identity
+- Contributors and staff sign in with **GitHub**. Players will sign in with **Steam** (OpenID) once sessions go live.
+- The keycard is derived from **GitHub organization teams**: `owners` → LV7, `administration` → LV6, `development` → LV5, `quality` → LV4, `contractors` → LV3. Anyone signed in is at least LV2.
+
+### Enforcement
+- **Never in the browser alone.** The site only shows or hides tools. Every action is checked by GitHub (for repository changes, through the user's own GitHub permissions) or by our API server (for sessions, mods and moderation), which reads the user's teams on every request.
+- Admin tools that change the repository work through pull requests. Owner-only actions require two-factor authentication.
+- Every moderation action is logged: who, what, when, why. The log is visible to LV6 and LV7.
+
+### Discord
+Discord roles carry the same levels, so a member's card is visible everywhere:
+
+| Card | Discord role |
+|---|---|
+| LV7 | `LV7 · Owner` |
+| LV6 | `LV6 · Administration`, `LV6 · Moderator` |
+| LV5 | `LV5 · Development`, `LV5 · Technical Lead` |
+| LV4 | `LV4 · Quality` |
+| LV3 | `LV3 · Contractor` |
+| LV2 | `LV2 · Member` |
+
+Until a bot keeps GitHub teams and Discord roles in sync, the Administration Department assigns roles by hand ([HP-SOP-007](../guides/HP-SOP-007-onboarding-offboarding.md)).
+
+### When
+- **Now:** the levels, Discord roles, GitHub team names and this record.
+- **With the session registry (ADR 0008):** the API server, GitHub sign-in on the site, keycard-gated tools (review queue, moderation, mod uploads).
+- **Later:** Steam sign-in for players, a Discord bot that syncs roles from GitHub teams.
+
+## Consequences
+- The website gains a sign-in button and a keycard badge once the API exists. Until then, everything public stays public and nothing pretends to be protected.
+- GitHub organization teams become the source of truth for access. They must be kept tidy ([HP-SOP-007](../guides/HP-SOP-007-onboarding-offboarding.md)).
+- The privacy notice must cover sign-in data before sign-in goes live.
+
+## Alternatives considered
+- **Password or code checked in the browser:** rejected, because anyone can read and bypass it.
+- **A separate account system:** rejected for now. GitHub and Steam accounts already exist and already have two-factor authentication.

@@ -13,7 +13,11 @@ Commands:
   add --login LOGIN --contract CXX --pr N [--commit SHA] [--name NAME]
       [--title T --difficulty easy|medium|hard] [--date YYYY-MM-DD] [--key-id ID]
                                 sign and append a record
-  verify                        check every record (used by CI)
+  staff-add --login LOGIN --card LV3..LV7 --department NAME [--name NAME] [--discord-id ID]
+                                issue a signed staff card with a permanent Hound ID (HND-NNNN)
+  staff-revoke --id HND-NNNN --reason TEXT
+                                mark a staff card as revoked (re-signed, never deleted)
+  verify                        check every record and staff card (used by CI)
   show RECORD_ID                print one record
 
 Needs: Python 3.8+ and the `cryptography` package for keygen, add and verify
@@ -25,6 +29,11 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "site/data/records.json"
 KEYS = ROOT / "site/data/records-key.json"
 CONTRACTS = ROOT / "site/data/contracts.json"
+STAFF = ROOT / "site/data/staff.json"
+CARDS = ("LV3", "LV4", "LV5", "LV6", "LV7")
+DEPARTMENTS = ("Administration", "Development", "Quality", "Contractor")
+STAFF_FIELDS = {"id", "kind", "login", "github_id", "name", "discord_id", "card", "department", "since", "status", "revoked", "reason", "key", "sig"}
+STAFF_REQUIRED = {"id", "kind", "login", "github_id", "card", "department", "since", "status", "key", "sig"}
 KEY_DIR = pathlib.Path(os.environ.get("HP_RECORDS_KEY_DIR", pathlib.Path.home() / ".config/hound-protocol"))
 DIFFICULTIES = ("easy", "medium", "hard")
 FIELDS = {"id", "kind", "login", "name", "contract", "title", "difficulty", "pr", "commit", "date", "key", "sig"}
@@ -129,6 +138,74 @@ def cmd_add(a):
     print(f"Added {rec['id']}: {a.login} · {a.contract} {title} · {diff}")
 
 
+def signer(kid=None):
+    """The published key to sign with, and the matching private key on this machine."""
+    _, ser, _ = crypto()
+    keys = load(KEYS, {"keys": []})
+    if not keys["keys"]:
+        sys.exit("No public key is published yet. Run keygen first.")
+    kid = kid or keys["keys"][-1]["id"]
+    pub = next((k for k in keys["keys"] if k["id"] == kid), None)
+    if not pub:
+        sys.exit(f"Key {kid} is not published in {KEYS.relative_to(ROOT)}.")
+    priv = private_key(kid)
+    raw = priv.public_key().public_bytes(ser.Encoding.Raw, ser.PublicFormat.Raw)
+    if base64.b64encode(raw).decode() != pub["public"]:
+        sys.exit(f"The private key on this machine does not match published key {kid}.")
+    return kid, priv
+
+
+def github_id(login):
+    """The numeric GitHub account ID. It never changes, even when the user renames the account."""
+    import urllib.request
+    req = urllib.request.Request(f"https://api.github.com/users/{login}", headers={"Accept": "application/vnd.github+json", "User-Agent": "hound-protocol-records"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            return int(json.load(r)["id"])
+    except Exception as e:
+        sys.exit(f"Could not look up the GitHub ID of {login} ({e}). Pass it with --github-id. "
+                 f"Find it with: gh api users/{login} --jq .id")
+
+
+def cmd_staff_add(a):
+    staff = load(STAFF, {"version": 1, "staff": []})
+    if not RE_LOGIN.match(a.login):
+        sys.exit("--login must be a GitHub user name.")
+    card, dept = a.card.upper(), a.department.capitalize()
+    if card not in CARDS or dept not in DEPARTMENTS:
+        sys.exit(f"--card must be one of {', '.join(CARDS)}; --department one of {', '.join(DEPARTMENTS)}.")
+    gid = a.github_id or github_id(a.login)
+    if any(s["github_id"] == gid and s["status"] == "active" for s in staff["staff"]):
+        sys.exit(f"{a.login} already has an active staff card. Revoke it first to issue a new one.")
+    if a.discord_id and not re.fullmatch(r"\d{15,21}", a.discord_id):
+        sys.exit("--discord-id must be the numeric Discord user ID (Developer Mode, right-click, Copy User ID).")
+    kid, priv = signer(a.key_id)
+    n = max([int(s["id"].split("-")[1]) for s in staff["staff"]] + [0]) + 1
+    card_rec = {"id": f"HND-{n:04d}", "kind": "staff", "login": a.login, "github_id": gid, "card": card, "department": dept,
+                "since": a.since or datetime.date.today().isoformat(), "status": "active", "key": kid}
+    if a.name:
+        card_rec["name"] = a.name
+    if a.discord_id:
+        card_rec["discord_id"] = a.discord_id
+    card_rec["sig"] = base64.b64encode(priv.sign(canonical(card_rec))).decode()
+    staff["staff"].append(card_rec)
+    save(STAFF, staff)
+    print(f"Issued {card_rec['id']}: {a.login} (GitHub ID {gid}) · {card} · {dept}")
+
+
+def cmd_staff_revoke(a):
+    staff = load(STAFF, {"version": 1, "staff": []})
+    s = next((x for x in staff["staff"] if x["id"] == a.id), None)
+    if not s or s["status"] != "active":
+        sys.exit("No active staff card with that ID.")
+    kid, priv = signer(a.key_id)
+    s.update({"status": "revoked", "revoked": datetime.date.today().isoformat(), "reason": a.reason, "key": kid})
+    s.pop("sig", None)
+    s["sig"] = base64.b64encode(priv.sign(canonical(s))).decode()
+    save(STAFF, staff)
+    print(f"Revoked {a.id}.")
+
+
 def cmd_verify(a):
     recs = load(RECORDS, {"version": 1, "records": []})["records"]
     keys = {k["id"]: k for k in load(KEYS, {"keys": []})["keys"]}
@@ -158,11 +235,37 @@ def cmd_verify(a):
             ed25519.Ed25519PublicKey.from_public_bytes(base64.b64decode(k["public"])).verify(base64.b64decode(r["sig"]), canonical(r))
         except Exception:
             errors.append(f"{rid}: signature does not verify")
+    staff = load(STAFF, {"version": 1, "staff": []})["staff"]
+    if staff and not recs:
+        ed25519, _, _ = crypto()
+    seen_ids, active_gids = set(), set()
+    for s in staff:
+        sid = s.get("id", "?")
+        if set(s) - STAFF_FIELDS or STAFF_REQUIRED - set(s):
+            errors.append(f"{sid}: fields wrong (unknown {sorted(set(s) - STAFF_FIELDS)}, missing {sorted(STAFF_REQUIRED - set(s))})")
+            continue
+        if sid in seen_ids:
+            errors.append(f"{sid}: duplicate id")
+        seen_ids.add(sid)
+        if s["status"] == "active":
+            if s["github_id"] in active_gids:
+                errors.append(f"{sid}: a second active card for GitHub ID {s['github_id']}")
+            active_gids.add(s["github_id"])
+        if s["card"] not in CARDS or s["department"] not in DEPARTMENTS or s["status"] not in ("active", "revoked"):
+            errors.append(f"{sid}: card, department or status not allowed")
+        k = keys.get(s["key"])
+        if not k:
+            errors.append(f"{sid}: unknown key {s['key']}")
+            continue
+        try:
+            ed25519.Ed25519PublicKey.from_public_bytes(base64.b64decode(k["public"])).verify(base64.b64decode(s["sig"]), canonical(s))
+        except Exception:
+            errors.append(f"{sid}: signature does not verify")
     for e in errors:
         print("FAIL", e)
     if errors:
         sys.exit(1)
-    print(f"{len(recs)} records verified against {len(keys)} key(s).")
+    print(f"{len(recs)} records and {len(staff)} staff cards verified against {len(keys)} key(s).")
 
 
 def cmd_show(a):
@@ -179,10 +282,14 @@ def main():
     d = sub.add_parser("add")
     d.add_argument("--login", required=True); d.add_argument("--contract", required=True); d.add_argument("--pr", type=int, required=True)
     d.add_argument("--commit"); d.add_argument("--name"); d.add_argument("--title"); d.add_argument("--difficulty"); d.add_argument("--date"); d.add_argument("--key-id")
+    sa = sub.add_parser("staff-add")
+    sa.add_argument("--login", required=True); sa.add_argument("--card", required=True); sa.add_argument("--department", required=True)
+    sa.add_argument("--name"); sa.add_argument("--discord-id"); sa.add_argument("--github-id", type=int); sa.add_argument("--since"); sa.add_argument("--key-id")
+    sr = sub.add_parser("staff-revoke"); sr.add_argument("--id", required=True); sr.add_argument("--reason", required=True); sr.add_argument("--key-id")
     sub.add_parser("verify")
     s = sub.add_parser("show"); s.add_argument("id")
     a = p.parse_args()
-    {"keygen": cmd_keygen, "add": cmd_add, "verify": cmd_verify, "show": cmd_show}[a.cmd](a)
+    {"keygen": cmd_keygen, "add": cmd_add, "staff-add": cmd_staff_add, "staff-revoke": cmd_staff_revoke, "verify": cmd_verify, "show": cmd_show}[a.cmd](a)
 
 
 if __name__ == "__main__":

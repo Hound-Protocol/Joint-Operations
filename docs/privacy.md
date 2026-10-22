@@ -11,7 +11,7 @@ This site does not use cookies, analytics, trackers or advertising, and it colle
 ## Third parties
 - **GitHub:** the site is hosted on GitHub Pages, and your browser requests releases, contract issues and commits directly from GitHub's public API. GitHub receives your IP address and browser details for these requests, as it does for any visit to GitHub. See GitHub's privacy statement for how they handle it.
 - **Fonts** are served from this site. No requests go to Google or other font services.
-- **Discord:** links to Discord open Discord's own site, which has its own privacy policy.
+- **Discord:** links to Discord open Discord's own site, which has its own privacy policy. When the server widget is switched on, the home page asks Discord's public widget API how many members are online. Discord receives your IP address and browser details for that request.
 
 ## Contact
 Questions about privacy can be raised as an issue on the project's GitHub repository.

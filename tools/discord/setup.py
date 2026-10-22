@@ -90,8 +90,9 @@ def main():
     for spec in BP["roles"]:
         want = {"name": spec["name"], "color": int(spec["color"].lstrip("#"), 16), "hoist": spec.get("hoist", False),
                 "permissions": bits(spec["permissions"])}
-        old = spec.get("was")
-        if spec["name"] not in roles and old and old in roles:
+        was = spec.get("was") or []
+        old = next((w for w in ([was] if isinstance(was, str) else was) if w in roles), None)
+        if spec["name"] not in roles and old:
             print(f"  rename role     {old} -> {spec['name']}")
             if apply:
                 roles[spec["name"]] = d.call("PATCH", f"/guilds/{gid}/roles/{roles[old]['id']}", want)
@@ -133,7 +134,7 @@ def main():
         access = "roles" if extra_roles else category["access"]
         if access == "read_only":
             ow = [{"id": everyone, "type": 0, "allow": str(VIEW), "deny": str(SEND)}]
-            for n in ("Lead", "Moderator"):
+            for n in ("LV7 · Owner", "LV6 · Administration", "LV6 · Moderator"):
                 if n in roles:
                     ow.append({"id": roles[n]["id"], "type": 0, "allow": str(SEND), "deny": "0"})
             return ow

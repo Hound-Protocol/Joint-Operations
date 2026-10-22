@@ -12,9 +12,9 @@
       "The host's game runs the missions, the enemies and the world. There is one version of events, so everyone sees the same thing."
     ],
     [
-      "soldier",
-      "You control your soldier",
-      "Every other player controls their own soldier and camera. Your moves go to the host, and the world comes back to you."
+      "client",
+      "Clients act",
+      "Every client controls their own character and camera. Your moves go to the host, and the world comes back to you."
     ],
     [
       "link",
@@ -23,7 +23,7 @@
     ]
   ],
   "host": {
-    "text": "The host takes {{Venom Snake's place}}. Wherever the story puts Snake, the host is there:",
+    "text": "The {{host}} runs the session and holds every command position:",
     "places": [
       "Helicopter seat",
       "Command Center",

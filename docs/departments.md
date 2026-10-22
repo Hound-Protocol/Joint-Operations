@@ -55,7 +55,7 @@ Every contract has a difficulty, shown in color everywhere, plus an effort estim
 |---|---|
 | Website, Team page | The departments and their units, with members |
 | Website, Contribute and Verify pages | Contractor ranks, the contributor wall |
-| Discord | A role per department, a role per rank, unit roles, and channels per department |
+| Discord | Keycard roles LV2 to LV7 per department ([ADR 0011](decisions/0011-keycard-access.md)), a role per rank, unit roles, and channels per department |
 | GitHub | Department owners in CODEOWNERS as departments fill; contract labels by module |
 
 ## Version 0.1

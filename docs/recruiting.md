@@ -22,7 +22,7 @@ This kit has ready-to-post texts, one pitch per role, answers to the usual quest
 ## Long post (Reddit, forums, Nexus)
 **MGSV: Joint Operations: a multiplayer mod for Metal Gear Solid V, for up to 16 players (PC, looking for contributors)**
 
-Hound Protocol is a community development team building **MGSV: Joint Operations**. It brings online play into the single-player world of The Phantom Pain: one player hosts from Venom Snake's position (helicopter, Command Center, briefings, Mother Base), and up to 15 others deploy as soldiers from the Mother Base roster. Players arrive and leave through the game's own mechanics, not pop-ins.
+Hound Protocol is a community development team building **MGSV: Joint Operations**. It brings online play into the single-player world of The Phantom Pain: one player hosts the session and commands it from the helicopter, the Command Center and Mother Base, and up to 15 clients join and deploy into the same world. Players arrive and leave through the game's own mechanics, not pop-ins.
 
 **What it is**
 - Unofficial, fan-made, non-commercial and open source.
@@ -65,10 +65,10 @@ Use these as replies to "what could I do?" or as separate posts in specialist co
 ## Answers to the usual questions
 - **Is this approved by Konami?** No. It is an unofficial fan project, not affiliated with or endorsed by Konami.
 - **Will it get me banned?** We never touch FOBs, Konami's servers or anti-cheat. Our sessions are separate from the game's online mode. Each build will say exactly what it changes.
-- **Is it co-op?** It's a multiplayer mod. It brings online functionality into the single-player world, with one host in Venom Snake's position and players as Mother Base soldiers.
+- **Is it co-op?** It's a multiplayer mod. It brings online functionality into the single-player world, with one host who runs the session and up to 15 clients.
 - **When is it out?** No date. The roadmap shows the phases and what is done.
 - **Do I get paid?** Not now. Contributions are recorded publicly, and signed records are planned. If donations open later, they go to hosting and development, are reported openly, and any payouts follow the published rules.
-- **Can I use AI tools?** Yes. Hand-written and AI-assisted work are reviewed and counted the same way. You are responsible for what you submit.
+- **Can I use AI tools?** Yes, for code, docs and operating tools like Canva. Hand-written and AI-assisted work are reviewed and counted the same way, and you are responsible for what you submit. Generative AI art, music and voices are not accepted.
 - **Do I need to commit to anything?** No. Take one contract, finish it or hand it off with a short note.
 - **Is the code from another mod?** No. We don't copy other mods' code. We study public documentation and observed game behavior, and credit what we learn from.
 

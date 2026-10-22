@@ -20,7 +20,7 @@ Learn what is needed to run a 16-player session in MGSV, and prove the networkin
 | R2 | Mod loading path | How does a mod get loaded into the game on Windows and under Proton? What public modding tools and docs exist? | RE / Hooks | research/loading.md |
 | R3 | Player representation | How are the player character and companions created and controlled? Can additional controllable characters exist in a session? | RE / Hooks | research/players.md |
 | R4 | State inventory | What state must sync: transforms, animation, weapons, health, enemies, world objects, mission flags, time, weather? Rank by cost and value. | RE / Hooks, Networking | research/state-inventory.md |
-| R5 | Mother Base roster | How are soldiers stored and selected? How do they map to player slots? | RE / Hooks | research/roster.md |
+| R5 | Mother Base roster | How is Mother Base staff stored and selected? How do staff members map to client slots? | RE / Hooks | research/roster.md |
 | R6 | Join and leave | What in-game mechanisms (arrivals, departures, animations) can make joins and leaves seamless? | RE / Hooks | research/join-leave.md |
 | R7 | Networking spike | Prototype outside the game: GameNetworkingSockets, Steam Networking Messages vs Sockets, direct IP. Simulate 16 clients. | Networking | research/networking-spike.md |
 | R8 | Test harness | Mock Steam DLL, clumsy and tc netem profiles, state hash logging | Networking, Proton Tester | tools/ scripts and research/test-harness.md |

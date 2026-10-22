@@ -12,6 +12,7 @@ Closes #
 ## AI assistance ([HP-POL-002](https://github.com/Hound-Protocol/Joint-Operations/blob/main/docs/guides/HP-POL-002-ai-use-policy.md))
 - [ ] AI-assisted. Tool and what it was used for:
 - [ ] I have run, reviewed and understood all of it
+- [ ] No generative AI images, artwork, music or voices are included
 
 ## Checklist
 - [ ] Commits are signed off (`git commit -s`)

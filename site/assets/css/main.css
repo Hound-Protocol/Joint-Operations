@@ -93,6 +93,8 @@ kbd { font: inherit; color: var(--fg); border: 1px solid var(--dim); padding: 2p
 .side .s-facts div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 5px; }
 .side .s-facts dt { font: 400 11px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .side .s-facts dd { margin: 0; font: 400 13px/1.4 var(--ui); color: var(--fg); text-align: right; }
+.side .s-facts dd a { text-decoration: none; color: var(--fg); }
+.side .live { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); margin-right: 7px; box-shadow: 0 0 8px var(--ok); animation: caret 1.6s steps(1) infinite; }
 .side .s-link { align-self: flex-start; margin-top: 4px; font: 400 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--dim); padding-bottom: 4px; }
 .side .s-link:hover, .side .s-link:focus-visible { color: var(--hot); border-color: var(--hot); }
 .menu .mi { width: .82em; height: .82em; margin: 0 .5em -.08em 0; vertical-align: baseline; }
@@ -278,6 +280,13 @@ td.num { text-align: right; white-space: nowrap; }
 .rank:nth-child(n+4) .r-grade { color: var(--amb); }
 .rank .r-n { font: 400 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .rank .r-u { font: 300 13px/1.4 var(--ui); color: var(--fg-2); }
+.card-lv { display: inline-block; font: 400 11px/1 var(--mono); letter-spacing: .12em; padding: 4px 7px; border: 1px solid var(--line); color: var(--fg); }
+.card-lv.lv7 { color: #0c0f10; background: var(--amb); border-color: var(--amb); }
+.card-lv.lv6 { color: var(--amb); border-color: var(--amb); }
+.card-lv.lv5 { color: var(--fg); border-color: var(--fg-2); }
+tr.revoked td { opacity: .55; }
+.vs .status.done, #sres .status.done { color: var(--ok); }
+#sres .status { font-size: 12px; }
 .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
 .op { display: grid; grid-template-columns: 40px 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--line); background: rgba(10,13,15,.72); color: inherit; text-decoration: none; animation: fade .25s calc(var(--i, 0) * .02s) both; }
 .op:hover, .op:focus-visible { border-color: var(--hot); }

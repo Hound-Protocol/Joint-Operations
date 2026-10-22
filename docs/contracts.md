@@ -128,14 +128,14 @@ Background: [R3](phase1-research-plan.md), [adr-0007](decisions/0007-host-author
 **Mother Base roster notes**  
 Module: hooks · Difficulty: 🟡 Medium (rank A+) · Effort: 3–5 days · Skills: Reverse engineering · Depends on: C04
 
-**Goal.** Understand how Mother Base soldiers are stored and selected, so players can join as roster soldiers.
+**Goal.** Understand how Mother Base staff are stored and selected, so clients can join as roster staff.
 
 **Deliverable.** `research/roster.md`
 
 **Acceptance criteria**
 - Where roster data lives at runtime and in the save, as far as observable
-- How a soldier is chosen for deployment and what defines their look and skills
-- Proposal for mapping player slots to roster soldiers
+- How a staff member is chosen for deployment and what defines their look and skills
+- Proposal for mapping client slots to roster staff
 
 Background: [R5](phase1-research-plan.md), [adr-0007](decisions/0007-host-authority.md)
 
@@ -303,7 +303,7 @@ Module: hooks · Difficulty: 🔴 Hard (rank S) · Effort: 1 week · Skills: Rev
 **Acceptance criteria**
 - In-game arrival and departure mechanisms listed (helicopter, Fulton, others)
 - Feasibility for mid-mission join and leave, with known unknowns
-- What happens to a leaving player's soldier
+- What happens to a leaving client's staff member
 
 Background: [R6](phase1-research-plan.md)
 

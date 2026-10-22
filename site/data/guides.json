@@ -72,7 +72,7 @@
       "title": "Administration Handbook",
       "type": "Guide",
       "audience": "Administration",
-      "version": "1.0",
+      "version": "1.1",
       "effective": "2026-10-22",
       "owner": "Administration",
       "for": "Administration Department and seat holders",
@@ -98,11 +98,11 @@
       "title": "AI Use Policy: Code and Mod Content",
       "type": "Policy",
       "audience": "Contributors",
-      "version": "1.0",
+      "version": "1.1",
       "effective": "2026-10-22",
       "owner": "Administration",
       "for": "all contributions",
-      "summary": "AI-assisted code and content are welcome, with responsibility, disclosure and clear limits.",
+      "summary": "AI-assisted code and tools are welcome. Generative AI art, music and voices are not.",
       "path": "docs/guides/HP-POL-002-ai-use-policy.md"
     },
     {
@@ -124,7 +124,7 @@
       "title": "Security Policy for Team Members",
       "type": "Policy",
       "audience": "Administration",
-      "version": "1.0",
+      "version": "1.1",
       "effective": "2026-10-22",
       "owner": "Administration",
       "for": "department members, seat holders and anyone with access",
@@ -254,12 +254,25 @@
       "title": "Discord Administration",
       "type": "Procedure",
       "audience": "Administration",
-      "version": "1.0",
+      "version": "1.1",
       "effective": "2026-10-22",
       "owner": "Administration",
       "for": "Discord admins",
       "summary": "Running the Discord server from its blueprint, safely.",
       "path": "docs/guides/HP-SOP-008-discord-administration.md"
+    },
+    {
+      "id": "hp-sop-009",
+      "code": "HP-SOP-009",
+      "title": "Backup and Restore",
+      "type": "Procedure",
+      "audience": "Administration",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "the owner (LV7) and Administration",
+      "summary": "Weekly encrypted backups on the owner's computer and Google Drive, and how to restore.",
+      "path": "docs/guides/HP-SOP-009-backup-and-restore.md"
     }
   ]
 }

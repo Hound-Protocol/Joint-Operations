@@ -28,7 +28,8 @@ Each starts with a title, then one metadata line: `Code · Version · Effective 
 | Use | Not |
 |---|---|
 | multiplayer mod | co-op mod |
-| host (in Venom Snake's position) | Venom Snake player |
+| host, client | Venom Snake player, soldier (for players) |
+| Mother Base staff (in-game characters) | soldiers |
 | contract, contractor | ticket, freelancer |
 | department | team (for the four departments) |
 | unofficial fan project | official, licensed |

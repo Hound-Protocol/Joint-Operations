@@ -74,6 +74,12 @@
         ((p.facts || []).length ? '<dl class="s-facts">' + p.facts.map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>"; }).join("") + "</dl>" : "") +
         (p.link ? '<a class="s-link" href="' + esc(p.link[1]) + '">' + esc(p.link[0]) + ' <span aria-hidden="true">→</span></a>' : "");
     });
+    // Hound Protocol panel: live Discord count when the widget is available
+    loadDiscord().then(function (d) {
+      var dl = $("#aboutTeam .s-facts");
+      if (!d || !dl || $("#dOnline")) return;
+      dl.insertAdjacentHTML("afterbegin", '<div id="dOnline"><dt>Discord</dt><dd><a href="' + esc(cfg.links.discord || d.invite) + '" target="_blank" rel="noopener noreferrer"><i class="live"></i>' + plural(d.online, "member") + " online</a></dd></div>");
+    });
   }
   function renderMenu() {
     renderAbout();

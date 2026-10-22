@@ -2,7 +2,7 @@
   "project": "Joint Operations",
   "team": "Hound Protocol",
   "tagline": "Metal Gear Solid V, now with up to 16 players",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
@@ -15,7 +15,8 @@
   "links": {
     "discord": "https://discord.gg/QTpJ89kMCM",
     "discordIcon": "",
-    "github": "https://github.com/Hound-Protocol/Joint-Operations"
+    "github": "https://github.com/Hound-Protocol/Joint-Operations",
+    "discordGuildId": ""
   },
   "milestones": {
     "download": "Nothing to download yet. The first playable version, 0.1, is in development.",
@@ -27,7 +28,7 @@
     "project": {
       "label": "The project",
       "title": "Joint Operations",
-      "text": "A multiplayer mod for Metal Gear Solid V: The Phantom Pain. One player hosts as the commander of Mother Base. Up to 15 friends deploy beside them as soldiers from the roster.",
+      "text": "A multiplayer mod for Metal Gear Solid V: The Phantom Pain. One player hosts the session. Up to 15 clients join and deploy into the same open world.",
       "facts": [
         [
           "Players",
