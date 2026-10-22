@@ -54,8 +54,12 @@ async def check(browser, name, size):
     if not await page.locator(".empty").count():
         failures.append("devlog: search did not filter")
     await page.goto(BASE + "#/roadmap"); await page.wait_for_timeout(900)
-    if await page.locator(".bf-road .ph").count() < 3:
-        failures.append("roadmap: phases missing")
+    if await page.locator(".mb-mod").count() < 3:
+        failures.append("roadmap: base platforms missing")
+    else:
+        await page.dispatch_event('.mb-mod[data-i="1"]', "click"); await page.wait_for_timeout(300)
+        if "Phase 1" not in await page.inner_text("#mbPanel"):
+            failures.append("roadmap: clicking a platform did not open its progress")
     await page.goto(BASE + "#/docs/plan")
     # Wait for the neural web to finish building (about 3 s), with headroom for slower engines
     try:
