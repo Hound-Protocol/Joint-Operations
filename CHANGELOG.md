@@ -2,6 +2,23 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.3 · Polish · 2026-10-22
+A cleaner, clearer website for everyone, not only contributors.
+
+### Added
+- **Menu icons** for every section, drawn for this site.
+- **Home side panels:** what Joint Operations is on the left, who Hound Protocol is on the right. Shown beside the menu on wide screens, below it on smaller ones.
+- Automatic GitHub releases: changing the version on main publishes the release, with notes from this changelog.
+
+### Changed
+- New tagline: *Metal Gear Solid V, now with up to 16 players.*
+- Menu: **About Joint Operations**, **Session Browser** ("Browse, Create & Join active Joint Operations"), **Contribute** ("Take part in development & Become a Hound Member"), **Mods** ("Upload, Download & Browse Re-Engineered mods curated to function with Joint Operations"), **Docs**.
+- Rewritten in plain words: About page, Download (Linux steps now include the launch option), Session Browser, Mods, Contribute, status messages and search previews.
+- Session Browser shows a **Host a session** button, active from 0.1.
+
+### Fixed
+- Removed unused styles from an older Briefing layout.
+
 ## v0.0.2 · Foundation update · 2026-10-22
 The foundation is now organized like Mother Base, documented end to end, and ready for contributors.
 

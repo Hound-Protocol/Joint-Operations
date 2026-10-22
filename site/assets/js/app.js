@@ -6,7 +6,7 @@
  *   data/mods.json       reviewed mods: compatible and with known issues
  *   data/docs.json       documentation library manifest
  *   data/contracts.json  planned contracts, used until GitHub issues carry the "contract" label
- *   data/briefing.json   text for the Briefing page
+ *   data/briefing.json   text for the About page (route #/briefing)
  *   data/devlog.json     manual dev log entries
  *   data/records.json    signed contributor records (tools/records.py), checked on the Verify page
  *   data/records-key.json public keys for those records
@@ -268,18 +268,33 @@
 
   /* ---------------- Menu ---------------- */
   var ITEMS = [
-    { id: "briefing", title: "Briefing", desc: "What Joint Operations is and where it stands", tab: "Briefing" },
-    { id: "roadmap", title: "Roadmap", desc: "Phases, progress and what comes next", tab: "Roadmap", tabOnly: true },
-    { id: "download", title: "Download", desc: "Available for Windows and Linux using Proton", tab: "Download" },
-    { id: "sessions", title: "Session Overview", desc: "Browse sessions, details, status and ping", tab: "Sessions" },
-    { id: "contribute", title: "Contribute", desc: "Become a part of the Protocol", tab: "Contribute" },
+    { id: "briefing", title: "About Joint Operations", desc: "What it is, how it works, and where it stands", tab: "About" },
+    { id: "roadmap", title: "Roadmap", desc: "Where we are and what comes next", tab: "Roadmap", tabOnly: true },
+    { id: "download", title: "Download", desc: "Get the mod for Windows or Linux", tab: "Download" },
+    { id: "sessions", title: "Session Browser", desc: "Browse, Create & Join active Joint Operations", tab: "Sessions" },
+    { id: "contribute", title: "Contribute", desc: "Take part in development & Become a Hound Member", tab: "Contribute" },
     { id: "team", title: "Team", desc: "The people behind Hound Protocol", tab: "Team", tabOnly: true },
-    { id: "mods", title: "Mods", desc: "Compatible mods and mods with known issues", tab: "Mods" },
-    { id: "devlog", title: "Dev Log", desc: "Recent changes, decisions and releases", tab: "Dev Log" },
-    { id: "guides", title: "Guides", desc: "Handbook for players, contributors, quality and admins", tab: "Guides" },
-    { id: "docs", title: "Documentation", desc: "Library of project documentation", tab: "Docs" },
-    { id: "options", title: "Options", desc: "Interface and data settings", tab: "Options" }
+    { id: "mods", title: "Mods", desc: "Upload, Download & Browse Re-Engineered mods curated to function with Joint Operations", tab: "Mods" },
+    { id: "devlog", title: "Dev Log", desc: "News, decisions and releases", tab: "Dev Log" },
+    { id: "guides", title: "Guides", desc: "How to play, help, test and run the project", tab: "Guides" },
+    { id: "docs", title: "Docs", desc: "Plans, decisions and research", tab: "Docs" },
+    { id: "options", title: "Options", desc: "Sound, motion and display settings", tab: "Options" }
   ];
+  /* Menu icons: simple line glyphs drawn for this site, on a 24 x 24 grid */
+  var MENU_ICONS = {
+    briefing: '<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3M9 10h6M9 14h6M9 18h4"/>',
+    roadmap: '<path d="M4 18l5-5 4 3 7-8"/><circle cx="4" cy="18" r="1.5"/><circle cx="20" cy="8" r="1.5"/>',
+    download: '<path d="M12 3v11M7 10l5 5 5-5M4 17v3h16v-3"/>',
+    sessions: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l5.5-5.5M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+    contribute: '<path d="M8 4h8v3H8z"/><path d="M8 5.5H5V21h14V5.5h-3"/><path d="M8.5 13.5l2.5 2.5 4.5-5"/>',
+    team: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M16 5.5a3 3 0 010 5.5M18 14.5c1.8.9 3 2.9 3 5.5"/>',
+    mods: '<path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M3.5 7.3L12 12l8.5-4.7M12 12v9.5"/>',
+    devlog: '<path d="M3 5h18v14H3z"/><path d="M6.5 9.5l3 2.5-3 2.5M11.5 15h6"/>',
+    guides: '<path d="M12 6.5C10 5 7 4.5 3 5v14c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v14"/>',
+    docs: '<path d="M4 6h6l2 2h8v11H4z"/><path d="M4 10h16"/>',
+    options: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>'
+  };
+  function menuIcon(id) { return MENU_ICONS[id] ? '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true">' + MENU_ICONS[id] + "</svg>" : ""; }
   var MENU = ITEMS.filter(function (it) { return !it.tabOnly; });
   var cur = 0;
   function itemInfo(id) {
@@ -314,9 +329,24 @@
     }
     return "";
   }
+  /* Home side panels: the project on the left, Hound Protocol on the right (config.about) */
+  function renderAbout() {
+    var a = cfg.about || {};
+    [["#aboutProject", a.project, "briefing"], ["#aboutTeam", a.team, "team"]].forEach(function (s) {
+      var el = $(s[0]), p = s[1];
+      if (!el) return;
+      if (!p) { el.hidden = true; return; }
+      el.innerHTML = '<div class="s-label">' + menuIcon(s[2]) + esc(p.label) + "</div>" +
+        '<h2 class="s-title">' + esc(p.title) + "</h2>" +
+        '<p class="s-text">' + esc(p.text) + "</p>" +
+        ((p.facts || []).length ? '<dl class="s-facts">' + p.facts.map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>"; }).join("") + "</dl>" : "") +
+        (p.link ? '<a class="s-link" href="' + esc(p.link[1]) + '">' + esc(p.link[0]) + ' <span aria-hidden="true">→</span></a>' : "");
+    });
+  }
   function renderMenu() {
+    renderAbout();
     $("#menu").innerHTML = MENU.map(function (it, n) {
-      return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + esc(it.title) + '</span><span class="win" aria-hidden="true"><span class="d"></span></span></a>';
+      return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + menuIcon(it.id) + '<span>' + esc(it.title) + '</span></span><span class="win' + (it.desc.length > 56 ? " long" : "") + '" aria-hidden="true"><span class="d"></span></span></a>';
     }).join("");
     $$("#menu a").forEach(function (a) {
       var n = +a.dataset.n;
@@ -479,14 +509,14 @@
   }
   function viewBriefing() {
     var v = $("#view");
-    v.innerHTML = shell("Overview", "Briefing", loading("Loading briefing"));
+    v.innerHTML = shell("Overview", "About Joint Operations", loading("Loading"));
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || {}, host = b.host || { places: [] };
       $("#vb").innerHTML = '<div class="bf">' +
         '<section class="bf-sec bf-hero"><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
         (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
-        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/docs/plan">Read the plan</a></div></section>' +
+        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Guides</a></div></section>' +
         '<section class="bf-sec"><div class="label">How a session works</div>' + howDiagram() +
         '<div class="bf-how">' + (b.how || []).map(function (h, k) {
           return '<div class="bf-pt" style="--k:' + k + '"><h4>' + (ICONS[h[0]] || "") + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div>";
@@ -526,7 +556,7 @@
           var state = p === ph ? "now" : (p.total && p.done === p.total ? "done" : "next");
           return '<a class="ph ' + state + '" href="#rm-' + p.n + '"><div class="n">Phase ' + p.n + (state === "now" ? " · Now" : state === "done" ? " · Done" : "") + '</div><div class="tt">' + esc(p.title) + '</div><div class="c">' + p.done + " / " + p.total + " tasks</div></a>";
         }).join("") + "</div>" +
-        '<p class="source">' + all[0] + " of " + all[1] + ' tasks done · read live from <a href="' + repoUrl("/blob/" + cfg.branch + "/ROADMAP.md") + '" target="_blank" rel="noopener noreferrer">ROADMAP.md</a> · a phase starts when the previous one is complete or deferred by the project lead</p></section>' +
+        '<p class="source">' + all[0] + " of " + all[1] + ' tasks done · read live from <a href="' + repoUrl("/blob/" + cfg.branch + "/ROADMAP.md") + '" target="_blank" rel="noopener noreferrer">ROADMAP.md</a> · each phase starts when the one before it is done</p></section>' +
         '<section class="bf-sec rm-list">' + r.map(function (p) {
           var state = p === ph ? "now" : (p.total && p.done === p.total ? "done" : "next");
           return '<div class="rm-ph ' + state + '" id="rm-' + p.n + '"><div class="rm-h"><span class="n">Phase ' + p.n + '</span><h3>' + esc(p.title) + '</h3><span class="pill ' + (state === "now" ? "warn" : state === "done" ? "ok" : "") + '">' + (state === "now" ? "In progress" : state === "done" ? "Complete" : "Planned") + "</span></div>" +
@@ -551,7 +581,7 @@
   }
   function viewDevlog() {
     var v = $("#view");
-    v.innerHTML = shell("Intel", "Dev Log", loading("Loading the dev log"));
+    v.innerHTML = shell("News", "Dev Log", loading("Loading the dev log"));
     Promise.all([loadLocal("devlog"), loadCommits(), loadReleases()]).then(function () { if (currentView === "devlog") drawDevlog(); refreshInfo(); });
   }
   function drawDevlog() {
@@ -596,8 +626,8 @@
         body += '<div class="panel"><div class="label">Release status</div>' +
           '<div class="kv"><span>Build</span><b>' + esc(cfg.version) + "</b></div>" +
           '<div class="kv"><span>Stage</span><b><span class="pill warn">' + esc(cfg.stage) + "</span></b></div>" +
-          '<div class="kv"><span>Public release</span><b>' + (rel === null ? "Could not reach GitHub" : "None yet") + "</b></div>" +
-          '<p class="sub" style="margin-top:12px">' + (rel === null ? "GitHub could not be reached. Releases will show here when it responds." : "No playable build has been published. Releases appear here automatically when they are published on GitHub.") + "</p>" +
+          '<div class="kv"><span>Playable release</span><b>' + (rel === null ? "Could not reach GitHub" : "Coming with 0.1") + "</b></div>" +
+          '<p class="sub" style="margin-top:12px">' + (rel === null ? "GitHub could not be reached. Releases will show here when it responds." : "No playable version yet. When 0.1 is released, it appears here automatically.") + "</p>" +
           '<div class="toolbar"><a class="btn" href="' + repoUrl("/releases") + '" target="_blank" rel="noopener noreferrer">Releases on GitHub</a>' +
           '<a class="btn" href="' + repoUrl("/archive/refs/heads/" + cfg.branch + ".zip") + '">Source code (zip)</a></div></div>';
       }
@@ -610,10 +640,10 @@
       body += "</div>";
       body += '<div class="cols" style="margin-top:14px">' +
         '<div class="panel"><div class="platform">' + ICON_WIN + "Windows</div><ol class=\"steps\">" +
-        "<li>Install MGSV from Steam and launch it once.</li><li>Download the latest release above.</li><li>Follow the install notes that ship with the release.</li><li>Start the game and choose Host or Join.</li></ol></div>" +
+        "<li>Install MGSV from Steam and start it once.</li><li>Download the latest release above.</li><li>Run the installer. It backs up your saves.</li><li>Start the game. Host a session or join one from the Session Browser.</li></ol></div>" +
         '<div class="panel"><div class="platform">' + ICON_LNX + "Linux (Proton)</div><ol class=\"steps\">" +
-        "<li>Enable Steam Play and run MGSV with Proton. Launch it once.</li><li>Download the same release as Windows. Proton runs it.</li><li>Follow the install notes, installing into the game folder Steam uses.</li><li>Include your Proton version in any bug report.</li></ol></div></div>";
-      body += '<p class="note">Joint Operations does not include or distribute any game files. You need your own copy of Metal Gear Solid V.</p>';
+        "<li>Install MGSV in Steam and start it once with Proton.</li><li>Download the same release as Windows and install it into the game folder.</li><li>In Steam, open MGSV → Properties → Launch Options and paste:<br><code>WINEDLLOVERRIDES=\"dinput8=n,b\" %command%</code></li><li>Start the game. Full steps in the <a href=\"#/guides/hp-gde-002\">Linux and Proton Guide</a>.</li></ol></div></div>";
+      body += '<p class="note">You need your own copy of Metal Gear Solid V. Joint Operations never includes game files. Step-by-step help: <a href="#/guides/hp-gde-001">Player Guide</a>.</p>';
       v.querySelector("#vb").innerHTML = pre + body;
       refreshInfo();
     });
@@ -624,7 +654,7 @@
   function serverList() { return (data.servers && data.servers.servers) || []; }
   function viewSessions() {
     var v = $("#view");
-    v.innerHTML = shell("Server browser", "Session Overview", loading("Loading sessions"));
+    v.innerHTML = shell("Joint Operations", "Session Browser", loading("Looking for sessions"));
     loadLocal("servers").then(function () { if (currentView === "sessions") drawSessions(); });
   }
   function drawSessions() {
@@ -655,11 +685,12 @@
       '<div class="toolbar"><input class="field grow" id="sq" type="search" placeholder="Search sessions" value="' + esc(sessState.q) + '" aria-label="Search sessions">' +
       '<select class="field" id="sr" aria-label="Region"><option value="all">All regions</option>' + Object.keys(regions).sort().map(function (r) { return '<option' + (sessState.region === r ? " selected" : "") + ">" + esc(r) + "</option>"; }).join("") + "</select>" +
       '<button class="btn' + (sessState.hideFull ? " sel" : "") + '" id="sf" aria-pressed="' + sessState.hideFull + '">Hide full</button>' +
-      '<button class="btn" id="srf">Refresh</button></div>' +
+      '<button class="btn" id="srf">Refresh</button>' +
+        '<span class="btn primary off" aria-disabled="true" title="Hosting arrives with version 0.1">Host a session</span></div>' +
       '<div class="tw"><table><tr>' + th("name", "Session") + th("host", "Host") + "<th>Details</th>" + th("players", "Players") + "<th>Status</th>" + th("ping", "Ping") + "</tr>" +
       rows + "</table></div>" +
-      (rows ? "" : all.length ? '<div class="empty" id="noServers">No servers found<small>No sessions match the filters.</small></div>'
-        : '<div class="scanbox" id="noServers"><div class="radar" aria-hidden="true"><i class="sweep"></i><i class="blip"></i></div><div><b>No servers found</b><small>Scanning for sessions. They appear here once the session service is running.</small></div></div>') +
+      (rows ? "" : all.length ? '<div class="empty" id="noServers">No sessions match<small>Try other filters.</small></div>'
+        : '<div class="scanbox" id="noServers"><div class="radar" aria-hidden="true"><i class="sweep"></i><i class="blip"></i></div><div><b>No sessions yet</b><small>Live sessions appear here from version 0.1. Hosts list their game, you pick one and deploy.</small></div></div>') +
       '<p class="source">Source: data/servers.json' + (data.serversHooked ? " · live hook" : "") + "</p>";
     $("#sq").addEventListener("input", function (e) { sessState.q = e.target.value; drawSessionsKeepFocus("#sq"); });
     $("#sr").addEventListener("change", function (e) { sessState.region = e.target.value; drawSessions(); });
@@ -756,10 +787,10 @@
         '<p class="source">Source: ' + (live ? "GitHub issues labeled contract, live" : data.issues === null ? "data/contracts.json · GitHub could not be reached" : "data/contracts.json") + "</p>",
       how:
         '<div class="cols"><div class="panel"><div class="label">Taking a contract</div><ol class="steps">' +
-        "<li>Pick an open contract whose dependencies are done.</li><li>Comment on the GitHub issue to claim it. A maintainer assigns you.</li><li>Work on a branch in your fork. Sign off every commit.</li><li>Open a pull request that says Closes #number.</li><li>A reviewer approves and merges. The contract closes and counts toward your rank.</li></ol></div>" +
+        "<li>Pick an open contract your rank allows. Start with Basic.</li><li>Comment on the GitHub issue to claim it. A maintainer assigns you.</li><li>Do the work on a branch in your fork. Sign off every commit.</li><li>Open a pull request that says Closes #number.</li><li>Quality checks it against the acceptance criteria and merges it. You get a signed record and move up in rank.</li></ol></div>" +
         '<div class="panel"><div class="label">Rules</div><ol class="steps">' +
-        "<li>Fork and pull request only. Nobody pushes to main.</li><li>No game files, binaries or third-party mod code.</li><li>Research in your own words, with sources.</li><li>Nothing that touches Konami online services or anti-cheat.</li><li>Leaving is fine. Post a handoff note on the issue first.</li></ol></div></div>" +
-        '<div class="toolbar" style="margin-top:14px"><a class="btn primary" href="#/docs/contributing">Read Contributing</a><a class="btn" href="' + repoUrl("/fork") + '" target="_blank" rel="noopener noreferrer">Fork on GitHub</a><a class="btn" href="' + repoUrl("/issues?q=is%3Aopen+label%3Acontract") + '" target="_blank" rel="noopener noreferrer">Contracts on GitHub</a></div>' +
+        "<li>Pull requests only. Nobody pushes to main.</li><li>No game files and no code copied from other mods.</li><li>AI tools are welcome. You review and own what you submit.</li><li>Nothing that touches Konami's servers or anti-cheat.</li><li>Leaving is fine. Post a short handoff note first.</li></ol></div></div>" +
+        '<div class="toolbar" style="margin-top:14px"><a class="btn primary" href="#/guides/hp-gde-003">Quick start</a><a class="btn" href="#/guides/hp-pol-002">AI Use Policy</a><a class="btn" href="' + repoUrl("/fork") + '" target="_blank" rel="noopener noreferrer">Fork on GitHub</a><a class="btn" href="' + repoUrl("/issues?q=is%3Aopen+label%3Acontract") + '" target="_blank" rel="noopener noreferrer">Contracts on GitHub</a></div>' +
         '<div class="label">Module progress</div><div class="cols">' + mods.map(function (m) {
           return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
         }).join("") + "</div>",
@@ -789,7 +820,7 @@
   var modState = { tab: "compatible", q: "" };
   function viewMods() {
     var v = $("#view");
-    v.innerHTML = shell("Hosted repository", "Mods", loading("Loading the mod repository"));
+    v.innerHTML = shell("Community", "Mods", loading("Loading mods"));
     loadLocal("mods").then(function () { if (currentView === "mods") drawMods(); refreshInfo(); });
   }
   function drawMods() {
@@ -800,15 +831,15 @@
       '<div class="tabs" role="tablist"><button role="tab" data-mt="compatible" aria-selected="' + (modState.tab === "compatible") + '">Compatible<span class="count">' + (md.compatible || []).length + "</span></button>" +
       '<button role="tab" data-mt="issues" aria-selected="' + (modState.tab === "issues") + '">Known issues<span class="count">' + (md.issues || []).length + "</span></button></div>" +
       ((md.compatible || []).length + (md.issues || []).length ? "" : milestone("mods")) +
-      '<p class="sub">' + (modState.tab === "compatible" ? "Reviewed and tested with Joint Operations. No known issues." : "Run with Joint Operations, but with known issues. Read the notes before installing.") + "</p>" +
+      '<p class="sub">' + (modState.tab === "compatible" ? "Re-engineered and tested to work with Joint Operations." : "These work, with known issues. Read the notes before you install.") + "</p>" +
       '<div class="toolbar"><input class="field grow" id="mq" type="search" placeholder="Search mods" value="' + esc(modState.q) + '" aria-label="Search mods">' +
-      '<a class="btn primary" href="' + esc(repoUrl("/issues/new?template=mod-submission.md")) + '" target="_blank" rel="noopener noreferrer">Submit a mod</a></div>' +
+      '<a class="btn primary" href="' + esc(repoUrl("/issues/new?template=mod-submission.md")) + '" target="_blank" rel="noopener noreferrer">Upload a mod</a></div>' +
       '<div class="tw"><table><tr><th>Mod</th><th>Version</th><th>Author</th><th>Tested on</th><th>Notes</th><th></th></tr>' +
       (list.length ? list.map(function (m) {
         return "<tr><td>" + esc(m.name) + "</td><td>" + esc(m.version || "—") + "</td><td>" + esc(m.author || "—") + "</td><td>" + esc(m.tested || "—") + "</td><td>" + esc(m.notes || "—") + '</td><td class="num">' +
           (m.url && /^https?:/i.test(m.url) ? '<a class="btn small" href="' + esc(m.url) + '" target="_blank" rel="noopener noreferrer">Get</a>' : "") + "</td></tr>";
       }).join("") : "") + "</table></div>" +
-      (list.length ? "" : '<div class="empty">No mods listed<small>' + (modState.q ? "No mods match the search." : "Reviewed mods will be listed here. Submit one for review.") + "</small></div>") +
+      (list.length ? "" : '<div class="empty">No mods listed<small>' + (modState.q ? "No mods match the search." : "Curated mods appear here after review. Upload yours for review.") + "</small></div>") +
       '<p class="source">Source: data/mods.json</p>';
     $$("[data-mt]").forEach(function (b) { b.addEventListener("click", function () { modState.tab = b.dataset.mt; drawMods(); }); });
     $("#mq").addEventListener("input", function (e) { modState.q = e.target.value; var p = e.target.selectionStart; drawMods(); var n = $("#mq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ } });
@@ -844,7 +875,7 @@
   }
   function viewDocs(id) {
     var v = $("#view");
-    if (!$("#docNav")) v.innerHTML = shell("Library", "Documentation", loading("Loading the library"));
+    if (!$("#docNav")) v.innerHTML = shell("Library", "Docs", loading("Loading the library"));
     loadLocal("docs").then(function (man) {
       if (currentView !== "docs") return;
       var docs = (man && man.docs) || [];
