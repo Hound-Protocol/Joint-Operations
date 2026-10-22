@@ -1,6 +1,6 @@
 # Architecture
 
-Status: DRAFT · Updated: 2026-10-21 after desk research
+Status: DRAFT · Updated: 2026-10-22 after Phase 1 desk research
 
 ## 1. Overview
 Joint Operations is a multiplayer mod ([ADR 0001](decisions/0001-multiplayer-scope.md)). It brings the game's online multiplayer functionality into the single-player world for up to 16 players. The host takes Venom Snake's place and is authoritative; other players join as Mother Base soldiers ([ADR 0007](decisions/0007-host-authority.md)).
@@ -42,11 +42,12 @@ Netcode principles are summarized in [the playbook summary](../research/networki
 
 ## 6. Open questions (Phase 1)
 1. Can 3 or more players share an engine session? (R12, blocking)
-2. Are current Steam networking interfaces reachable through the game's older Steam API? (R13)
+2. Are current Steam networking interfaces reachable through the game's older Steam API? (R13. Desk research says likely; rig test planned, see [steam-interfaces.md](../research/steam-interfaces.md))
 3. Does IHHook's plugin interface give us what we need? (R2)
 4. Which single-player systems break with extra players, and how costly is each? (R4)
 5. Steam App ID position for a public release (R10, blocking for release)
 6. Bandwidth and CPU budget at 16 players (R9)
+7. Do join requests and launch arguments reach the game through Konami's launcher, and can we open Sortie Prep directly? (R14)
 
 ## 7. Testing
 See [development process](development-process.md): unit tests outside the game, a multi-client harness with a mock Steam layer and bad-network profiles, written in-game checklists for Windows and Proton, and soak tests with state-hash comparison.
