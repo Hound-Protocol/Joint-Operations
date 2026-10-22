@@ -15,6 +15,8 @@ A cleaner, clearer website for everyone, not only contributors.
 - Menu: **About Joint Operations**, **Session Browser** ("Browse, Create & Join active Joint Operations"), **Contribute** ("Take part in development & Become a Hound Member"), **Mods** ("Upload, Download & Browse Re-Engineered mods curated to function with Joint Operations"), **Docs**.
 - Rewritten in plain words: About page, Download (Linux steps now include the launch option), Session Browser, Mods, Contribute, status messages and search previews.
 - Session Browser shows a **Host a session** button, active from 0.1.
+- **Contract difficulty is now Easy, Medium and Hard**, color-coded green, yellow and red everywhere. Each one explains what makes a contract that hard and who can claim it. **Core** marks 0.1 critical-path work for the Development Department.
+- Contribute page: difficulty cards that double as filters, colored contract cards, and color-coded rank rewards.
 
 ### Fixed
 - Removed unused styles from an older Briefing layout.

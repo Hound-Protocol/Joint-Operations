@@ -8,7 +8,7 @@ How a piece of work goes from an idea to a signed contributor record.
 | # | Stage | Who | Done when |
 |---|---|---|---|
 | 1 | **Draft** | Development | Entry in `site/data/contracts.json` with goal, deliverable, acceptance criteria, difficulty and effort |
-| 2 | **Publish** | Development | Issue created with `tools/publish_contracts.py`, labels `contract`, `module:*`, `difficulty:*` |
+| 2 | **Publish** | Development | Issue created with `tools/publish_contracts.py`, labels `contract`, `module:*`, `difficulty:easy|medium|hard`, and `core` where it applies |
 | 3 | **Claim** | Contractor | Comment "I'll take this". A maintainer checks the rank against the difficulty and assigns |
 | 4 | **Deliver** | Contractor | Pull request with `Closes #<issue>`, template filled in |
 | 5 | **Review** | Quality | Every acceptance criterion checked, CI green ([HP-SOP-002](HP-SOP-002-pull-request-review.md)) |
@@ -18,7 +18,7 @@ How a piece of work goes from an idea to a signed contributor record.
 ## Writing a good contract
 - One clear outcome. If it has two, split it.
 - Acceptance criteria a stranger can check without asking you.
-- Difficulty by the skill it needs, effort by the time it takes. Core for anything on the 0.1 critical path.
+- Difficulty by the skill it needs: Easy (clear steps, small scope), Medium (some research or a test rig), Hard (unknown ground, deep skills). Effort by the time it takes. Mark **Core** for anything on the 0.1 critical path.
 - List dependencies, and background links to research and decisions.
 
 ## Claiming

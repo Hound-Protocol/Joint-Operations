@@ -11,7 +11,7 @@ never pasted into chat, and never stored as a GitHub secret.
 Commands:
   keygen [--key-id ID]          create a signing key, publish its public half
   add --login LOGIN --contract CXX --pr N [--commit SHA] [--name NAME]
-      [--title T --difficulty basic|standard|advanced|expert|core] [--date YYYY-MM-DD] [--key-id ID]
+      [--title T --difficulty easy|medium|hard] [--date YYYY-MM-DD] [--key-id ID]
                                 sign and append a record
   verify                        check every record (used by CI)
   show RECORD_ID                print one record
@@ -26,7 +26,7 @@ RECORDS = ROOT / "site/data/records.json"
 KEYS = ROOT / "site/data/records-key.json"
 CONTRACTS = ROOT / "site/data/contracts.json"
 KEY_DIR = pathlib.Path(os.environ.get("HP_RECORDS_KEY_DIR", pathlib.Path.home() / ".config/hound-protocol"))
-DIFFICULTIES = ("basic", "standard", "advanced", "expert", "core")
+DIFFICULTIES = ("easy", "medium", "hard")
 FIELDS = {"id", "kind", "login", "name", "contract", "title", "difficulty", "pr", "commit", "date", "key", "sig"}
 REQUIRED = {"id", "kind", "login", "contract", "title", "difficulty", "pr", "date", "key", "sig"}
 RE_LOGIN = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")

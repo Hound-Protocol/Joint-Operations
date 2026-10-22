@@ -25,12 +25,12 @@ Ranks follow Mother Base staff grades. They depend on the number of **completed 
 
 | Rank | Completed contracts | Unlocks |
 |---|---|---|
-| — | 0 | Claim Basic contracts |
+| — | 0 | Claim Easy contracts |
 | **A** | 1 | Listed on the contributor wall, contractor role on Discord |
-| **A+** | 3 | Claim Standard contracts |
-| **A++** | 6 | Review Basic contracts with Quality |
-| **S** | 10 | Claim Advanced contracts, review Standard contracts |
-| **S+** | 20 | Claim Expert contracts, can be invited into a department, own a module area |
+| **A+** | 3 | Claim Medium contracts |
+| **A++** | 6 | Review Easy contracts with Quality |
+| **S** | 10 | Claim Hard contracts, review Medium contracts |
+| **S+** | 20 | Review Hard contracts, can be invited into a department, own a module area |
 | **S++** | 35 | Vote on priorities, seat candidate |
 
 - Every completed contract also earns a signed [contributor record](contributor-records.md). Ranks are counted from those records, so anyone can check them on the website's Verify page.
@@ -38,17 +38,17 @@ Ranks follow Mother Base staff grades. They depend on the number of **completed 
 - Ranks are never taken away for inactivity. Leaving and coming back is normal.
 
 ## Contract difficulty
-Every contract has a difficulty that sets who can claim it, and an effort estimate.
+Every contract has a difficulty, shown in color everywhere, plus an effort estimate.
 
-| Difficulty | Who can claim it | Typical work |
+| Difficulty | Who can claim it | What makes it this hard |
 |---|---|---|
-| **Basic** | Anyone | Docs, small tools, test runs, first contracts |
-| **Standard** | Rank A+ | Research notes, test setups, focused features |
-| **Advanced** | Rank S | Reverse engineering, sync systems, measurements |
-| **Expert** | Rank S+ | Core libraries, networking spikes, public APIs |
-| **Core** | Development Department | The critical path, including all 0.1 work |
+| 🟢 **Easy** | Anyone | Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools. Usually a day or two |
+| 🟡 **Medium** | Rank A+ | Some research or design. Touches a few files or systems, or needs the game and a test rig. Usually a few days |
+| 🔴 **Hard** | Rank S | Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing. A week or more |
 
-**Effort** is a separate estimate ("up to 1 day", "2–3 days", "1–2 weeks"). It helps people plan, and does not affect rank.
+**Core** marks contracts on the 0.1 critical path, at any difficulty. They stay with the Development Department.
+
+**Effort** is a separate time estimate ("up to 1 day", "2–3 days", "1–2 weeks"). It helps people plan and does not affect rank.
 
 ## Where it shows
 | Place | What |

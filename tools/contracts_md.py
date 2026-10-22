@@ -10,7 +10,7 @@ import json, pathlib, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "site/data/contracts.json"
 OUT = ROOT / "docs/contracts.md"
-DIFF = {"basic": ("Basic", "anyone"), "standard": ("Standard", "rank A+"), "advanced": ("Advanced", "rank S"), "expert": ("Expert", "rank S+"), "core": ("Core", "Development Department")}
+DIFF = {"easy": ("🟢 Easy", "anyone"), "medium": ("🟡 Medium", "rank A+"), "hard": ("🔴 Hard", "rank S")}
 
 
 def ref_link(ref, docs):
@@ -29,16 +29,16 @@ def render():
     out = ["# Contract specs", "",
            "Generated from `site/data/contracts.json` by `tools/contracts_md.py`. Edit the JSON, then run the tool.", "",
            "Every contract has a goal, a deliverable and acceptance criteria. The Quality Department checks each criterion before merging. "
-           "Difficulty sets who can claim a contract: Basic (anyone), Standard (rank A+), Advanced (rank S), Expert (rank S+), Core (Development Department). "
+           "Difficulty sets who can claim a contract: Easy (anyone), Medium (rank A+), Hard (rank S). Core contracts are on the 0.1 critical path and reserved for the Development Department. "
            "Effort is a time estimate. Each completed contract counts toward the contractor's rank (A to S++). "
            "See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).", "",
            "Version 0.1 is built by the project lead. These contracts open to contractors after 0.1.", "",
            "| ID | Contract | Module | Difficulty | Effort | Depends on | Status |", "|---|---|---|---|---|---|---|"]
     cs = data["contracts"]
     for c in cs:
-        out.append(f"| {c['id']} | {c['title']} | {c['module']} | {DIFF[c['difficulty']][0]} | {c.get('effort', '')} | {', '.join(c.get('depends') or []) or '—'} | {c.get('status', 'planned')} |")
+        out.append(f"| {c['id']} | {c['title']} | {c['module']} | {DIFF[c['difficulty']][0]}{' · Core' if c.get('core') else ''} | {c.get('effort', '')} | {', '.join(c.get('depends') or []) or '—'} | {c.get('status', 'planned')} |")
     for c in cs:
-        out += ["", f"## {c['id']}", f"**{c['title']}**  ", f"Module: {c['module']} · Difficulty: {DIFF[c['difficulty']][0]} ({DIFF[c['difficulty']][1]}) · Effort: {c.get('effort', '')} · Skills: {c.get('skills', '')}"
+        out += ["", f"## {c['id']}", f"**{c['title']}**  ", f"Module: {c['module']} · Difficulty: {DIFF[c['difficulty']][0]} ({'Core: Development Department' if c.get('core') else DIFF[c['difficulty']][1]}) · Effort: {c.get('effort', '')} · Skills: {c.get('skills', '')}"
                 + (f" · Depends on: {', '.join(c['depends'])}" if c.get("depends") else ""), ""]
         if c.get("goal"):
             out += [f"**Goal.** {c['goal']}", ""]
