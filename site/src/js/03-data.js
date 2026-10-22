@@ -1,0 +1,86 @@
+  /* ---------------- GitHub (live, cached per session) ---------------- */
+  function gh(path) {
+    var key = "jo-gh:" + path, hit = session.get(key), max = (cfg.cacheMinutes || 10) * 60000;
+    if (hit && Date.now() - hit.t < max) return Promise.resolve(hit.v);
+    return fetchJSON("https://api.github.com" + path, { headers: { Accept: "application/vnd.github+json" } }).then(function (v) {
+      session.set(key, { t: Date.now(), v: v });
+      return v;
+    });
+  }
+  function repoUrl(p) { return "https://github.com/" + cfg.repo + (p || ""); }
+  function newIssueUrl(title, body, labels) {
+    return repoUrl("/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body) + (labels ? "&labels=" + encodeURIComponent(labels) : ""));
+  }
+
+  function loadReleases() {
+    if (data.releases !== undefined) return Promise.resolve(data.releases);
+    return gh("/repos/" + cfg.repo + "/releases?per_page=10").then(function (list) {
+      data.releases = (list || []).filter(function (r) { return !r.draft; });
+      return data.releases;
+    }, function () { data.releases = null; return null; });
+  }
+
+  var SIZE_PTS = { S: 1, M: 3, L: 5 };
+  function loadContracts() {
+    if (data.issues !== undefined) return Promise.resolve(data.issues);
+    return gh("/repos/" + cfg.repo + "/issues?labels=contract&state=all&per_page=100").then(function (list) {
+      var issues = (list || []).filter(function (i) { return !i.pull_request; });
+      var byNum = {};
+      issues.forEach(function (i) { byNum[i.number] = i; });
+      data.issues = issues.map(function (i) {
+        var labels = (i.labels || []).map(function (l) { return typeof l === "string" ? l : l.name; });
+        var mod = "", size = "";
+        labels.forEach(function (l) {
+          if (l.indexOf("module:") === 0) mod = l.slice(7);
+          if (l.indexOf("size:") === 0) size = l.slice(5).toUpperCase();
+        });
+        var deps = [], m = /depends on\s+((?:#\d+[\s,]*(?:and\s+)?)+)/i.exec(i.body || "");
+        if (m) m[1].replace(/#(\d+)/g, function (_, n) { deps.push(+n); });
+        var st = i.state === "closed" ? "done" : labels.indexOf("status:review") > -1 ? "review" : (i.assignees && i.assignees.length) ? "claimed" : "open";
+        return {
+          id: "#" + i.number, num: i.number, title: i.title, module: mod, size: size, skills: "",
+          depends: deps.map(function (n) { return "#" + n; }),
+          blocked: deps.some(function (n) { return byNum[n] && byNum[n].state !== "closed"; }) || labels.indexOf("blocked") > -1,
+          status: st, by: (i.assignees || []).map(function (a) { return a.login; }), url: i.html_url, live: true
+        };
+      });
+      return data.issues;
+    }, function () { data.issues = null; return null; });
+  }
+
+  function loadCommits() {
+    if (data.commits !== undefined) return Promise.resolve(data.commits);
+    return gh("/repos/" + cfg.repo + "/commits?sha=" + encodeURIComponent(cfg.branch) + "&per_page=30").then(function (list) {
+      data.commits = (list || []).map(function (c) {
+        var msg = (c.commit && c.commit.message) || "";
+        return { date: (c.commit && c.commit.author && c.commit.author.date) || "", title: msg.split("\n")[0], tag: "Commit", url: c.html_url, by: (c.author && c.author.login) || (c.commit && c.commit.author && c.commit.author.name) || "" };
+      });
+      return data.commits;
+    }, function () { data.commits = null; return null; });
+  }
+  function parseRoadmap(md) {
+    var phases = [], cur = null;
+    String(md).split("\n").forEach(function (l) {
+      var h = /^##\s+Phase\s+(\d+):\s*([^(]*)/.exec(l);
+      if (h) { cur = { n: +h[1], title: h[2].trim(), done: 0, total: 0, items: [] }; phases.push(cur); return; }
+      if (/^##\s/.test(l)) { cur = null; return; }
+      var t = /^\s*-\s+\[([ xX])\]\s+(.*)$/.exec(l);
+      if (t && cur) { cur.total++; if (t[1] !== " ") cur.done++; cur.items.push({ done: t[1] !== " ", text: t[2] }); }
+    });
+    return phases;
+  }
+  function loadRoadmap() {
+    if (data.roadmap !== undefined) return Promise.resolve(data.roadmap);
+    return loadDoc({ path: "ROADMAP.md" }).then(function (md) { data.roadmap = parseRoadmap(md); return data.roadmap; }, function () { data.roadmap = null; return null; });
+  }
+  function currentPhase() {
+    var r = data.roadmap || [];
+    for (var k = 0; k < r.length; k++) if (r[k].done < r[k].total) return r[k];
+    return r[r.length - 1] || null;
+  }
+  var EMBED = window.JO_EMBED || null; // set by tools/bundle_site.py for the single-file build
+  function loadLocal(name) {
+    if (data[name]) return Promise.resolve(data[name]);
+    if (EMBED && EMBED[name]) { data[name] = EMBED[name]; return Promise.resolve(data[name]); }
+    return fetchJSON("data/" + name + ".json").then(function (v) { data[name] = v; return v; }, function () { return null; });
+  }

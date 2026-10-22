@@ -6,6 +6,7 @@ Status: DRAFT
 Gates and sequence are in docs/pre-development.md.
 - [x] Repository created (public) and website built
 - [x] Core docs written: team, legal, architecture, governance, process, decisions, research
+- [x] CI checks for pull requests
 - [ ] Docs reviewed and pull request #1 merged
 - [ ] License chosen (ADR 0005)
 - [ ] Steam App ID position recorded (legal.md)

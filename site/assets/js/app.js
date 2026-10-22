@@ -82,11 +82,11 @@
   var docCache = {};
 
   var OPT_KEY = "hp-jo-options";
-  var DEFAULT_OPTS = { scan: true, grid: true, motion: true, ledFx: true, contrast: false, size: "1" };
+  var DEFAULT_OPTS = { glitch: true, grid: true, motion: true, ledFx: true, contrast: false, sound: false, size: "1" };
   var opts = Object.assign({}, DEFAULT_OPTS, store.get(OPT_KEY, {}));
   function applyOpts() {
     var c = document.body.classList;
-    c.toggle("no-scan", !opts.scan);
+    c.toggle("no-glitch", !opts.glitch);
     c.toggle("no-grid", !opts.grid);
     c.toggle("no-motion", !opts.motion);
     c.toggle("no-led", !opts.ledFx);
@@ -263,6 +263,7 @@
   /* ---------------- Menu ---------------- */
   var ITEMS = [
     { id: "briefing", title: "Briefing", desc: "What Joint Operations is and where it stands", tab: "Briefing" },
+    { id: "roadmap", title: "Roadmap", desc: "Phases, progress and what comes next", tab: "Roadmap", tabOnly: true },
     { id: "download", title: "Download", desc: "Available for Windows and Linux using Proton", tab: "Download" },
     { id: "sessions", title: "Session Overview", desc: "Browse sessions, details, status and ping", tab: "Sessions" },
     { id: "contribute", title: "Contribute", desc: "Become a part of the Protocol", tab: "Contribute" },
@@ -271,12 +272,15 @@
     { id: "docs", title: "Documentation", desc: "Library of project documentation", tab: "Docs" },
     { id: "options", title: "Options", desc: "Interface and data settings", tab: "Options" }
   ];
+  var MENU = ITEMS.filter(function (it) { return !it.tabOnly; });
   var cur = 0;
   function itemInfo(id) {
     switch (id) {
       case "briefing":
         var ph = currentPhase();
         return ph ? "Current: Phase " + ph.n + " · " + ph.title + " · " + ph.done + " of " + ph.total + " done" : "Project overview";
+      case "roadmap":
+        return "Roadmap";
       case "devlog":
         var n2 = devlogEntries().length;
         return n2 ? plural(n2, "entry", "entries") : "Dev log";
@@ -301,7 +305,7 @@
     return "";
   }
   function renderMenu() {
-    $("#menu").innerHTML = ITEMS.map(function (it, n) {
+    $("#menu").innerHTML = MENU.map(function (it, n) {
       return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + esc(it.title) + '</span><span class="win" aria-hidden="true"><span class="d"></span></span></a>';
     }).join("");
     $$("#menu a").forEach(function (a) {
@@ -327,17 +331,87 @@
   }
   function select(n, focus) {
     var prev = cur;
-    cur = (n + ITEMS.length) % ITEMS.length;
+    cur = (n + MENU.length) % MENU.length;
     $$("#menu a").forEach(function (a, j) {
       var on = j === cur, d = a.querySelector(".d");
-      if (on && (!a.classList.contains("on") || prev !== cur || !d.childNodes.length)) typeInto(d, ITEMS[j].desc);
-      if (!on && d) d.textContent = "";
+      if (compact()) { if (!d.childNodes.length) d.textContent = MENU[j].desc; }
+      else {
+        if (on && (!a.classList.contains("on") || prev !== cur || !d.childNodes.length)) typeInto(d, MENU[j].desc);
+        if (!on && d) d.textContent = "";
+      }
       a.classList.toggle("on", on);
     });
+    if (prev !== cur && focus) blip("move");
     if (focus) { var a = $$("#menu a")[cur]; if (a) a.focus({ preventScroll: false }); }
-    led($("#ledInfo"), itemInfo(ITEMS[cur].id));
+    led($("#ledInfo"), itemInfo(MENU[cur].id));
   }
-  function refreshInfo() { if (!currentView) led($("#ledInfo"), itemInfo(ITEMS[cur].id)); }
+  function refreshInfo() { if (!currentView) led($("#ledInfo"), itemInfo(MENU[cur].id)); }
+
+  /* ---------------- Interface sounds (optional, off by default) ---------------- */
+  var audioCtx = null;
+  function blip(kind) {
+    if (!opts.sound) return;
+    try {
+      if (!audioCtx) { var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; audioCtx = new AC(); }
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      var t = audioCtx.currentTime, o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = "triangle";
+      if (kind === "go") { o.frequency.setValueAtTime(700, t); o.frequency.exponentialRampToValueAtTime(1500, t + 0.07); }
+      else { o.frequency.setValueAtTime(1250, t); }
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(kind === "go" ? 0.05 : 0.03, t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + (kind === "go" ? 0.11 : 0.05));
+      o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + 0.12);
+    } catch (e) { /* audio unavailable */ }
+  }
+
+  /* ---------------- Compatibility layer ----------------
+   * Detects the browser engine, input type and platform, adds classes to <html>
+   * for CSS hooks, applies fallbacks, and exposes the result as JO.env.
+   * Targets: Chrome, Edge, Brave, Opera, Vivaldi (Blink), Firefox (Gecko),
+   * Safari on macOS and iOS (WebKit), Chrome and Samsung Internet on Android.
+   */
+  var ENV = (function () {
+    var ua = navigator.userAgent || "", mm = function (q) { try { return window.matchMedia && matchMedia(q).matches; } catch (e) { return false; } };
+    var touch = mm("(pointer: coarse)") || ("ontouchstart" in window && !mm("(pointer: fine)"));
+    var ios = /iP(hone|ad|od)/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var css = function (p, v) { try { return window.CSS && CSS.supports(p, v); } catch (e) { return false; } };
+    var engine = css("-moz-appearance", "none") ? "gecko" : (window.chrome || /Chrom(e|ium)|Edg\//.test(ua)) ? "blink" : /AppleWebKit/.test(ua) ? "webkit" : "other";
+    return {
+      engine: engine,
+      brave: !!(navigator.brave),
+      ios: ios,
+      android: /Android/.test(ua),
+      touch: !!touch,
+      hover: mm("(hover: hover)"),
+      standalone: mm("(display-mode: standalone)") || navigator.standalone === true,
+      reducedMotion: mm("(prefers-reduced-motion: reduce)"),
+      features: {
+        intersectionObserver: "IntersectionObserver" in window,
+        clipPath: css("clip-path", "inset(0 0 0 0)"),
+        dvh: css("height", "100dvh"),
+        backdrop: css("backdrop-filter", "blur(2px)") || css("-webkit-backdrop-filter", "blur(2px)"),
+        fetch: "fetch" in window,
+        abort: "AbortController" in window,
+        audio: !!(window.AudioContext || window.webkitAudioContext),
+        storage: (function () { try { localStorage.setItem("_t", "1"); localStorage.removeItem("_t"); return true; } catch (e) { return false; } })()
+      }
+    };
+  })();
+  (function applyEnv() {
+    var c = document.documentElement.classList, f = ENV.features;
+    c.add("eng-" + ENV.engine);
+    c.toggle("is-touch", ENV.touch);
+    c.toggle("is-ios", ENV.ios);
+    c.toggle("is-android", ENV.android);
+    c.toggle("no-clip", !f.clipPath);
+    c.toggle("no-dvh", !f.dvh);
+    c.toggle("no-io", !f.intersectionObserver);
+    // Older mobile browsers: 100vh includes the address bar. Keep a --vh unit in sync.
+    function vh() { document.documentElement.style.setProperty("--vh", (window.innerHeight * 0.01) + "px"); }
+    vh(); window.addEventListener("resize", vh, { passive: true }); window.addEventListener("orientationchange", vh, { passive: true });
+  })();
+  function compact() { try { return matchMedia("(max-width: 700px)").matches || ENV.touch; } catch (e) { return ENV.touch; } }
 
   /* ---------------- Views ---------------- */
   var currentView = "";
@@ -355,46 +429,60 @@
 
   /* Briefing */
   function hl(t) { return esc(t).replace(/\{\{([^}]+)\}\}/g, '<mark class="key">$1</mark>'); }
-  function sessionDiagram() {
-    var W = 400, C = 200, R = 150, out = '<svg class="bf-dia" viewBox="0 0 ' + W + ' 400" role="img" aria-label="Session diagram: one host at the center connected to fifteen soldier slots">';
-    var pts = [];
-    for (var k = 0; k < 15; k++) { var a = -Math.PI / 2 + k * (2 * Math.PI / 15); pts.push([C + R * Math.cos(a), C + R * Math.sin(a)]); }
-    pts.forEach(function (p) { out += '<line class="link" x1="' + C + '" y1="' + C + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"/><line class="flow" x1="' + C + '" y1="' + C + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"/>'; });
-    out += '<circle cx="' + C + '" cy="' + C + '" r="' + R + '" fill="none" stroke="var(--line)" stroke-dasharray="2 6"/>';
-    pts.forEach(function (p, k) {
-      out += '<g class="node soldier" style="--k:' + (k + 1) + '"><circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="15"/><text x="' + p[0].toFixed(1) + '" y="' + (p[1] + 3).toFixed(1) + '" text-anchor="middle">' + (k < 8 ? "0" : "") + (k + 2) + "</text></g>";
-    });
-    out += '<g class="node host" style="--k:0"><circle class="ring" cx="' + C + '" cy="' + C + '" r="30"/><circle class="core" cx="' + C + '" cy="' + C + '" r="30"/><text x="' + C + '" y="' + (C + 4) + '" text-anchor="middle">HOST</text></g>';
-    out += '<text class="cap" x="' + C + '" y="392" text-anchor="middle">1 HOST · 15 SOLDIER SLOTS</text></svg>';
-    return out;
-  }
-  function countUp(el) {
-    var to = +el.dataset.to, t0 = null;
-    if (!opts.motion || to === 0) { el.textContent = to; return; }
-    function step(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 900); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); }
-    requestAnimationFrame(step);
+  var ICONS = {
+    host: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2l8 8-8 8-8-8z"/><path d="M10 7l3 3-3 3-3-3z" class="f"/></svg>',
+    soldier: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="6" r="3"/><path d="M4 18c0-4 2.7-6 6-6s6 2 6 6"/></svg>',
+    link: '<svg class="ico-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 7h13l-3-3M18 13H5l3 3"/></svg>'
+  };
+  /* Architecture diagram: host PC, connection, soldier PCs, and what flows each way */
+  function howDiagram() {
+    var narrow = window.matchMedia && matchMedia("(max-width: 700px)").matches;
+    function box(x, y, w, h, title, sub, rows, cls, k) {
+      var o = '<g class="dn ' + cls + '" style="--k:' + k + '"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>' +
+        '<path class="tick" d="M' + x + ' ' + (y + 10) + 'V' + y + 'H' + (x + 10) + '"/>' +
+        '<text class="t" x="' + (x + 16) + '" y="' + (y + 26) + '">' + title + '</text><text class="s" x="' + (x + 16) + '" y="' + (y + 42) + '">' + sub + "</text>";
+      rows.forEach(function (r, i) { o += '<rect class="row" x="' + (x + 16) + '" y="' + (y + 56 + i * 26) + '" width="' + (w - 32) + '" height="20"/><text class="r" x="' + (x + 26) + '" y="' + (y + 70 + i * 26) + '">' + r + "</text>"; });
+      return o + "</g>";
+    }
+    if (narrow) {
+      var v = '<svg class="how narrow" viewBox="0 0 340 600" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; soldier PCs send movement and actions; the host sends world state back.">';
+      v += box(10, 10, 320, 180, "HOST PC", "Venom Snake's position", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
+      v += '<g class="dn lane" style="--k:1"><text class="lt" x="170" y="222" text-anchor="middle">STEAM RELAY · DIRECT IP</text>' +
+        '<line class="rail" x1="120" y1="236" x2="120" y2="362"/><line class="pkt up" x1="120" y1="362" x2="120" y2="236"/><path class="arrow" d="M114 244l6-8 6 8"/><text class="lb" x="110" y="304" text-anchor="end">movement</text><text class="lb" x="110" y="318" text-anchor="end">actions</text>' +
+        '<line class="rail" x1="220" y1="236" x2="220" y2="362"/><line class="pkt down" x1="220" y1="236" x2="220" y2="362"/><path class="arrow" d="M214 354l6 8 6-8"/><text class="lb" x="230" y="296">world state</text><text class="lb" x="230" y="310">AI</text><text class="lb" x="230" y="324">events</text></g>';
+      [0, 1].forEach(function (i) { v += '<g class="dn ghost" style="--k:' + (3 + i) + '"><rect x="' + (26 - i * 8) + '" y="' + (382 + i * 8) + '" width="304" height="160"/></g>'; });
+      v += box(10, 398, 304, 160, "SOLDIER PC", "Up to 15 players", ["Own movement", "Own camera", "Local view of world"], "soldierbox", 2);
+      return v + '<text class="foot" x="170" y="592" text-anchor="middle">ONE HOST DECIDES · ALL SEE THE SAME WORLD</text></svg>';
+    }
+    var svg = '<svg class="how" viewBox="0 30 760 270" role="img" aria-label="How a session works: the host PC runs the mission, AI and world; soldier PCs send movement and actions; the host sends world state back through Steam relay or a direct connection.">';
+    svg += box(10, 40, 230, 200, "HOST PC", "Venom Snake's position", ["Mission state", "AI and enemies", "World and time", "Decides outcomes"], "hostbox", 0);
+    [0, 1, 2].forEach(function (i) { svg += '<g class="dn ghost" style="--k:' + (3 + i) + '"><rect x="' + (536 - i * 8) + '" y="' + (40 + i * 8) + '" width="214" height="200"/></g>'; });
+    svg += box(520, 56, 214, 200, "SOLDIER PC", "Up to 15 players", ["Own movement", "Own camera", "Local view of world"], "soldierbox", 2);
+    svg += '<g class="dn lane" style="--k:1">' +
+      '<text class="lt" x="380" y="70" text-anchor="middle">STEAM RELAY · DIRECT IP</text>' +
+      '<line class="rail" x1="250" y1="120" x2="510" y2="120"/><line class="pkt up" x1="510" y1="120" x2="250" y2="120"/>' +
+      '<path class="arrow" d="M258 114l-8 6 8 6"/><text class="lb" x="380" y="108" text-anchor="middle">movement · actions</text>' +
+      '<line class="rail" x1="250" y1="180" x2="510" y2="180"/><line class="pkt down" x1="250" y1="180" x2="510" y2="180"/>' +
+      '<path class="arrow" d="M502 174l8 6-8 6"/><text class="lb" x="380" y="204" text-anchor="middle">world state · AI · events</text></g>';
+    svg += '<text class="foot" x="380" y="292" text-anchor="middle">UP TO 16 PLAYERS · ONE HOST DECIDES · EVERYONE SEES THE SAME WORLD</text></svg>';
+    return svg;
   }
   function viewBriefing() {
     var v = $("#view");
     v.innerHTML = shell("Overview", "Briefing", loading("Loading briefing"));
-    Promise.all([loadLocal("briefing"), loadRoadmap()]).then(function () {
+    loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
-      var b = data.briefing || {}, r = data.roadmap || [], ph = currentPhase(), host = b.host || { places: [] };
-      var idx = r.indexOf(ph), prog = r.length ? Math.round(((idx < 0 ? 0 : idx) + (ph && ph.total ? ph.done / ph.total : 0)) / r.length * 100) : 0;
-      var html = '<div class="bf">' +
-        '<section class="bf-sec bf-hero"><div><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" + (b.summary || []).map(function (t) { return "<p>" + hl(t) + "</p>"; }).join("") +
-        '<div class="toolbar" style="margin-top:18px"><a class="btn primary" href="#/contribute">Join the Protocol</a><a class="btn" href="#/docs/plan">Read the plan</a></div></div>' + sessionDiagram() + "</section>" +
-        '<section class="bf-sec bf-stats">' + (b.stats || []).map(function (st) { return '<div class="bf-stat"><b data-to="' + (+st[0]) + '">0</b><span>' + esc(st[1]) + "</span></div>"; }).join("") + "</section>" +
-        '<section class="bf-sec bf-host"><div><h3>' + esc(host.title || "") + "</h3><p>" + hl(host.text || "") + '</p></div><ul class="bf-places">' + (host.places || []).map(function (pl, k) { return '<li style="--k:' + k + '">' + esc(pl) + "</li>"; }).join("") + "</ul></section>" +
-        '<section class="bf-sec"><h3 class="bf-flow-h">How a session works</h3><ol class="bf-flow">' + (b.flow || []).map(function (f, k) { return '<li style="--k:' + k + '"><b>' + esc(f[0]) + "</b><span>" + esc(f[1]) + "</span></li>"; }).join("") + "</ol></section>" +
-        '<section class="bf-sec"><h3 class="bf-flow-h">Roadmap</h3>' + (r.length ? '<div class="bf-road" style="--p:' + prog + '%"><i class="fill"></i>' + r.map(function (p) {
-          var state = p === ph ? "now" : (p.total && p.done === p.total ? "done" : "next");
-          return '<div class="ph ' + state + '"><div class="n">Phase ' + p.n + (state === "now" ? " · Now" : state === "done" ? " · Done" : "") + '</div><div class="tt">' + esc(p.title) + '</div><div class="c">' + p.done + " / " + p.total + " tasks</div></div>";
-        }).join("") + '</div><p class="source">Progress counted from ROADMAP.md checklists</p>' : '<div class="empty">Roadmap unavailable</div>') + "</section>" +
-        '<section class="bf-sec bf-two"><div><div class="label">Principles</div><ol class="steps">' + (b.principles || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ol></div>" +
-        '<aside class="panel"><div class="label">At a glance</div>' + (b.facts || []).map(function (f) { return '<div class="kv"><span>' + esc(f[0]) + "</span><b>" + esc(f[1]) + "</b></div>"; }).join("") +
-        '<div class="kv"><span>Stage</span><b><span class="pill warn">' + esc(cfg.stage) + "</span></b></div></aside></section></div>";
-      $("#vb").innerHTML = html;
+      var b = data.briefing || {}, host = b.host || { places: [] };
+      $("#vb").innerHTML = '<div class="bf">' +
+        '<section class="bf-sec bf-hero"><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
+        (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
+        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/docs/plan">Read the plan</a></div></section>' +
+        '<section class="bf-sec"><div class="label">How a session works</div>' + howDiagram() +
+        '<div class="bf-how">' + (b.how || []).map(function (h, k) {
+          return '<div class="bf-pt" style="--k:' + k + '"><h4>' + (ICONS[h[0]] || "") + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div>";
+        }).join("") + "</div></section>" +
+        '<section class="bf-sec bf-hostline"><p>' + ICONS.host + hl(host.text || "") + '</p><ul class="chips">' + (host.places || []).map(function (pl, k) { return '<li style="--k:' + k + '">' + esc(pl) + "</li>"; }).join("") + "</ul></section>" +
+        "</div>";
       revealSections();
       refreshInfo();
     });
@@ -403,8 +491,43 @@
     var secs = $$(".bf-sec");
     function show(el) { if (el.classList.contains("in")) return; el.classList.add("in"); $$("[data-to]", el).forEach(countUp); }
     if (!("IntersectionObserver" in window)) { secs.forEach(show); return; }
-    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } }); }, { root: $("#center"), threshold: 0.15 });
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } }); }, { root: $("#center"), threshold: 0.12 });
     secs.forEach(function (el, k) { setTimeout(function () { io.observe(el); }, k * 90); });
+  }
+  function countUp(el) {
+    var to = +el.dataset.to, t0 = null;
+    if (!opts.motion || to === 0) { el.textContent = to; return; }
+    function step(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 900); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+
+  /* Roadmap */
+  function viewRoadmap() {
+    var v = $("#view");
+    v.innerHTML = shell("Plan", "Roadmap", loading("Loading roadmap"));
+    loadRoadmap().then(function () {
+      if (currentView !== "roadmap") return;
+      var r = data.roadmap || [], ph = currentPhase(), idx = r.indexOf(ph);
+      if (!r.length) { $("#vb").innerHTML = '<div class="empty">Roadmap unavailable<small>ROADMAP.md could not be loaded.</small></div>'; return; }
+      var prog = Math.round(((idx < 0 ? 0 : idx) + (ph && ph.total ? ph.done / ph.total : 0)) / r.length * 100);
+      var all = r.reduce(function (a, p) { return [a[0] + p.done, a[1] + p.total]; }, [0, 0]);
+      $("#vb").innerHTML = '<div class="bf">' +
+        '<section class="bf-sec"><div class="bf-road" style="--p:' + prog + '%"><i class="fill"></i>' + r.map(function (p) {
+          var state = p === ph ? "now" : (p.total && p.done === p.total ? "done" : "next");
+          return '<a class="ph ' + state + '" href="#rm-' + p.n + '"><div class="n">Phase ' + p.n + (state === "now" ? " · Now" : state === "done" ? " · Done" : "") + '</div><div class="tt">' + esc(p.title) + '</div><div class="c">' + p.done + " / " + p.total + " tasks</div></a>";
+        }).join("") + "</div>" +
+        '<p class="source">' + all[0] + " of " + all[1] + ' tasks done · read live from <a href="' + repoUrl("/blob/" + cfg.branch + "/ROADMAP.md") + '" target="_blank" rel="noopener noreferrer">ROADMAP.md</a> · a phase starts when the previous one is complete or deferred by the project lead</p></section>' +
+        '<section class="bf-sec rm-list">' + r.map(function (p) {
+          var state = p === ph ? "now" : (p.total && p.done === p.total ? "done" : "next");
+          return '<div class="rm-ph ' + state + '" id="rm-' + p.n + '"><div class="rm-h"><span class="n">Phase ' + p.n + '</span><h3>' + esc(p.title) + '</h3><span class="pill ' + (state === "now" ? "warn" : state === "done" ? "ok" : "") + '">' + (state === "now" ? "In progress" : state === "done" ? "Complete" : "Planned") + "</span></div>" +
+            '<div class="meter"><i style="width:' + (p.total ? Math.round(p.done / p.total * 100) : 0) + '%"></i></div><ul class="rm-items">' + p.items.map(function (it) {
+              return '<li class="' + (it.done ? "done" : "") + '">' + inline(it.text, "ROADMAP.md") + "</li>";
+            }).join("") + "</ul></div>";
+        }).join("") + "</section></div>";
+      $$(".bf-road a.ph").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); var t = $(a.getAttribute("href")); if (t) t.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "start" }); }); });
+      revealSections();
+      refreshInfo();
+    });
   }
 
   /* Dev log */
@@ -525,7 +648,8 @@
       '<button class="btn" id="srf">Refresh</button></div>' +
       '<div class="tw"><table><tr>' + th("name", "Session") + th("host", "Host") + "<th>Details</th>" + th("players", "Players") + "<th>Status</th>" + th("ping", "Ping") + "</tr>" +
       rows + "</table></div>" +
-      (rows ? "" : '<div class="empty" id="noServers">No servers found<small>' + (all.length ? "No sessions match the filters." : "Sessions appear here once the session service is running.") + "</small></div>") +
+      (rows ? "" : all.length ? '<div class="empty" id="noServers">No servers found<small>No sessions match the filters.</small></div>'
+        : '<div class="scanbox" id="noServers"><div class="radar" aria-hidden="true"><i class="sweep"></i><i class="blip"></i></div><div><b>No servers found</b><small>Scanning for sessions. They appear here once the session service is running.</small></div></div>') +
       '<p class="source">Source: data/servers.json' + (data.serversHooked ? " · live hook" : "") + "</p>";
     $("#sq").addEventListener("input", function (e) { sessState.q = e.target.value; drawSessionsKeepFocus("#sq"); });
     $("#sr").addEventListener("change", function (e) { sessState.region = e.target.value; drawSessions(); });
@@ -670,7 +794,33 @@
   }
 
   /* Documentation */
-  var docFilter = "";
+  var docFilter = "", searchTimer, docBodyBackup = null;
+  /* Full-text search across all documents; results replace the article until the query is cleared */
+  function searchDocs(docs, q) {
+    var body = $("#docBody"); if (!body) return;
+    q = q.trim();
+    if (q.length < 3) { if (docBodyBackup !== null) { body.innerHTML = docBodyBackup; docBodyBackup = null; } return; }
+    if (docBodyBackup === null) docBodyBackup = body.innerHTML;
+    Promise.all(docs.map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
+      if (currentView !== "docs" || docFilter.trim() !== q) return;
+      var ql = q.toLowerCase(), hits = [];
+      all.forEach(function (pair) {
+        var text = pair[1].replace(/[#*`|>\[\]()_-]+/g, " ").replace(/\s+/g, " "), i = text.toLowerCase().indexOf(ql), n = 0, j = i;
+        while (j > -1) { n++; j = text.toLowerCase().indexOf(ql, j + ql.length); }
+        if (i > -1 || pair[0].title.toLowerCase().indexOf(ql) > -1) {
+          var a = Math.max(0, i - 60), snip = i > -1 ? (a ? "…" : "") + text.slice(a, i + ql.length + 90) + "…" : "";
+          hits.push({ d: pair[0], n: n, snip: snip });
+        }
+      });
+      hits.sort(function (x, y) { return y.n - x.n; });
+      var re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig");
+      body.innerHTML = '<div class="meta-line"><span>Search · ' + plural(hits.length, "document") + ' match "' + esc(q) + '"</span></div>' +
+        (hits.length ? '<ol class="hits">' + hits.map(function (h) {
+          return '<li><a href="#/docs/' + esc(h.d.id) + '">' + esc(h.d.title) + '</a><span class="pill">' + esc(h.d.group) + "</span>" + (h.n ? '<span class="cnt">' + plural(h.n, "match", "matches") + "</span>" : "") +
+            (h.snip ? "<p>" + esc(h.snip).replace(re, function (m) { return "<mark>" + m + "</mark>"; }) + "</p>" : "") + "</li>";
+        }).join("") + "</ol>" : '<div class="empty">No matches<small>Try a different word.</small></div>');
+    });
+  }
   function viewDocs(id) {
     var v = $("#view");
     if (!$("#docNav")) v.innerHTML = shell("Library", "Documentation", loading("Loading the library"));
@@ -684,6 +834,7 @@
       }
       drawDocNav(docs, doc.id);
       var body = $("#docBody");
+      docBodyBackup = null;
       body.innerHTML = loading("Loading " + doc.title);
       loadDoc(doc).then(function (md) {
         if (currentView !== "docs") return;
@@ -699,16 +850,22 @@
   function drawDocNav(docs, active) {
     var groups = [], by = {};
     docs.forEach(function (d) { if (!by[d.group]) { by[d.group] = []; groups.push(d.group); } by[d.group].push(d); });
-    var q = docFilter.toLowerCase(), html = '<input class="field" id="dq" type="search" placeholder="Filter documents" value="' + esc(docFilter) + '" aria-label="Filter documents">';
+    var q = docFilter.toLowerCase(), cur = docs.filter(function (d) { return d.id === active; })[0];
+    var html = '<button class="btn doc-toggle" id="dtog" aria-expanded="false" aria-controls="docNav">' + esc(cur ? cur.title : "Documents") + '<span aria-hidden="true">▾</span></button>' + '<input class="field" id="dq" type="search" placeholder="Search documents" value="' + esc(docFilter) + '" aria-label="Search documents">';
     groups.forEach(function (g) {
-      var items = by[g].filter(function (d) { return !q || d.title.toLowerCase().indexOf(q) > -1; });
+      var items = by[g].filter(function (d) { return !q || q.length >= 3 || d.title.toLowerCase().indexOf(q) > -1; });
       if (!items.length) return;
       html += '<div class="grp">' + esc(g) + "</div>" + items.map(function (d) {
         return '<a href="#/docs/' + esc(d.id) + '"' + (d.id === active ? ' aria-current="true"' : "") + ">" + esc(d.title) + "</a>";
       }).join("");
     });
     var nav = $("#docNav"); nav.innerHTML = html;
-    $("#dq").addEventListener("input", function (e) { docFilter = e.target.value; var p = e.target.selectionStart; drawDocNav(docs, active); var n = $("#dq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ } });
+    $("#dtog").addEventListener("click", function () { var open = nav.classList.toggle("open"); this.setAttribute("aria-expanded", String(open)); });
+    $("#dq").addEventListener("input", function (e) {
+      docFilter = e.target.value; var p = e.target.selectionStart; drawDocNav(docs, active);
+      var n = $("#dq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ }
+      clearTimeout(searchTimer); searchTimer = setTimeout(function () { searchDocs(docs, docFilter); }, 180);
+    });
   }
   function loadDoc(doc) {
     if (docCache[doc.path]) return Promise.resolve(docCache[doc.path]);
@@ -726,11 +883,12 @@
     var size = [["1", "Normal"], ["1.1", "Large"], ["1.2", "Larger"]];
     v.innerHTML = shell("Settings", "Options",
       '<div class="opt"><div><div class="label">Display</div>' +
-      sw("scan", "Scanlines", "Line overlay across the screen") +
+      sw("glitch", "Glitch effect", "A light background distortion every 5 to 20 seconds") +
       sw("grid", "Background grid", "Grid and moving light band") +
       sw("motion", "Animations", "Turn off for a static interface") +
       sw("ledFx", "LED glow", "Glow and letter-by-letter text on the status lines") +
       sw("contrast", "High contrast", "Brighter secondary text and lines") +
+      sw("sound", "Interface sounds", "Short tones when selecting and opening sections") +
       '<div class="orow"><span>Text size<small>Applies to the whole site</small></span><select class="field" id="osz" aria-label="Text size">' +
       size.map(function (s) { return '<option value="' + s[0] + '"' + (opts.size === s[0] ? " selected" : "") + ">" + s[1] + "</option>"; }).join("") + "</select></div></div>" +
       '<div><div class="label">Data</div>' +
@@ -753,14 +911,26 @@
   }
 
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
-  var flashTimer;
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var goTimer;
   function flash() {
-    var x = $(".xfer"), st = $("#stage");
-    if (!x || !opts.motion) return;
-    x.classList.remove("go"); st.classList.remove("going"); void x.offsetWidth;
-    x.classList.add("go"); st.classList.add("going");
-    clearTimeout(flashTimer); flashTimer = setTimeout(function () { x.classList.remove("go"); st.classList.remove("going"); }, 400);
+    var st = $("#stage");
+    blip("go");
+    st.classList.remove("going"); void st.offsetWidth; st.classList.add("going");
+    clearTimeout(goTimer); goTimer = setTimeout(function () { st.classList.remove("going"); }, 450);
+  }
+  /* Light background glitch at a random interval of 5 to 20 seconds */
+  function scheduleGlitch() {
+    setTimeout(function () {
+      var st = $("#stage");
+      if (opts.glitch && opts.motion && !document.hidden && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        $$(".gl i").forEach(function (b) { b.style.setProperty("--y", (Math.random() * 90 + 5).toFixed(1) + "%"); b.style.setProperty("--h", (Math.random() * 10 + 2).toFixed(0) + "px"); });
+        st.style.setProperty("--d", (0.16 + Math.random() * 0.12).toFixed(2) + "s");
+        st.classList.add("glitch");
+        setTimeout(function () { st.classList.remove("glitch"); }, 320);
+      }
+      scheduleGlitch();
+    }, 5000 + Math.random() * 15000);
   }
   var booted = false;
   function route() {
@@ -773,7 +943,7 @@
       if (currentView) {
         currentView = ""; view.hidden = true; view.innerHTML = ""; menu.hidden = false;
         document.body.classList.remove("in-view");
-        var idx = ITEMS.map(function (i) { return i.id; }).indexOf(lastView);
+        var idx = MENU.map(function (i) { return i.id; }).indexOf(lastView);
         select(idx > -1 ? idx : cur, true);
       }
       document.title = cfg.team + " · " + cfg.project;
@@ -787,6 +957,8 @@
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
+    var tab = $('.secbar a[aria-current="page"]');
+    if (tab) { var bar = tab.parentNode; bar.scrollLeft = Math.max(0, tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2); }
   }
   var lastView = "";
 
@@ -806,11 +978,12 @@
     if (currentView || /INPUT|SELECT|TEXTAREA/.test(tag)) return;
     if (e.key === "ArrowDown") { select(cur + 1, true); e.preventDefault(); }
     else if (e.key === "ArrowUp") { select(cur - 1, true); e.preventDefault(); }
-    else if (e.key === "Enter" && tag !== "A") { location.hash = "#/" + ITEMS[cur].id; e.preventDefault(); }
+    else if (e.key === "Enter" && tag !== "A") { location.hash = "#/" + MENU[cur].id; e.preventDefault(); }
   });
 
   /* ---------------- Hooks ---------------- */
   window.JO = {
+    env: ENV,
     setServers: function (list) { data.servers = { servers: Array.isArray(list) ? list : [] }; data.serversHooked = true; if (currentView === "sessions") drawSessions(); refreshInfo(); },
     setMods: function (m) { data.mods = { compatible: (m && m.compatible) || [], issues: (m && m.issues) || [] }; if (currentView === "mods") drawMods(); refreshInfo(); },
     setDevlog: function (list) { data.devlog = { entries: Array.isArray(list) ? list : [] }; if (currentView === "devlog") drawDevlog(); refreshInfo(); },
@@ -842,6 +1015,7 @@
     });
   }
   applyOpts();
+  scheduleGlitch();
   renderMenu(); select(0, false);
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });

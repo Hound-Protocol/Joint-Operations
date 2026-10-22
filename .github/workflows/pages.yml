@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "site/**"
+      - "tools/**"
       - "docs/**"
       - "research/**"
       - "README.md"
@@ -31,13 +32,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Assemble site
         run: |
-          mkdir -p _site/content
-          cp -r site/. _site/
-          python3 tools/write_build_info.py _site/data/build.json
-          cp README.md ROADMAP.md CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md _site/content/
-          cp -r docs research _site/content/
+          pip install fonttools brotli
+          python3 tools/assemble_site.py _site --woff2
           for f in _site/data/*.json; do python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

@@ -2,91 +2,33 @@
   "note": "Text for the Briefing page. Wrap a key term in {{double braces}} to color-code it. Use sparingly.",
   "headline": "A {{multiplayer mod}} for Metal Gear Solid V, for up to {{16 players}}",
   "summary": [
-    "Joint Operations brings the game's online functionality into the single-player world. Up to 16 players share the open world, its missions and Mother Base.",
-    "The host takes {{Venom Snake's place}}. Everyone else joins as a soldier from the host's Mother Base roster, and players join and leave with in-game transitions instead of popping in and out.",
-    "Built in the open by Hound Protocol. Free, open to contributors, and it never includes or distributes game files."
+    "Joint Operations brings the game's online functionality into the single-player world. One player hosts, up to fifteen others join, and everyone shares the same open world and missions."
   ],
-  "stats": [
+  "how": [
     [
-      16,
-      "Players per session"
+      "host",
+      "The host decides",
+      "The host's game runs the mission, the AI and the world. It is the single source of truth, so every player sees the same outcome."
     ],
     [
-      2,
-      "Platforms: Windows and Linux"
+      "soldier",
+      "Soldiers act",
+      "Each other player controls their own soldier and camera, and sends their movement and actions to the host."
     ],
     [
-      1,
-      "Host in Venom Snake's place"
-    ],
-    [
-      0,
-      "Game files distributed"
+      "link",
+      "One connection",
+      "Players connect through Steam's relay network, with a direct connection as fallback. No ports to open and no Konami servers involved."
     ]
   ],
   "host": {
-    "title": "The host stands in for Venom Snake",
-    "text": "The host is not a separate character. They occupy {{Venom Snake's position}} in the game, so every place the story puts Snake belongs to the host.",
+    "text": "The host takes {{Venom Snake's place}}. Wherever the game puts Snake, the host is there:",
     "places": [
-      "Helicopter seat on insertion and extraction",
-      "Aerial Command Center",
-      "Mission briefings and radio calls",
-      "Cutscenes and story moments",
-      "Mother Base command and staff management"
+      "Helicopter seat",
+      "Command Center",
+      "Briefings and radio",
+      "Cutscenes",
+      "Mother Base command"
     ]
-  },
-  "flow": [
-    [
-      "Host deploys",
-      "The host starts a mission or free roam from Venom Snake's position."
-    ],
-    [
-      "Soldiers join",
-      "Other players pick a soldier from the host's Mother Base roster and arrive in the field."
-    ],
-    [
-      "Shared world",
-      "Everyone plays in one world. The host's game decides AI, missions and world state."
-    ],
-    [
-      "Seamless leave",
-      "Players leave with an in-game exit, and the session carries on."
-    ]
-  ],
-  "facts": [
-    [
-      "Players",
-      "Up to 16 per session"
-    ],
-    [
-      "Host",
-      "Takes Venom Snake's place"
-    ],
-    [
-      "Other players",
-      "Soldiers from the Mother Base roster"
-    ],
-    [
-      "Platforms",
-      "Windows, and Linux through Proton"
-    ],
-    [
-      "Connection",
-      "Steam relay, with direct IP as fallback"
-    ],
-    [
-      "Requirement",
-      "Your own copy of MGSV on Steam"
-    ],
-    [
-      "Cost",
-      "Free and open source"
-    ]
-  ],
-  "principles": [
-    "Research is done openly and written in our own words.",
-    "No game files, cracks or third-party mod code are ever distributed.",
-    "Nothing touches Konami online services or anti-cheat.",
-    "Anyone can contribute through the contract board."
-  ]
+  }
 }

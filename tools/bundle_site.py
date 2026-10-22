@@ -29,6 +29,8 @@ for d in data["docs"]["docs"] + [{"path": "ROADMAP.md"}]:
 def data_uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode(path.read_bytes()).decode()
 
+import subprocess as _sp
+_sp.run([sys.executable, str(root / "tools" / "build_js.py")], check=True)
 html = (site / "index.html").read_text()
 html = re.sub(r'<link rel="preload"[^>]*>\n', "", html)  # fonts are inlined below
 for name in ["emblem.svg", "favicon.svg"]:

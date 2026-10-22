@@ -25,6 +25,12 @@ tools/           build and helper scripts, test harness
 tests/           automated tests that run outside the game
 ```
 
+## Website development
+- The site's script is written as modules in `site/src/js/` and joined into `site/assets/js/app.js` by `python3 tools/build_js.py`. Commit both; CI checks they match.
+- `python3 tools/assemble_site.py _site` builds the deployable site (build number, documents, static doc pages). Add `--woff2` to convert fonts.
+- `python3 tests/browser_smoke.py _site` tests it in Chromium, Firefox and WebKit at desktop and phone sizes.
+- `python3 tools/bundle_site.py` makes the single-file version that opens from disk.
+
 ## 3. Quality checks
 | Level | What | Where |
 |---|---|---|
