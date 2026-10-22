@@ -32,7 +32,7 @@
         '<section class="ogroup"><div class="label">Look</div>' +
           sw("glitch", "Glitch effect", "A light distortion every 5 to 20 seconds") +
           sw("grid", "Background grid", "The tactical grid behind every page") +
-          sw("emblem", "Background emblem", "The faint Joint Operations emblem behind the menu") +
+          sw("emblem", "Background artwork", "The faint saluting operatives behind every page") +
           sw("ledFx", "LED glow", "Glowing, letter-by-letter status lines") +
           sw("contrast", "High contrast", "Brighter secondary text and lines") +
         "</section>" +

@@ -14,6 +14,7 @@ from fontTools.pens.transformPen import TransformPen
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import emblem as jo_emblem  # noqa: E402
+import salute  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 OUT = ROOT / "site/assets/brand"
@@ -122,6 +123,8 @@ def main():
     files["joint-operations-emblem-mono.svg"] = svg(400, 400, jo_emblem.emblem(glyphs, mono=True), "Joint Operations")
     # Light one-colour version for dark pages (the site background); an <img> cannot inherit currentColor
     files["joint-operations-emblem-white.svg"] = files["joint-operations-emblem-mono.svg"].replace("currentColor", WHITE)
+    # Background scene for the website: saluting operatives and their commander, one colour
+    files["joint-operations-salute.svg"] = salute.scene(WHITE)
     # Lockups: mark plus outlined wordmark
     hp1, w1 = text_path("HOUND", size=64, tracking=0.32, x=236, y=96)
     hp2, w2 = text_path("PROTOCOL", size=64, tracking=0.32, x=236, y=172)

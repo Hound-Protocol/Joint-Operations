@@ -2,7 +2,7 @@
   var ITEMS = [
     { id: "briefing", title: "About Joint Operations", desc: "What it is, how it works, and where it stands", tab: "About" },
     { id: "roadmap", title: "Roadmap", desc: "Where we are and what comes next", tab: "Roadmap", tabOnly: true },
-    { id: "download", title: "Download", desc: "Get the mod for Windows or Linux", tab: "Download" },
+    { id: "download", title: "Download", desc: "Get Joint Operations for Windows or Linux", tab: "Download" },
     { id: "sessions", title: "Session Browser", desc: "Browse, Create & Join active Joint Operations", tab: "Sessions" },
     { id: "contribute", title: "Contribute", desc: "Take part in development & Become a Hound Member", tab: "Contribute" },
     { id: "team", title: "Team", desc: "Chain of command and the people behind Hound Protocol", tab: "Team", tabOnly: true },
@@ -86,7 +86,7 @@
     renderAbout();
     if ($("#hdMark")) $("#hdMark").innerHTML = BRAND.hpColor;
     $("#menu").innerHTML = MENU.map(function (it, n) {
-      return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + menuIcon(it.id) + '<span>' + esc(it.title) + '</span></span><span class="win' + (it.desc.length > 56 ? " long" : "") + '" aria-hidden="true"><span class="d"></span></span></a>';
+      return '<a href="#/' + it.id + '" class="mi-' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + menuIcon(it.id) + '<span>' + esc(it.title) + '</span></span><span class="win' + (it.desc.length > 56 ? " long" : "") + '" aria-hidden="true"><span class="d"></span></span></a>';
     }).join("");
     $$("#menu a").forEach(function (a) {
       var n = +a.dataset.n;

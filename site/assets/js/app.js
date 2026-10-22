@@ -314,7 +314,7 @@
   var ITEMS = [
     { id: "briefing", title: "About Joint Operations", desc: "What it is, how it works, and where it stands", tab: "About" },
     { id: "roadmap", title: "Roadmap", desc: "Where we are and what comes next", tab: "Roadmap", tabOnly: true },
-    { id: "download", title: "Download", desc: "Get the mod for Windows or Linux", tab: "Download" },
+    { id: "download", title: "Download", desc: "Get Joint Operations for Windows or Linux", tab: "Download" },
     { id: "sessions", title: "Session Browser", desc: "Browse, Create & Join active Joint Operations", tab: "Sessions" },
     { id: "contribute", title: "Contribute", desc: "Take part in development & Become a Hound Member", tab: "Contribute" },
     { id: "team", title: "Team", desc: "Chain of command and the people behind Hound Protocol", tab: "Team", tabOnly: true },
@@ -398,7 +398,7 @@
     renderAbout();
     if ($("#hdMark")) $("#hdMark").innerHTML = BRAND.hpColor;
     $("#menu").innerHTML = MENU.map(function (it, n) {
-      return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + menuIcon(it.id) + '<span>' + esc(it.title) + '</span></span><span class="win' + (it.desc.length > 56 ? " long" : "") + '" aria-hidden="true"><span class="d"></span></span></a>';
+      return '<a href="#/' + it.id + '" class="mi-' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + menuIcon(it.id) + '<span>' + esc(it.title) + '</span></span><span class="win' + (it.desc.length > 56 ? " long" : "") + '" aria-hidden="true"><span class="d"></span></span></a>';
     }).join("");
     $$("#menu a").forEach(function (a) {
       var n = +a.dataset.n;
@@ -510,7 +510,7 @@
   function shell(kicker, title, body) {
     var now = ITEMS.filter(function (it) { return it.id === currentView; })[0];
     var tabs = '<div class="secwrap"><nav class="secbar" aria-label="Sections">' + ITEMS.map(function (it) {
-      return '<a href="#/' + it.id + '" data-desc="' + esc(it.desc) + '"' + (it.id === currentView ? ' aria-current="page"' : "") + ">" + menuIcon(it.id) + "<span>" + esc(it.tab) + "</span></a>";
+      return '<a href="#/' + it.id + '" class="tab-' + it.id + '" data-desc="' + esc(it.desc) + '"' + (it.id === currentView ? ' aria-current="page"' : "") + ">" + menuIcon(it.id) + "<span>" + esc(it.tab) + "</span></a>";
     }).join("") + '</nav><div class="secdesc" id="secDesc" aria-hidden="true">' + esc(now ? now.desc : "") + "</div></div>";
     return tabs + '<div class="vh"><div><span class="kicker">' + esc(kicker) + '</span><h2>' + esc(title) + '</h2></div><a class="btn" href="#/">Menu</a></div><div id="vb">' + body + "</div>";
   }
@@ -686,10 +686,13 @@
   function viewDownload() {
     var v = $("#view");
     v.innerHTML = shell("Releases", "Download", loading("Checking releases on GitHub"));
-    loadReleases().then(function (rel) {
+    // Everything on this page is about the game mod. Website and foundation updates live in the Dev Log.
+    Promise.all([loadReleases(), loadRoadmap()]).then(function (res) {
+      var rel = res[0];
       if (currentView !== "download") return;
       dlOS = dlOS || guessOS();
-      var latest = playableReleases()[0], foundation = (rel || []).filter(function (r) { return !isPlayable(r); }).slice(0, 5);
+      var latest = playableReleases()[0], ph = currentPhase(), road = data.roadmap || [];
+      var done = road.reduce(function (a, p) { return a + p.done; }, 0), total = road.reduce(function (a, p) { return a + p.total; }, 0);
       var files = latest ? (latest.assets || []) : [];
       var hero = latest
         ? '<div class="dl-hero ready"><div class="dl-main"><span class="kicker">Latest release · ' + (latest.prerelease ? "Pre-release" : "Stable") + '</span><h3>Joint Operations ' + esc(latest.tag_name) + '</h3><p>Published ' + fmtDate(latest.published_at) + ". Free and open source.</p>" +
@@ -697,10 +700,11 @@
               return '<a class="btn primary" href="' + esc(a.browser_download_url) + '">' + esc(a.name) + ' <small>' + fmtBytes(a.size) + "</small></a>";
             }).join("") : '<span class="sub">This release has no attached files yet.</span>') + "</div>" +
             '<div class="toolbar"><a class="btn" href="' + esc(latest.html_url) + '" target="_blank" rel="noopener noreferrer">Release notes</a><a class="btn" href="' + repoUrl("/releases") + '" target="_blank" rel="noopener noreferrer">All releases</a></div></div></div>'
-        : '<div class="dl-hero"><div class="dl-main"><span class="kicker">Playable release</span><h3>Joint Operations 0.1 is on its way</h3>' +
-            "<p>" + (rel === null ? "GitHub could not be reached, so the latest status is not shown. Try again later." : "There is no playable version yet. When 0.1 is released, the download appears here automatically, for Windows and Linux.") + "</p>" +
-            '<div class="dl-status"><div><span>Current build</span><b>' + esc(cfg.version) + '</b></div><div><span>Stage</span><b>' + esc(cfg.stage || "In development") + '</b></div><div><span>Next</span><b>0.1 · first playable</b></div></div>' +
-            '<div class="toolbar"><a class="btn primary" href="#/roadmap">See the roadmap</a><a class="btn" href="#/contribute">Help test</a><a class="btn" href="' + repoUrl("/archive/refs/heads/" + cfg.branch + ".zip") + '">Source code (zip)</a></div></div></div>';
+        : '<div class="dl-hero"><div class="dl-main"><span class="kicker">Game release</span><h3>Joint Operations 0.1 is on its way</h3>' +
+            "<p>" + (rel === null ? "GitHub could not be reached, so the release status is not shown. Try again later." : "The mod is in development and there is no playable version yet. When 0.1 is released, the download appears here automatically, for Windows and Linux.") + "</p>" +
+            '<div class="dl-status"><div><span>Mod status</span><b>In development</b></div><div><span>First playable</span><b>Version 0.1</b></div><div><span>Current phase</span><b>' + (ph ? "Phase " + ph.n + " · " + esc(ph.title) : "–") + "</b></div></div>" +
+            (total ? '<div class="dl-progress"><div class="meter"><i style="width:' + Math.round(done / total * 100) + '%"></i></div><small>Road to 0.1: ' + done + " of " + total + " roadmap tasks done</small></div>" : "") +
+            '<div class="toolbar"><a class="btn primary" href="#/roadmap">Follow the road to 0.1</a><a class="btn" href="#/contribute">Contribute to Joint Operations</a></div></div></div>';
       var req = [["Game", "Your own copy of MGSV: The Phantom Pain on Steam"], ["Windows", "Windows 10 or 11"], ["Linux", "Through Proton, including Steam Deck and Bazzite"], ["Online", "Steam running. No ports to open"], ["Players", "Up to 16 per session"], ["Price", "Free"]];
       var body = hero +
         '<div class="dl-grid"><section class="panel"><div class="label">Install</div>' +
@@ -710,9 +714,6 @@
           '<ol class="steps" id="dlSteps">' + DL_STEPS[dlOS].map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>" +
           '<p class="sub">We guessed your system from your browser. Pick the other tab if that is wrong.</p></section>' +
         '<section class="panel"><div class="label">Requirements</div><dl class="dl-req">' + req.map(function (r) { return "<div><dt>" + r[0] + "</dt><dd>" + r[1] + "</dd></div>"; }).join("") + "</dl></section></div>" +
-        (foundation.length ? '<section class="panel" style="margin-top:14px"><div class="label">Foundation builds · not playable</div><ul class="dl-hist">' + foundation.map(function (r) {
-          return '<li><a href="' + esc(r.html_url) + '" target="_blank" rel="noopener noreferrer"><b>' + esc(r.tag_name) + "</b><span>" + esc((r.name || "").replace(/^Release\s+v?[\d.]+:?\s*/i, "") || "Foundation release") + "</span><small>" + fmtDate(r.published_at) + "</small></a></li>";
-        }).join("") + '</ul><p class="sub">Foundation builds update the website, docs and tools. The game mod starts with 0.1.</p></section>' : "") +
         '<p class="note">You need your own copy of Metal Gear Solid V. Joint Operations never includes game files and never connects to Konami\'s servers. Step-by-step help: <a href="#/guides/hp-gde-001">Player Guide</a>.</p>';
       v.querySelector("#vb").innerHTML = body;
       $$('[data-os]').forEach(function (b) {
@@ -1620,7 +1621,7 @@
         '<section class="ogroup"><div class="label">Look</div>' +
           sw("glitch", "Glitch effect", "A light distortion every 5 to 20 seconds") +
           sw("grid", "Background grid", "The tactical grid behind every page") +
-          sw("emblem", "Background emblem", "The faint Joint Operations emblem behind the menu") +
+          sw("emblem", "Background artwork", "The faint saluting operatives behind every page") +
           sw("ledFx", "LED glow", "Glowing, letter-by-letter status lines") +
           sw("contrast", "High contrast", "Brighter secondary text and lines") +
         "</section>" +

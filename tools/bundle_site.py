@@ -39,7 +39,7 @@ for m in data["team"].get("members", []):
 html = re.sub(r'<link rel="preload"[^>]*>\n', "", html)  # fonts are inlined below
 for name in ["emblem.svg", "favicon.svg"]:
     html = html.replace(f"assets/img/{name}", data_uri(site / "assets/img" / name, "image/svg+xml"))
-html = html.replace("assets/brand/joint-operations-emblem-white.svg", data_uri(site / "assets/brand/joint-operations-emblem-white.svg", "image/svg+xml"))
+html = html.replace("assets/brand/joint-operations-salute.svg", data_uri(site / "assets/brand/joint-operations-salute.svg", "image/svg+xml"))
 css = (site / "assets/css/main.css").read_text()
 js = (site / "assets/js/app.js").read_text()
 js = js.replace("assets/brand/joint-operations-emblem.svg", data_uri(site / "assets/brand/joint-operations-emblem.svg", "image/svg+xml"))
