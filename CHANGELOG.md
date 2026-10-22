@@ -2,6 +2,12 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.11 · Click to copy · 2026-10-22
+- **Click to copy:** commands, file names and code in documents, guides and steps copy to the clipboard with one click. Pointing at them types "click to copy this text"; after a click it says "copied to clipboard". Works by keyboard (Tab, then Enter) and in older browsers.
+- **Handbook PDFs:** every guide has a **Download PDF** button. The PDFs are built from the print layout when the site deploys (`tools/guides_pdf.py`), so they work even where the browser's print dialog does not open (for example Flatpak browsers without a print portal).
+- **Session Browser:** the counters are Sessions, Online and Total players (the 16-player limit is known).
+- **Print:** if no print dialog appears, the status line says to press Ctrl+P (Cmd+P on Mac) or to use Download PDF.
+
 ## v0.0.10 · Salute · 2026-10-22
 - **New background artwork:** a line of saluting operatives with their commander standing behind them. Original vector art drawn in code (`tools/brand/salute.py`), one color, faint behind every page. The commander is our own figure, not an existing character. Options → Background artwork turns it off.
 - **Download stands out:** orange in the main menu and the section bar, in Joint Operations colors.

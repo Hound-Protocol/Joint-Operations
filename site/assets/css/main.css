@@ -1083,3 +1083,19 @@ a, button, .field, summary { transition: color .3s ease, background-color .3s ea
 .logo .emblem.scene { position: absolute; left: 50%; bottom: 40px; width: 100vw; max-width: 1700px; height: auto; transform: translateX(-50%); opacity: .032; animation: none; }
 .in-view .logo .emblem.scene { opacity: .022; }
 @media (max-width: 700px) { .logo .emblem.scene { width: 160vw; } }
+
+/* Click to copy: code and commands in documents, guides, steps and cards */
+#view [data-copy] { cursor: copy; position: relative; transition: background-color .25s ease, box-shadow .25s ease, color .25s ease; }
+#view code[data-copy]:hover, #view code[data-copy]:focus-visible { background: rgba(242,140,40,.16); box-shadow: 0 0 0 1px rgba(242,140,40,.6); outline: 0; }
+#view pre[data-copy]:hover, #view pre[data-copy]:focus-visible { box-shadow: inset 0 0 0 1px rgba(242,140,40,.6); outline: 0; }
+#view pre[data-copy]::after { content: "Copy"; position: absolute; top: 8px; right: 8px; padding: 3px 8px; font: 400 12px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: #0c0f10; background: var(--jo, #f28c28); opacity: 0; transition: opacity .25s ease; }
+#view pre[data-copy]:hover::after, #view pre[data-copy]:focus-visible::after { opacity: 1; }
+#view [data-copy].copied { background: rgba(127,191,138,.22) !important; box-shadow: 0 0 0 1px var(--ok) !important; }
+#view pre[data-copy].copied::after { content: "Copied"; background: var(--ok); opacity: 1; }
+.sheet [data-copy]:hover { background: rgba(242,140,40,.22); }
+.copytip { position: fixed; z-index: 80; left: 0; top: 0; pointer-events: none; padding: 5px 10px; font: 400 12.5px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; color: var(--jo, #f28c28); background: rgba(7,10,11,.94); border: 1px solid rgba(242,140,40,.6); box-shadow: 0 8px 20px rgba(0,0,0,.45); opacity: 0; transition: opacity .2s ease; }
+.copytip.on { opacity: 1; }
+.copytip.ok { color: var(--ok); border-color: var(--ok); }
+.copytip.bad { color: var(--bad); border-color: var(--bad); }
+.copytip .ch { display: inline-block; animation: typeOn .12s both; }
+@media print { #view pre[data-copy]::after, .copytip { display: none !important; } }
