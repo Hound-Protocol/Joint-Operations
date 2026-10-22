@@ -146,6 +146,18 @@
       "path": "docs/decisions/0012-shared-alert.md"
     },
     {
+      "id": "adr-0013",
+      "title": "0013 Chain of Command",
+      "group": "Decisions",
+      "path": "docs/decisions/0013-chain-of-command.md"
+    },
+    {
+      "id": "adr-0014",
+      "title": "0014 Quiet Until 0.1",
+      "group": "Decisions",
+      "path": "docs/decisions/0014-quiet-until-0-1.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",
@@ -276,6 +288,12 @@
       "title": "Legal and Ethics",
       "group": "Legal",
       "path": "docs/legal.md"
+    },
+    {
+      "id": "licensing",
+      "title": "Licensing",
+      "group": "Legal",
+      "path": "LICENSING.md"
     },
     {
       "id": "security",

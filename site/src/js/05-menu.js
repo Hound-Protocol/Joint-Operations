@@ -64,7 +64,7 @@
   /* Home side panels: the project on the left, Hound Protocol on the right (config.about) */
   function renderAbout() {
     var a = cfg.about || {};
-    [["#aboutProject", a.project, BRAND.jo], ["#aboutTeam", a.team, BRAND.hp]].forEach(function (s) {
+    [["#aboutProject", a.project, BRAND.joColor], ["#aboutTeam", a.team, BRAND.hpColor]].forEach(function (s) {
       var el = $(s[0]), p = s[1];
       if (!el) return;
       el.hidden = !p;   // the menu renders before config loads, so this must also un-hide
@@ -84,7 +84,7 @@
   }
   function renderMenu() {
     renderAbout();
-    if ($("#hdMark")) $("#hdMark").innerHTML = BRAND.hp;
+    if ($("#hdMark")) $("#hdMark").innerHTML = BRAND.hpColor;
     $("#menu").innerHTML = MENU.map(function (it, n) {
       return '<a href="#/' + it.id + '" data-n="' + n + '" style="--i:' + n + '" aria-description="' + esc(it.desc) + '"><i class="hl"></i><span class="t">' + menuIcon(it.id) + '<span>' + esc(it.title) + '</span></span><span class="win' + (it.desc.length > 56 ? " long" : "") + '" aria-hidden="true"><span class="d"></span></span></a>';
     }).join("");

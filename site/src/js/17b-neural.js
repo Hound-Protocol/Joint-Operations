@@ -3,7 +3,7 @@
      synapses are links between documents. Clicking a neuron opens it as an A4 window beside the web;
      windows stack, minimize to a dock (up to 5 documents) and restore. Closing everything rebuilds the web. */
   var NW_COLORS = { Project: "#c9a24a", Technical: "#6fb7c9", Decisions: "#d77a6e", Research: "#8fbf7f", Community: "#a99be0", Legal: "#b7c2c6", Handbook: "#e6dcc0" };
-  var NW_BUILD_MS = 3000, NW_MAX_DOCS = 5;
+  var NW_BUILD_MS = 1500, NW_MAX_DOCS = 5;
   var NW = null;
   // The neural web needs pointer events and canvas; older browsers get the classic list
   function docsMode() { if (!window.PointerEvent || !document.createElement("canvas").getContext) return "classic"; return store.get("jo-docs-mode", "neural") === "classic" ? "classic" : "neural"; }
@@ -19,7 +19,8 @@
       if (currentView !== "docs") return;
       var docs = (man && man.docs) || [];
       $("#vb").innerHTML =
-        '<div class="nw" id="nw">' +
+        '<div class="nw-top"><div class="nw-switchbar"><span>Don\'t like the neural interface?</span><button class="btn small" id="nwClassicTop">Switch back to classic</button></div></div>' +
+        '<div class="nw-wrap"><div class="nw" id="nw">' +
           '<div class="nw-graph" id="nwGraph"><canvas id="nwCanvas" role="img" aria-label="Neural web of the documentation. Use the list below or Classic view to browse by keyboard."></canvas>' +
             '<div class="nw-hud"><input class="field" id="nwq" type="search" placeholder="Search the web" aria-label="Search documents">' +
               '<button class="btn small" id="nwClassic">Classic view</button></div>' +
@@ -29,8 +30,18 @@
             '<ul class="sr-only" id="nwList"></ul></div>' +
           '<div class="nw-stage" id="nwStage" aria-live="polite"></div>' +
           '<div class="nw-dock" id="nwDock" aria-label="Minimized documents"></div>' +
-        "</div>";
+        "</div>" +
+        '<aside class="nw-guide" aria-label="How to use the docs"><div class="label">Using the docs</div><ul>' +
+          '<li><b>Point</b><span>Hover a neuron to see its title and what it links to.</span></li>' +
+          '<li><b>Click</b><span>Open a document. Click a group\'s hub to show only that group.</span></li>' +
+          '<li><b>Search</b><span>Type in the search box to light up matching documents. Enter opens the first.</span></li>' +
+          '<li><b>Stack</b><span>Keep up to ' + NW_MAX_DOCS + ' documents open. Click a header to bring it to the front.</span></li>' +
+          '<li><b>Minimize</b><span>Send a document to the dock at the bottom. Hover a tab to preview it.</span></li>' +
+          '<li><b>Drag</b><span>Move neurons around. Links inside documents open the next one.</span></li>' +
+          '<li><b>Classic</b><span>Prefer a plain list? Switch above, or set it in Options.</span></li>' +
+        '</ul><div class="nw-count">' + plural(docs.length, "document") + " in " + plural(docs.map(function (d) { return d.group; }).filter(function (g, i, a) { return a.indexOf(g) === i; }).length, "group") + "</div></aside></div>";
       $("#nwClassic").addEventListener("click", function () { setDocsMode("classic"); NW = null; viewDocs(id); });
+      $("#nwClassicTop").addEventListener("click", function () { $("#nwClassic").click(); });
       nwInit(docs);
       if (id) setTimeout(function () { if (NW) nwOpen(id); }, opts.motion ? NW_BUILD_MS * 0.6 : 0);
     });
@@ -222,7 +233,7 @@
       if (!n.on) return;
       var target = n === NW.hover ? 1.1 : 1;
       if (!opts.motion) { n.s = target; return; }
-      var age = (now - n.born) / 420;
+      var age = (now - n.born) / 300;
       n.s = age < 1 ? (function (t) { var c = 1.70158; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); })(age) * target : n.s + (target - n.s) * 0.1;
     });
     if (opts.motion && NW.ready && Math.random() < 0.18) {
@@ -296,7 +307,7 @@
         var rot = opts.motion ? now / (n.kind === "core" ? 5200 : 3600) : 0;
         c.beginPath(); c.arc(n.x, n.y, r + 6, rot, rot + Math.PI * 1.4); c.strokeStyle = rgba(col, 0.55); c.lineWidth = 1; c.stroke();
         if (n.kind === "core") { c.beginPath(); c.arc(n.x, n.y, r + 12, -rot, -rot + Math.PI * 0.8); c.strokeStyle = rgba("#c9a24a", 0.6); c.stroke(); }
-        c.font = (n.kind === "core" ? "500 12px " : "400 11px ") + "'Share Tech Mono', monospace";
+        c.font = (n.kind === "core" ? "500 13px " : "400 12.5px ") + "'Share Tech Mono', monospace";
         c.textAlign = "center"; c.textBaseline = "alphabetic"; c.fillStyle = rgba(n.kind === "core" ? "#ffffff" : col, 0.95);
         c.fillText(n.label.toUpperCase().split("").join(String.fromCharCode(8202)), n.x, n.y + r + (n.kind === "core" ? 28 : 20));
       }
@@ -313,7 +324,7 @@
     NW.nodes.forEach(function (n) {
       if (n.on && n.kind !== "doc") { var r = n.r * K * n.s; taken.push({ x: n.x - 70, y: n.y - r - 4, w: 140, h: r * 2 + 34 }); }
     });
-    c.font = "400 12px 'Barlow Semi Condensed', sans-serif"; c.textBaseline = "middle";
+    c.font = "400 13.5px 'Barlow Semi Condensed', sans-serif"; c.textBaseline = "middle";
     var cand = NW.nodes.filter(function (n) { return n.on && n.kind === "doc" && rel && rel[n.id] && n !== h; });
     // Labels already showing keep their place first, so nothing flickers while the web moves
     cand.sort(function (a, b) { return (b.la || 0) - (a.la || 0) || Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(b.x - h.x, b.y - h.y); });
@@ -322,8 +333,8 @@
       var txt = n.label.length > 30 ? n.label.slice(0, 29) + "…" : n.label, w = c.measureText(txt).width + 12, r = n.r * K * n.s;
       var dx = n.x - h.x, dy = n.y - h.y, d = Math.hypot(dx, dy) || 1, right = dx >= 0;
       var ax = n.x + (dx / d) * (r + 6), ay = n.y + (dy / d) * (r + 6);
-      var box = { x: right ? ax : ax - w, y: ay - 9, w: w, h: 18 };
-      if (box.x < 4 || box.x + w > NW.w - 4 || box.y < 4 || box.y + 18 > NW.h - 4) return;
+      var box = { x: right ? ax : ax - w, y: ay - 10, w: w, h: 20 };
+      if (box.x < 4 || box.x + w > NW.w - 4 || box.y < 4 || box.y + 20 > NW.h - 4) return;
       if (taken.some(function (t) { return box.x < t.x + t.w && box.x + box.w > t.x && box.y < t.y + t.h && box.y + box.h > t.y; })) return;
       taken.push(box); show[n.id] = 1; n.lbox = box; n.ltxt = txt;
     });
@@ -366,6 +377,7 @@
     var stage = $("#nwStage"), wrap = $("#nw");
     if (!stage) return;
     wrap.classList.toggle("reading", NW.open.length > 0);
+    if (wrap.parentNode) wrap.parentNode.classList.toggle("reading", NW.open.length > 0);
     var focus = NW.open[NW.open.length - 1];
     stage.innerHTML = NW.open.map(function (id) {
       var d = nwDoc(id), col = nwColor(d.group), f = id === focus;
@@ -424,7 +436,7 @@
     var tab = $('#nwDock .dtab[data-id="' + id + '"]');
     NW.min.splice(NW.min.indexOf(id), 1);
     NW.open.push(id);
-    $("#nw").classList.add("reading");
+    $("#nw").classList.add("reading"); $("#nw").parentNode.classList.add("reading");
     nwFly(tab, $("#nwStage"), function () { nwRender(id); });
     if (tab) tab.remove();
   }

@@ -7,7 +7,7 @@
       t = t || { members: [], seats: [], roles: [], departments: [] };
       var still = !opts.motion;
       $("#vb").innerHTML = '<div class="bf">' +
-        '<section class="bf-sec team-brand"><div class="tb-mark">' + BRAND.hp + '</div><div><div class="tb-name">Hound Protocol</div><p>A community development team, organized like Mother Base. We build <b>Joint Operations</b> in the open.</p></div><div class="tb-mark jo"><img src="assets/brand/joint-operations-emblem.svg" alt="Joint Operations emblem"></div></section>' +
+        '<section class="bf-sec team-brand"><div class="tb-mark">' + BRAND.hpColor + '</div><div><div class="tb-name">Hound Protocol</div><p>A community development team, organized like Mother Base. We build <b>Joint Operations</b> in the open.</p></div><div class="tb-mark jo"><img src="assets/brand/joint-operations-emblem.svg" alt="Joint Operations emblem"></div></section>' +
         '<section class="bf-sec team-members">' + t.members.map(function (m) {
           return '<article class="member"><div class="portrait"><picture>' +
             (m.still ? '<source srcset="' + esc(m.still) + '" media="(prefers-reduced-motion: reduce)">' : "") +

@@ -7,25 +7,28 @@ Two marks, one family. **Hound Protocol** is the team. **Joint Operations** is t
 ## The marks
 | Mark | Meaning | Files (`site/assets/brand/`) |
 |---|---|---|
-| **Hound Protocol**: a hexagon insignia with a hound in profile | The team: watchful, loyal, organized like a unit | `hound-protocol-mark.svg`, `-mono.svg`, `-light.svg`, `-lockup.svg`, `-avatar.png` |
-| **Joint Operations emblem** (official logo): three operatives inside a ring of sixteen marks, a gold host marker over the centre operative, the name on the ring | A joint operation: the host and clients, sixteen players | `joint-operations-emblem.svg`, `-emblem-mono.svg`, `-emblem-white.svg`, `-lockup.svg`, `-avatar.png` |
-| **Joint Operations mark** (small sizes, favicon): sixteen marks around a gold diamond, with four routes converging | Sixteen players around one host, coming together | `joint-operations-mark.svg`, `-mono.svg`, `-light.svg` |
+| **Hound Protocol**: a black hexagon insignia with a white hound in profile, a red inner ring, red eye and red collar | The team: watchful, loyal, organized like a unit. The collar marks a hound that belongs to a unit | `hound-protocol-mark.svg`, `-mono.svg`, `-light.svg`, `-lockup.svg`, `-avatar.png` |
+| **Joint Operations emblem** (official logo): three operatives inside a ring of sixteen marks, an orange host marker over the centre operative, the name on the ring | A joint operation: the host and clients, sixteen players | `joint-operations-emblem.svg`, `-emblem-mono.svg`, `-emblem-white.svg`, `-lockup.svg`, `-avatar.png` |
+| **Joint Operations mark** (small sizes, favicon): sixteen marks around an orange diamond, with four routes converging | Sixteen players around one host, coming together | `joint-operations-mark.svg`, `-mono.svg`, `-light.svg` |
 
 Also: `site/assets/img/favicon.svg` (simplified mark for small sizes) and `site/assets/img/og.png` (link previews and the README banner).
 
 ## Colors
 | Name | Hex | Use |
 |---|---|---|
-| Field white | `#e9edee` | Marks and text on dark |
-| Ops gold | `#c9a24a` | The host diamond, accents, one highlight per layout |
-| Night | `#0b0e10` | Backgrounds |
+| Field white | `#e9edee` | Marks and text on dark, both brands |
+| Ops orange | `#f28c28` | **Joint Operations**: the host marker, inner ring and accents. Joint Operations is orange and white |
+| Hound red | `#d0303a` | **Hound Protocol**: the inner ring, eye and collar. Hound Protocol is white, black and red |
+| Night | `#0b0e10` | Backgrounds, and the Hound Protocol insignia field |
 | Paper | `#f3efe6` | Light backgrounds (use the `-light` files) |
+| Site gold | `#c9a24a` | The website's interface accent only, not the logos |
 
 Type: **Barlow Semi Condensed** (light, wide letter-spacing, uppercase) for names. **Share Tech Mono** for labels. Both are licensed under the SIL Open Font License.
 
 ## Use
 - Keep clear space around a mark equal to a quarter of its width.
 - On light backgrounds use the `-light` files. On photos use the `-mono` files in one color.
+- Keep each brand in its own colors: never put Hound red on the Joint Operations marks or Ops orange on the Hound Protocol mark.
 - Never stretch, rotate, recolor beyond the palette, add effects, or redraw the hound.
 - Discord server icon and GitHub organization avatar: `hound-protocol-avatar.png`. Mod and release artwork: `joint-operations-avatar.png`.
 

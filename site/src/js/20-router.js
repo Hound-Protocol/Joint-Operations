@@ -41,7 +41,7 @@
     currentView = name; lastView = name;
     menu.hidden = true; view.hidden = false; document.body.classList.add("in-view");
     view.dataset.v = name;
-    if (!same || name !== "docs") { view.innerHTML = ""; $("#center").scrollTop = 0; }
+    if (!same || name !== "docs") { view.innerHTML = ""; var ce = $("#center"); ce.style.scrollBehavior = "auto"; ce.scrollTop = 0; ce.style.scrollBehavior = ""; }
     var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" } })[name];
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
