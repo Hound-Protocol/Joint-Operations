@@ -45,7 +45,7 @@
       var html = markdown(body, g.path).replace(/href="#\/docs\/(hp-(?:pol|sop|gde)-\d{3})"/g, 'href="#/guides/$1"');
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guides/" + g.id;
       $("#vb").innerHTML =
-        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">All documents</a><button class="btn small" id="gprint">Print or save as PDF</button>' +
+        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">All documents</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
         '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
         '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +
           '<header class="sh-head"><div class="sh-org"><img src="assets/img/emblem.svg" alt="" width="34" height="34"><span><b>Hound Protocol</b><i>MGSV: Joint Operations</i></span></div>' +
@@ -56,9 +56,25 @@
           '<div class="sh-body">' + html + "</div>" +
           '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
         "</article>";
-      $("#gprint").addEventListener("click", function () { window.print(); });
+      $("#gprint").addEventListener("click", function () { printSheet(); });
+      // The PDF exists on the deployed site (built by tools/guides_pdf.py); show the button only when it is there
+      if (typeof fetch === "function") fetch("guides/pdf/" + encodeURIComponent(g.code) + ".pdf", { method: "HEAD" }).then(function (r) { var b = $("#gpdf"); if (b && r.ok) b.hidden = false; }, function () { /* offline or local copy */ });
       document.title = g.code + " " + g.title + " · " + cfg.project;
     }, function () {
       $("#vb").innerHTML = '<div class="empty">Could not load ' + esc(g.code) + '<small><a href="#/guides">Back to the handbook</a></small></div>';
     });
+  }
+
+  // Print with a fallback: some browsers (for example Flatpak browsers without a print portal) never open the dialog
+  function printSheet() {
+    var opened = false;
+    function mark() { opened = true; }
+    window.addEventListener("beforeprint", mark);
+    try { window.focus(); window.print(); } catch (e) { /* handled below */ }
+    setTimeout(function () {
+      window.removeEventListener("beforeprint", mark);
+      if (opened) return;
+      var mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || "");
+      status("No print dialog? Press " + (mac ? "Cmd+P" : "Ctrl+P") + ($("#gpdf") && !$("#gpdf").hidden ? ", or use Download PDF" : ""), true);
+    }, 600);
   }

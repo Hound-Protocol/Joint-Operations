@@ -31,6 +31,8 @@
   if (typeof Object.assign !== "function") {
     Object.assign = function (t) { for (var i = 1; i < arguments.length; i++) { var s = arguments[i]; if (s) for (var k in s) if (Object.prototype.hasOwnProperty.call(s, k)) t[k] = s[k]; } return t; };
   }
+  if (window.Element && !Element.prototype.matches) Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+  if (window.Element && !Element.prototype.closest) Element.prototype.closest = function (s) { var el = this; while (el && el.nodeType === 1) { if (el.matches(s)) return el; el = el.parentNode; } return null; };
   if (window.Element && !Element.prototype.remove) Element.prototype.remove = function () { if (this.parentNode) this.parentNode.removeChild(this); };
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
@@ -535,6 +537,96 @@
     document.addEventListener("focusin", function (e) { var a = find(e); if (a) show(a); });
     document.addEventListener("mouseout", function (e) { var a = find(e); if (a && !(e.relatedTarget && find({ target: e.relatedTarget }))) show(null); });
   })();
+
+  /* ---------------- Click to copy ----------------
+   * Anything players are meant to copy (code in documents, guides, steps and cards) copies to the
+   * clipboard with one click. Pointing at it types "click to copy this text" beside the pointer.
+   * Works by keyboard too: copyable text is focusable, Enter or Space copies.
+   */
+  var COPY_SEL = "#view code, #view pre";
+  function copyTarget(el) {
+    while (el && el !== document) {
+      if (el.nodeType === 1 && (el.tagName === "CODE" || el.tagName === "PRE") && el.closest && el.closest("#view")) {
+        if (el.tagName === "CODE" && el.parentNode && el.parentNode.tagName === "PRE") return el.parentNode;
+        if (el.closest("a, button, .sw, .field")) return null;
+        return el;
+      }
+      el = el.parentNode;
+    }
+    return null;
+  }
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise(function (ok, fail) {
+      // Older browsers: copy through a hidden text area
+      var t = document.createElement("textarea");
+      t.value = text; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0";
+      document.body.appendChild(t); t.select();
+      try { document.execCommand("copy") ? ok() : fail(); } catch (e) { fail(e); }
+      document.body.removeChild(t);
+    });
+  }
+  var copyTip = null, copyTipFor = null;
+  function tipEl() {
+    if (!copyTip) { copyTip = document.createElement("div"); copyTip.className = "copytip"; copyTip.setAttribute("aria-hidden", "true"); document.body.appendChild(copyTip); }
+    return copyTip;
+  }
+  function typeTip(text, cls) {
+    var t = tipEl();
+    t.className = "copytip on" + (cls ? " " + cls : "");
+    t.innerHTML = String(text).split("").map(function (ch, i) {
+      return '<span class="ch" style="animation-delay:' + (opts.motion ? i * 18 : 0) + 'ms">' + (ch === " " ? "&nbsp;" : esc(ch)) + "</span>";
+    }).join("");
+  }
+  function placeTip(x, y) {
+    var t = tipEl(), w = t.offsetWidth || 180;
+    t.style.left = Math.min(window.innerWidth - w - 8, x + 14) + "px";
+    t.style.top = Math.max(8, y + 18) + "px";
+  }
+  function hideTip() { if (copyTip) copyTip.className = "copytip"; copyTipFor = null; }
+  function doCopy(el, x, y) {
+    var text = (el.innerText || el.textContent || "").replace(/\s+$/, "");
+    copyText(text).then(function () {
+      el.classList.add("copied"); setTimeout(function () { el.classList.remove("copied"); }, 900);
+      typeTip("copied to clipboard", "ok"); if (x != null) placeTip(x, y);
+      status("Copied: " + (text.length > 40 ? text.slice(0, 39) + "…" : text));
+      if (typeof blip === "function") blip("go");
+    }, function () { typeTip("press Ctrl+C to copy", "bad"); });
+  }
+  // Mark copyable text so it can be reached by keyboard and is announced as a button
+  function markCopyable(root) {
+    $$(COPY_SEL, root).forEach(function (el) {
+      var t = copyTarget(el);
+      if (!t || t.getAttribute("data-copy")) return;
+      t.setAttribute("data-copy", "");
+      t.setAttribute("tabindex", "0");
+      t.setAttribute("role", "button");
+      t.setAttribute("aria-label", "Copy: " + (t.textContent || "").trim().slice(0, 80));
+    });
+  }
+  if (window.MutationObserver) {
+    new MutationObserver(function () { var v = $("#view"); if (v && !v.hidden) markCopyable(v); }).observe(document.getElementById("view") || document.body, { childList: true, subtree: true });
+  }
+  document.addEventListener("mouseover", function (e) {
+    var t = copyTarget(e.target);
+    if (t === copyTipFor) return;
+    if (!t) { hideTip(); return; }
+    copyTipFor = t; typeTip("click to copy this text"); placeTip(e.clientX, e.clientY);
+  });
+  document.addEventListener("mousemove", function (e) { if (copyTipFor) placeTip(e.clientX, e.clientY); });
+  document.addEventListener("click", function (e) {
+    var t = copyTarget(e.target);
+    if (!t) return;
+    var sel = window.getSelection && String(window.getSelection());
+    if (sel && sel.length > 0 && t.contains(window.getSelection().anchorNode)) return; // let people select part of it
+    doCopy(t, e.clientX, e.clientY);
+  });
+  document.addEventListener("keydown", function (e) {
+    if ((e.key === "Enter" || e.key === " ") && e.target && e.target.hasAttribute && e.target.hasAttribute("data-copy")) {
+      e.preventDefault(); var r = e.target.getBoundingClientRect(); doCopy(e.target, r.left, r.bottom - 10);
+    }
+  });
+  document.addEventListener("scroll", hideTip, true);
 
   /* Briefing */
   function hl(t) { return esc(t).replace(/\{\{([^}]+)\}\}/g, '<mark class="key">$1</mark>'); }
@@ -1872,7 +1964,7 @@
       var html = markdown(body, g.path).replace(/href="#\/docs\/(hp-(?:pol|sop|gde)-\d{3})"/g, 'href="#/guides/$1"');
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guides/" + g.id;
       $("#vb").innerHTML =
-        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">All documents</a><button class="btn small" id="gprint">Print or save as PDF</button>' +
+        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">All documents</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
         '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
         '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +
           '<header class="sh-head"><div class="sh-org"><img src="assets/img/emblem.svg" alt="" width="34" height="34"><span><b>Hound Protocol</b><i>MGSV: Joint Operations</i></span></div>' +
@@ -1883,11 +1975,27 @@
           '<div class="sh-body">' + html + "</div>" +
           '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
         "</article>";
-      $("#gprint").addEventListener("click", function () { window.print(); });
+      $("#gprint").addEventListener("click", function () { printSheet(); });
+      // The PDF exists on the deployed site (built by tools/guides_pdf.py); show the button only when it is there
+      if (typeof fetch === "function") fetch("guides/pdf/" + encodeURIComponent(g.code) + ".pdf", { method: "HEAD" }).then(function (r) { var b = $("#gpdf"); if (b && r.ok) b.hidden = false; }, function () { /* offline or local copy */ });
       document.title = g.code + " " + g.title + " · " + cfg.project;
     }, function () {
       $("#vb").innerHTML = '<div class="empty">Could not load ' + esc(g.code) + '<small><a href="#/guides">Back to the handbook</a></small></div>';
     });
+  }
+
+  // Print with a fallback: some browsers (for example Flatpak browsers without a print portal) never open the dialog
+  function printSheet() {
+    var opened = false;
+    function mark() { opened = true; }
+    window.addEventListener("beforeprint", mark);
+    try { window.focus(); window.print(); } catch (e) { /* handled below */ }
+    setTimeout(function () {
+      window.removeEventListener("beforeprint", mark);
+      if (opened) return;
+      var mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || "");
+      status("No print dialog? Press " + (mac ? "Cmd+P" : "Ctrl+P") + ($("#gpdf") && !$("#gpdf").hidden ? ", or use Download PDF" : ""), true);
+    }, 600);
   }
 
   /* ---------------- Router ---------------- */
