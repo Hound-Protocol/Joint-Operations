@@ -4,9 +4,9 @@
   var RANKS = [["—", 0, "Take any contract, {{easy:Easy}} to {{hard:Hard}}"], ["A", 1, "Listed on the contributor wall, contractor role on Discord"], ["A+", 3, "Hold two contracts at once"], ["A++", 6, "Review {{easy:Easy}} contracts with Quality"], ["S", 10, "Review {{medium:Medium}} contracts with Quality"], ["S+", 20, "Review {{hard:Hard}} contracts, invitation into a department"], ["S++", 35, "Vote on priorities, seat candidate"]];
   // Contract difficulty (docs/departments.md): information only, never a gate. Name, short label, and what makes it this hard
   var DIFF = {
-    easy: ["Easy", "Good first contract", "Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools. Usually a day or two."],
-    medium: ["Medium", "Some experience", "Some research or design. Touches a few files or systems, or needs the game and a test rig. Usually a few days."],
-    hard: ["Hard", "Deep skills", "Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing. A week or more."]
+    easy: ["Easy", "Good first contract", "Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools."],
+    medium: ["Medium", "Some experience", "Some research or design. Touches a few files or systems, or needs the game and a test rig."],
+    hard: ["Hard", "Deep skills", "Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing."]
   };
   var DIFF_ORDER = ["easy", "medium", "hard"];
   // Board columns: field, description, modules, icon
@@ -55,13 +55,15 @@
     function card(c, n) {
       var st = c.blocked && c.status === "open" ? "blocked" : c.status, S = STATUS[st] || ["", st];
       var action = "";
-      if (c.live) action = '<a class="btn small' + (st === "open" ? " primary" : "") + '" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">' + (st === "open" ? "Claim on GitHub" : "View on GitHub") + "</a>";
-      else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nDifficulty: " + ((DIFF[c.difficulty] || [c.difficulty])[0]) + (c.core ? " (Core: Development Department only)" : "") + (c.effort ? "\nEffort: " + c.effort : "") + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",difficulty:" + c.difficulty + (c.core ? ",core" : ""))) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
+      if (c.live) action = (st !== "done" ? '<a class="btn small primary" href="' + esc(c.url) + '#new_comment_field" target="_blank" rel="noopener noreferrer" title="Comment /claim on the issue. Several people can claim the same contract.">' + ((c.by || []).length ? "Join claim" : "Claim") + "</a>" : "") +
+        '<a class="btn small" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a>';
+      else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nDifficulty: " + ((DIFF[c.difficulty] || [c.difficulty])[0]) + (c.core ? " (Core: Development Department only)" : "") + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",difficulty:" + c.difficulty + (c.core ? ",core" : ""))) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
       var done = st === "done";
       return '<article class="kc st-' + esc(st) + " d-" + esc(c.difficulty || "none") + '" style="--i:' + n + '">' +
-        '<div class="kc-top"><span class="kc-id">' + esc(c.id) + '</span><span class="kc-st">' + S[0] + " " + S[1] + (c.by && c.by.length && !done ? " · " + esc(c.by.join(", ")) : "") + "</span></div>" +
+        '<div class="kc-top"><span class="kc-id">' + esc(c.id) + '</span><span class="kc-st">' + S[0] + " " + S[1] + (c.by && c.by.length > 1 && !done ? " · " + c.by.length : "") + "</span></div>" +
         "<h3>" + esc(c.title) + "</h3>" +
-        '<div class="kc-tags">' + diffPill(c) + (c.effort && !done ? '<span class="pill">' + esc(c.effort) + "</span>" : "") + (c.module ? '<span class="pill mod">' + esc(MODULES[c.module] || c.module) + "</span>" : "") + "</div>" +
+        ((c.by || []).length && !done ? '<div class="kc-claims" aria-label="Claimed by">' + c.by.map(function (u) { return '<a class="tok" href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer"><i>◆</i>' + esc(u) + "</a>"; }).join("") + "</div>" : "") +
+        '<div class="kc-tags">' + diffPill(c) + (c.module ? '<span class="pill mod">' + esc(MODULES[c.module] || c.module) + "</span>" : "") + "</div>" +
         (done
           ? '<div class="kc-stamp">Completed' + (c.by && c.by.length ? " by " + esc(c.by.join(", ")) : "") + "</div>" + (c.live ? '<div class="actions">' + action + "</div>" : "")
           : (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">' + (c.blocked ? "Waiting for " : "After ") + esc(c.depends.join(", ")) + "</div>" : "") +
@@ -117,6 +119,7 @@
         '<select class="field" id="cs" aria-label="Status">' + opt("all", conState.status, "All statuses") + (live ? opt("open", conState.status, "Open") + opt("claimed", conState.status, "Claimed") + opt("review", conState.status, "In review") + opt("done", conState.status, "Done") : opt("planned", conState.status, "Planned")) + "</select>" +
         '<select class="field" id="cz" aria-label="Difficulty">' + opt("all", conState.diff, "All difficulties") + DIFF_ORDER.map(function (k) { return opt(k, conState.diff, DIFF[k][0]); }).join("") + "</select></div>" +
         (shown.length ? '<div class="kanban' + (cardsAnim ? " anim" : "") + '">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
+        (live ? '<p class="sub claimnote">To claim, comment <code>/claim</code> on the contract\'s GitHub issue. Several people can claim the same contract, and every claimant shows here with their token. <code>/unclaim</code> leaves it. The board refreshes every 2 minutes.</p>' : "") +
         '<p class="source">Source: ' + (live ? "GitHub issues labeled contract, live" : data.issues === null ? "data/contracts.json · GitHub could not be reached" : "data/contracts.json") + "</p>",
       how:
         '<div class="cols"><div class="panel"><div class="label">Taking a contract</div><ol class="steps">' +
@@ -150,3 +153,11 @@
     }
   }
   var conTab = "board", cardsAnim = true;
+
+  // Keep claims live while the Contribute page is open and visible
+  setInterval(function () {
+    if (currentView !== "contribute" || document.hidden || !data.issues || !data.issues.length) return;
+    session.clear("jo-gh:/repos/" + cfg.repo + "/issues?labels=contract");
+    data.issues = undefined;
+    loadContracts().then(function () { if (currentView === "contribute" && conTab === "board") { cardsAnim = false; drawContribute(); } });
+  }, 120000);

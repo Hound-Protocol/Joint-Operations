@@ -33,7 +33,7 @@ def gh(*args, body=None):
 
 
 def issue_body(c, numbers, docs):
-    lines = [f"Module: {MODULES.get(c['module'], c['module'])}", f"Difficulty: {DIFF[c['difficulty']]}" + (" · Core: Development Department only" if c.get("core") else ""), f"Effort: {c.get('effort', '')}", f"Skills: {c.get('skills', '')}"]
+    lines = [f"Module: {MODULES.get(c['module'], c['module'])}", f"Difficulty: {DIFF[c['difficulty']]}" + (" · Core: Development Department only" if c.get("core") else ""), f"Skills: {c.get('skills', '')}"]
     deps = [f"#{numbers[d]}" if d in numbers else d for d in c.get("depends") or []]
     if deps:
         lines.append("Depends on " + ", ".join(deps))

@@ -1,6 +1,6 @@
   /* ---------------- GitHub (live, cached per session) ---------------- */
-  function gh(path) {
-    var key = "jo-gh:" + path, hit = session.get(key), max = (cfg.cacheMinutes || 10) * 60000;
+  function gh(path, maxMinutes) {
+    var key = "jo-gh:" + path, hit = session.get(key), max = (maxMinutes || cfg.cacheMinutes || 10) * 60000;
     if (hit && Date.now() - hit.t < max) return Promise.resolve(hit.v);
     return fetchJSON("https://api.github.com" + path, { headers: { Accept: "application/vnd.github+json" } }).then(function (v) {
       session.set(key, { t: Date.now(), v: v });
@@ -35,7 +35,8 @@
 
   function loadContracts() {
     if (data.issues !== undefined) return Promise.resolve(data.issues);
-    return gh("/repos/" + cfg.repo + "/issues?labels=contract&state=all&per_page=100").then(function (list) {
+    // Claims change often, so contract issues are cached for 2 minutes only
+    return gh("/repos/" + cfg.repo + "/issues?labels=contract&state=all&per_page=100", 2).then(function (list) {
       var issues = (list || []).filter(function (i) { return !i.pull_request; });
       var byNum = {};
       issues.forEach(function (i) { byNum[i.number] = i; });

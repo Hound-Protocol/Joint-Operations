@@ -38,17 +38,15 @@ Ranks follow Mother Base staff grades. They depend on the number of **completed 
 - Ranks are never taken away for inactivity. Leaving and coming back is normal.
 
 ## Contract difficulty
-Every contract has a difficulty, shown in color everywhere, plus an effort estimate. Difficulty is **information, not a gate**: it tells you what you are about to deal with, and anyone can take any contract.
+Every contract has a difficulty, shown in color everywhere. Difficulty is **information, not a gate**: it tells you what you are about to deal with, and anyone can take any contract.
 
 | Difficulty | What makes it this hard |
 |---|---|
-| 🟢 **Easy** | Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools. Usually a day or two |
-| 🟡 **Medium** | Some research or design. Touches a few files or systems, or needs the game and a test rig. Usually a few days |
-| 🔴 **Hard** | Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing. A week or more |
+| 🟢 **Easy** | Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools. |
+| 🟡 **Medium** | Some research or design. Touches a few files or systems, or needs the game and a test rig. |
+| 🔴 **Hard** | Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing. |
 
 **Core** marks contracts on the 0.1 critical path, at any difficulty. They stay with the Development Department.
-
-**Effort** is a separate time estimate ("up to 1 day", "2–3 days", "1–2 weeks"). It helps people plan and does not affect rank.
 
 ## Where it shows
 | Place | What |

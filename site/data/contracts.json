@@ -1,12 +1,11 @@
 {
-  "note": "Planned contracts with difficulty (easy, medium, hard), effort, goals and acceptance criteria. core: true marks 0.1 critical-path work for the Development Department only (docs/departments.md). Shown when no GitHub issues carry the contract label yet. docs/contracts.md is generated from this file by tools/contracts_md.py.",
+  "note": "Planned contracts with difficulty (easy, medium, hard), goals and acceptance criteria. core: true marks 0.1 critical-path work for the Development Department only (docs/departments.md). Shown when no GitHub issues carry the contract label yet. docs/contracts.md is generated from this file by tools/contracts_md.py.",
   "contracts": [
     {
       "id": "C01",
       "title": "Pin game build and set up Windows test rig",
       "module": "testing",
       "difficulty": "easy",
-      "effort": "Up to 1 day",
       "skills": "Windows, docs",
       "depends": [],
       "goal": "Have one Windows machine that runs the exact game build we target, set up the same way every time.",
@@ -26,7 +25,6 @@
       "title": "Proton test rig and setup guide",
       "module": "testing",
       "difficulty": "medium",
-      "effort": "1–2 days",
       "skills": "Linux, Proton",
       "depends": [
         "C01"
@@ -49,7 +47,6 @@
       "title": "Survey public MGSV modding tools and docs",
       "module": "hooks",
       "difficulty": "medium",
-      "effort": "2–3 days",
       "skills": "Research",
       "depends": [],
       "goal": "Confirm on a rig the tool list from desk research, and find the community docs we can learn from.",
@@ -70,7 +67,6 @@
       "module": "launcher",
       "difficulty": "hard",
       "core": true,
-      "effort": "1 week",
       "skills": "Reverse engineering, C++",
       "depends": [
         "C03"
@@ -94,7 +90,6 @@
       "module": "launcher",
       "difficulty": "medium",
       "core": true,
-      "effort": "2–3 days",
       "skills": "Reverse engineering, Linux",
       "depends": [
         "C04"
@@ -117,7 +112,6 @@
       "module": "hooks",
       "difficulty": "hard",
       "core": true,
-      "effort": "1–2 weeks",
       "skills": "Reverse engineering",
       "depends": [
         "C04"
@@ -140,7 +134,6 @@
       "title": "Mother Base roster notes",
       "module": "hooks",
       "difficulty": "medium",
-      "effort": "3–5 days",
       "skills": "Reverse engineering",
       "depends": [
         "C04"
@@ -162,7 +155,6 @@
       "title": "State inventory and sync priorities",
       "module": "session",
       "difficulty": "medium",
-      "effort": "3–5 days",
       "skills": "Netcode, research",
       "depends": [
         "C06"
@@ -185,7 +177,6 @@
       "title": "Spike: GameNetworkingSockets, Steam Messages vs Sockets",
       "module": "net",
       "difficulty": "hard",
-      "effort": "1–2 weeks",
       "skills": "C++, networking",
       "depends": [],
       "goal": "Prove the transport outside the game: open-source GameNetworkingSockets and Steam networking side by side.",
@@ -207,7 +198,6 @@
       "title": "Simulate 16 clients and measure bandwidth",
       "module": "net",
       "difficulty": "medium",
-      "effort": "3–5 days",
       "skills": "C++, tooling",
       "depends": [
         "C09"
@@ -228,7 +218,6 @@
       "title": "Mock Steam DLL for one-PC testing",
       "module": "testing",
       "difficulty": "hard",
-      "effort": "1–2 weeks",
       "skills": "C++",
       "depends": [],
       "goal": "Test multiplayer on one PC without real Steam accounts.",
@@ -247,7 +236,6 @@
       "title": "Bad-network test profiles (clumsy, tc netem)",
       "module": "testing",
       "difficulty": "easy",
-      "effort": "Up to 1 day",
       "skills": "Tooling",
       "depends": [],
       "goal": "Repeatable bad-network conditions for testing.",
@@ -266,7 +254,6 @@
       "title": "Summarize networking playbook in our own words",
       "module": "docs",
       "difficulty": "easy",
-      "effort": "Up to 1 day",
       "skills": "Writing",
       "depends": [],
       "goal": "Summarize the networking playbook in our own words.",
@@ -284,7 +271,6 @@
       "title": "Draft Steam App ID and rights position",
       "module": "legal",
       "difficulty": "medium",
-      "effort": "2–3 days",
       "skills": "Research",
       "depends": [],
       "goal": "A written position on using MGSV's Steam App ID, our license and donations.",
@@ -306,7 +292,6 @@
       "title": "Publish Phase 1 contracts as GitHub issues",
       "module": "web",
       "difficulty": "easy",
-      "effort": "Up to 1 day",
       "skills": "GitHub",
       "depends": [],
       "goal": "Move the planned contracts onto GitHub so people can claim them.",
@@ -326,7 +311,6 @@
       "title": "Lobby app wireframes",
       "module": "lobby",
       "difficulty": "medium",
-      "effort": "2–3 days",
       "skills": "UI design",
       "depends": [],
       "goal": "Wireframes for the lobby and session screens.",
@@ -346,7 +330,6 @@
       "title": "Mod API draft v0",
       "module": "modapi",
       "difficulty": "hard",
-      "effort": "1–2 weeks",
       "skills": "API design",
       "depends": [
         "C08"
@@ -367,7 +350,6 @@
       "title": "Join and leave feasibility notes",
       "module": "hooks",
       "difficulty": "hard",
-      "effort": "1 week",
       "skills": "Reverse engineering",
       "depends": [
         "C06"
@@ -389,7 +371,6 @@
       "module": "session",
       "difficulty": "hard",
       "core": true,
-      "effort": "2 weeks, time-boxed",
       "skills": "Reverse engineering, networking",
       "depends": [
         "C04"
@@ -414,7 +395,6 @@
       "module": "net",
       "difficulty": "medium",
       "core": true,
-      "effort": "2–3 days",
       "skills": "C++, Steamworks",
       "depends": [
         "C04"
@@ -438,7 +418,6 @@
       "title": "Join links: Steam lobby links and launch arguments",
       "module": "launcher",
       "difficulty": "medium",
-      "effort": "1–2 days",
       "skills": "Testing, Linux",
       "depends": [
         "C20"

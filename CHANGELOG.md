@@ -15,11 +15,14 @@ The documentation becomes a living map, and the Contribute board gets columns.
   - Close everything and the web resets and rebuilds.
   - Search, group filters, a keyboard-accessible list, and a **Classic view** switch (remembered per browser).
 - **Contribute board in columns by field:** Programming, Reverse engineering, Testing, Design and web, Docs and legal, each with a progress bar. Cards now show their status clearly: open (green), planned (dashed), claimed or in review (amber), blocked (red stripes), done (green stamp, struck-through title, sorted last).
+- **Live claims:** comment `/claim` on a contract's GitHub issue and you are assigned at once (`/unclaim` to leave). Several people can claim one contract, up to 10. Every claimant shows on the board as a token with their name. The board refreshes itself every 2 minutes.
+- **Guides with personality:** each document type has its own paper. Guides use field-manual graph paper, policies use formal linen with a seal, and procedures use an engineering pad with a dotted grid and a margin rule.
 - **About: one shared alert** ([ADR 0012](docs/decisions/0012-shared-alert.md)). Enemies target players individually by distance and detection, but the session has one status, hidden, searched for or detected, that players join.
 - **Session Browser empty state:** a faster, flashier area scan with a green grid radar, sweep, pings, enemy blips, static bursts, frequency tuning and a glitching "No sessions detected" alert.
 
 ### Changed
 - **Contract difficulty is information, not a gate.** Anyone can take any contract. Ranks now give claim capacity and review rights instead.
+- Time estimates are removed from contracts.
 - Wording: the host runs the missions, clients share the session. "Friends" is gone.
 
 ## v0.0.4 · Security and keycards · 2026-10-22

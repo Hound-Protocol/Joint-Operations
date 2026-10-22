@@ -36,7 +36,7 @@ Status on the board:
 
 ## How to take a contract
 1. Pick an open contract on the board whose dependencies are done.
-2. Comment on the issue to claim it. A maintainer assigns you.
+2. Comment `/claim` on the issue. You are assigned automatically, and your name shows on the website's board. Several people can claim the same contract. `/unclaim` leaves it.
 3. Do the work on a branch in your fork.
 4. Open a pull request that says `Closes #<issue>`.
 5. The Quality Department reviews it against the acceptance criteria and merges. The contract closes and counts toward your rank.
@@ -57,7 +57,7 @@ Contractors are ranked like Mother Base staff, by the number of completed contra
 | S+ | 20 | Review Hard contracts, invitation into a department, own a module area |
 | S++ | 35 | Vote on priorities, seat candidate |
 
-Each contract has a **difficulty**, 🟢 **Easy**, 🟡 **Medium** or 🔴 **Hard**, so you know what you are about to take on. It is information, not a gate: anyone can take any contract. Contracts marked **Core** are on the 0.1 critical path and stay with the Development Department. Each contract also has an **effort** estimate. The full structure, with the four departments, is in [departments.md](docs/departments.md).
+Each contract has a **difficulty**, 🟢 **Easy**, 🟡 **Medium** or 🔴 **Hard**, so you know what you are about to take on. It is information, not a gate: anyone can take any contract. Contracts marked **Core** are on the 0.1 critical path and stay with the Development Department. The full structure, with the four departments, is in [departments.md](docs/departments.md).
 
 ## Submitting a mod to the repository
 Open an issue with the `mod-submission` label. Include the mod name, version, author, link, and what you tested. Reviewed mods are listed as Compatible or Known issues on the website.

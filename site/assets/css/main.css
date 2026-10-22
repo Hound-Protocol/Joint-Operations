@@ -672,6 +672,27 @@ mark.key { background: none; color: var(--amb); }
 .sh-body th, .sh-body td { border: 1px solid #cfccc3; padding: 6px 8px; vertical-align: top; color: #23282a; }
 .sh-body .tw { overflow-x: auto; }
 .sh-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 30px; padding-top: 10px; border-top: 1px solid #c9c6bd; font: 400 10px/1.4 var(--mono); letter-spacing: .06em; color: #6b6f70; }
+/* Paper personalities: guides are field-manual graph paper, policies are formal linen with a seal,
+   procedures are engineering pads with a dotted grid and a margin rule */
+.mini.t-guide, .sheet.t-guide { --ink: #8a6a1e;
+  background: linear-gradient(rgba(138,106,30,.10) 1px, transparent 1px) 0 0 / 14px 14px, linear-gradient(90deg, rgba(138,106,30,.10) 1px, transparent 1px) 0 0 / 14px 14px, linear-gradient(rgba(138,106,30,.16) 1px, transparent 1px) 0 0 / 70px 70px, #f1ebdc; }
+.mini.t-policy, .sheet.t-policy { --ink: #8e2f26;
+  background: radial-gradient(circle at 88% 10%, transparent 34px, rgba(142,47,38,.16) 35px, rgba(142,47,38,.16) 37px, transparent 38px, transparent 44px, rgba(142,47,38,.10) 45px, transparent 46px),
+    repeating-linear-gradient(45deg, rgba(60,50,30,.035) 0 1px, transparent 1px 4px), repeating-linear-gradient(-45deg, rgba(60,50,30,.035) 0 1px, transparent 1px 4px), #f3eee2; }
+.mini.t-procedure, .sheet.t-procedure { --ink: #275a6b;
+  background: linear-gradient(90deg, transparent 22px, rgba(196,70,60,.45) 22px, rgba(196,70,60,.45) 23px, transparent 23px), radial-gradient(rgba(39,90,107,.28) 1px, transparent 1.4px) 0 0 / 12px 12px, #e9eef0; }
+.sheet.t-procedure { background: linear-gradient(90deg, transparent 40px, rgba(196,70,60,.4) 40px, rgba(196,70,60,.4) 41px, transparent 41px), radial-gradient(rgba(39,90,107,.25) 1px, transparent 1.4px) 0 0 / 14px 14px, #e9eef0; }
+.sheet.t-policy { background: radial-gradient(circle at 92% 7%, transparent 52px, rgba(142,47,38,.14) 53px, rgba(142,47,38,.14) 56px, transparent 57px, transparent 66px, rgba(142,47,38,.09) 67px, transparent 69px),
+    repeating-linear-gradient(45deg, rgba(60,50,30,.03) 0 1px, transparent 1px 4px), repeating-linear-gradient(-45deg, rgba(60,50,30,.03) 0 1px, transparent 1px 4px), #f3eee2; }
+.mini .m-top b, .sheet .sh-code b { color: var(--ink, #1c2022); }
+.mini .m-top { border-bottom-color: var(--ink, #1c2022); }
+.sheet .sh-head { border-bottom-color: var(--ink, #1c2022); }
+.sheet .sh-code i { color: var(--ink, #5b6062); font-weight: 500; }
+.sheet .sh-body h2 { border-bottom-color: color-mix(in srgb, var(--ink, #c9c6bd) 35%, transparent); }
+.mini.t-policy .m-top b::after { content: " ◉"; color: var(--ink); }
+.mini.t-procedure .m-top b::after { content: " ☰"; color: var(--ink); }
+.mini.t-guide .m-top b::after { content: " ✦"; color: var(--ink); }
+@media print { .sheet.t-guide, .sheet.t-policy, .sheet.t-procedure { background: #fff !important; } }
 @media (max-width: 720px) {
   .sheets { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .mini { padding: 12px; }
@@ -870,3 +891,8 @@ mark.key { background: none; color: var(--amb); }
 .kc .spec summary:hover, .kc .spec[open] summary { color: var(--fg); }
 .kc .spec ul { margin: 8px 0 0; padding-left: 18px; font: 300 13px/1.5 var(--ui); color: var(--fg-2); }
 .kc .spec .meta { margin-top: 8px; }
+.kc-claims { display: flex; flex-wrap: wrap; gap: 5px; }
+.tok { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px 4px 6px; font: 400 11px/1 var(--mono); letter-spacing: .06em; color: #0c0f10; background: var(--amb); text-decoration: none; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); }
+.tok i { font-style: normal; font-size: 9px; }
+.tok:hover { background: var(--hot); }
+.claimnote code { font: 400 12px/1 var(--mono); background: rgba(255,255,255,.08); padding: 1px 5px; color: var(--fg); }

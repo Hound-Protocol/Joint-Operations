@@ -30,15 +30,15 @@ def render():
            "Generated from `site/data/contracts.json` by `tools/contracts_md.py`. Edit the JSON, then run the tool.", "",
            "Every contract has a goal, a deliverable and acceptance criteria. The Quality Department checks each criterion before merging. "
            "Difficulty (Easy, Medium, Hard) tells you how demanding a contract is. It is information only: anyone can take any contract. Core contracts are on the 0.1 critical path and reserved for the Development Department. "
-           "Effort is a time estimate. Each completed contract counts toward the contractor's rank (A to S++). "
+           "Each completed contract counts toward the contractor's rank (A to S++). "
            "See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).", "",
            "Version 0.1 is built by the project lead. These contracts open to contractors after 0.1.", "",
-           "| ID | Contract | Module | Difficulty | Effort | Depends on | Status |", "|---|---|---|---|---|---|---|"]
+           "| ID | Contract | Module | Difficulty | Depends on | Status |", "|---|---|---|---|---|---|"]
     cs = data["contracts"]
     for c in cs:
-        out.append(f"| {c['id']} | {c['title']} | {c['module']} | {DIFF[c['difficulty']][0]}{' · Core' if c.get('core') else ''} | {c.get('effort', '')} | {', '.join(c.get('depends') or []) or '—'} | {c.get('status', 'planned')} |")
+        out.append(f"| {c['id']} | {c['title']} | {c['module']} | {DIFF[c['difficulty']][0]}{' · Core' if c.get('core') else ''} | {', '.join(c.get('depends') or []) or '—'} | {c.get('status', 'planned')} |")
     for c in cs:
-        out += ["", f"## {c['id']}", f"**{c['title']}**  ", f"Module: {c['module']} · Difficulty: {DIFF[c['difficulty']][0]}{' (Core: Development Department)' if c.get('core') else ''} · Effort: {c.get('effort', '')} · Skills: {c.get('skills', '')}"
+        out += ["", f"## {c['id']}", f"**{c['title']}**  ", f"Module: {c['module']} · Difficulty: {DIFF[c['difficulty']][0]}{' (Core: Development Department)' if c.get('core') else ''} · Skills: {c.get('skills', '')}"
                 + (f" · Depends on: {', '.join(c['depends'])}" if c.get("depends") else ""), ""]
         if c.get("goal"):
             out += [f"**Goal.** {c['goal']}", ""]
