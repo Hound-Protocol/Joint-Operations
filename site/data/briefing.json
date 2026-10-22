@@ -2,19 +2,19 @@
   "note": "Text for the Briefing page. Wrap a key term in {{double braces}} to color-code it. Use sparingly.",
   "headline": "Bring your squad into {{The Phantom Pain}}. Up to {{16 players}}.",
   "summary": [
-    "Joint Operations adds online multiplayer to the single-player game. One player hosts. Up to 15 friends join. Everyone shares the same open world, the same missions and the same Mother Base.",
+    "Joint Operations adds online multiplayer to the single-player game. The host runs the missions. Up to 15 clients share the session: the same open world, the same missions and the same Mother Base.",
     "It's free, it's open source, and it never touches Konami's servers."
   ],
   "how": [
     [
       "host",
-      "The host runs the mission",
-      "The host's game runs the missions, the enemies and the world. There is one version of events, so everyone sees the same thing."
+      "The host runs the missions",
+      "The host's game runs the missions, the enemies and the world. There is one version of events, so every client sees the same thing."
     ],
     [
       "client",
-      "Clients act",
-      "Every client controls their own character and camera. Your moves go to the host, and the world comes back to you."
+      "Clients share the session",
+      "Every client controls their own character and camera. Their moves go to the host, and the world comes back to them."
     ],
     [
       "link",
@@ -31,5 +31,27 @@
       "Cutscenes",
       "Mother Base command"
     ]
+  },
+  "alert": {
+    "title": "One shared alert",
+    "text": "Enemies react to each player on their own, by distance and by who they actually see. The alert is shared: there is one status for the whole session, and players join it.",
+    "states": [
+      [
+        "hidden",
+        "Hidden",
+        "Not noticed. Most players stay here while someone else is in trouble."
+      ],
+      [
+        "search",
+        "Searched for",
+        "Enemies are looking. A player who draws suspicion joins the search."
+      ],
+      [
+        "detected",
+        "Detected",
+        "Spotted. A detected player joins the one detection pipeline, and every player spotted after them joins the same one."
+      ]
+    ],
+    "foot": "So if one player is detected, only that player is hunted. If a second player is spotted, they join the same alert, not a new one."
   }
 }

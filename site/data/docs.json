@@ -140,6 +140,12 @@
       "path": "docs/decisions/0011-keycard-access.md"
     },
     {
+      "id": "adr-0012",
+      "title": "0012 Shared Alert",
+      "group": "Decisions",
+      "path": "docs/decisions/0012-shared-alert.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",
@@ -222,6 +228,12 @@
       "title": "Departments and Ranks",
       "group": "Community",
       "path": "docs/departments.md"
+    },
+    {
+      "id": "brand",
+      "title": "Brand",
+      "group": "Community",
+      "path": "docs/brand.md"
     },
     {
       "id": "governance",

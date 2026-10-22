@@ -27,7 +27,10 @@
     });
   }
   function viewDocs(id) {
+    if (docsMode() === "neural") return viewNeural(id);
+    NW = null;
     var v = $("#view");
+    if ($("#nw")) v.innerHTML = "";
     if (!$("#docNav")) v.innerHTML = shell("Library", "Docs", loading("Loading the library"));
     loadLocal("docs").then(function (man) {
       if (currentView !== "docs") return;
@@ -56,7 +59,7 @@
     var groups = [], by = {};
     docs.forEach(function (d) { if (!by[d.group]) { by[d.group] = []; groups.push(d.group); } by[d.group].push(d); });
     var q = docFilter.toLowerCase(), cur = docs.filter(function (d) { return d.id === active; })[0];
-    var html = '<button class="btn doc-toggle" id="dtog" aria-expanded="false" aria-controls="docNav">' + esc(cur ? cur.title : "Documents") + '<span aria-hidden="true">▾</span></button>' + '<input class="field" id="dq" type="search" placeholder="Search documents" value="' + esc(docFilter) + '" aria-label="Search documents">';
+    var html = '<button class="btn small nw-switch" id="toNeural">Neural view</button><button class="btn doc-toggle" id="dtog" aria-expanded="false" aria-controls="docNav">' + esc(cur ? cur.title : "Documents") + '<span aria-hidden="true">▾</span></button>' + '<input class="field" id="dq" type="search" placeholder="Search documents" value="' + esc(docFilter) + '" aria-label="Search documents">';
     groups.forEach(function (g) {
       var items = by[g].filter(function (d) { return !q || q.length >= 3 || d.title.toLowerCase().indexOf(q) > -1; });
       if (!items.length) return;
@@ -65,6 +68,7 @@
       }).join("");
     });
     var nav = $("#docNav"); nav.innerHTML = html;
+    $("#toNeural").addEventListener("click", function () { setDocsMode("neural"); $("#view").innerHTML = ""; viewNeural(); });
     $("#dtog").addEventListener("click", function () { var open = nav.classList.toggle("open"); this.setAttribute("aria-expanded", String(open)); });
     $("#dq").addEventListener("input", function (e) {
       docFilter = e.target.value; var p = e.target.selectionStart; drawDocNav(docs, active);

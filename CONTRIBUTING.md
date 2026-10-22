@@ -21,7 +21,7 @@ Contracts are GitHub issues with the `contract` label. The website's Contribute 
 |---|---|
 | `contract` | The issue is a contract on the board |
 | `module:<name>` | Module it belongs to: `launcher`, `hooks`, `session`, `net`, `modapi`, `lobby`, `web`, `docs`, `testing`, `legal` |
-| `difficulty:easy`, `difficulty:medium`, `difficulty:hard` | Who can claim it: easy (anyone), medium (rank A+), hard (rank S) |
+| `difficulty:easy`, `difficulty:medium`, `difficulty:hard` | How demanding the work is. Information only: anyone can take any difficulty |
 | `core` | On the 0.1 critical path. Development Department only |
 | `status:review` | Work is submitted and waiting for review |
 | `blocked` | Waiting on another contract |
@@ -36,7 +36,7 @@ Status on the board:
 
 ## How to take a contract
 1. Pick an open contract on the board whose dependencies are done.
-2. Comment on the issue to claim it. A maintainer assigns you.
+2. Comment `/claim` on the issue. You are assigned automatically, and your name shows on the website's board. Several people can claim the same contract. `/unclaim` leaves it.
 3. Do the work on a branch in your fork.
 4. Open a pull request that says `Closes #<issue>`.
 5. The Quality Department reviews it against the acceptance criteria and merges. The contract closes and counts toward your rank.
@@ -49,15 +49,15 @@ Contractors are ranked like Mother Base staff, by the number of completed contra
 
 | Rank | Completed contracts | Unlocks |
 |---|---|---|
-| — | 0 | Claim Easy contracts |
+| — | 0 | Take any contract |
 | A | 1 | Contributor wall, contractor role on Discord |
-| A+ | 3 | Claim Medium contracts |
+| A+ | 3 | Hold two contracts at once |
 | A++ | 6 | Review Easy contracts with Quality |
-| S | 10 | Claim Hard contracts, review Medium contracts |
+| S | 10 | Review Medium contracts with Quality |
 | S+ | 20 | Review Hard contracts, invitation into a department, own a module area |
 | S++ | 35 | Vote on priorities, seat candidate |
 
-Each contract has a **difficulty** that sets who can claim it: 🟢 **Easy** (anyone), 🟡 **Medium** (rank A+) and 🔴 **Hard** (rank S). Contracts marked **Core** are on the 0.1 critical path and stay with the Development Department. Each contract also has an **effort** estimate. The full structure, with the four departments, is in [departments.md](docs/departments.md).
+Each contract has a **difficulty**, 🟢 **Easy**, 🟡 **Medium** or 🔴 **Hard**, so you know what you are about to take on. It is information, not a gate: anyone can take any contract. Contracts marked **Core** are on the 0.1 critical path and stay with the Development Department. The full structure, with the four departments, is in [departments.md](docs/departments.md).
 
 ## Submitting a mod to the repository
 Open an issue with the `mod-submission` label. Include the mod name, version, author, link, and what you tested. Reviewed mods are listed as Compatible or Known issues on the website.

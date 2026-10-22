@@ -2,7 +2,7 @@
   "project": "Joint Operations",
   "team": "Hound Protocol",
   "tagline": "Metal Gear Solid V, now with up to 16 players",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
@@ -28,7 +28,7 @@
     "project": {
       "label": "The project",
       "title": "Joint Operations",
-      "text": "A multiplayer mod for Metal Gear Solid V: The Phantom Pain. One player hosts the session. Up to 15 clients join and deploy into the same open world.",
+      "text": "A multiplayer mod for Metal Gear Solid V: The Phantom Pain. The host runs the missions. Up to 15 clients share the session in the same open world.",
       "facts": [
         [
           "Players",

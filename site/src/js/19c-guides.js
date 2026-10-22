@@ -19,7 +19,7 @@
       var l = byType[type] || [];
       if (!l.length) return "";
       return '<div class="label">' + label + '</div><p class="sub">' + note + '</p><div class="sheets">' + l.map(function (g, n) {
-        return '<a class="mini" style="--i:' + n + '" href="#/guides/' + esc(g.id) + '"><span class="m-top"><b>' + esc(g.code) + "</b><i>v" + esc(g.version) + "</i></span>" +
+        return '<a class="mini t-' + esc(g.type.toLowerCase()) + '" style="--i:' + n + '" href="#/guides/' + esc(g.id) + '"><span class="m-top"><b>' + esc(g.code) + "</b><i>v" + esc(g.version) + "</i></span>" +
           '<span class="m-title">' + esc(g.title) + '</span><span class="m-sum">' + esc(g.summary) + "</span>" +
           '<span class="m-foot">' + esc(g.type) + " · " + esc(g.owner) + " Dept</span></a>";
       }).join("") + "</div>";
@@ -47,7 +47,7 @@
       $("#vb").innerHTML =
         '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">All documents</a><button class="btn small" id="gprint">Print or save as PDF</button>' +
         '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
-        '<article class="sheet" aria-label="' + esc(g.code + " " + g.title) + '">' +
+        '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +
           '<header class="sh-head"><div class="sh-org"><img src="assets/img/emblem.svg" alt="" width="34" height="34"><span><b>Hound Protocol</b><i>MGSV: Joint Operations</i></span></div>' +
           '<div class="sh-code"><b>' + esc(g.code) + "</b><i>" + esc(g.type) + "</i></div></header>" +
           '<h1 class="sh-title">' + esc(g.title) + "</h1>" +

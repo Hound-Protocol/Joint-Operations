@@ -1,0 +1,55 @@
+name: Contract claims
+
+# Contractors claim a contract by commenting /claim on its issue, and leave with /unclaim.
+# Several people can claim the same contract (GitHub allows up to 10 assignees).
+# The website's Contribute page shows every claimant live. See docs/guides/HP-SOP-001-contract-lifecycle.md.
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+
+concurrency:
+  group: claims-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  claim:
+    if: >-
+      !github.event.issue.pull_request &&
+      contains(github.event.issue.labels.*.name, 'contract') &&
+      (startsWith(github.event.comment.body, '/claim') || startsWith(github.event.comment.body, '/unclaim'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign or unassign the commenter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ISSUE: ${{ github.event.issue.number }}
+          USER: ${{ github.event.comment.user.login }}
+          COMMENT: ${{ github.event.comment.id }}
+          BODY: ${{ github.event.comment.body }}
+          STATE: ${{ github.event.issue.state }}
+        run: |
+          set -euo pipefail
+          react() { gh api -X POST "repos/$REPO/issues/comments/$COMMENT/reactions" -f content="$1" >/dev/null; }
+          if [ "$STATE" != "open" ]; then react "confused"; exit 0; fi
+          count=$(gh api "repos/$REPO/issues/$ISSUE" --jq '.assignees | length')
+          if [[ "$BODY" == /unclaim* ]]; then
+            gh api -X DELETE "repos/$REPO/issues/$ISSUE/assignees" -f "assignees[]=$USER" >/dev/null
+            react "+1"
+          else
+            if [ "$count" -ge 10 ]; then
+              gh api -X POST "repos/$REPO/issues/$ISSUE/comments" -f body="@$USER this contract already has 10 claimants, the most GitHub allows. Ask on Discord to pair with someone." >/dev/null
+              react "confused"; exit 0
+            fi
+            gh api -X POST "repos/$REPO/issues/$ISSUE/assignees" -f "assignees[]=$USER" >/dev/null
+            react "rocket"
+          fi
+          now=$(gh api "repos/$REPO/issues/$ISSUE" --jq '.assignees | length')
+          if [ "$now" -gt 0 ]; then
+            gh api -X POST "repos/$REPO/issues/$ISSUE/labels" -f "labels[]=status:claimed" >/dev/null
+          else
+            gh api -X DELETE "repos/$REPO/issues/$ISSUE/labels/status:claimed" >/dev/null 2>&1 || true
+          fi
