@@ -28,8 +28,11 @@ Some duties cannot be fluid. They are held as **seats**: a role with a written c
 ## The technical lead role
 Claude, an AI assistant, acts as technical lead for architecture, code and documentation. Claude cannot own accounts, sign releases or carry accountability, so a human **technical lead delegate** approves its work, and seat holders control all access.
 
-## Contributors and ranks
-Contributors earn ranks through completed contracts, as described in [CONTRIBUTING.md](../CONTRIBUTING.md). Ranks unlock larger contracts and review rights. Seat holders are chosen from experienced contributors.
+## Departments
+The project has four departments: Administration, Development, Quality and Contractor ([departments.md](departments.md), [ADR 0009](decisions/0009-departments-and-ranks.md)). Seats belong to Administration, except the technical lead delegate (Development) and release signers (Quality).
+
+## Contractor ranks
+Contractors are ranked A, A+, A++, S, S+ and S++ by the number of completed contracts. Ranks unlock larger contracts and review rights. Seat holders and department members are chosen from experienced contractors (S+ and up) or appointed by the project lead.
 
 ## Money
-No donations before 0.1. After that, funds go through a fiscal host, every expense is published, and money never buys influence over decisions.
+No donations before 0.1 ([ADR 0010](decisions/0010-funding.md)). After that, funds go through a fiscal host, every expense is published, and money never buys influence over decisions.

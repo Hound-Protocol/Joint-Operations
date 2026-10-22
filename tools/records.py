@@ -11,7 +11,7 @@ never pasted into chat, and never stored as a GitHub secret.
 Commands:
   keygen [--key-id ID]          create a signing key, publish its public half
   add --login LOGIN --contract CXX --pr N [--commit SHA] [--name NAME]
-      [--title T --size S|M|L] [--date YYYY-MM-DD] [--key-id ID]
+      [--title T --difficulty basic|standard|advanced|expert|core] [--date YYYY-MM-DD] [--key-id ID]
                                 sign and append a record
   verify                        check every record (used by CI)
   show RECORD_ID                print one record
@@ -26,9 +26,9 @@ RECORDS = ROOT / "site/data/records.json"
 KEYS = ROOT / "site/data/records-key.json"
 CONTRACTS = ROOT / "site/data/contracts.json"
 KEY_DIR = pathlib.Path(os.environ.get("HP_RECORDS_KEY_DIR", pathlib.Path.home() / ".config/hound-protocol"))
-SIZE_PTS = {"S": 1, "M": 3, "L": 5}
-FIELDS = {"id", "kind", "login", "name", "contract", "title", "size", "points", "pr", "commit", "date", "key", "sig"}
-REQUIRED = {"id", "kind", "login", "contract", "title", "size", "points", "pr", "date", "key", "sig"}
+DIFFICULTIES = ("basic", "standard", "advanced", "expert", "core")
+FIELDS = {"id", "kind", "login", "name", "contract", "title", "difficulty", "pr", "commit", "date", "key", "sig"}
+REQUIRED = {"id", "kind", "login", "contract", "title", "difficulty", "pr", "date", "key", "sig"}
 RE_LOGIN = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
 
 
@@ -105,16 +105,16 @@ def cmd_add(a):
     if not RE_LOGIN.match(a.login):
         sys.exit("--login must be a GitHub user name.")
     spec = next((c for c in load(CONTRACTS, {"contracts": []})["contracts"] if c["id"] == a.contract), {})
-    title, size = a.title or spec.get("title"), (a.size or spec.get("size") or "").upper()
-    if not title or size not in SIZE_PTS:
-        sys.exit("Unknown contract: give --title and --size.")
+    title, diff = a.title or spec.get("title"), (a.difficulty or spec.get("difficulty") or "").lower()
+    if not title or diff not in DIFFICULTIES:
+        sys.exit("Unknown contract: give --title and --difficulty (" + ", ".join(DIFFICULTIES) + ").")
     if any(r["contract"] == a.contract and r["login"].lower() == a.login.lower() for r in recs["records"]):
         sys.exit(f"{a.login} already has a record for {a.contract}.")
     if a.commit and not re.fullmatch(r"[0-9a-f]{40}", a.commit):
         sys.exit("--commit must be a full 40-character commit SHA.")
     n = max([int(r["id"].split("-")[1]) for r in recs["records"]] + [0]) + 1
     rec = {"id": f"HP-{n:04d}", "kind": "contract", "login": a.login, "contract": a.contract, "title": title,
-           "size": size, "points": SIZE_PTS[size], "pr": a.pr, "date": a.date or datetime.date.today().isoformat(), "key": kid}
+           "difficulty": diff, "pr": a.pr, "date": a.date or datetime.date.today().isoformat(), "key": kid}
     if a.name:
         rec["name"] = a.name
     if a.commit:
@@ -126,7 +126,7 @@ def cmd_add(a):
     rec["sig"] = base64.b64encode(priv.sign(canonical(rec))).decode()
     recs["records"].append(rec)
     save(RECORDS, recs)
-    print(f"Added {rec['id']}: {a.login} · {a.contract} {title} · {size} ({rec['points']} pts)")
+    print(f"Added {rec['id']}: {a.login} · {a.contract} {title} · {diff}")
 
 
 def cmd_verify(a):
@@ -148,8 +148,8 @@ def cmd_verify(a):
         if rid in seen:
             errors.append(f"{rid}: duplicate id")
         seen.add(rid)
-        if SIZE_PTS.get(r["size"]) != r["points"]:
-            errors.append(f"{rid}: points do not match size")
+        if r["difficulty"] not in DIFFICULTIES:
+            errors.append(f"{rid}: unknown difficulty {r['difficulty']}")
         k = keys.get(r["key"])
         if not k:
             errors.append(f"{rid}: unknown key {r['key']}")
@@ -178,7 +178,7 @@ def main():
     k = sub.add_parser("keygen"); k.add_argument("--key-id"); k.add_argument("--owner", default="TrueMan (project lead)")
     d = sub.add_parser("add")
     d.add_argument("--login", required=True); d.add_argument("--contract", required=True); d.add_argument("--pr", type=int, required=True)
-    d.add_argument("--commit"); d.add_argument("--name"); d.add_argument("--title"); d.add_argument("--size"); d.add_argument("--date"); d.add_argument("--key-id")
+    d.add_argument("--commit"); d.add_argument("--name"); d.add_argument("--title"); d.add_argument("--difficulty"); d.add_argument("--date"); d.add_argument("--key-id")
     sub.add_parser("verify")
     s = sub.add_parser("show"); s.add_argument("id")
     a = p.parse_args()

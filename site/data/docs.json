@@ -20,6 +20,12 @@
       "path": "ROADMAP.md"
     },
     {
+      "id": "changelog",
+      "title": "Changelog",
+      "group": "Project",
+      "path": "CHANGELOG.md"
+    },
+    {
       "id": "risks",
       "title": "Risk Register",
       "group": "Project",
@@ -116,6 +122,18 @@
       "path": "docs/decisions/0008-browser-launch.md"
     },
     {
+      "id": "adr-0009",
+      "title": "0009 Departments and Ranks",
+      "group": "Decisions",
+      "path": "docs/decisions/0009-departments-and-ranks.md"
+    },
+    {
+      "id": "adr-0010",
+      "title": "0010 Funding",
+      "group": "Decisions",
+      "path": "docs/decisions/0010-funding.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",
@@ -194,6 +212,12 @@
       "path": "docs/team.md"
     },
     {
+      "id": "departments",
+      "title": "Departments and Ranks",
+      "group": "Community",
+      "path": "docs/departments.md"
+    },
+    {
       "id": "governance",
       "title": "Governance",
       "group": "Community",
@@ -246,6 +270,126 @@
       "title": "Privacy",
       "group": "Legal",
       "path": "docs/privacy.md"
+    },
+    {
+      "id": "hp-gde-001",
+      "title": "HP-GDE-001 Player Guide: Installing and Playing",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-001-player-guide.md"
+    },
+    {
+      "id": "hp-gde-002",
+      "title": "HP-GDE-002 Linux and Proton Guide",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-002-linux-proton.md"
+    },
+    {
+      "id": "hp-gde-003",
+      "title": "HP-GDE-003 Contributor Quick Start",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-003-contributor-quick-start.md"
+    },
+    {
+      "id": "hp-gde-004",
+      "title": "HP-GDE-004 Quality Guide: Testing and Bug Reports",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-004-quality-testing.md"
+    },
+    {
+      "id": "hp-gde-005",
+      "title": "HP-GDE-005 Documentation Style Guide",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-005-documentation-style.md"
+    },
+    {
+      "id": "hp-gde-006",
+      "title": "HP-GDE-006 Administration Handbook",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-006-admin-handbook.md"
+    },
+    {
+      "id": "hp-pol-001",
+      "title": "HP-POL-001 Contributor Policy",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-001-contributor-policy.md"
+    },
+    {
+      "id": "hp-pol-002",
+      "title": "HP-POL-002 AI Use Policy: Code and Mod Content",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-002-ai-use-policy.md"
+    },
+    {
+      "id": "hp-pol-003",
+      "title": "HP-POL-003 Clean-Room and Intellectual Property Policy",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-003-clean-room-and-ip.md"
+    },
+    {
+      "id": "hp-pol-004",
+      "title": "HP-POL-004 Security Policy for Team Members",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-004-security-policy.md"
+    },
+    {
+      "id": "hp-pol-005",
+      "title": "HP-POL-005 Community and Moderation Policy",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-005-community-moderation.md"
+    },
+    {
+      "id": "hp-pol-006",
+      "title": "HP-POL-006 Quality Policy",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-006-quality-policy.md"
+    },
+    {
+      "id": "hp-sop-001",
+      "title": "HP-SOP-001 Contract Lifecycle",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-001-contract-lifecycle.md"
+    },
+    {
+      "id": "hp-sop-002",
+      "title": "HP-SOP-002 Pull Request and Review",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-002-pull-request-review.md"
+    },
+    {
+      "id": "hp-sop-003",
+      "title": "HP-SOP-003 Release Procedure and Versioning",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-003-release.md"
+    },
+    {
+      "id": "hp-sop-004",
+      "title": "HP-SOP-004 Contributor Records and Rank Updates",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-004-records-and-ranks.md"
+    },
+    {
+      "id": "hp-sop-005",
+      "title": "HP-SOP-005 Bug Triage",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-005-bug-triage.md"
+    },
+    {
+      "id": "hp-sop-006",
+      "title": "HP-SOP-006 Security Incident and Leaked Secret Response",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-006-security-incident.md"
+    },
+    {
+      "id": "hp-sop-007",
+      "title": "HP-SOP-007 Onboarding and Offboarding",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-007-onboarding-offboarding.md"
+    },
+    {
+      "id": "hp-sop-008",
+      "title": "HP-SOP-008 Discord Administration",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-008-discord-administration.md"
     }
   ]
 }

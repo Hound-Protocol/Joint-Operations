@@ -3,18 +3,15 @@
 Hound Protocol is a non-commercial community development team building MGSV: Joint Operations.
 It is not a company or a studio.
 
-Status: DRAFT
+Status: DRAFT · Structure: [departments.md](departments.md)
 
-| Role | Responsibility |
-|---|---|
-| Project lead: **TrueMan** (founder) | Decisions, priorities, final approval, license and donations |
-| Technical lead (Claude, AI assistant) | Architecture, coding, docs, reviews. Work is approved by a human technical delegate |
-| Technical delegate | Human approval of merges, architecture and releases |
-| RE / hooks | Game launch and state research, hook layer |
-| Networking | Session, sync, transport |
-| Proton tester | Linux and Proton testing |
-| Docs and community | Wiki, Discord, onboarding |
-| Web and app | Lobby, browser, web application (Phase 4) |
+## Departments
+| Department | Members | Open |
+|---|---|---|
+| **Administration** | **TrueMan**, founder and project lead | Discord admins, moderators, second GitHub owner |
+| **Development** | **TrueMan** (0.1 development) · Claude, technical lead (AI assistant) | Technical lead delegate: a person who approves Claude's architecture and merges |
+| **Quality** | — | Windows testers, Proton testers, reviewers, release signers |
+| **Contractor** | — | Opens after 0.1. Anyone can join by completing a contract |
 
 Several roles may be held by one person early on. Names are added here when people join.
-Seats, terms and handoffs are described in governance.md.
+Seats, terms and handoffs are described in [governance.md](governance.md).

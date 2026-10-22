@@ -13,7 +13,12 @@ The server can be built automatically from `tools/discord/blueprint.json` (roles
    - Linux: `DISCORD_BOT_TOKEN=<token> python3 tools/discord/setup.py <server id>`
    This is a dry run that shows what will change. Add `--apply` to make the changes.
 5. Afterwards: kick the bot from the server, and **Reset Token** again in the portal so the old token is useless.
-6. In Server Settings, enable **Community**, set **#rules** as the rules channel, and set up **Onboarding** so new members can pick Tester, Proton Tester or Developer roles.
+6. In Server Settings, enable **Community**, set **#rules** as the rules channel, and set up **Onboarding** so new members can pick Windows Tester or Proton Tester.
+
+### Updating an existing server
+The script also brings an existing server in line with the blueprint. It renames roles and categories (for example **Core Dev → Development Dept**, **Tester → Windows Tester**, **TESTING → QUALITY**, **STAFF → ADMINISTRATION**), creates what is missing, moves channels to their category, orders the categories and resets channel permissions to the blueprint. Roles and channels not in the blueprint are listed and left alone.
+- Add `--update-messages` to also edit the starter messages the bot posted earlier (for example the welcome text). Only works if it is the same bot application that posted them.
+- Always run the dry run first and read the list before adding `--apply`.
 
 ## Setup order (manual)
 1. Create server from scratch. Name as above. Upload icon only after it is checked for Konami artwork (none allowed).
@@ -24,19 +29,23 @@ The server can be built automatically from `tools/discord/blueprint.json` (roles
 6. Invite the first contributors, then open public invite.
 
 ## Roles (top to bottom)
-| Role | Who | Permissions |
+The server mirrors the project's four departments ([departments.md](departments.md)).
+
+| Role | Who | Access |
 |---|---|---|
-| Lead | Project lead | Administrator |
-| Technical Lead | Claude-led technical direction, human delegate | Manage channels, manage messages |
-| Moderator | Trusted community members | Manage messages, timeout, kick |
-| Core Dev | Committed contributors | Access to all DEVELOPMENT channels |
-| RE / Hooks | Reverse engineering and hooks | DEVELOPMENT access, pinned in #reverse-engineering |
-| Networking | Session and transport | DEVELOPMENT access |
-| Web / App | Lobby, browser, web app | DEVELOPMENT access |
-| Docs | Wiki, guides, onboarding | DEVELOPMENT access |
-| Proton Tester | Linux and Proton testers | TESTING access, #proton-linux |
-| Tester | Windows testers | TESTING access |
-| Member | Everyone else | COMMUNITY, MODDING read and post |
+| Lead | Project lead | Everything (Administrator for setup only) |
+| Technical Lead | Technical direction (Claude, through the human delegate) | All department channels, manage messages |
+| Moderator | Trusted community members | Manage messages, timeout, kick; ADMINISTRATION |
+| **Administration Dept** | Seat holders, admins | ADMINISTRATION |
+| **Development Dept** | Core developers | DEVELOPMENT, QUALITY, CONTRACTORS |
+| **Quality Dept** | Testers, reviewers, release QA | QUALITY, CONTRACTORS |
+| **Contractor Dept** | Anyone who has completed a contract | DEVELOPMENT, QUALITY, CONTRACTORS |
+| Rank S++ · S+ · S · A++ · A+ · A | Contractor rank by completed contracts | Cosmetic: shows rank in the member list |
+| RE / Hooks · Networking · Web / App · Docs | Development units | DEVELOPMENT |
+| Windows Tester · Proton Tester · Reviewer | Quality units | QUALITY |
+| Member | Everyone else | COMMUNITY, MODDING, VOICE Lobby |
+
+Department roles are shown separately in the member list, so the server reads like Mother Base. A contractor gets **Contractor Dept** plus their **Rank** role. Ranks are updated by hand from the Verify page until a bot does it.
 
 ## Categories and channels
 **INFO** (read only for Member)
@@ -45,17 +54,23 @@ The server can be built automatically from `tools/discord/blueprint.json` (roles
 **COMMUNITY**
 - #general, #showcase, #suggestions, #off-topic
 
-**DEVELOPMENT** (contributors only)
-- #dev-log, #architecture, #reverse-engineering, #networking, #hooks, #web-and-app, #legal-and-funding
+**ADMINISTRATION** (Administration Dept, Lead, Moderator)
+- #admin-board, #legal-and-funding, #mod-log
 
-**TESTING** (Testers and above)
-- #test-sessions, #windows, #proton-linux, #bug-reports
+**DEVELOPMENT** (Development Dept, Contractor Dept, development units)
+- #dev-log, #architecture, #reverse-engineering, #networking, #hooks, #web-and-app
+
+**QUALITY** (Quality Dept, Development Dept, Contractor Dept, quality units)
+- #test-sessions, #windows, #proton-linux, #bug-reports, #review-queue, #release-qa
+
+**CONTRACTORS** (Contractor Dept, Development Dept, Quality Dept)
+- #contract-board, #contractor-lounge, #handoffs
 
 **MODDING**
 - #mod-api, #mod-showcase
 
 **VOICE**
-- Lobby, Dev Standup (contributors), Test Session
+- Lobby, Dev Standup (Development and contractors), Test Session (Quality, Development and contractors)
 
 ## Rules (post in #rules)
 1. MGSV: Joint Operations is an unofficial fan project by Hound Protocol. It is not affiliated with or endorsed by Konami.
@@ -80,8 +95,8 @@ Welcome to MGSV: Joint Operations, by Hound Protocol. We are building a multipla
 - Logs (no game files):
 
 ## Onboarding
-- Role picker in #welcome: Tester, Proton Tester, Developer, Docs, Web / App.
-- Contributor roles (Core Dev and specialist roles) are granted by the Lead.
+- Role picker (Onboarding): Windows Tester, Proton Tester. These give QUALITY access.
+- Department roles are granted by the Lead. Contractor Dept and Rank roles follow completed contracts.
 - New contributors read docs/legal.md before getting DEVELOPMENT access.
 
 ## Moderation and safety
@@ -91,4 +106,5 @@ Welcome to MGSV: Joint Operations, by Hound Protocol. We are building a multipla
 
 ## Open decisions
 - Bot for role picker and tickets (optional, later).
-- Whether to open a donation channel (see docs/legal.md section 6).
+- Donation channel: not before 0.1 (ADR 0010).
+- A bot that assigns Rank roles from the Verify page (later).

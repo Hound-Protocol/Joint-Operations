@@ -2,35 +2,37 @@
 
 Generated from `site/data/contracts.json` by `tools/contracts_md.py`. Edit the JSON, then run the tool.
 
-Every contract has a goal, a deliverable and acceptance criteria. A reviewer checks each criterion before merging. Size sets the points: S = 1, M = 3, L = 5. See [Contributing](../CONTRIBUTING.md).
+Every contract has a goal, a deliverable and acceptance criteria. The Quality Department checks each criterion before merging. Difficulty sets who can claim a contract: Basic (anyone), Standard (rank A+), Advanced (rank S), Expert (rank S+), Core (Development Department). Effort is a time estimate. Each completed contract counts toward the contractor's rank (A to S++). See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).
 
-| ID | Contract | Module | Size | Depends on | Status |
-|---|---|---|---|---|---|
-| C01 | Pin game build and set up Windows test rig | testing | S | — | planned |
-| C02 | Proton test rig and setup guide | testing | M | C01 | planned |
-| C03 | Survey public MGSV modding tools and docs | hooks | M | — | planned |
-| C04 | Document mod loading path (Windows) | launcher | L | C03 | planned |
-| C05 | Document mod loading path (Proton) | launcher | L | C04 | planned |
-| C06 | Player and companion representation notes | hooks | L | C04 | planned |
-| C07 | Mother Base roster notes | hooks | M | C04 | planned |
-| C08 | State inventory and sync priorities | session | M | C06 | planned |
-| C09 | Spike: GameNetworkingSockets, Steam Messages vs Sockets | net | L | — | planned |
-| C10 | Simulate 16 clients and measure bandwidth | net | M | C09 | planned |
-| C11 | Mock Steam DLL for one-PC testing | testing | L | — | planned |
-| C12 | Bad-network test profiles (clumsy, tc netem) | testing | S | — | planned |
-| C13 | Summarize networking playbook in our own words | docs | S | — | done |
-| C14 | Draft Steam App ID and rights position | legal | M | — | planned |
-| C15 | Publish Phase 1 contracts as GitHub issues | web | S | — | planned |
-| C16 | Lobby app wireframes | lobby | M | — | planned |
-| C17 | Mod API draft v0 | modapi | L | C08 | planned |
-| C18 | Join and leave feasibility notes | hooks | L | C06 | planned |
-| C19 | Engine session spike: can 3+ players join? | session | L | C04 | planned |
-| C20 | Steam interfaces from inside the game (rig test) | net | M | C04 | planned |
-| C21 | Join links: Steam lobby links and launch arguments | launcher | S | C20 | planned |
+Version 0.1 is built by the project lead. These contracts open to contractors after 0.1.
+
+| ID | Contract | Module | Difficulty | Effort | Depends on | Status |
+|---|---|---|---|---|---|---|
+| C01 | Pin game build and set up Windows test rig | testing | Basic | Up to 1 day | — | planned |
+| C02 | Proton test rig and setup guide | testing | Standard | 1–2 days | C01 | planned |
+| C03 | Survey public MGSV modding tools and docs | hooks | Standard | 2–3 days | — | planned |
+| C04 | Document mod loading path (Windows) | launcher | Core | 1 week | C03 | planned |
+| C05 | Document mod loading path (Proton) | launcher | Core | 2–3 days | C04 | planned |
+| C06 | Player and companion representation notes | hooks | Core | 1–2 weeks | C04 | planned |
+| C07 | Mother Base roster notes | hooks | Advanced | 3–5 days | C04 | planned |
+| C08 | State inventory and sync priorities | session | Advanced | 3–5 days | C06 | planned |
+| C09 | Spike: GameNetworkingSockets, Steam Messages vs Sockets | net | Expert | 1–2 weeks | — | planned |
+| C10 | Simulate 16 clients and measure bandwidth | net | Advanced | 3–5 days | C09 | planned |
+| C11 | Mock Steam DLL for one-PC testing | testing | Expert | 1–2 weeks | — | planned |
+| C12 | Bad-network test profiles (clumsy, tc netem) | testing | Basic | Up to 1 day | — | planned |
+| C13 | Summarize networking playbook in our own words | docs | Basic | Up to 1 day | — | done |
+| C14 | Draft Steam App ID and rights position | legal | Standard | 2–3 days | — | planned |
+| C15 | Publish Phase 1 contracts as GitHub issues | web | Basic | Up to 1 day | — | planned |
+| C16 | Lobby app wireframes | lobby | Standard | 2–3 days | — | planned |
+| C17 | Mod API draft v0 | modapi | Expert | 1–2 weeks | C08 | planned |
+| C18 | Join and leave feasibility notes | hooks | Advanced | 1 week | C06 | planned |
+| C19 | Engine session spike: can 3+ players join? | session | Core | 2 weeks, time-boxed | C04 | planned |
+| C20 | Steam interfaces from inside the game (rig test) | net | Core | 2–3 days | C04 | planned |
+| C21 | Join links: Steam lobby links and launch arguments | launcher | Standard | 1–2 days | C20 | planned |
 
 ## C01
 **Pin game build and set up Windows test rig**  
-Module: testing · Size: S (1 pts) · Skills: Windows, docs
+Module: testing · Difficulty: Basic (anyone) · Effort: Up to 1 day · Skills: Windows, docs
 
 **Goal.** Have one Windows machine that runs the exact game build we target, set up the same way every time.
 
@@ -46,7 +48,7 @@ Background: [R1](phase1-research-plan.md)
 
 ## C02
 **Proton test rig and setup guide**  
-Module: testing · Size: M (3 pts) · Skills: Linux, Proton · Depends on: C01
+Module: testing · Difficulty: Standard (rank A+) · Effort: 1–2 days · Skills: Linux, Proton · Depends on: C01
 
 **Goal.** Have a Linux machine with Proton that runs the same build, with a setup guide.
 
@@ -62,7 +64,7 @@ Background: [R1](phase1-research-plan.md), [r-proton](../research/proton.md)
 
 ## C03
 **Survey public MGSV modding tools and docs**  
-Module: hooks · Size: M (3 pts) · Skills: Research
+Module: hooks · Difficulty: Standard (rank A+) · Effort: 2–3 days · Skills: Research
 
 **Goal.** Confirm on a rig the tool list from desk research, and find the community docs we can learn from.
 
@@ -77,7 +79,7 @@ Background: [r-formats](../research/file-formats-and-tools.md), [r-modding](../r
 
 ## C04
 **Document mod loading path (Windows)**  
-Module: launcher · Size: L (5 pts) · Skills: Reverse engineering, C++ · Depends on: C03
+Module: launcher · Difficulty: Core (Development Department) · Effort: 1 week · Skills: Reverse engineering, C++ · Depends on: C03
 
 **Goal.** Know exactly how our native code gets into the game on Windows, alone and alongside IHHook.
 
@@ -93,7 +95,7 @@ Background: [R2](phase1-research-plan.md), [adr-0004](decisions/0004-loader.md)
 
 ## C05
 **Document mod loading path (Proton)**  
-Module: launcher · Size: L (5 pts) · Skills: Reverse engineering, Linux · Depends on: C04
+Module: launcher · Difficulty: Core (Development Department) · Effort: 2–3 days · Skills: Reverse engineering, Linux · Depends on: C04
 
 **Goal.** The same loading path, confirmed under Proton.
 
@@ -108,7 +110,7 @@ Background: [R2](phase1-research-plan.md), [r-proton](../research/proton.md)
 
 ## C06
 **Player and companion representation notes**  
-Module: hooks · Size: L (5 pts) · Skills: Reverse engineering · Depends on: C04
+Module: hooks · Difficulty: Core (Development Department) · Effort: 1–2 weeks · Skills: Reverse engineering · Depends on: C04
 
 **Goal.** Understand how the player character and companions are created and controlled, and whether more controllable characters can exist.
 
@@ -124,7 +126,7 @@ Background: [R3](phase1-research-plan.md), [adr-0007](decisions/0007-host-author
 
 ## C07
 **Mother Base roster notes**  
-Module: hooks · Size: M (3 pts) · Skills: Reverse engineering · Depends on: C04
+Module: hooks · Difficulty: Advanced (rank S) · Effort: 3–5 days · Skills: Reverse engineering · Depends on: C04
 
 **Goal.** Understand how Mother Base soldiers are stored and selected, so players can join as roster soldiers.
 
@@ -139,7 +141,7 @@ Background: [R5](phase1-research-plan.md), [adr-0007](decisions/0007-host-author
 
 ## C08
 **State inventory and sync priorities**  
-Module: session · Size: M (3 pts) · Skills: Netcode, research · Depends on: C06
+Module: session · Difficulty: Advanced (rank S) · Effort: 3–5 days · Skills: Netcode, research · Depends on: C06
 
 **Goal.** List every piece of state that must sync, ranked by cost and value.
 
@@ -155,7 +157,7 @@ Background: [R4](phase1-research-plan.md), [r-netcode](../research/networking-pl
 
 ## C09
 **Spike: GameNetworkingSockets, Steam Messages vs Sockets**  
-Module: net · Size: L (5 pts) · Skills: C++, networking
+Module: net · Difficulty: Expert (rank S+) · Effort: 1–2 weeks · Skills: C++, networking
 
 **Goal.** Prove the transport outside the game: open-source GameNetworkingSockets and Steam networking side by side.
 
@@ -171,7 +173,7 @@ Background: [R7](phase1-research-plan.md), [adr-0003](decisions/0003-transport.m
 
 ## C10
 **Simulate 16 clients and measure bandwidth**  
-Module: net · Size: M (3 pts) · Skills: C++, tooling · Depends on: C09
+Module: net · Difficulty: Advanced (rank S) · Effort: 3–5 days · Skills: C++, tooling · Depends on: C09
 
 **Goal.** Measure what 16 clients cost.
 
@@ -186,7 +188,7 @@ Background: [R9](phase1-research-plan.md)
 
 ## C11
 **Mock Steam DLL for one-PC testing**  
-Module: testing · Size: L (5 pts) · Skills: C++
+Module: testing · Difficulty: Expert (rank S+) · Effort: 1–2 weeks · Skills: C++
 
 **Goal.** Test multiplayer on one PC without real Steam accounts.
 
@@ -201,7 +203,7 @@ Background: [R8](phase1-research-plan.md)
 
 ## C12
 **Bad-network test profiles (clumsy, tc netem)**  
-Module: testing · Size: S (1 pts) · Skills: Tooling
+Module: testing · Difficulty: Basic (anyone) · Effort: Up to 1 day · Skills: Tooling
 
 **Goal.** Repeatable bad-network conditions for testing.
 
@@ -216,7 +218,7 @@ Background: [R8](phase1-research-plan.md)
 
 ## C13
 **Summarize networking playbook in our own words**  
-Module: docs · Size: S (1 pts) · Skills: Writing
+Module: docs · Difficulty: Basic (anyone) · Effort: Up to 1 day · Skills: Writing
 
 **Goal.** Summarize the networking playbook in our own words.
 
@@ -229,7 +231,7 @@ Background: [r-netcode](../research/networking-playbook-summary.md)
 
 ## C14
 **Draft Steam App ID and rights position**  
-Module: legal · Size: M (3 pts) · Skills: Research
+Module: legal · Difficulty: Standard (rank A+) · Effort: 2–3 days · Skills: Research
 
 **Goal.** A written position on using MGSV's Steam App ID, our license and donations.
 
@@ -245,7 +247,7 @@ Background: [R10](phase1-research-plan.md), [adr-0005](decisions/0005-license.md
 
 ## C15
 **Publish Phase 1 contracts as GitHub issues**  
-Module: web · Size: S (1 pts) · Skills: GitHub
+Module: web · Difficulty: Basic (anyone) · Effort: Up to 1 day · Skills: GitHub
 
 **Goal.** Move the planned contracts onto GitHub so people can claim them.
 
@@ -261,7 +263,7 @@ Background: [contributing](../CONTRIBUTING.md)
 
 ## C16
 **Lobby app wireframes**  
-Module: lobby · Size: M (3 pts) · Skills: UI design
+Module: lobby · Difficulty: Standard (rank A+) · Effort: 2–3 days · Skills: UI design
 
 **Goal.** Wireframes for the lobby and session screens.
 
@@ -273,11 +275,11 @@ Module: lobby · Size: M (3 pts) · Skills: UI design
 - Fits ADR 0008 stage 1 (invite links)
 - Works with keyboard and gamepad
 
-Background: adr-0008
+Background: [adr-0008](decisions/0008-browser-launch.md)
 
 ## C17
 **Mod API draft v0**  
-Module: modapi · Size: L (5 pts) · Skills: API design · Depends on: C08
+Module: modapi · Difficulty: Expert (rank S+) · Effort: 1–2 weeks · Skills: API design · Depends on: C08
 
 **Goal.** First draft of the API other mods use to work with Joint Operations.
 
@@ -292,7 +294,7 @@ Background: [r-modding](../research/modding-ecosystem.md)
 
 ## C18
 **Join and leave feasibility notes**  
-Module: hooks · Size: L (5 pts) · Skills: Reverse engineering · Depends on: C06
+Module: hooks · Difficulty: Advanced (rank S) · Effort: 1 week · Skills: Reverse engineering · Depends on: C06
 
 **Goal.** Can players join and leave mid-session in a way that fits the game world?
 
@@ -307,7 +309,7 @@ Background: [R6](phase1-research-plan.md)
 
 ## C19
 **Engine session spike: can 3+ players join?**  
-Module: session · Size: L (5 pts) · Skills: Reverse engineering, networking · Depends on: C04
+Module: session · Difficulty: Core (Development Department) · Effort: 2 weeks, time-boxed · Skills: Reverse engineering, networking · Depends on: C04
 
 **Goal.** Find out whether the engine's own multiplayer layer can run a free-roam session with three or more players. This decides ADR 0002.
 
@@ -323,7 +325,7 @@ Background: [R12](phase1-research-plan.md), [adr-0002](decisions/0002-integratio
 
 ## C20
 **Steam interfaces from inside the game (rig test)**  
-Module: net · Size: M (3 pts) · Skills: C++, Steamworks · Depends on: C04
+Module: net · Difficulty: Core (Development Department) · Effort: 2–3 days · Skills: C++, Steamworks · Depends on: C04
 
 **Goal.** Run the R13 rig test: confirm that current Steam networking interfaces are reachable from inside the game on Windows and Proton.
 
@@ -339,7 +341,7 @@ Background: [R13](phase1-research-plan.md), [r-steam-interfaces](../research/ste
 
 ## C21
 **Join links: Steam lobby links and launch arguments**  
-Module: launcher · Size: S (1 pts) · Skills: Testing, Linux · Depends on: C20
+Module: launcher · Difficulty: Standard (rank A+) · Effort: 1–2 days · Skills: Testing, Linux · Depends on: C20
 
 **Goal.** Run the R14 rig tests for joining from a website.
 
@@ -350,4 +352,4 @@ Module: launcher · Size: S (1 pts) · Skills: Testing, Linux · Depends on: C20
 - steam:// and a dummy jointops:// link tested from native and Flatpak browsers on Linux
 - Results feed ADR 0008
 
-Background: [R14](phase1-research-plan.md), r-browser-launch, adr-0008
+Background: [R14](phase1-research-plan.md), [r-browser-launch](../research/browser-launch.md), [adr-0008](decisions/0008-browser-launch.md)

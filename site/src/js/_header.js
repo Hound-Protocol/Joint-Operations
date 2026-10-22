@@ -10,6 +10,7 @@
  *   data/devlog.json     manual dev log entries
  *   data/records.json    signed contributor records (tools/records.py), checked on the Verify page
  *   data/records-key.json public keys for those records
+ *   data/guides.json     handbook index (tools/guides_index.py), shown on the Guides page
  *   GitHub API           releases, contract issues and commits, read live
  *
  * Hooks (for the future session service or tools)

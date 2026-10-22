@@ -2,6 +2,8 @@
 
 Status: DRAFT. Nothing here is posted yet. The project lead decides when and where to post.
 
+**Two waves.** Before 0.1, the project lead builds the core ([ADR 0009](decisions/0009-departments-and-ranks.md)), so we recruit for the **Quality** and **Administration** departments (testers, reviewers, moderators) and build a following. After 0.1, contracts open and we recruit **contractors** for development.
+
 This kit has ready-to-post texts, one pitch per role, answers to the usual questions, and the rules for whoever posts. Every post points to the Discord and the contract board.
 
 - Discord: https://discord.gg/QTpJ89kMCM
@@ -10,7 +12,8 @@ This kit has ready-to-post texts, one pitch per role, answers to the usual quest
 - Contract specs: [contracts.md](contracts.md)
 
 ## Before posting (checklist)
-- [ ] The contract board has live GitHub issues (contract C15), so newcomers can claim something on day one
+- [ ] Wave 1 (now): Quality and Administration roles described on the Team page
+- [ ] Wave 2 (after 0.1): the contract board has live GitHub issues (contract C15), so newcomers can claim something on day one
 - [ ] Discord onboarding is on, and #welcome explains roles
 - [ ] License decision recorded (ADR 0005). Contributors will ask
 - [ ] Someone can answer replies for the first 48 hours
@@ -29,7 +32,7 @@ Hound Protocol is a community development team building **MGSV: Joint Operations
 
 **Where we are:** early. Phase 0 (structure and documentation) is almost done, and Phase 1 research is starting. Nothing is playable yet, and we won't give a release date.
 
-**How it works:** we run as a contract network. Every task is a contract with a clear goal and acceptance criteria. Take one, deliver it, leave whenever you like. Hand-written and AI-assisted work count the same: what matters is that it meets the criteria and passes review. Completed contracts earn rank, and a signed contributor record is planned.
+**How it works:** Hound Protocol runs like Mother Base, with four departments: Administration, Development, Quality and Contractor. We run as a contract network. Every task is a contract with a clear goal and acceptance criteria. Take one, deliver it, leave whenever you like. Hand-written and AI-assisted work count the same: what matters is that it meets the criteria and passes review. Completed contracts earn a contractor rank from A to S++ and a signed contributor record.
 
 **Who we need**
 - Reverse engineering and game hooks (C++, x64, debuggers)
@@ -37,7 +40,7 @@ Hound Protocol is a community development team building **MGSV: Joint Operations
 - Linux/Proton and Windows testers with a legal copy of the game
 - Docs writers, web developers, community moderators
 
-**Start here:** read the contract board, pick one with no open dependencies, and say hi in Discord.
+**Start here:** join the Discord. Testers can start now. Contracts open to contractors after version 0.1.
 Discord: https://discord.gg/QTpJ89kMCM · Site: https://hound-protocol.github.io/Joint-Operations/
 
 ## Short post (Discord servers, Bluesky, X, Mastodon)

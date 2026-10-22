@@ -9,7 +9,12 @@ Closes #
 - [ ] In-game on Windows (game build: )
 - [ ] In-game on Linux with Proton (Proton version: )
 
+## AI assistance ([HP-POL-002](https://github.com/Hound-Protocol/Joint-Operations/blob/main/docs/guides/HP-POL-002-ai-use-policy.md))
+- [ ] AI-assisted. Tool and what it was used for:
+- [ ] I have run, reviewed and understood all of it
+
 ## Checklist
 - [ ] Commits are signed off (`git commit -s`)
-- [ ] No game files, binaries or third-party mod code
+- [ ] No game files, binaries or third-party mod code ([HP-POL-003](https://github.com/Hound-Protocol/Joint-Operations/blob/main/docs/guides/HP-POL-003-clean-room-and-ip.md))
+- [ ] Acceptance criteria of the contract are met
 - [ ] Docs updated if behavior or decisions changed

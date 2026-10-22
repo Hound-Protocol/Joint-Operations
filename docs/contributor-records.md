@@ -2,7 +2,7 @@
 
 Status: DRAFT, waiting for the project lead's approval and signing key.
 
-Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, size, points and a link to the merged pull request. Records are public on the website's [Verify page](https://hound-protocol.github.io/Joint-Operations/#/verify), and anyone can check them.
+Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, difficulty and a link to the merged pull request. Contractor ranks (A to S++, see [departments.md](departments.md)) are counted from these records. Records are public on the website's [Verify page](https://hound-protocol.github.io/Joint-Operations/#/verify), and anyone can check them.
 
 Hand-written and AI-assisted work earn the same record. What counts is that the contract's acceptance criteria are met and the work passed review.
 
@@ -15,8 +15,7 @@ Hand-written and AI-assisted work earn the same record. What counts is that the 
   "name": "Display name (optional)",
   "contract": "C13",
   "title": "Summarize networking playbook in our own words",
-  "size": "S",
-  "points": 1,
+  "difficulty": "basic",
   "pr": 12,
   "commit": "full 40-character SHA (optional)",
   "date": "2026-10-22",
@@ -48,9 +47,9 @@ For each completed contract, after its pull request is merged:
 ```
 python3 tools/records.py add --login <github-user> --contract C07 --pr <number> --commit <merge sha>
 ```
-Title and size come from the contract specs. Then open a pull request with the updated `site/data/records.json`.
+Title and difficulty come from the contract specs. Then open a pull request with the updated `site/data/records.json`.
 
 ## Rules
-- One record per person per contract. Shared contracts get one record each, at the contract's full size, unless the contributors agree on a split.
+- One record per person per contract. Shared contracts get one record for each contributor.
 - Records are never deleted. A record issued by mistake is replaced by a new record and noted in the pull request.
 - Records carry no money value. If donations open later, any payout rules will be published separately, and records are how contributions will be counted.

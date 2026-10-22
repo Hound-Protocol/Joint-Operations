@@ -14,6 +14,8 @@ Status values: **Proposed** (waiting for the project lead), **Accepted**, **Supe
 | [0006](0006-no-konami-services.md) | Never use Konami online services; matchmaking by Steam or our own server | Accepted |
 | [0007](0007-host-authority.md) | Host (Venom Snake) is authoritative; players join as Mother Base soldiers | Accepted |
 | [0008](0008-browser-launch.md) | Server browser on the website and one-click join, Battlelog-style: session registry API, `jointops://` launcher, straight to equipment, then deploy | Proposed |
+| [0009](0009-departments-and-ranks.md) | Four departments (Administration, Development, Quality, Contractor), contractor ranks A to S++, 0.1 built by the project lead | Accepted |
+| [0010](0010-funding.md) | Donations open at version 0.1, through a fiscal host | Accepted |
 
 ## Template
 ```

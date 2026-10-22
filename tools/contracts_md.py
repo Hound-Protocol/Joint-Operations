@@ -10,7 +10,7 @@ import json, pathlib, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "site/data/contracts.json"
 OUT = ROOT / "docs/contracts.md"
-SIZE_PTS = {"S": 1, "M": 3, "L": 5}
+DIFF = {"basic": ("Basic", "anyone"), "standard": ("Standard", "rank A+"), "advanced": ("Advanced", "rank S"), "expert": ("Expert", "rank S+"), "core": ("Core", "Development Department")}
 
 
 def ref_link(ref, docs):
@@ -28,14 +28,17 @@ def render():
     docs = {d["id"]: d["path"] for d in json.loads((ROOT / "site/data/docs.json").read_text(encoding="utf-8"))["docs"]}
     out = ["# Contract specs", "",
            "Generated from `site/data/contracts.json` by `tools/contracts_md.py`. Edit the JSON, then run the tool.", "",
-           "Every contract has a goal, a deliverable and acceptance criteria. A reviewer checks each criterion before merging. "
-           "Size sets the points: S = 1, M = 3, L = 5. See [Contributing](../CONTRIBUTING.md).", "",
-           "| ID | Contract | Module | Size | Depends on | Status |", "|---|---|---|---|---|---|"]
+           "Every contract has a goal, a deliverable and acceptance criteria. The Quality Department checks each criterion before merging. "
+           "Difficulty sets who can claim a contract: Basic (anyone), Standard (rank A+), Advanced (rank S), Expert (rank S+), Core (Development Department). "
+           "Effort is a time estimate. Each completed contract counts toward the contractor's rank (A to S++). "
+           "See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).", "",
+           "Version 0.1 is built by the project lead. These contracts open to contractors after 0.1.", "",
+           "| ID | Contract | Module | Difficulty | Effort | Depends on | Status |", "|---|---|---|---|---|---|---|"]
     cs = data["contracts"]
     for c in cs:
-        out.append(f"| {c['id']} | {c['title']} | {c['module']} | {c['size']} | {', '.join(c.get('depends') or []) or '—'} | {c.get('status', 'planned')} |")
+        out.append(f"| {c['id']} | {c['title']} | {c['module']} | {DIFF[c['difficulty']][0]} | {c.get('effort', '')} | {', '.join(c.get('depends') or []) or '—'} | {c.get('status', 'planned')} |")
     for c in cs:
-        out += ["", f"## {c['id']}", f"**{c['title']}**  ", f"Module: {c['module']} · Size: {c['size']} ({SIZE_PTS.get(c['size'], 0)} pts) · Skills: {c.get('skills', '')}"
+        out += ["", f"## {c['id']}", f"**{c['title']}**  ", f"Module: {c['module']} · Difficulty: {DIFF[c['difficulty']][0]} ({DIFF[c['difficulty']][1]}) · Effort: {c.get('effort', '')} · Skills: {c.get('skills', '')}"
                 + (f" · Depends on: {', '.join(c['depends'])}" if c.get("depends") else ""), ""]
         if c.get("goal"):
             out += [f"**Goal.** {c['goal']}", ""]

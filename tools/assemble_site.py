@@ -27,7 +27,7 @@ shutil.copytree(root / "site", out, ignore=shutil.ignore_patterns("src", "conten
 run("tools/write_build_info.py", str(out / "data" / "build.json"))
 content = out / "content"
 content.mkdir()
-for name in ["README.md", "ROADMAP.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md"]:
+for name in ["README.md", "ROADMAP.md", "CHANGELOG.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md"]:
     shutil.copy(root / name, content / name)
 for folder in ["docs", "research"]:
     shutil.copytree(root / folder, content / folder)

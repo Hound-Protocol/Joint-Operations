@@ -60,45 +60,114 @@
       ]
     },
     {
-      "name": "Core Dev",
+      "name": "Administration Dept",
+      "color": "#e9edee",
+      "hoist": true,
+      "permissions": []
+    },
+    {
+      "name": "Development Dept",
+      "was": "Core Dev",
       "color": "#9fb3c8",
       "hoist": true,
       "permissions": []
     },
     {
+      "name": "Quality Dept",
+      "color": "#7fbf8a",
+      "hoist": true,
+      "permissions": []
+    },
+    {
+      "name": "Contractor Dept",
+      "color": "#c9a24a",
+      "hoist": true,
+      "permissions": []
+    },
+    {
+      "name": "Rank S++",
+      "color": "#e8c46a",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank S+",
+      "color": "#d9b45a",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank S",
+      "color": "#c9a24a",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank A++",
+      "color": "#b7c2c6",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank A+",
+      "color": "#9aa6aa",
+      "hoist": false,
+      "permissions": []
+    },
+    {
+      "name": "Rank A",
+      "color": "#808b8f",
+      "hoist": false,
+      "permissions": []
+    },
+    {
       "name": "RE / Hooks",
       "color": "#8b9599",
-      "permissions": []
+      "permissions": [],
+      "hoist": false
     },
     {
       "name": "Networking",
       "color": "#8b9599",
-      "permissions": []
+      "permissions": [],
+      "hoist": false
     },
     {
       "name": "Web / App",
       "color": "#8b9599",
-      "permissions": []
+      "permissions": [],
+      "hoist": false
     },
     {
       "name": "Docs",
       "color": "#8b9599",
+      "permissions": [],
+      "hoist": false
+    },
+    {
+      "name": "Windows Tester",
+      "was": "Tester",
+      "color": "#6f8f9f",
+      "hoist": false,
       "permissions": []
     },
     {
       "name": "Proton Tester",
       "color": "#6f8f9f",
-      "permissions": []
+      "permissions": [],
+      "hoist": false
     },
     {
-      "name": "Tester",
+      "name": "Reviewer",
       "color": "#6f8f9f",
+      "hoist": false,
       "permissions": []
     },
     {
       "name": "Member",
       "color": "#5d6668",
-      "permissions": []
+      "permissions": [],
+      "hoist": false
     }
   ],
   "categories": [
@@ -151,10 +220,35 @@
       ]
     },
     {
+      "name": "ADMINISTRATION",
+      "access": "roles",
+      "roles": [
+        "Administration Dept",
+        "Lead",
+        "Moderator"
+      ],
+      "channels": [
+        {
+          "name": "admin-board",
+          "topic": "Administration: decisions, seats, accounts, recruiting."
+        },
+        {
+          "name": "legal-and-funding",
+          "topic": "License, Steam App ID, donations from 0.1 (ADR 0010)."
+        },
+        {
+          "name": "mod-log",
+          "topic": "Moderation actions. Staff only."
+        }
+      ],
+      "was": "STAFF"
+    },
+    {
       "name": "DEVELOPMENT",
       "access": "roles",
       "roles": [
-        "Core Dev",
+        "Development Dept",
+        "Contractor Dept",
         "RE / Hooks",
         "Networking",
         "Web / App",
@@ -187,24 +281,19 @@
         {
           "name": "web-and-app",
           "topic": "Website, launcher and lobby app."
-        },
-        {
-          "name": "legal-and-funding",
-          "topic": "License, rights and funding questions."
         }
       ]
     },
     {
-      "name": "TESTING",
+      "name": "QUALITY",
       "access": "roles",
       "roles": [
-        "Tester",
+        "Quality Dept",
+        "Development Dept",
+        "Contractor Dept",
+        "Windows Tester",
         "Proton Tester",
-        "Core Dev",
-        "RE / Hooks",
-        "Networking",
-        "Web / App",
-        "Docs",
+        "Reviewer",
         "Technical Lead",
         "Lead",
         "Moderator"
@@ -225,6 +314,41 @@
         {
           "name": "bug-reports",
           "topic": "Use the template pinned in this channel."
+        },
+        {
+          "name": "review-queue",
+          "topic": "Pull requests waiting for Quality review against their acceptance criteria."
+        },
+        {
+          "name": "release-qa",
+          "topic": "Release checklists and sign-off. Nothing ships without Quality."
+        }
+      ],
+      "was": "TESTING"
+    },
+    {
+      "name": "CONTRACTORS",
+      "access": "roles",
+      "roles": [
+        "Contractor Dept",
+        "Development Dept",
+        "Quality Dept",
+        "Technical Lead",
+        "Lead",
+        "Moderator"
+      ],
+      "channels": [
+        {
+          "name": "contract-board",
+          "topic": "New and updated contracts. Claim them on GitHub."
+        },
+        {
+          "name": "contractor-lounge",
+          "topic": "Contractors: questions, pairing, help."
+        },
+        {
+          "name": "handoffs",
+          "topic": "Leaving a contract? Post your handoff note here and on the issue."
         }
       ]
     },
@@ -252,7 +376,8 @@
         {
           "name": "Dev Standup",
           "roles": [
-            "Core Dev",
+            "Development Dept",
+            "Contractor Dept",
             "RE / Hooks",
             "Networking",
             "Web / App",
@@ -265,41 +390,27 @@
         {
           "name": "Test Session",
           "roles": [
-            "Tester",
+            "Quality Dept",
+            "Development Dept",
+            "Contractor Dept",
+            "Windows Tester",
             "Proton Tester",
-            "Core Dev",
-            "RE / Hooks",
-            "Networking",
-            "Web / App",
-            "Docs",
+            "Reviewer",
             "Technical Lead",
             "Lead",
             "Moderator"
           ]
         }
       ]
-    },
-    {
-      "name": "STAFF",
-      "access": "roles",
-      "roles": [
-        "Lead",
-        "Moderator"
-      ],
-      "channels": [
-        {
-          "name": "mod-log",
-          "topic": "Moderation actions. Staff only."
-        }
-      ]
     }
   ],
   "messages": {
-    "welcome": "**Welcome to MGSV: Joint Operations, by Hound Protocol.**\nWe are building a multiplayer mod for Metal Gear Solid V on PC: online play for up to 16 players in the single-player world, for Windows and Linux through Proton.\n\n1. Read <#rules>.\n2. Check the live roadmap in <#roadmap>.\n3. Want to help? Open contracts are on the website: https://hound-protocol.github.io/Joint-Operations/#/contribute\n\nThis is an unofficial fan project, not affiliated with or endorsed by Konami.",
+    "welcome": "**Welcome to MGSV: Joint Operations, by Hound Protocol.**\nWe are building a multiplayer mod for Metal Gear Solid V on PC: online play for up to 16 players in the single-player world, for Windows and Linux through Proton.\n\n1. Read <#rules>.\n2. Check the live roadmap in <#roadmap>.\n3. Hound Protocol runs like Mother Base: **Administration**, **Development**, **Quality** and the **Contractor** department.\n4. Want to help? Testers are welcome now. Contracts open after 0.1: https://hound-protocol.github.io/Joint-Operations/#/contribute\n\nThis is an unofficial fan project, not affiliated with or endorsed by Konami.",
     "rules": "**Rules**\n1. MGSV: Joint Operations is an unofficial fan project by Hound Protocol. It is not affiliated with or endorsed by Konami.\n2. Own your copy of MGSV. No piracy, cracks or game-file sharing.\n3. No cheating in other people's multiplayer, and nothing that touches Konami's online services or anti-cheat.\n4. Be respectful. No harassment, hate or spam.\n5. Keep discussion in the right channel. Credit your sources.\n6. Bug reports use the template in <#bug-reports>.\n7. Never share passwords, tokens or keys.\n8. Moderators have the final say.\n\nFull code of conduct: https://hound-protocol.github.io/Joint-Operations/#/docs/conduct",
     "roadmap": "**Roadmap**\nThe live roadmap is on the website and updates with every change: https://hound-protocol.github.io/Joint-Operations/#/roadmap\nWe are in **Phase 0: Foundation**.",
     "announcements": "**Hound Protocol is open.**\nThe website, documentation and contract board are live: https://hound-protocol.github.io/Joint-Operations/\nThe project is in its foundation phase. Read the briefing, check the roadmap, and join the hound.",
     "bug-reports": "**Bug report template**\nCopy this and fill it in:\n```\nGame build (title screen and exe):\nOS: Windows / Linux with Proton (version: )\nJoint Operations version:\nPlayers in session:\nWhat happened:\nWhat you expected:\nSteps to reproduce:\nLogs (never game files):\n```",
-    "faq": "**FAQ**\n**Is it playable?** Not yet. See the roadmap.\n**Is it co-op?** It is a multiplayer mod: online play for up to 16 players in the single-player world.\n**Do I need the game?** Yes, your own copy of MGSV on Steam.\n**Linux?** Yes, through Proton.\n**How do I help?** https://hound-protocol.github.io/Joint-Operations/#/contribute"
+    "faq": "**FAQ**\n**Is it playable?** Not yet. See the roadmap.\n**Is it co-op?** It is a multiplayer mod: online play for up to 16 players in the single-player world.\n**Do I need the game?** Yes, your own copy of MGSV on Steam.\n**Linux?** Yes, through Proton.\n**How do I help?** https://hound-protocol.github.io/Joint-Operations/#/contribute",
+    "contract-board": "**Contract board**\nContracts are tasks with a goal and acceptance criteria. Take one, deliver it, leave whenever you like. Hand-written and AI-assisted work count the same.\n\n**Contractor ranks** (completed contracts): A 1 · A+ 3 · A++ 6 · S 10 · S+ 20 · S++ 35.\nEvery completed contract earns a signed record: https://hound-protocol.github.io/Joint-Operations/#/verify\n\nContracts open after version 0.1. Board: https://hound-protocol.github.io/Joint-Operations/#/contribute"
   }
 }

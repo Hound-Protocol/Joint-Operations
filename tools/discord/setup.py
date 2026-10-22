@@ -3,8 +3,12 @@
 
 Creates roles, categories, text and voice channels, permissions, and posts the
 welcome, rules, roadmap, FAQ, announcement and bug-template messages.
-Safe to re-run: roles and channels are matched by name and left in place, and
-messages are only posted into channels that are still empty.
+Safe to re-run: roles and channels are matched by name. Re-running brings an
+existing server in line with the blueprint: it renames roles and categories
+that have a "was" name, updates role colors and permissions, moves channels to
+their blueprint category, and resets channel permissions to the blueprint.
+Roles and channels that are not in the blueprint are listed but never deleted.
+Messages are only posted into channels that are still empty.
 
 Needs only Python 3.8+ (standard library). The bot token is read from the
 DISCORD_BOT_TOKEN environment variable and is never printed or saved.
@@ -12,6 +16,7 @@ DISCORD_BOT_TOKEN environment variable and is never printed or saved.
 Usage:
   python3 tools/discord/setup.py SERVER_ID            # show what would change
   python3 tools/discord/setup.py SERVER_ID --apply    # make the changes
+  add --update-messages to also edit starter messages this bot posted earlier
 """
 import json, os, pathlib, re, sys, time, urllib.error, urllib.request
 
@@ -67,6 +72,7 @@ class Discord:
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     apply = "--apply" in sys.argv
+    update_msgs = "--update-messages" in sys.argv
     if len(args) != 1 or not args[0].isdigit():
         sys.exit(__doc__)
     token = os.environ.get("DISCORD_BOT_TOKEN", "").strip()
@@ -77,18 +83,38 @@ def main():
     guild = d.call("GET", f"/guilds/{gid}")
     print(f"Server: {guild['name']}  ({'APPLY' if apply else 'DRY RUN: nothing will change'})\n")
     everyone = gid  # the @everyone role has the server's ID
+    bot_id = d.call("GET", "/users/@me")["id"]
 
     # Roles
     roles = {r["name"]: r for r in d.call("GET", f"/guilds/{gid}/roles")}
     for spec in BP["roles"]:
+        want = {"name": spec["name"], "color": int(spec["color"].lstrip("#"), 16), "hoist": spec.get("hoist", False),
+                "permissions": bits(spec["permissions"])}
+        old = spec.get("was")
+        if spec["name"] not in roles and old and old in roles:
+            print(f"  rename role     {old} -> {spec['name']}")
+            if apply:
+                roles[spec["name"]] = d.call("PATCH", f"/guilds/{gid}/roles/{roles[old]['id']}", want)
+            else:
+                roles[spec["name"]] = roles[old]
+            roles.pop(old, None)
+            continue
         if spec["name"] in roles:
-            print(f"  role exists     {spec['name']}")
+            r = roles[spec["name"]]
+            if (r.get("color"), r.get("hoist"), str(r.get("permissions"))) != (want["color"], want["hoist"], want["permissions"]):
+                print(f"  update role     {spec['name']}")
+                if apply:
+                    roles[spec["name"]] = d.call("PATCH", f"/guilds/{gid}/roles/{r['id']}", want)
+            else:
+                print(f"  role ok         {spec['name']}")
             continue
         print(f"  create role     {spec['name']}")
         if apply:
-            roles[spec["name"]] = d.call("POST", f"/guilds/{gid}/roles", {
-                "name": spec["name"], "color": int(spec["color"].lstrip("#"), 16), "hoist": spec.get("hoist", False),
-                "permissions": bits(spec["permissions"]), "mentionable": False})
+            roles[spec["name"]] = d.call("POST", f"/guilds/{gid}/roles", dict(want, mentionable=False))
+    known = {s["name"] for s in BP["roles"]} | {"@everyone"}
+    for name, r in roles.items():
+        if name not in known and not r.get("managed"):
+            print(f"  not in blueprint (left alone): role {name}")
     if apply:
         # Order: blueprint order from the top, just below the bot's own role.
         me = d.call("GET", "/users/@me")
@@ -121,22 +147,40 @@ def main():
 
     # Categories and channels
     channels = d.call("GET", f"/guilds/{gid}/channels")
-    by_key = {(c["type"], c["name"].lower(), c.get("parent_id")): c for c in channels}
-    created_text = {}
+    cats = {c["name"].lower(): c for c in channels if c["type"] == CATEGORY}
+    by_name = {(c["type"], c["name"].lower()): c for c in channels if c["type"] != CATEGORY}
+    created_text, seen, cat_ids = {}, set(), []
+
+    def sync(existing, body, label):
+        """Move a channel into its category and reset its permissions to the blueprint."""
+        if not apply or existing.get("id") in (None, "0"):
+            return
+        d.call("PATCH", f"/channels/{existing['id']}", body)
+
     for pos, cat in enumerate(BP["categories"]):
-        key = (CATEGORY, cat["name"].lower(), None)
-        if key in by_key:
-            parent = by_key[key]
-            print(f"  category exists {cat['name']}")
+        old = (cat.get("was") or "").lower()
+        if cat["name"].lower() in cats:
+            parent = cats[cat["name"].lower()]
+            print(f"  category ok     {cat['name']} (permissions synced)")
+            sync(parent, {"permission_overwrites": overwrites(cat)}, cat["name"])
+        elif old and old in cats:
+            parent = cats[old]
+            print(f"  rename category {cat['was']} -> {cat['name']}")
+            sync(parent, {"name": cat["name"], "permission_overwrites": overwrites(cat)}, cat["name"])
         else:
             print(f"  create category {cat['name']}")
             parent = d.call("POST", f"/guilds/{gid}/channels", {"name": cat["name"], "type": CATEGORY, "position": pos,
                                                                   "permission_overwrites": overwrites(cat)}) if apply else {"id": None}
+        seen.add(parent.get("id"))
+        cat_ids.append(parent.get("id"))
         for ch in cat.get("channels", []):
-            k = (TEXT, ch["name"], parent["id"])
-            if k in by_key:
-                print(f"    text exists   #{ch['name']}")
-                created_text[ch["name"]] = (by_key[k], False)
+            ex = by_name.get((TEXT, ch["name"]))
+            if ex:
+                seen.add(ex["id"])
+                moved = ex.get("parent_id") != parent.get("id")
+                print(f"    {'move text    ' if moved else 'text ok      '} #{ch['name']}")
+                sync(ex, {"parent_id": parent.get("id"), "topic": ch.get("topic", ""), "permission_overwrites": overwrites(cat)}, ch["name"])
+                created_text[ch["name"]] = (ex, False)
                 continue
             print(f"    create text   #{ch['name']}")
             if apply:
@@ -146,14 +190,21 @@ def main():
             else:
                 created_text[ch["name"]] = ({"id": "0"}, True)
         for vc in cat.get("voice", []):
-            k = (VOICE, vc["name"].lower(), parent["id"])
-            if k in by_key:
-                print(f"    voice exists  {vc['name']}")
+            ex = by_name.get((VOICE, vc["name"].lower()))
+            if ex:
+                seen.add(ex["id"])
+                print(f"    voice ok      {vc['name']}")
+                sync(ex, {"parent_id": parent.get("id"), "permission_overwrites": overwrites(cat, vc.get("roles"))}, vc["name"])
                 continue
             print(f"    create voice  {vc['name']}")
             if apply:
                 d.call("POST", f"/guilds/{gid}/channels", {"name": vc["name"], "type": VOICE, "parent_id": parent["id"],
                                                            "permission_overwrites": overwrites(cat, vc.get("roles"))})
+    if apply and all(cat_ids):
+        d.call("PATCH", f"/guilds/{gid}/channels", [{"id": cid, "position": i} for i, cid in enumerate(cat_ids)])
+    for c in channels:
+        if c["id"] not in seen:
+            print(f"  not in blueprint (left alone): {'category' if c['type'] == CATEGORY else 'channel'} {c['name']}")
 
     # Messages, only into empty channels
     ids = {name: c["id"] for name, (c, _) in created_text.items()}
@@ -162,11 +213,23 @@ def main():
             continue
         chan, new = created_text[name]
         text = re.sub(r"<#([a-z0-9-]+)>", lambda m: f"<#{ids[m.group(1)]}>" if m.group(1) in ids else "#" + m.group(1), text)
+        if not new:
+            existing = d.call("GET", f"/channels/{chan['id']}/messages?limit=50") or []
+            if existing:
+                mine = [m for m in existing if m.get("author", {}).get("id") == bot_id]
+                if update_msgs and mine:
+                    first = mine[-1]  # messages come newest first; the starter message is the oldest
+                    if first.get("content") != text:
+                        print(f"  update message  #{name}")
+                        if apply:
+                            d.call("PATCH", f"/channels/{chan['id']}/messages/{first['id']}", {"content": text, "allowed_mentions": {"parse": []}})
+                    else:
+                        print(f"  message ok      #{name}")
+                else:
+                    print(f"  message skipped #{name} (channel not empty)")
+                continue
         if not apply:
             print(f"  post message    #{name}")
-            continue
-        if not new and d.call("GET", f"/channels/{chan['id']}/messages?limit=1"):
-            print(f"  message skipped #{name} (channel not empty)")
             continue
         print(f"  post message    #{name}")
         d.call("POST", f"/channels/{chan['id']}/messages", {"content": text, "allowed_mentions": {"parse": []}})

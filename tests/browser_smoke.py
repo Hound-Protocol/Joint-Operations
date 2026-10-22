@@ -10,7 +10,7 @@ from playwright.async_api import async_playwright
 
 site = sys.argv[1]
 engines = sys.argv[2:] or ["chromium", "firefox", "webkit"]
-VIEWS = ["briefing", "roadmap", "download", "sessions", "contribute", "mods", "devlog", "docs/architecture", "options"]
+VIEWS = ["briefing", "roadmap", "download", "sessions", "contribute", "team", "mods", "devlog", "guides", "guides/hp-pol-002", "verify", "docs/architecture", "options"]
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *args):
@@ -30,8 +30,8 @@ async def check(browser, name, size):
     page.on("pageerror", lambda e: errors.append(str(e)))
     await page.goto(BASE)
     await page.wait_for_timeout(1200)
-    if await page.locator("#menu a").count() != 8:
-        failures.append("menu does not have 8 items")
+    if await page.locator("#menu a").count() != 9:
+        failures.append("menu does not have 9 items")
     for v in VIEWS:
         await page.goto(BASE + "#/" + v)
         await page.wait_for_timeout(900)

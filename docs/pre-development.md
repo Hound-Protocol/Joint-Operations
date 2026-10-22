@@ -22,7 +22,7 @@ Development of 0.1 (Phase 2) starts only when every gate is **closed** or explic
 - [ ] Choose the license ([ADR 0005](decisions/0005-license.md)); replace the LICENSE placeholder with the full text
 - [ ] Record the Steam App ID position in `legal.md` (using the game's own App ID from inside the process; see `research/steam-networking.md`)
 - [ ] Optional but recommended: ask Valve support how in-process mods may use a game's Steam networking
-- [ ] Decide funding: recommended **no donations before 0.1**; later through a fiscal host ([funding research](../research/funding-and-distribution.md))
+- [x] Decide funding: **no donations before 0.1** ([ADR 0010](decisions/0010-funding.md)); later through a fiscal host ([funding research](../research/funding-and-distribution.md))
 - [ ] Decide whether to get a legal opinion before public releases
 - [ ] Confirm the repository stays public (it is public now; docs no longer assume private)
 

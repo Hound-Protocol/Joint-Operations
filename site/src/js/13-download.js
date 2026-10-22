@@ -4,7 +4,7 @@
     v.innerHTML = shell("Releases", "Download", loading("Checking releases on GitHub"));
     loadReleases().then(function (rel) {
       if (currentView !== "download") return;
-      var latest = rel && rel[0], body = "", pre = "";
+      var latest = playableReleases()[0], body = "", pre = "";
       body += '<div class="cols">';
       if (latest) {
         body += '<div class="panel"><div class="label">Latest release</div>' +
