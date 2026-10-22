@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.16 · Base construction · 2026-10-23
+- **Roadmap:** rebuilt as a base under construction, seen from above. Phase 0 is the command platform in the centre, each later phase a platform on its own bridge. Each platform fills up like a gauge with the share of its tasks done, color coded (complete green, under construction amber, planned blueprint blue), with the percentage above it. Point at a platform to light it orange, click it to see its tasks on the right. Boats, crews, cranes and a helicopter keep the base busy (off with Options → Animations).
+- **Guides:** stronger color per document type (Guide ochre, Policy red, Procedure blue) on paper, headings and borders, with a type stripe 20% in from the right edge that names the type. Background patterns are fainter so the text stands out.
+- **PDF and print:** pages print full width on a white page with room inside the frame (the dark page margins are gone).
+
 ## v0.0.15 · Field notes · 2026-10-23
 - **About:** clearer host and client text (host-authoritative; the host is a player's game for now, a dedicated server is later research; clients follow the host's state and control their own character), the new Steam connection text, and an FAQ at the bottom. The shared-alert section moved into the FAQ.
 - **Research:** how the enemy AI notices, reports and hunts ([research/ai-system.md](research/ai-system.md)). ADR 0012 revised to one session detection status that spotted players join, with two proposed additions.

@@ -1,4 +1,6 @@
   /* Guides: the handbook (guides, policies, procedures) as A4 documents */
+  /* The type stripe: a band 20% in from the right edge, in the type colour, with the type written along it */
+  function typeStripe(type, n) { var w = "<b>" + esc(type) + "</b>", out = ""; for (var k = 0; k < n; k++) out += w; return '<span class="stripe" aria-hidden="true">' + out + "</span>"; }
   var GUIDE_AUD = ["All", "Players", "Contributors", "Quality", "Administration"];
   var guideAud = "All";
   function viewGuides(id) {
@@ -21,7 +23,7 @@
       return '<div class="label">' + label + '</div><p class="sub">' + note + '</p><div class="sheets">' + l.map(function (g, n) {
         return '<a class="mini t-' + esc(g.type.toLowerCase()) + '" style="--i:' + n + '" href="#/guides/' + esc(g.id) + '"><span class="m-top"><b>' + esc(g.code) + "</b><i>v" + esc(g.version) + "</i></span>" +
           '<span class="m-title">' + esc(g.title) + '</span><span class="m-sum">' + esc(g.summary) + "</span>" +
-          '<span class="m-foot">' + esc(g.type) + " · " + esc(g.owner) + " Dept</span></a>";
+          '<span class="m-foot">' + esc(g.type) + " · " + esc(g.owner) + " Dept</span>" + typeStripe(g.type, 3) + "</a>";
       }).join("") + "</div>";
     };
     $("#vb").innerHTML =
@@ -48,6 +50,7 @@
         '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">All documents</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
         '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
         '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +
+          typeStripe(g.type, 6) +
           '<header class="sh-head"><div class="sh-org"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="34" height="34"><span><b>Hound Protocol</b><i>MGSV: Joint Operations</i></span></div>' +
           '<div class="sh-code"><b>' + esc(g.code) + "</b><i>" + esc(g.type) + "</i></div></header>" +
           '<h1 class="sh-title">' + esc(g.title) + "</h1>" +
