@@ -1,0 +1,26 @@
+{
+  "project": "Joint Operations",
+  "team": "Hound Protocol",
+  "tagline": "Multiplayer mod for Metal Gear Solid V for up to 16 players",
+  "version": "0.0.1",
+  "stage": "Pre-release",
+  "repo": "Hound-Protocol/Joint-Operations",
+  "branch": "main",
+  "siteUrl": "https://hound-protocol.github.io/Joint-Operations/",
+  "logo": {
+    "src": "",
+    "alt": "Joint Operations logo",
+    "opacity": 0.18
+  },
+  "links": {
+    "discord": "",
+    "discordIcon": "",
+    "github": "https://github.com/Hound-Protocol/Joint-Operations"
+  },
+  "milestones": {
+    "download": "The first playable build is planned for version 0.1, at the end of Phase 2.",
+    "sessions": "The session service arrives with version 0.1 (Phase 2). Sessions will be listed here automatically.",
+    "mods": "The mod repository opens alongside the Mod API in Phase 4. Submissions can be sent for review now."
+  },
+  "cacheMinutes": 10
+}

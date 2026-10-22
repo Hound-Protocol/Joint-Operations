@@ -1,0 +1,215 @@
+{
+  "note": "Documentation library. Paths are relative to the repository root.",
+  "docs": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "group": "Project",
+      "path": "README.md"
+    },
+    {
+      "id": "plan",
+      "title": "Pre-development Plan",
+      "group": "Project",
+      "path": "docs/pre-development.md"
+    },
+    {
+      "id": "roadmap",
+      "title": "Roadmap",
+      "group": "Project",
+      "path": "ROADMAP.md"
+    },
+    {
+      "id": "risks",
+      "title": "Risk Register",
+      "group": "Project",
+      "path": "docs/risk-register.md"
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture",
+      "group": "Technical",
+      "path": "docs/architecture.md"
+    },
+    {
+      "id": "phase1",
+      "title": "Phase 1 Research Plan",
+      "group": "Technical",
+      "path": "docs/phase1-research-plan.md"
+    },
+    {
+      "id": "process",
+      "title": "Development Process",
+      "group": "Technical",
+      "path": "docs/development-process.md"
+    },
+    {
+      "id": "glossary",
+      "title": "Glossary",
+      "group": "Technical",
+      "path": "docs/glossary.md"
+    },
+    {
+      "id": "github-setup",
+      "title": "GitHub Setup Checklist",
+      "group": "Technical",
+      "path": "docs/github-setup.md"
+    },
+    {
+      "id": "decisions",
+      "title": "Decision Index",
+      "group": "Decisions",
+      "path": "docs/decisions/README.md"
+    },
+    {
+      "id": "adr-0001",
+      "title": "0001 Multiplayer Scope",
+      "group": "Decisions",
+      "path": "docs/decisions/0001-multiplayer-scope.md"
+    },
+    {
+      "id": "adr-0002",
+      "title": "0002 Integration Strategy",
+      "group": "Decisions",
+      "path": "docs/decisions/0002-integration-strategy.md"
+    },
+    {
+      "id": "adr-0003",
+      "title": "0003 Transport",
+      "group": "Decisions",
+      "path": "docs/decisions/0003-transport.md"
+    },
+    {
+      "id": "adr-0004",
+      "title": "0004 Loader",
+      "group": "Decisions",
+      "path": "docs/decisions/0004-loader.md"
+    },
+    {
+      "id": "adr-0005",
+      "title": "0005 License",
+      "group": "Decisions",
+      "path": "docs/decisions/0005-license.md"
+    },
+    {
+      "id": "adr-0006",
+      "title": "0006 No Konami Services",
+      "group": "Decisions",
+      "path": "docs/decisions/0006-no-konami-services.md"
+    },
+    {
+      "id": "adr-0007",
+      "title": "0007 Host Authority",
+      "group": "Decisions",
+      "path": "docs/decisions/0007-host-authority.md"
+    },
+    {
+      "id": "research",
+      "title": "Research Index",
+      "group": "Research",
+      "path": "research/README.md"
+    },
+    {
+      "id": "r-engine",
+      "title": "Game and Engine",
+      "group": "Research",
+      "path": "research/game-and-engine.md"
+    },
+    {
+      "id": "r-modding",
+      "title": "Modding Ecosystem",
+      "group": "Research",
+      "path": "research/modding-ecosystem.md"
+    },
+    {
+      "id": "r-steam",
+      "title": "Steam Networking",
+      "group": "Research",
+      "path": "research/steam-networking.md"
+    },
+    {
+      "id": "r-proton",
+      "title": "Linux and Proton",
+      "group": "Research",
+      "path": "research/proton.md"
+    },
+    {
+      "id": "r-legal",
+      "title": "Legal Landscape",
+      "group": "Research",
+      "path": "research/legal-landscape.md"
+    },
+    {
+      "id": "r-funding",
+      "title": "Funding and Distribution",
+      "group": "Research",
+      "path": "research/funding-and-distribution.md"
+    },
+    {
+      "id": "r-netcode",
+      "title": "Netcode Summary",
+      "group": "Research",
+      "path": "research/networking-playbook-summary.md"
+    },
+    {
+      "id": "r-prior-art",
+      "title": "Prior Art Study",
+      "group": "Research",
+      "path": "research/prior-art/dynamite.md"
+    },
+    {
+      "id": "team",
+      "title": "Team",
+      "group": "Community",
+      "path": "docs/team.md"
+    },
+    {
+      "id": "governance",
+      "title": "Governance",
+      "group": "Community",
+      "path": "docs/governance.md"
+    },
+    {
+      "id": "contributing",
+      "title": "Contributing",
+      "group": "Community",
+      "path": "CONTRIBUTING.md"
+    },
+    {
+      "id": "conduct",
+      "title": "Code of Conduct",
+      "group": "Community",
+      "path": "CODE_OF_CONDUCT.md"
+    },
+    {
+      "id": "discord",
+      "title": "Discord Blueprint",
+      "group": "Community",
+      "path": "docs/discord.md"
+    },
+    {
+      "id": "recruiting",
+      "title": "Recruiting",
+      "group": "Community",
+      "path": "docs/recruiting.md"
+    },
+    {
+      "id": "legal",
+      "title": "Legal and Ethics",
+      "group": "Legal",
+      "path": "docs/legal.md"
+    },
+    {
+      "id": "security",
+      "title": "Security Policy",
+      "group": "Legal",
+      "path": "SECURITY.md"
+    },
+    {
+      "id": "privacy",
+      "title": "Privacy",
+      "group": "Legal",
+      "path": "docs/privacy.md"
+    }
+  ]
+}

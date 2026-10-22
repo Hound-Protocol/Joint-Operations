@@ -1,0 +1,21 @@
+{
+  "note": "Team page. Images live in site/assets/img/team/. Seats follow docs/governance.md.",
+  "members": [
+    {
+      "name": "TrueMan",
+      "role": "Founder · Project lead",
+      "image": "assets/img/team/trueman.webp",
+      "still": "assets/img/team/trueman.jpg",
+      "bio": "Founded Hound Protocol and Joint Operations. Sets the direction, the priorities and the final decisions."
+    }
+  ],
+  "seats": [
+    { "seat": "Project lead", "need": 1, "holders": ["TrueMan"] },
+    { "seat": "Technical lead delegate", "need": 1, "holders": [] },
+    { "seat": "GitHub organization owner", "need": 2, "holders": ["TrueMan"] },
+    { "seat": "Discord admin", "need": 2, "holders": [] },
+    { "seat": "Release signer", "need": 2, "holders": [] },
+    { "seat": "Moderator", "need": 2, "holders": [] }
+  ],
+  "roles": ["Reverse engineering and hooks", "Networking", "Windows testing", "Linux and Proton testing", "Docs and community", "Web and app"]
+}

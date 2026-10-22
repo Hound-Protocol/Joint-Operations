@@ -1,0 +1,28 @@
+# Game files and assets: never commit
+*.exe
+*.dll
+*.pak
+*.arc
+*.fpk
+*.zip
+*.7z
+game/
+assets/extracted/
+
+# Local tooling
+.env
+*.log
+.DS_Store
+Thumbs.db
+node_modules/
+
+# Site build output (docs are copied in at deploy time)
+_site/
+site/content/
+
+# Single-file build output
+hound-protocol.html
+_bundle.html
+
+# Generated at build time
+site/data/build.json

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hound Protocol · Joint Operations</title>
+<meta name="description" content="MGSV: Joint Operations is an unofficial, fan-made project a multiplayer mod bringing online play for up to 16 players into the single-player world of Metal Gear Solid V on PC. Built in the open by Hound Protocol.">
+<meta name="theme-color" content="#0c0f10">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hound Protocol">
+<meta property="og:title" content="MGSV: Joint Operations · Hound Protocol">
+<meta property="og:description" content="Unofficial multiplayer mod: up to 16 players in the open world of Metal Gear Solid V on PC, for Windows and Linux through Proton.">
+<meta property="og:url" content="https://hound-protocol.github.io/Joint-Operations/">
+<meta property="og:image" content="https://hound-protocol.github.io/Joint-Operations/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="assets/fonts/barlow-semi-condensed-extralight.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="assets/fonts/barlow-semi-condensed-light.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="assets/fonts/share-tech-mono-regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="fx grid" aria-hidden="true"></div>
+  <div class="fx grid fine" aria-hidden="true"></div>
+  <div class="fx scan" aria-hidden="true"></div>
+  <div class="gl" aria-hidden="true"><i></i><i></i><i></i></div>
+  <!-- Logo hook: set logo.src in site/data/config.json to replace the emblem -->
+  <div class="logo" id="logo" aria-hidden="true"><img class="emblem" src="assets/img/emblem.svg" alt=""></div>
+  <i class="ruler l" aria-hidden="true"></i><i class="ruler r" aria-hidden="true"></i>
+  <i class="corner c1" aria-hidden="true"></i><i class="corner c2" aria-hidden="true"></i>
+  <i class="corner c3" aria-hidden="true"></i><i class="corner c4" aria-hidden="true"></i>
+
+  <header class="bar top">
+    <span id="build">Build —</span>
+    <span class="keys" id="keys"><kbd>↑</kbd><kbd>↓</kbd>Select<kbd>Enter</kbd>Confirm</span>
+  </header>
+
+  <main class="center" id="center">
+    <div class="menu-wrap" id="menuView">
+      <div class="hd">
+        <div class="hd-a" id="teamName">Hound Protocol</div>
+        <h1 class="hd-b" id="projectName">Joint Operations</h1>
+        <p class="tagline" id="tagline">Multiplayer mod for Metal Gear Solid V for up to 16 players</p>
+      </div>
+      <div class="rule"></div>
+      <nav class="menu" id="menu" aria-label="Main menu"></nav>
+      <div class="rule short"></div>
+      <div class="links" id="links"></div>
+      <p class="disclaimer">Unofficial fan project. Not affiliated with or endorsed by Konami. <a href="#/docs/privacy">Privacy</a></p>
+    </div>
+    <section class="view" id="view" hidden aria-live="polite"></section>
+  </main>
+
+  <footer class="bar bot">
+    <span class="led" id="ledInfo"></span>
+    <span class="led right" id="ledStatus" role="status"></span>
+  </footer>
+</div>
+<noscript><p class="noscript">This site needs JavaScript. The project lives at github.com/Hound-Protocol/Joint-Operations.</p></noscript>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

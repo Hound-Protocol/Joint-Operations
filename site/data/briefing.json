@@ -1,0 +1,34 @@
+{
+  "note": "Text for the Briefing page. Wrap a key term in {{double braces}} to color-code it. Use sparingly.",
+  "headline": "A {{multiplayer mod}} for Metal Gear Solid V, for up to {{16 players}}",
+  "summary": [
+    "Joint Operations brings the game's online functionality into the single-player world. One player hosts, up to fifteen others join, and everyone shares the same open world and missions."
+  ],
+  "how": [
+    [
+      "host",
+      "The host decides",
+      "The host's game runs the mission, the AI and the world. It is the single source of truth, so every player sees the same outcome."
+    ],
+    [
+      "soldier",
+      "Soldiers act",
+      "Each other player controls their own soldier and camera, and sends their movement and actions to the host."
+    ],
+    [
+      "link",
+      "One connection",
+      "Players connect through Steam's relay network, with a direct connection as fallback. No ports to open and no Konami servers involved."
+    ]
+  ],
+  "host": {
+    "text": "The host takes {{Venom Snake's place}}. Wherever the game puts Snake, the host is there:",
+    "places": [
+      "Helicopter seat",
+      "Command Center",
+      "Briefings and radio",
+      "Cutscenes",
+      "Mother Base command"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "note": "Manual dev log entries, merged with commits and releases read from GitHub. Fields: date (YYYY-MM-DD), title, body, tag.",
+  "entries": [
+    {
+      "date": "2026-10-21",
+      "tag": "Milestone",
+      "title": "Pre-development plan and research published",
+      "body": "Desk research on the engine, modding tools, Steam networking, Proton, law and funding, plus decision records and the gates that must close before development starts."
+    },
+    {
+      "date": "2026-10-21",
+      "tag": "Decision",
+      "title": "Scope: a multiplayer mod",
+      "body": "Joint Operations brings the game's online multiplayer functionality into the single-player world for up to 16 players. It is a multiplayer mod, not a co-op add-on."
+    },
+    {
+      "date": "2026-10-21",
+      "tag": "Milestone",
+      "title": "Website and documentation published",
+      "body": "The Hound Protocol site, project documents, contract board and mod repository went up for review."
+    },
+    {
+      "date": "2026-10-21",
+      "tag": "Decision",
+      "title": "Transport chosen",
+      "body": "GameNetworkingSockets over Steam relay, with direct IP as fallback. The Steam API variant will be decided by testing in Phase 1."
+    },
+    {
+      "date": "2026-10-21",
+      "tag": "Milestone",
+      "title": "Project founded",
+      "body": "MGSV: Joint Operations started, with Hound Protocol as the development team. Phase 0 (foundation) is underway."
+    }
+  ]
+}
