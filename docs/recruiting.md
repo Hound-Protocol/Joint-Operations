@@ -29,10 +29,10 @@ Who we need:
 
 What we offer: a clear roadmap, written architecture, open decisions, and real ownership of your area. We do not promise a release date or payment. Donations, if opened, go to hosting and development only, and will be reported openly.
 
-Join: [Discord invite] | Code: github.com/Hound-Protocol/Joint-Operations
+Join: https://discord.gg/QTpJ89kMCM | Code: github.com/Hound-Protocol/Joint-Operations
 
 ## Short version (Discord, social)
-Building MGSV: Joint Operations, an unofficial multiplayer mod bringing online play for up to 16 players into the single-player world of Metal Gear Solid V on PC (Windows and Linux/Proton). Looking for reverse engineers, networking devs, Proton testers, docs writers, and web devs. Open source, non-commercial. Join: [Discord invite]
+Building MGSV: Joint Operations, an unofficial multiplayer mod bringing online play for up to 16 players into the single-player world of Metal Gear Solid V on PC (Windows and Linux/Proton). Looking for reverse engineers, networking devs, Proton testers, docs writers, and web devs. Open source, non-commercial. Join: https://discord.gg/QTpJ89kMCM
 
 ## Rules for recruiters on our team
 - State clearly that the project is unofficial and early.
