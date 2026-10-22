@@ -31,4 +31,6 @@ This policy sets the rules every contributor accepts when they work on MGSV: Joi
 You can leave at any time. If you hold a contract, post a short handoff note on the issue first (see [HP-SOP-001](HP-SOP-001-contract-lifecycle.md)). Access is removed the same day you leave a seat or department ([HP-SOP-007](HP-SOP-007-onboarding-offboarding.md)).
 
 ## 7. Breaches
+Careless mistakes, such as merging broken work without checking it, are handled by the [Accountability and Infractions Policy](HP-POL-009-accountability.md): notes, infractions, and a suspension at three, with appeals and no time limits. Deliberate breaches are handled here.
+
 Breaches are handled under the [Community and Moderation Policy](HP-POL-005-community-moderation.md). Committing game files, leaked secrets or copied code is removed at once and may lead to removal from the project.

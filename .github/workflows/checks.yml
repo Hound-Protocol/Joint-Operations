@@ -28,6 +28,8 @@ jobs:
         run: python3 tools/contracts_md.py --check
       - name: CSS fallbacks for older browsers
         run: python3 tools/css_compat.py --check
+      - name: Infraction record is valid
+        run: python3 tools/infractions.py verify
       - name: AI agent detection
         run: |
           printf 'Fix\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n' | python3 tools/agents.py --stdin | grep -qx Claude

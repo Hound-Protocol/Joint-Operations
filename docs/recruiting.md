@@ -22,7 +22,7 @@ This kit has ready-to-post texts, one pitch per role, answers to the usual quest
 ## Long post (Reddit, forums, Nexus)
 **MGSV: Joint Operations: a multiplayer mod for Metal Gear Solid V, for up to 16 players (PC, looking for contributors)**
 
-Hound Protocol is a community development team building **MGSV: Joint Operations**. It brings online play into the single-player world of The Phantom Pain: one player hosts the session and commands it from the helicopter, the Command Center and Mother Base, and up to 15 clients join and deploy into the same world. Players arrive and leave through the game's own mechanics, not pop-ins.
+Hound Protocol is a community-focused organization that builds ambitious projects, one of them being **MGSV: Joint Operations**. It brings online play into the single-player world of The Phantom Pain: one player hosts the session and commands it from the helicopter, the Command Center and Mother Base, and up to 15 clients join and deploy into the same world. Players arrive and leave through the game's own mechanics, not pop-ins.
 
 **What it is**
 - Unofficial, fan-made, non-commercial and open source.

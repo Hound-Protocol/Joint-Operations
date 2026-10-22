@@ -1,0 +1,7 @@
+{
+ "version": 1,
+ "note": "Infraction record. See docs/guides/HP-POL-009-accountability.md. Edit with tools/infractions.py only.",
+ "infractions": [],
+ "credits": [],
+ "suspensions": []
+}

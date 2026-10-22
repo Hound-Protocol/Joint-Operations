@@ -16,6 +16,7 @@ Closes #
 - [ ] No generative AI images, artwork, music or voices are included
 
 ## Checklist
+- [ ] I ran the checks locally or they are green on this pull request, and I tested what I said I tested ([HP-POL-009](https://github.com/Hound-Protocol/Joint-Operations/blob/main/docs/guides/HP-POL-009-accountability.md))
 - [ ] Commits are signed off (`git commit -s`)
 - [ ] No game files, binaries or third-party mod code ([HP-POL-003](https://github.com/Hound-Protocol/Joint-Operations/blob/main/docs/guides/HP-POL-003-clean-room-and-ip.md))
 - [ ] Acceptance criteria of the contract are met

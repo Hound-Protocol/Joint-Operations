@@ -1,6 +1,6 @@
 # Team: Hound Protocol
 
-Hound Protocol is a non-commercial community development team building MGSV: Joint Operations.
+Hound Protocol is a non-commercial, community-focused organization. We build ambitious projects, one of them being MGSV: Joint Operations.
 It is not a company or a studio.
 
 Status: DRAFT · Structure: [departments.md](departments.md)

@@ -1,5 +1,5 @@
 {
- "note": "Team page. Images live in site/assets/img/team/. The chain of command follows docs/guides/HP-POL-007 (ADR 0013), departments follow docs/departments.md, seats follow docs/governance.md.",
+ "note": "Team page. Images live in site/assets/img/team/. The chain of command follows docs/guides/HP-POL-007 (ADR 0013), departments follow docs/departments.md, seats follow docs/governance.md. Open positions: positions (seats have a number of holders needed; open roles take anyone).",
  "members": [
   {
    "name": "TrueMan",
@@ -251,6 +251,92 @@
      "job": "Everyone in the community. Can talk to anyone, follow sessions and report problems."
     }
    ]
+  }
+ ],
+ "positions": [
+  {
+   "dept": "Administration",
+   "title": "Project lead",
+   "need": 1,
+   "holders": [
+    "TrueMan"
+   ],
+   "kind": "seat",
+   "about": "Final decisions, legal stance, funding"
+  },
+  {
+   "dept": "Administration",
+   "title": "GitHub organization owner",
+   "need": 2,
+   "holders": [
+    "TrueMan"
+   ],
+   "kind": "seat",
+   "about": "Account control and repository settings"
+  },
+  {
+   "dept": "Administration",
+   "title": "Discord admin",
+   "need": 2,
+   "holders": [],
+   "kind": "seat",
+   "about": "Server control, moderation escalation"
+  },
+  {
+   "dept": "Administration",
+   "title": "Moderator",
+   "need": 2,
+   "holders": [],
+   "kind": "seat",
+   "about": "Community safety, social decisions"
+  },
+  {
+   "dept": "Development",
+   "title": "Technical lead",
+   "need": 1,
+   "holders": [],
+   "kind": "seat",
+   "about": "Technical direction, architecture, merge approval"
+  },
+  {
+   "dept": "Quality",
+   "title": "Release signer",
+   "need": 2,
+   "holders": [],
+   "kind": "seat",
+   "about": "Approves and publishes releases"
+  },
+  {
+   "dept": "Quality",
+   "title": "Windows testers",
+   "need": null,
+   "holders": [],
+   "kind": "open",
+   "about": "Test builds on Windows 10 and 11"
+  },
+  {
+   "dept": "Quality",
+   "title": "Proton testers",
+   "need": null,
+   "holders": [],
+   "kind": "open",
+   "about": "Test on Linux, Steam Deck and Bazzite"
+  },
+  {
+   "dept": "Quality",
+   "title": "Reviewers",
+   "need": null,
+   "holders": [],
+   "kind": "open",
+   "about": "Check contracts against their acceptance criteria"
+  },
+  {
+   "dept": "Contractor",
+   "title": "Contractors",
+   "need": null,
+   "holders": [],
+   "kind": "later",
+   "about": "Take contracts and deliver them. Opens with version 0.1"
   }
  ]
 }

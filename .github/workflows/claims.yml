@@ -40,6 +40,12 @@ jobs:
             gh api -X DELETE "repos/$REPO/issues/$ISSUE/assignees" -f "assignees[]=$USER" >/dev/null
             react "+1"
           else
+            # Suspended contributors (HP-POL-009) cannot claim until an appeal is accepted
+            suspended=$(gh api "repos/$REPO/contents/site/data/infractions.json" -H "Accept: application/vnd.github.raw" 2>/dev/null | python3 -c "import json,sys,os; d=json.load(sys.stdin); u=os.environ['USER'].lower(); print(any(s['login'].lower()==u and s['track']=='contributor' and s['status']=='active' for s in d.get('suspensions',[])))" 2>/dev/null || echo False)
+            if [ "$suspended" = "True" ]; then
+              gh api -X POST "repos/$REPO/issues/$ISSUE/comments" -f body="@$USER you are suspended from contributing after three infractions, so you cannot claim contracts right now. You can appeal at any time: see https://github.com/$REPO/blob/main/docs/guides/HP-SOP-011-infractions-and-appeals.md" >/dev/null
+              react "confused"; exit 0
+            fi
             if [ "$count" -ge 10 ]; then
               gh api -X POST "repos/$REPO/issues/$ISSUE/comments" -f body="@$USER this contract already has 10 claimants, the most GitHub allows. Ask on Discord to pair with someone." >/dev/null
               react "confused"; exit 0

@@ -4,6 +4,12 @@
   {
    "date": "2026-10-22",
    "tag": "Organization",
+   "title": "New logos and an accountability system",
+   "body": "Hound Protocol and Joint Operations have new logos in the style of unit insignia. And everyone, leads included, is now held to the same standard of care: careless work earns infractions, three suspend, appeals are always open, and there are no time limits. This is a passion project, not a boot camp."
+  },
+  {
+   "date": "2026-10-22",
+   "tag": "Organization",
    "title": "AI agents are credited, not ranked",
    "body": "Claude now works as a contractor's tool instead of technical lead, which becomes a seat for a person. Work done with an AI agent is credited to the person with the agent named, for example \"Forge77, with Claude\", detected automatically from commit trailers."
   },

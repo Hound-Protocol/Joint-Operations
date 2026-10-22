@@ -1,0 +1,25 @@
+name: Contributor standing
+
+# A contributor suspended under HP-POL-009 (three active infractions) cannot have work merged
+# until an appeal is accepted. This check reads the base branch's record, never the pull request's copy.
+# Make "Contributor standing" a required check in branch protection.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  standing:
+    name: Contributor standing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - name: Check the author's standing
+        env:
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: python3 tools/infractions.py check --login "$AUTHOR" --track contributor

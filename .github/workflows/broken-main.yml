@@ -1,0 +1,40 @@
+name: Broken main
+
+# When the checks fail on main after a merge, open one incident issue so Development can look at it.
+# This is not an infraction by itself: a person decides that, following HP-SOP-011.
+on:
+  workflow_run:
+    workflows: [Checks]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  incident:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open an incident issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+          short=${SHA:0:7}
+          title="Main is failing its checks at $short"
+          if gh issue list --repo "$REPO" --state open --label "incident: broken main" --search "$short in:title" --json number --jq '.[0].number' | grep -q .; then
+            echo "Incident already open."; exit 0
+          fi
+          pr=$(gh api "repos/$REPO/commits/$SHA/pulls" --jq '.[0] | "#\(.number) by @\(.user.login)"' 2>/dev/null || true)
+          gh label create "incident: broken main" --repo "$REPO" --color d0303a --description "Checks failing on main (HP-SOP-011)" 2>/dev/null || true
+          body="The checks failed on \`main\` at $short${pr:+, after $pr}.
+
+          - Failed run: $RUN
+          - First step: fix or revert, so main is green again.
+          - Then Development looks at what happened. **This is not an infraction by itself.** An infraction is only given when the checks were skipped, bypassed or ignored ([HP-SOP-011](https://github.com/$REPO/blob/main/docs/guides/HP-SOP-011-infractions-and-appeals.md))."
+          gh issue create --repo "$REPO" --title "$title" --label "incident: broken main" --body "$body"

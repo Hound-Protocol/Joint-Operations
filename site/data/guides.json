@@ -275,6 +275,19 @@
       "path": "docs/guides/HP-POL-008-licensing-and-attribution.md"
     },
     {
+      "id": "hp-pol-009",
+      "code": "HP-POL-009",
+      "title": "Accountability and Infractions Policy",
+      "type": "Policy",
+      "audience": "Everyone",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "every contributor and every role holder, leads included",
+      "summary": "Infractions for careless work and duty breaches, three suspend, clearing by good work, appeals. No time limits.",
+      "path": "docs/guides/HP-POL-009-accountability.md"
+    },
+    {
       "id": "hp-sop-001",
       "code": "HP-SOP-001",
       "title": "Contract Lifecycle",
@@ -403,6 +416,19 @@
       "for": "Development and Administration, from version 0.1",
       "summary": "Turning planned contracts into GitHub issues when contracts open at 0.1.",
       "path": "docs/guides/HP-SOP-010-publishing-contracts.md"
+    },
+    {
+      "id": "hp-sop-011",
+      "code": "HP-SOP-011",
+      "title": "Issuing Infractions and Handling Appeals",
+      "type": "Procedure",
+      "audience": "Administration",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "Development, Administration and the owner",
+      "summary": "Handling broken main, issuing infractions fairly, recording clean work and deciding appeals.",
+      "path": "docs/guides/HP-SOP-011-infractions-and-appeals.md"
     }
   ]
 }

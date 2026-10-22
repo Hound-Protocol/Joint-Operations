@@ -7,9 +7,12 @@ Two marks, one family. **Hound Protocol** is the team. **Joint Operations** is t
 ## The marks
 | Mark | Meaning | Files (`site/assets/brand/`) |
 |---|---|---|
-| **Hound Protocol**: a black hexagon insignia with a white hound in profile, a red inner ring, red eye and red collar | The team: watchful, loyal, organized like a unit. The collar marks a hound that belongs to a unit | `hound-protocol-mark.svg`, `-mono.svg`, `-light.svg`, `-lockup.svg`, `-avatar.png` |
-| **Joint Operations emblem** (official logo): three operatives inside a ring of sixteen marks, an orange host marker over the centre operative, the name on the ring | A joint operation: the host and clients, sixteen players | `joint-operations-emblem.svg`, `-emblem-mono.svg`, `-emblem-white.svg`, `-lockup.svg`, `-avatar.png` |
-| **Joint Operations mark** (small sizes, favicon): sixteen marks around an orange diamond, with four routes converging | Sixteen players around one host, coming together | `joint-operations-mark.svg`, `-mono.svg`, `-light.svg` |
+| **Hound Protocol**: a geometric hound face over a red slash, with HOUND / PROTOCOL beneath (lockup) | The organization: watchful, sharp, organized like a unit | `hound-protocol-mark.svg` (no name), `hound-protocol-lockup.svg` (with name), each with `-mono` and `-light`; `hound-protocol-avatar.png` |
+| **Joint Operations badge**: a unit shield with an orange JOINT OPS band and a sixteen-point star around the orange host diamond | Sixteen players around one host | `joint-operations-mark.svg`, `-mono`, `-light`, `-white`; `joint-operations-avatar.png` |
+| **Joint Operations wordmark**: J, the star inside the O, speed bars, the full name and "up to 16 operatives" | The project's name in full | `joint-operations-lockup.svg`, `-mono`, `-light` |
+| **Background scene**: saluting operatives and their commander | Website background only | `joint-operations-salute.svg` |
+
+All marks are drawn in code (`tools/brand/logos.py`, `salute.py`) in the style of unit insignia, with our own shapes. They are not modeled on any Konami logo.
 
 Also: `site/assets/img/favicon.svg` (simplified mark for small sizes) and `site/assets/img/og.png` (link previews and the README banner).
 
