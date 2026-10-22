@@ -20,7 +20,7 @@ Code: HP-GDE-003 · Version 1.0 · Effective 2026-10-22 · Owner: Development ·
 5. Preview the website: `python3 tools/assemble_site.py _site` then open `_site/index.html` through a local server (`python3 -m http.server -d _site`).
 
 ## 3. Take a contract
-1. Open the **Contribute** page. Pick a contract whose difficulty your rank allows (Easy for your first) and whose dependencies are done.
+1. Open the **Contribute** page. Pick a contract whose dependencies are done. The difficulty tells you what to expect. Easy is a good first one.
 2. Comment on the issue to claim it. Wait to be assigned.
 3. Read its goal, deliverable and acceptance criteria. Ask questions on the issue, not in private.
 

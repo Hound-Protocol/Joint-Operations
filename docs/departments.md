@@ -25,11 +25,11 @@ Ranks follow Mother Base staff grades. They depend on the number of **completed 
 
 | Rank | Completed contracts | Unlocks |
 |---|---|---|
-| — | 0 | Claim Easy contracts |
+| — | 0 | Take any contract |
 | **A** | 1 | Listed on the contributor wall, contractor role on Discord |
-| **A+** | 3 | Claim Medium contracts |
+| **A+** | 3 | Hold two contracts at once |
 | **A++** | 6 | Review Easy contracts with Quality |
-| **S** | 10 | Claim Hard contracts, review Medium contracts |
+| **S** | 10 | Review Medium contracts with Quality |
 | **S+** | 20 | Review Hard contracts, can be invited into a department, own a module area |
 | **S++** | 35 | Vote on priorities, seat candidate |
 
@@ -38,13 +38,13 @@ Ranks follow Mother Base staff grades. They depend on the number of **completed 
 - Ranks are never taken away for inactivity. Leaving and coming back is normal.
 
 ## Contract difficulty
-Every contract has a difficulty, shown in color everywhere, plus an effort estimate.
+Every contract has a difficulty, shown in color everywhere, plus an effort estimate. Difficulty is **information, not a gate**: it tells you what you are about to deal with, and anyone can take any contract.
 
-| Difficulty | Who can claim it | What makes it this hard |
-|---|---|---|
-| 🟢 **Easy** | Anyone | Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools. Usually a day or two |
-| 🟡 **Medium** | Rank A+ | Some research or design. Touches a few files or systems, or needs the game and a test rig. Usually a few days |
-| 🔴 **Hard** | Rank S | Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing. A week or more |
+| Difficulty | What makes it this hard |
+|---|---|
+| 🟢 **Easy** | Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools. Usually a day or two |
+| 🟡 **Medium** | Some research or design. Touches a few files or systems, or needs the game and a test rig. Usually a few days |
+| 🔴 **Hard** | Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing. A week or more |
 
 **Core** marks contracts on the 0.1 critical path, at any difficulty. They stay with the Development Department.
 

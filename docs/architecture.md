@@ -24,13 +24,14 @@ Decided by the Phase 1 spike R12 ([ADR 0002](decisions/0002-integration-strategy
 | 4 | Lua layer | Lua | Mission, player, marker and session logic in the game's own scripting |
 | 5 | Session layer | C++ / Lua | Player slots 1 to 16, join and leave, host authority, late-join snapshots |
 | 6 | Transport | C++ | Steam path through the game's Steam API; direct path through open-source GNS ([ADR 0003](decisions/0003-transport.md)) |
-| 7 | Matchmaking | — | Steam lobbies and friend invites. Never Konami's ([ADR 0006](decisions/0006-no-konami-services.md)). Proposed: a small session registry API so the website can list and join servers, with Steam lobby search as fallback ([ADR 0008](decisions/0008-browser-launch.md)) |
+| 7 | Matchmaking | — | Steam lobbies and Steam invites. Never Konami's ([ADR 0006](decisions/0006-no-konami-services.md)). Proposed: a small session registry API so the website can list and join servers, with Steam lobby search as fallback ([ADR 0008](decisions/0008-browser-launch.md)) |
 | 8 | Config and mod API | Lua / data | Settings now; extension points in Phase 4 |
 | 9 | Apps and web | Web | Website now. Proposed: the Servers page becomes a live server browser with one-click join (ADR 0008). Outside the game process |
 
 ## 4. Session model
 - Slot 1 is the host, who runs the session: helicopter seat, Aerial Command Center, briefings, radio calls, cutscenes and Mother Base command all belong to the host. Slots 2 to 16 are clients, each playing a staff member from the host's Mother Base roster.
 - Each player owns their own movement and camera. The host owns AI, mission state, world objects, time and weather.
+- **One shared alert** ([ADR 0012](decisions/0012-shared-alert.md)): enemies target players individually by distance and detection, but the session has a single alert status. Players join it as hidden, searched for or detected.
 - Late joiners receive a full snapshot, then updates.
 - If the host leaves, the session ends for 0.1. Host migration comes later.
 - Joint Operations uses its own save files, separate from the player's normal saves.

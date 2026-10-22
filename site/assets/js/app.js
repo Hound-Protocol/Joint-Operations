@@ -19,6 +19,7 @@
  *   window.JO.setMods({compatible, issues})
  *   window.JO.setDevlog(entries) replace the manual dev log entries
  *   window.JO.refresh()          clear cached GitHub data and reload the current view
+ *   window.JO.docsGraph()        read-only snapshot of the Docs neural web (used by tests)
  */
 (function () {
   "use strict";
@@ -539,6 +540,9 @@
           return '<div class="bf-pt" style="--k:' + k + '"><h4>' + (ICONS[h[0]] || "") + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div>";
         }).join("") + "</div></section>" +
         '<section class="bf-sec bf-hostline"><p>' + ICONS.host + hl(host.text || "") + '</p><ul class="chips">' + (host.places || []).map(function (pl, k) { return '<li style="--k:' + k + '">' + esc(pl) + "</li>"; }).join("") + "</ul></section>" +
+        (b.alert ? '<section class="bf-sec"><div class="label">' + esc(b.alert.title) + '</div><p class="bf-lead">' + hl(b.alert.text) + '</p><div class="alerts">' + (b.alert.states || []).map(function (s, k) {
+          return '<div class="al ' + esc(s[0]) + '" style="--k:' + k + '"><b>' + esc(s[1]) + "</b><p>" + hl(s[2]) + "</p></div>";
+        }).join("") + '</div><p class="source">' + hl(b.alert.foot || "") + ' · <a href="#/docs/adr-0012">ADR 0012</a></p></section>' : "") +
         "</div>";
       revealSections();
       refreshInfo();
@@ -707,8 +711,16 @@
       '<div class="tw"><table><tr>' + th("name", "Session") + th("host", "Host") + "<th>Details</th>" + th("players", "Players") + "<th>Status</th>" + th("ping", "Ping") + "</tr>" +
       rows + "</table></div>" +
       (rows ? "" : all.length ? '<div class="empty" id="noServers">No sessions match<small>Try other filters.</small></div>'
-        : '<div class="scanbox" id="noServers"><div class="radar" aria-hidden="true"><i class="sweep"></i><i class="blip"></i></div><div><b>No sessions yet</b><small>Live sessions appear here from version 0.1. Hosts list their game, you pick one and deploy.</small></div></div>') +
+        : '<div class="ops" id="noServers">' +
+            '<div class="ops-radar" aria-hidden="true"><i class="g"></i><i class="sw"></i><i class="ring r1"></i><i class="ring r2"></i>' +
+              '<i class="bp b1"></i><i class="bp b2"></i><i class="bp b3"></i><i class="bp b4"></i><i class="you"></i><i class="static"></i></div>' +
+            '<div class="ops-read"><div class="ops-k">SEARCH · AREA SCAN</div>' +
+              '<div class="ops-freq" aria-hidden="true"><span id="opsF">140.85</span><i>MHz</i></div>' +
+              '<div class="ops-alert"><b data-t="NO SESSIONS DETECTED">NO SESSIONS DETECTED</b></div>' +
+              '<div class="ops-bars" aria-hidden="true">' + new Array(14).join("<i></i>") + "</div>" +
+              '<small>Live sessions appear here from version 0.1. Hosts list their game, you pick one and deploy.</small></div></div>') +
       '<p class="source">Source: data/servers.json' + (data.serversHooked ? " · live hook" : "") + "</p>";
+    opsScan();
     $("#sq").addEventListener("input", function (e) { sessState.q = e.target.value; drawSessionsKeepFocus("#sq"); });
     $("#sr").addEventListener("change", function (e) { sessState.region = e.target.value; drawSessions(); });
     $("#sf").addEventListener("click", function () { sessState.hideFull = !sessState.hideFull; drawSessions(); });
@@ -726,23 +738,44 @@
     var n = $(sel); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { /* not a text field */ } }
   }
 
+  /* Empty Session Browser: a fast area scan that keeps tuning frequencies */
+  var opsTimer = 0;
+  function opsScan() {
+    clearInterval(opsTimer);
+    var el = $("#opsF"); if (!el || !opts.motion) return;
+    var f = 140.85;
+    opsTimer = setInterval(function () {
+      if (currentView !== "sessions" || !$("#opsF")) { clearInterval(opsTimer); return; }
+      f = 140 + Math.random() * 1.99;
+      $("#opsF").textContent = f.toFixed(2);
+    }, 110);
+  }
+
   /* Contribute */
   var MODULES = { launcher: "Launcher / Injector", hooks: "Game Hooks", session: "Session / Host", net: "Networking", modapi: "Mod API", lobby: "Lobby App", web: "Web", docs: "Docs", testing: "Testing", legal: "Legal" };
   // Contractor ranks, Mother Base style, by completed contracts (docs/departments.md)
-  var RANKS = [["—", 0, "Claim {{easy:Easy}} contracts"], ["A", 1, "Listed on the contributor wall, contractor role on Discord"], ["A+", 3, "Claim {{medium:Medium}} contracts"], ["A++", 6, "Review {{easy:Easy}} contracts with Quality"], ["S", 10, "Claim {{hard:Hard}} contracts, review {{medium:Medium}} ones"], ["S+", 20, "Review {{hard:Hard}} contracts, invitation into a department"], ["S++", 35, "Vote on priorities, seat candidate"]];
-  // Contract difficulty (docs/departments.md): color, who can claim it, and what makes a contract this hard
+  var RANKS = [["—", 0, "Take any contract, {{easy:Easy}} to {{hard:Hard}}"], ["A", 1, "Listed on the contributor wall, contractor role on Discord"], ["A+", 3, "Hold two contracts at once"], ["A++", 6, "Review {{easy:Easy}} contracts with Quality"], ["S", 10, "Review {{medium:Medium}} contracts with Quality"], ["S+", 20, "Review {{hard:Hard}} contracts, invitation into a department"], ["S++", 35, "Vote on priorities, seat candidate"]];
+  // Contract difficulty (docs/departments.md): information only, never a gate. Name, short label, and what makes it this hard
   var DIFF = {
-    easy: ["Easy", "Anyone", "Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools. Usually a day or two."],
-    medium: ["Medium", "Rank A+", "Some research or design. Touches a few files or systems, or needs the game and a test rig. Usually a few days."],
-    hard: ["Hard", "Rank S", "Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing. A week or more."]
+    easy: ["Easy", "Good first contract", "Clear steps and a small scope. No game knowledge needed: docs, test runs, small tools. Usually a day or two."],
+    medium: ["Medium", "Some experience", "Some research or design. Touches a few files or systems, or needs the game and a test rig. Usually a few days."],
+    hard: ["Hard", "Deep skills", "Unknown ground: reverse engineering, networking, core systems. Needs deep skills and careful testing. A week or more."]
   };
   var DIFF_ORDER = ["easy", "medium", "hard"];
+  // Board columns: field, description, modules, icon
+  var FIELDS = [
+    ["code", "Programming", "Networking, session, launcher and the mod API", ["net", "session", "launcher", "modapi"], "devlog"],
+    ["re", "Reverse engineering", "How the game works inside, and the hooks into it", ["hooks"], "sessions"],
+    ["qa", "Testing", "Test rigs, harnesses and bad-network profiles", ["testing"], "contribute"],
+    ["design", "Design and web", "Screens, the lobby and the website", ["lobby", "web"], "mods"],
+    ["docs", "Docs and legal", "Writing, research summaries and the legal position", ["docs", "legal"], "guides"]
+  ];
   var CORE_NOTE = "Core: on the 0.1 critical path. Development Department only.";
   // {{easy:Text}} color-codes a word by difficulty; {{key:Text}} uses the amber accent
   function tint(s) { return esc(s).replace(/\{\{(easy|medium|hard|key):([^}]+)\}\}/g, function (_, k, w) { return '<b class="tint ' + k + '">' + w + "</b>"; }); }
   function diffPill(c) {
     var d = DIFF[c.difficulty];
-    return (d ? '<span class="pill diff ' + esc(c.difficulty) + '" title="' + esc(d[0] + ": " + d[2] + " Who can claim it: " + d[1] + ".") + '">' + esc(d[0]) + "</span>" : "") +
+    return (d ? '<span class="pill diff ' + esc(c.difficulty) + '" title="' + esc(d[0] + ": " + d[2]) + '">' + esc(d[0]) + "</span>" : "") +
       (c.core ? '<span class="pill diff core" title="' + esc(CORE_NOTE) + '">Core</span>' : "");
   }
   var conState = { module: "all", status: "all", diff: "all", q: "" };
@@ -769,23 +802,41 @@
       if (conState.q && (c.id + " " + c.title + " " + (c.skills || "") + " " + (c.goal || "")).toLowerCase().indexOf(conState.q.toLowerCase()) < 0) return false;
       return true;
     });
-    var board = shown.map(function (c, n) {
-      var label = { planned: "Planned", open: c.blocked ? "Blocked" : "Open", claimed: "Claimed", review: "In review", done: "Done" }[c.status];
+    // Board: one column per field, cards sorted open first (easy to hard), finished work last
+    var STATUS = { planned: ["○", "Planned"], open: ["●", "Open"], blocked: ["✕", "Blocked"], claimed: ["◐", "Claimed"], review: ["◑", "In review"], done: ["✓", "Done"] };
+    var rank = { open: 0, planned: 1, claimed: 2, review: 3, blocked: 4, done: 5 };
+    function card(c, n) {
+      var st = c.blocked && c.status === "open" ? "blocked" : c.status, S = STATUS[st] || ["", st];
       var action = "";
-      if (c.live) action = '<a class="btn small' + (c.status === "open" && !c.blocked ? " primary" : "") + '" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">' + (c.status === "open" && !c.blocked ? "Claim on GitHub" : "View on GitHub") + "</a>";
+      if (c.live) action = '<a class="btn small' + (st === "open" ? " primary" : "") + '" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">' + (st === "open" ? "Claim on GitHub" : "View on GitHub") + "</a>";
       else action = '<a class="btn small" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nDifficulty: " + ((DIFF[c.difficulty] || [c.difficulty])[0]) + (c.core ? " (Core: Development Department only)" : "") + (c.effort ? "\nEffort: " + c.effort : "") + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",difficulty:" + c.difficulty + (c.core ? ",core" : ""))) + '" target="_blank" rel="noopener noreferrer">Open as issue</a>';
-      return '<article class="card d-' + esc(c.difficulty || "none") + '" style="--i:' + n + '"><div class="id">' + esc(c.id) + '</div><h3>' + esc(c.title) + "</h3><div>" +
-        (c.module ? '<span class="pill">' + esc(MODULES[c.module] || c.module) + "</span>" : "") +
-        diffPill(c) +
-        (c.effort ? '<span class="pill">' + esc(c.effort) + "</span>" : "") +
-        (c.skills ? '<span class="pill">' + esc(c.skills) + "</span>" : "") + "</div>" +
-        '<div class="status ' + (c.blocked && c.status === "open" ? "claimed" : c.status) + '">' + label + (c.by && c.by.length ? " · " + esc(c.by.join(", ")) : "") + "</div>" +
-        (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">Depends on ' + esc(c.depends.join(", ")) + "</div>" : "") +
-        (c.goal ? '<p class="goal">' + esc(c.goal) + "</p>" : "") +
-        ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary>Acceptance criteria</summary>' +
-          (c.deliverable ? '<div class="meta">Deliverable: ' + esc(c.deliverable) + "</div>" : "") +
-          (c.acceptance && c.acceptance.length ? "<ul>" + c.acceptance.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>" : "") + "</details>" : "") +
-        '<div class="actions">' + action + "</div></article>";
+      var done = st === "done";
+      return '<article class="kc st-' + esc(st) + " d-" + esc(c.difficulty || "none") + '" style="--i:' + n + '">' +
+        '<div class="kc-top"><span class="kc-id">' + esc(c.id) + '</span><span class="kc-st">' + S[0] + " " + S[1] + (c.by && c.by.length && !done ? " · " + esc(c.by.join(", ")) : "") + "</span></div>" +
+        "<h3>" + esc(c.title) + "</h3>" +
+        '<div class="kc-tags">' + diffPill(c) + (c.effort && !done ? '<span class="pill">' + esc(c.effort) + "</span>" : "") + (c.module ? '<span class="pill mod">' + esc(MODULES[c.module] || c.module) + "</span>" : "") + "</div>" +
+        (done
+          ? '<div class="kc-stamp">Completed' + (c.by && c.by.length ? " by " + esc(c.by.join(", ")) : "") + "</div>" + (c.live ? '<div class="actions">' + action + "</div>" : "")
+          : (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">' + (c.blocked ? "Waiting for " : "After ") + esc(c.depends.join(", ")) + "</div>" : "") +
+            (c.goal ? '<p class="goal">' + esc(c.goal) + "</p>" : "") +
+            ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary>Acceptance criteria</summary>' +
+              (c.deliverable ? '<div class="meta">Deliverable: ' + esc(c.deliverable) + "</div>" : "") +
+              (c.acceptance && c.acceptance.length ? "<ul>" + c.acceptance.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>" : "") + "</details>" : "") +
+            (c.skills ? '<div class="meta">Skills: ' + esc(c.skills) + "</div>" : "") +
+            '<div class="actions">' + action + "</div>") +
+        "</article>";
+    }
+    var board = FIELDS.map(function (f) {
+      var all = list.filter(function (c) { return f[3].indexOf(c.module) > -1; });
+      var cs = shown.filter(function (c) { return f[3].indexOf(c.module) > -1; }).sort(function (a, b) {
+        var sa = a.blocked && a.status === "open" ? "blocked" : a.status, sb = b.blocked && b.status === "open" ? "blocked" : b.status;
+        return (rank[sa] - rank[sb]) || (DIFF_ORDER.indexOf(a.difficulty) - DIFF_ORDER.indexOf(b.difficulty));
+      });
+      if (!all.length) return "";
+      var dn = all.filter(function (c) { return c.status === "done"; }).length;
+      return '<section class="kcol f-' + f[0] + '"><header class="kcol-h"><div class="kcol-t">' + menuIcon(f[4]) + "<b>" + esc(f[1]) + "</b><i>" + cs.length + "</i></div>" +
+        "<p>" + esc(f[2]) + '</p><div class="kcol-m"><span style="width:' + Math.round(dn / all.length * 100) + '%"></span></div><small>' + dn + " of " + all.length + " done</small></header>" +
+        '<div class="kcol-b">' + (cs.length ? cs.map(card).join("") : '<div class="kcol-e">Nothing matches the filters</div>') + "</div></section>";
     }).join("");
     // Module progress
     var mods = Object.keys(MODULES).map(function (k) {
@@ -811,18 +862,18 @@
         '<div class="diffs">' + DIFF_ORDER.map(function (k) {
           var d = DIFF[k], n2 = list.filter(function (c) { return c.difficulty === k; }).length;
           return '<button class="diffcard ' + k + (conState.diff === k ? " sel" : "") + '" data-diff="' + k + '" aria-pressed="' + (conState.diff === k) + '"><span class="dc-h"><b>' + d[0] + "</b><i>" + plural(n2, "contract") + "</i></span>" +
-            '<span class="dc-who">Who can claim it: ' + d[1] + '</span><span class="dc-what">' + d[2] + "</span></button>";
+            '<span class="dc-who">' + d[1] + '</span><span class="dc-what">' + d[2] + "</span></button>";
         }).join("") + "</div>" +
-        '<p class="sub diffnote"><span class="pill diff core">Core</span> ' + esc(CORE_NOTE) + " Click a difficulty to filter.</p>" +
+        '<p class="sub diffnote">Difficulty tells you what to expect. It is not a gate: anyone can take any contract. <span class="pill diff core">Core</span> ' + esc(CORE_NOTE) + " Click a difficulty to filter.</p>" +
         '<div class="toolbar"><input class="field grow" id="cq" type="search" placeholder="Search contracts" value="' + esc(conState.q) + '" aria-label="Search contracts">' +
         '<select class="field" id="cm" aria-label="Module">' + opt("all", conState.module, "All modules") + Object.keys(MODULES).map(function (k) { return opt(k, conState.module, MODULES[k]); }).join("") + "</select>" +
         '<select class="field" id="cs" aria-label="Status">' + opt("all", conState.status, "All statuses") + (live ? opt("open", conState.status, "Open") + opt("claimed", conState.status, "Claimed") + opt("review", conState.status, "In review") + opt("done", conState.status, "Done") : opt("planned", conState.status, "Planned")) + "</select>" +
         '<select class="field" id="cz" aria-label="Difficulty">' + opt("all", conState.diff, "All difficulties") + DIFF_ORDER.map(function (k) { return opt(k, conState.diff, DIFF[k][0]); }).join("") + "</select></div>" +
-        (board ? '<div class="cards' + (cardsAnim ? " anim" : "") + '">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
+        (shown.length ? '<div class="kanban' + (cardsAnim ? " anim" : "") + '">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
         '<p class="source">Source: ' + (live ? "GitHub issues labeled contract, live" : data.issues === null ? "data/contracts.json · GitHub could not be reached" : "data/contracts.json") + "</p>",
       how:
         '<div class="cols"><div class="panel"><div class="label">Taking a contract</div><ol class="steps">' +
-        "<li>Pick an open contract your rank allows. Start with an <b class=\"tint easy\">Easy</b> one.</li><li>Comment on the GitHub issue to claim it. A maintainer assigns you.</li><li>Do the work on a branch in your fork. Sign off every commit.</li><li>Open a pull request that says Closes #number.</li><li><b class=\"tint key\">Quality</b> checks it against the acceptance criteria and merges it. You get a <b class=\"tint key\">signed record</b> and move up in rank.</li></ol></div>" +
+        "<li>Pick any open contract. An <b class=\"tint easy\">Easy</b> one is a good start.</li><li>Comment on the GitHub issue to claim it. A maintainer assigns you.</li><li>Do the work on a branch in your fork. Sign off every commit.</li><li>Open a pull request that says Closes #number.</li><li><b class=\"tint key\">Quality</b> checks it against the acceptance criteria and merges it. You get a <b class=\"tint key\">signed record</b> and move up in rank.</li></ol></div>" +
         '<div class="panel"><div class="label">Rules</div><ol class="steps">' +
         "<li>Pull requests only. Nobody pushes to main.</li><li>No game files and no code copied from other mods.</li><li>AI tools are welcome for code and docs. No generative AI art, music or voices.</li><li>Nothing that touches Konami's servers or anti-cheat.</li><li>Leaving is fine. Post a short handoff note first.</li></ol></div></div>" +
         '<div class="toolbar" style="margin-top:14px"><a class="btn primary" href="#/guides/hp-gde-003">Quick start</a><a class="btn" href="#/guides/hp-pol-002">AI Use Policy</a><a class="btn" href="' + repoUrl("/fork") + '" target="_blank" rel="noopener noreferrer">Fork on GitHub</a><a class="btn" href="' + repoUrl("/issues?q=is%3Aopen+label%3Acontract") + '" target="_blank" rel="noopener noreferrer">Contracts on GitHub</a></div>' +
@@ -833,8 +884,8 @@
         '<p class="sub">Contractors are ranked like Mother Base staff, by the number of completed contracts. Each one also earns a <a href="#/verify">signed contributor record</a>.</p>' +
         '<div class="ranks">' + RANKS.slice(1).map(function (r, k) { return '<div class="rank" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " contract" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + tint(r[2]) + "</span></div>"; }).join("") + "</div>" +
         '<div class="label">Contract difficulty</div>' +
-        '<div class="tw"><table><tr><th>Difficulty</th><th>Who can claim it</th><th>What makes it this hard</th></tr>' + DIFF_ORDER.map(function (k) { return '<tr><td><span class="pill diff ' + k + '">' + DIFF[k][0] + "</span></td><td>" + DIFF[k][1] + "</td><td>" + DIFF[k][2] + "</td></tr>"; }).join("") +
-        '<tr><td><span class="pill diff core">Core</span></td><td>Development Department</td><td>Any difficulty, on the 0.1 critical path.</td></tr></table></div>' +
+        '<div class="tw"><table><tr><th>Difficulty</th><th>What makes it this hard</th></tr>' + DIFF_ORDER.map(function (k) { return '<tr><td><span class="pill diff ' + k + '">' + DIFF[k][0] + "</span></td><td>" + DIFF[k][2] + "</td></tr>"; }).join("") +
+        '<tr><td><span class="pill diff core">Core</span></td><td>On the 0.1 critical path, at any difficulty. Reserved for the Development Department until 0.1.</td></tr></table></div>' +
         '<div class="label">Contractors</div>' +
         (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Rank</th></tr>' + ops.map(function (u) {
           return '<tr><td><a href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u) + '</a></td><td class="num">' + pts[u].n + "</td><td>" + esc(rankFor(pts[u].n)[0]) + "</td></tr>";
@@ -911,7 +962,10 @@
     });
   }
   function viewDocs(id) {
+    if (docsMode() === "neural") return viewNeural(id);
+    NW = null;
     var v = $("#view");
+    if ($("#nw")) v.innerHTML = "";
     if (!$("#docNav")) v.innerHTML = shell("Library", "Docs", loading("Loading the library"));
     loadLocal("docs").then(function (man) {
       if (currentView !== "docs") return;
@@ -940,7 +994,7 @@
     var groups = [], by = {};
     docs.forEach(function (d) { if (!by[d.group]) { by[d.group] = []; groups.push(d.group); } by[d.group].push(d); });
     var q = docFilter.toLowerCase(), cur = docs.filter(function (d) { return d.id === active; })[0];
-    var html = '<button class="btn doc-toggle" id="dtog" aria-expanded="false" aria-controls="docNav">' + esc(cur ? cur.title : "Documents") + '<span aria-hidden="true">▾</span></button>' + '<input class="field" id="dq" type="search" placeholder="Search documents" value="' + esc(docFilter) + '" aria-label="Search documents">';
+    var html = '<button class="btn small nw-switch" id="toNeural">Neural view</button><button class="btn doc-toggle" id="dtog" aria-expanded="false" aria-controls="docNav">' + esc(cur ? cur.title : "Documents") + '<span aria-hidden="true">▾</span></button>' + '<input class="field" id="dq" type="search" placeholder="Search documents" value="' + esc(docFilter) + '" aria-label="Search documents">';
     groups.forEach(function (g) {
       var items = by[g].filter(function (d) { return !q || q.length >= 3 || d.title.toLowerCase().indexOf(q) > -1; });
       if (!items.length) return;
@@ -949,6 +1003,7 @@
       }).join("");
     });
     var nav = $("#docNav"); nav.innerHTML = html;
+    $("#toNeural").addEventListener("click", function () { setDocsMode("neural"); $("#view").innerHTML = ""; viewNeural(); });
     $("#dtog").addEventListener("click", function () { var open = nav.classList.toggle("open"); this.setAttribute("aria-expanded", String(open)); });
     $("#dq").addEventListener("input", function (e) {
       docFilter = e.target.value; var p = e.target.selectionStart; drawDocNav(docs, active);
@@ -961,6 +1016,408 @@
     if (EMBED && EMBED.content && EMBED.content[doc.path] != null) return Promise.resolve(docCache[doc.path] = EMBED.content[doc.path]);
     var raw = "https://raw.githubusercontent.com/" + cfg.repo + "/" + cfg.branch + "/" + doc.path;
     return fetchText("content/" + doc.path).catch(function () { return fetchText(raw); }).then(function (t) { docCache[doc.path] = t; return t; });
+  }
+
+  /* ---------------- Docs: neural web ----------------
+     A force-directed map of the documentation. Hubs are the library groups, neurons are documents,
+     synapses are links between documents. Clicking a neuron opens it as an A4 window beside the web;
+     windows stack, minimize to a dock (up to 5 documents) and restore. Closing everything rebuilds the web. */
+  var NW_COLORS = { Project: "#c9a24a", Technical: "#6fb7c9", Decisions: "#d77a6e", Research: "#8fbf7f", Community: "#a99be0", Legal: "#b7c2c6", Handbook: "#e6dcc0" };
+  var NW_BUILD_MS = 3000, NW_MAX_DOCS = 5;
+  var NW = null;
+  function docsMode() { return store.get("jo-docs-mode", "neural") === "classic" ? "classic" : "neural"; }
+  function setDocsMode(m) { store.set("jo-docs-mode", m); }
+  function nwColor(g) { return NW_COLORS[g] || "#c9d0d2"; }
+  function rgba(hex, a) { var n = parseInt(hex.slice(1), 16); return "rgba(" + (n >> 16) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")"; }
+
+  function viewNeural(id) {
+    if (NW && $("#nw")) { if (id) nwOpen(id); return; }
+    var v = $("#view");
+    v.innerHTML = shell("Library", "Docs", loading("Building the neural web"));
+    loadLocal("docs").then(function (man) {
+      if (currentView !== "docs") return;
+      var docs = (man && man.docs) || [];
+      $("#vb").innerHTML =
+        '<div class="nw" id="nw">' +
+          '<div class="nw-graph" id="nwGraph"><canvas id="nwCanvas" role="img" aria-label="Neural web of the documentation. Use the list below or Classic view to browse by keyboard."></canvas>' +
+            '<div class="nw-hud"><input class="field" id="nwq" type="search" placeholder="Search the web" aria-label="Search documents">' +
+              '<button class="btn small" id="nwClassic">Classic view</button></div>' +
+            '<div class="nw-legend" id="nwLegend"></div>' +
+            '<div class="nw-hint" id="nwHint">Point at a neuron to see it. Click to open.</div>' +
+            '<div class="nw-tip" id="nwTip" hidden></div>' +
+            '<ul class="sr-only" id="nwList"></ul></div>' +
+          '<div class="nw-stage" id="nwStage" aria-live="polite"></div>' +
+          '<div class="nw-dock" id="nwDock" aria-label="Minimized documents"></div>' +
+        "</div>";
+      $("#nwClassic").addEventListener("click", function () { setDocsMode("classic"); NW = null; viewDocs(id); });
+      nwInit(docs);
+      if (id) setTimeout(function () { if (NW) nwOpen(id); }, opts.motion ? NW_BUILD_MS * 0.6 : 0);
+    });
+  }
+
+  function nwInit(docs) {
+    var groups = [];
+    docs.forEach(function (d) { if (groups.indexOf(d.group) < 0) groups.push(d.group); });
+    var nodes = [{ id: "core", kind: "core", label: cfg.project || "Joint Operations", r: 24, group: null }];
+    groups.forEach(function (g) { nodes.push({ id: "hub:" + g, kind: "hub", label: g, r: 15, group: g }); });
+    groups.forEach(function (g) {
+      docs.forEach(function (d) { if (d.group === g) nodes.push({ id: d.id, kind: "doc", label: d.title, r: 8, group: g, doc: d }); });
+    });
+    var byId = {}, edges = [];
+    nodes.forEach(function (n, i) { n.i = i; n.x = 0; n.y = 0; n.vx = 0; n.vy = 0; n.s = 0; n.on = false; byId[n.id] = n; });
+    groups.forEach(function (g) { edges.push({ a: byId.core, b: byId["hub:" + g], kind: "trunk" }); });
+    nodes.forEach(function (n) { if (n.kind === "doc") { n.parent = byId["hub:" + n.group]; n.parent.kids = (n.parent.kids || 0) + 1; edges.push({ a: n.parent, b: n, kind: "branch" }); } });
+    NW = { ready: false, nodes: nodes, edges: edges, byId: byId, groups: groups, docs: docs, open: [], min: [], html: {}, text: {},
+      hover: null, iso: null, q: "", pulses: [], t0: performance.now(), raf: 0, drag: null, w: 0, h: 0 };
+    // Legend and keyboard list
+    $("#nwLegend").innerHTML = groups.map(function (g) {
+      return '<button class="nw-chip" data-g="' + esc(g) + '" style="--c:' + nwColor(g) + '"><i></i>' + esc(g) + "</button>";
+    }).join("");
+    $$("#nwLegend .nw-chip").forEach(function (b) {
+      b.addEventListener("click", function () { NW.iso = NW.iso === b.dataset.g ? null : b.dataset.g; $$("#nwLegend .nw-chip").forEach(function (x) { x.classList.toggle("on", x.dataset.g === NW.iso); }); });
+    });
+    $("#nwList").innerHTML = docs.map(function (d) { return '<li><button data-open="' + esc(d.id) + '">' + esc(d.group + ": " + d.title) + "</button></li>"; }).join("");
+    $$("#nwList [data-open]").forEach(function (b) { b.addEventListener("click", function () { nwOpen(b.dataset.open); }); });
+    $("#nwq").addEventListener("input", function (e) { NW.q = e.target.value.trim().toLowerCase(); });
+    $("#nwq").addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" || !NW.q) return;
+      var hit = NW.nodes.filter(function (n) { return n.kind === "doc" && n.label.toLowerCase().indexOf(NW.q) > -1; })[0];
+      if (hit) nwOpen(hit.id);
+    });
+    nwCanvas();
+    nwBuild();
+    // Synapses: links between documents, discovered from their text
+    docs.forEach(function (d) {
+      loadDoc(d).then(function (md) {
+        if (!NW || NW.docs !== docs) return;
+        NW.text[d.id] = md;
+        var re = /\]\(([^)\s#]+)(?:#[^)]*)?\)/g, m;
+        while ((m = re.exec(md))) {
+          if (/^(https?:|mailto:)/.test(m[1])) continue;
+          var p = resolvePath(d.path, m[1]), t = docs.filter(function (x) { return x.path === p; })[0];
+          if (!t || t.id === d.id) continue;
+          var a = NW.byId[d.id], b = NW.byId[t.id];
+          if (!NW.edges.some(function (e) { return (e.a === a && e.b === b) || (e.a === b && e.b === a); })) NW.edges.push({ a: a, b: b, kind: "syn", born: performance.now() });
+        }
+      }, function () { /* a missing document just has no synapses */ });
+    });
+  }
+
+  function nwCanvas() {
+    var c = $("#nwCanvas"), g = $("#nwGraph");
+    NW.ctx = c.getContext("2d");
+    function size() {
+      if (!NW) return;
+      var r = g.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+      NW.w = r.width; NW.h = r.height; NW.dpr = dpr; NW.k = Math.max(0.5, Math.min(1, Math.min(r.width, r.height) / 720));
+      c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
+      c.style.width = r.width + "px"; c.style.height = r.height + "px";
+    }
+    size();
+    if (window.ResizeObserver) { NW.ro = new ResizeObserver(size); NW.ro.observe(g); } else window.addEventListener("resize", size);
+    function at(e) { var r = c.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+    function pick(p) {
+      var best = null, bd = 1e9;
+      NW.nodes.forEach(function (n) {
+        if (!n.on) return;
+        var d = Math.hypot(n.x - p.x, n.y - p.y);
+        if (d < n.r * (NW.k || 1) * Math.max(1, n.s) + 6 && d < bd) { best = n; bd = d; }
+      });
+      return best;
+    }
+    c.addEventListener("pointermove", function (e) {
+      var p = at(e);
+      if (NW.drag) {
+        var n = NW.drag.n; if (Math.hypot(p.x - NW.drag.x, p.y - NW.drag.y) > 4) NW.drag.moved = true;
+        n.x = p.x; n.y = p.y; n.vx = n.vy = 0; return;
+      }
+      var h = pick(p);
+      if (h !== NW.hover) { NW.hover = h; if (h && h.kind === "doc") blip("move"); }
+      c.style.cursor = h ? "pointer" : "default";
+      nwTip(h);
+    });
+    c.addEventListener("pointerleave", function () { if (!NW.drag) { NW.hover = null; nwTip(null); } });
+    c.addEventListener("pointerdown", function (e) {
+      var n = pick(at(e)); if (!n) return;
+      NW.drag = { n: n, x: at(e).x, y: at(e).y, moved: false }; c.setPointerCapture(e.pointerId);
+    });
+    c.addEventListener("pointerup", function () {
+      var d = NW.drag; NW.drag = null;
+      if (!d || d.moved) return;
+      if (d.n.kind === "doc") nwOpen(d.n.id);
+      else if (d.n.kind === "hub") { NW.iso = NW.iso === d.n.group ? null : d.n.group; $$("#nwLegend .nw-chip").forEach(function (x) { x.classList.toggle("on", x.dataset.g === NW.iso); }); }
+      else nwOpen((NW.docs.filter(function (x) { return x.path === "README.md"; })[0] || NW.docs[0]).id);
+    });
+  }
+
+  function nwTip(n) {
+    var tip = $("#nwTip");
+    if (!tip) return;
+    if (!n || n.kind === "core") { tip.hidden = true; return; }
+    tip.hidden = false;
+    tip.style.setProperty("--c", nwColor(n.group));
+    tip.innerHTML = n.kind === "hub"
+      ? "<b>" + esc(n.label) + "</b><span>" + plural(NW.nodes.filter(function (x) { return x.group === n.group && x.kind === "doc"; }).length, "document") + " · click to focus</span>"
+      : "<b>" + esc(n.label) + "</b><span>" + esc(n.group) + " · click to open</span>";
+    tip.style.left = Math.min(NW.w - 240, Math.max(8, n.x + 16)) + "px";
+    tip.style.top = Math.max(8, n.y - 46) + "px";
+  }
+
+  function nwBuild() {
+    var n = NW.nodes.length, cx = NW.w / 2, cy = NW.h / 2;
+    NW.t0 = performance.now(); NW.ready = false; NW.pulses = [];
+    NW.nodes.forEach(function (nd, i) {
+      nd.on = false; nd.s = 0; nd.vx = nd.vy = 0;
+      if (nd.kind === "core") { nd.x = cx; nd.y = cy; }
+      else if (nd.kind === "hub") { var a = (NW.groups.indexOf(nd.group) / NW.groups.length) * Math.PI * 2 - Math.PI / 2; nd.ax = a; nd.x = cx + Math.cos(a) * 30; nd.y = cy + Math.sin(a) * 30; }
+      nd.spawn = opts.motion ? (i / Math.max(1, n - 1)) * (NW_BUILD_MS - 450) : 0;
+    });
+    if (!opts.motion) { NW.nodes.forEach(function (nd) { nwSpawn(nd); nd.s = 1; }); for (var k = 0; k < 400; k++) nwStep(); NW.ready = true; }
+    cancelAnimationFrame(NW.raf);
+    NW.raf = requestAnimationFrame(nwFrame);
+  }
+  function nwSpawn(nd) {
+    nd.on = true; nd.born = performance.now();
+    if (nd.kind === "doc") { var p = nd.parent; nd.x = p.x + (Math.random() - 0.5) * 30; nd.y = p.y + (Math.random() - 0.5) * 30; }
+  }
+
+  function nwStep() {
+    var N = NW.nodes, K = NW.k || 1, cx = NW.w / 2, cy = NW.h / 2, R = Math.min(NW.w, NW.h) * 0.34, i, j;
+    for (i = 0; i < N.length; i++) {
+      var a = N[i]; if (!a.on) continue;
+      for (j = i + 1; j < N.length; j++) {
+        var b = N[j]; if (!b.on) continue;
+        var dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy + 0.01, d = Math.sqrt(d2);
+        var gap = ((a.kind === "doc" && b.kind === "doc") ? 9 : 22) * K, min = (a.r + b.r) * K + gap;
+        var f = 0;
+        if (d < min) f = (min - d) * 0.25;                       // collision: keep space
+        else if (d < 260 * K) f = 520 * K * K / d2;               // soft repulsion
+        if (f) { var ux = dx / d, uy = dy / d; a.vx -= ux * f; a.vy -= uy * f; b.vx += ux * f; b.vy += uy * f; }
+      }
+    }
+    NW.edges.forEach(function (e) {
+      var a = e.a, b = e.b; if (!a.on || !b.on) return;
+      var dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy) + 0.01;
+      var L = e.kind === "trunk" ? R : e.kind === "branch" ? (46 + Math.sqrt(a.kids || 1) * 9) * K : 150 * K;
+      var k = e.kind === "syn" ? 0.0016 : 0.03, f = (d - L) * k, ux = dx / d, uy = dy / d;
+      if (a.kind !== "core") { a.vx += ux * f; a.vy += uy * f; }
+      b.vx -= ux * f; b.vy -= uy * f;
+    });
+    N.forEach(function (n) {
+      if (!n.on) return;
+      if (n.kind === "core") { n.x += (cx - n.x) * 0.2; n.y += (cy - n.y) * 0.2; n.vx = n.vy = 0; return; }
+      if (n.kind === "hub") { n.vx += (cx + Math.cos(n.ax) * R - n.x) * 0.012; n.vy += (cy + Math.sin(n.ax) * R - n.y) * 0.012; }
+      n.vx += (cx - n.x) * 0.0009; n.vy += (cy - n.y) * 0.0009;
+      if (NW.drag && NW.drag.n === n) return;
+      n.vx *= 0.8; n.vy *= 0.8;
+      var sp = Math.hypot(n.vx, n.vy); if (sp > 14) { n.vx *= 14 / sp; n.vy *= 14 / sp; }
+      n.x += n.vx; n.y += n.vy;
+      var rr = n.r * K + 4; n.x = Math.max(rr, Math.min(NW.w - rr, n.x)); n.y = Math.max(rr, Math.min(NW.h - rr, n.y));
+    });
+  }
+
+  function nwFrame(now) {
+    if (!NW || currentView !== "docs" || !$("#nwCanvas")) { if (NW && NW.ro) NW.ro.disconnect(); NW = null; return; }
+    var el = now - NW.t0;
+    NW.nodes.forEach(function (n) { if (!n.on && el >= n.spawn) nwSpawn(n); });
+    if (!NW.ready && el >= NW_BUILD_MS) { NW.ready = true; $("#nwHint") && $("#nwHint").classList.add("done"); }
+    nwStep();
+    // Neuron scale: grow in on spawn, bump forward by 10% on hover
+    NW.nodes.forEach(function (n) {
+      if (!n.on) return;
+      var target = n === NW.hover ? 1.1 : 1;
+      if (!opts.motion) { n.s = target; return; }
+      var age = (now - n.born) / 420;
+      n.s = age < 1 ? (function (t) { var c = 1.70158; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); })(age) * target : n.s + (target - n.s) * 0.2;
+    });
+    if (opts.motion && NW.ready && Math.random() < 0.18) {
+      var live = NW.edges.filter(function (e) { return e.a.on && e.b.on; });
+      if (live.length) NW.pulses.push({ e: live[Math.floor(Math.random() * live.length)], t: 0, rev: Math.random() < 0.5 });
+    }
+    nwDraw(now);
+    if (NW.hover) nwTip(NW.hover);
+    NW.raf = requestAnimationFrame(nwFrame);
+  }
+
+  function nwRelated(n) {
+    if (!n) return null;
+    var set = {}; set[n.id] = 1;
+    NW.edges.forEach(function (e) { if (e.a === n) set[e.b.id] = 1; if (e.b === n) set[e.a.id] = 1; });
+    return set;
+  }
+  function nwDraw(now) {
+    var c = NW.ctx, dpr = NW.dpr, rel = nwRelated(NW.hover), q = NW.q, iso = NW.iso;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, NW.w, NW.h);
+    function lit(n) {
+      if (rel) return !!rel[n.id];
+      if (iso) return n.group === iso || n.kind === "core";
+      if (q) return n.kind !== "doc" || n.label.toLowerCase().indexOf(q) > -1 || n.group.toLowerCase().indexOf(q) > -1;
+      return true;
+    }
+    function curve(e) {
+      var a = e.a, b = e.b, mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y, k = e.kind === "syn" ? 0.18 : 0.06;
+      return { x: mx - dy * k, y: my + dx * k };
+    }
+    // Synapses
+    NW.edges.forEach(function (e) {
+      if (!e.a.on || !e.b.on) return;
+      var on = lit(e.a) && lit(e.b), col = nwColor(e.b.group || e.a.group), grow = Math.min(1, (now - Math.max(e.b.born || 0, e.born || 0)) / 260);
+      if (!opts.motion) grow = 1;
+      var ctl = curve(e), ex = e.a.x + (e.b.x - e.a.x) * grow, ey = e.a.y + (e.b.y - e.a.y) * grow;
+      c.beginPath(); c.moveTo(e.a.x, e.a.y); c.quadraticCurveTo(e.a.x + (ctl.x - e.a.x) * grow, e.a.y + (ctl.y - e.a.y) * grow, ex, ey);
+      c.strokeStyle = e.kind === "syn" ? rgba(col, on ? (rel ? 0.55 : 0.16) : 0.04) : rgba(col, on ? (rel ? 0.85 : 0.42) : 0.07);
+      c.lineWidth = e.kind === "trunk" ? 1.6 : e.kind === "branch" ? 1.1 : 0.8;
+      if (e.kind === "syn") c.setLineDash([2, 4]); else c.setLineDash([]);
+      c.stroke();
+    });
+    c.setLineDash([]);
+    // Signals travelling along synapses
+    NW.pulses = NW.pulses.filter(function (p) {
+      p.t += 0.022; if (p.t >= 1) return false;
+      var e = p.e, t = p.rev ? 1 - p.t : p.t, ctl = curve(e), u = 1 - t;
+      var x = u * u * e.a.x + 2 * u * t * ctl.x + t * t * e.b.x, y = u * u * e.a.y + 2 * u * t * ctl.y + t * t * e.b.y;
+      var col = nwColor(e.b.group || e.a.group), on = lit(e.a) && lit(e.b);
+      c.beginPath(); c.arc(x, y, 1.8, 0, Math.PI * 2); c.fillStyle = rgba(col, on ? 0.95 : 0.2);
+      c.shadowColor = col; c.shadowBlur = on ? 10 : 0; c.fill(); c.shadowBlur = 0;
+      return true;
+    });
+    // Neurons, drawn back to front so the hovered one sits on top
+    NW.nodes.slice().sort(function (a, b) { return (a === NW.hover) - (b === NW.hover); }).forEach(function (n) {
+      if (!n.on || n.s <= 0.01) return;
+      var col = n.kind === "core" ? "#ffffff" : nwColor(n.group), on = lit(n), r = n.r * (NW.k || 1) * n.s, hov = n === NW.hover;
+      c.globalAlpha = on ? 1 : 0.22;
+      if (hov) { c.beginPath(); c.arc(n.x + 3, n.y + 6, r * 1.05, 0, Math.PI * 2); c.fillStyle = "rgba(0,0,0,.45)"; c.shadowColor = "rgba(0,0,0,.6)"; c.shadowBlur = 16; c.fill(); }
+      var g = c.createRadialGradient(n.x - r * 0.35, n.y - r * 0.35, r * 0.1, n.x, n.y, r);
+      g.addColorStop(0, rgba(col, 0.95)); g.addColorStop(0.6, rgba(col, n.kind === "doc" ? 0.55 : 0.35)); g.addColorStop(1, rgba(col, 0.12));
+      c.beginPath(); c.arc(n.x, n.y, r, 0, Math.PI * 2); c.fillStyle = g;
+      c.shadowColor = col; c.shadowBlur = hov ? 26 : n.kind === "doc" ? 8 : 16; c.fill(); c.shadowBlur = 0;
+      c.lineWidth = hov ? 1.6 : 1; c.strokeStyle = rgba(col, hov ? 1 : 0.8); c.stroke();
+      if (n.kind !== "doc") {
+        var rot = opts.motion ? now / (n.kind === "core" ? 5200 : 3600) : 0;
+        c.beginPath(); c.arc(n.x, n.y, r + 6, rot, rot + Math.PI * 1.4); c.strokeStyle = rgba(col, 0.55); c.lineWidth = 1; c.stroke();
+        if (n.kind === "core") { c.beginPath(); c.arc(n.x, n.y, r + 12, -rot, -rot + Math.PI * 0.8); c.strokeStyle = rgba("#c9a24a", 0.6); c.stroke(); }
+        c.font = (n.kind === "core" ? "500 12px " : "400 11px ") + "'Share Tech Mono', monospace";
+        c.textAlign = "center"; c.fillStyle = rgba(n.kind === "core" ? "#ffffff" : col, 0.95);
+        c.fillText(n.label.toUpperCase().split("").join(String.fromCharCode(8202)), n.x, n.y + r + (n.kind === "core" ? 28 : 20));
+      } else if (rel && rel[n.id] && !hov) {
+        c.font = "400 11px 'Barlow Semi Condensed', sans-serif"; c.textAlign = "center"; c.fillStyle = "rgba(233,237,238,.85)";
+        c.fillText(n.label.length > 28 ? n.label.slice(0, 27) + "…" : n.label, n.x, n.y - r - 7);
+      }
+      c.globalAlpha = 1;
+    });
+  }
+
+  /* ---- Document windows: stack, minimize to dock, restore ---- */
+  function nwDoc(id) { return NW.docs.filter(function (d) { return d.id === id; })[0]; }
+  function nwOpen(id) {
+    if (!NW) return;
+    var d = nwDoc(id); if (!d) return;
+    var mi = NW.min.indexOf(id);
+    if (mi > -1) { nwRestore(id); return; }
+    var oi = NW.open.indexOf(id);
+    if (oi > -1) NW.open.splice(oi, 1);
+    else if (NW.open.length + NW.min.length >= NW_MAX_DOCS) {
+      var drop = NW.min.length ? NW.min.shift() : NW.open.shift();
+      status(nwDoc(drop).title + " closed · up to " + NW_MAX_DOCS + " documents");
+    }
+    NW.open.push(id);
+    blip("go");
+    nwRender(id);
+  }
+  function nwContent(d) {
+    if (NW.html[d.id]) return Promise.resolve(NW.html[d.id]);
+    return loadDoc(d).then(function (md) { NW.text[d.id] = md; return (NW.html[d.id] = markdown(md, d.path)); });
+  }
+  function nwRender(animateId) {
+    var stage = $("#nwStage"), wrap = $("#nw");
+    if (!stage) return;
+    wrap.classList.toggle("reading", NW.open.length > 0);
+    var focus = NW.open[NW.open.length - 1];
+    stage.innerHTML = NW.open.map(function (id) {
+      var d = nwDoc(id), col = nwColor(d.group), f = id === focus;
+      return '<section class="dwin' + (f ? " focus" : "") + (f && id === animateId ? " enter" : "") + '" data-id="' + esc(id) + '" style="--c:' + col + '">' +
+        '<header class="dwin-h"' + (f ? "" : ' tabindex="0" role="button" aria-label="Bring ' + esc(d.title) + ' to front"') + '><i class="dot"></i><b>' + esc(d.title) + "</b><span>" + esc(d.group) + "</span>" +
+        '<button class="wb" data-act="min" aria-label="Minimize ' + esc(d.title) + '">–</button><button class="wb" data-act="close" aria-label="Close ' + esc(d.title) + '">×</button></header>' +
+        (f ? '<div class="dwin-b"><article class="doc a4" id="nwBody">' + loading("Opening " + d.title) + "</article></div>" +
+          '<footer class="dwin-f"><span>' + esc(d.path) + '</span><button class="lnk nw-classic">Classic view</button><a href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + d.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></footer>' : "") +
+        "</section>";
+    }).join("");
+    $$("#nwStage .nw-classic").forEach(function (b) { b.addEventListener("click", function () { $("#nwClassic").click(); }); });
+    $$("#nwStage .dwin").forEach(function (w) {
+      var id = w.dataset.id;
+      w.querySelector('[data-act="min"]').addEventListener("click", function (e) { e.stopPropagation(); nwMinimize(id); });
+      w.querySelector('[data-act="close"]').addEventListener("click", function (e) { e.stopPropagation(); nwClose(id); });
+      if (!w.classList.contains("focus")) {
+        var h = w.querySelector(".dwin-h");
+        h.addEventListener("click", function () { nwOpen(id); });
+        h.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); nwOpen(id); } });
+      }
+    });
+    if (focus) {
+      var d = nwDoc(focus);
+      nwContent(d).then(function (html) {
+        var b = $("#nwBody"); if (!b || !NW || NW.open[NW.open.length - 1] !== focus) return;
+        b.innerHTML = html;
+        $$("a[href^='#/docs/']", b).forEach(function (a) {
+          a.addEventListener("click", function (e) { e.preventDefault(); nwOpen(a.getAttribute("href").slice(7)); });
+        });
+        led($("#ledInfo"), d.title);
+      }, function () { var b = $("#nwBody"); if (b) b.innerHTML = '<div class="empty">Could not load this document<small>Open it on GitHub instead.</small></div>'; });
+    }
+    nwDock();
+  }
+  function nwFly(fromEl, toEl, done) {
+    if (!opts.motion || !fromEl || !toEl || !fromEl.animate) { done(); return; }
+    var a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+    var g = document.createElement("div"); g.className = "nw-ghost";
+    g.style.cssText = "left:" + a.left + "px;top:" + a.top + "px;width:" + a.width + "px;height:" + a.height + "px";
+    g.style.setProperty("--c", getComputedStyle(fromEl).getPropertyValue("--c") || "#c9a24a");
+    document.body.appendChild(g);
+    var sx = b.width / a.width, sy = b.height / a.height, tx = b.left - a.left, ty = b.top - a.top;
+    g.animate([{ transform: "none", opacity: 1 }, { transform: "translate(" + tx + "px," + ty + "px) scale(" + sx + "," + sy + ")", opacity: 0.6 }],
+      { duration: 340, easing: "cubic-bezier(.2,.8,.2,1)" }).onfinish = function () { g.remove(); done(); };
+  }
+  function nwMinimize(id) {
+    var w = $('#nwStage .dwin[data-id="' + id + '"]');
+    NW.open.splice(NW.open.indexOf(id), 1);
+    NW.min.push(id);
+    nwDock();
+    var tab = $('#nwDock .dtab[data-id="' + id + '"]');
+    if (tab) tab.style.visibility = "hidden";
+    nwFly(w, tab, function () { if (tab) tab.style.visibility = ""; nwRender(); });
+  }
+  function nwRestore(id) {
+    var tab = $('#nwDock .dtab[data-id="' + id + '"]');
+    NW.min.splice(NW.min.indexOf(id), 1);
+    NW.open.push(id);
+    $("#nw").classList.add("reading");
+    nwFly(tab, $("#nwStage"), function () { nwRender(id); });
+    if (tab) tab.remove();
+  }
+  function nwClose(id) {
+    var i = NW.open.indexOf(id); if (i > -1) NW.open.splice(i, 1);
+    if (!NW.open.length && !NW.min.length) {
+      // Interface closed: reset and rebuild the web from the first neuron
+      nwRender();
+      NW.hover = null; NW.iso = null; $$("#nwLegend .nw-chip").forEach(function (x) { x.classList.remove("on"); });
+      setTimeout(function () { if (NW && $("#nw")) { $("#nwHint") && $("#nwHint").classList.remove("done"); nwBuild(); } }, opts.motion ? 420 : 0);
+      led($("#ledInfo"), "Docs");
+      return;
+    }
+    nwRender();
+  }
+  function nwDock() {
+    var dock = $("#nwDock"); if (!dock) return;
+    dock.classList.toggle("on", NW.min.length > 0);
+    $("#nw").classList.toggle("docked", NW.min.length > 0);
+    dock.innerHTML = NW.min.map(function (id) {
+      var d = nwDoc(id), txt = (NW.text[id] || "").replace(/^(#|Code:|Status:|Author:).*$/gm, "").replace(/[#>*`|_\[\]()-]/g, " ").replace(/\s+/g, " ").trim().slice(0, 420);
+      return '<button class="dtab" data-id="' + esc(id) + '" style="--c:' + nwColor(d.group) + '" aria-label="Restore ' + esc(d.title) + '">' +
+        '<span class="pv" aria-hidden="true"><b>' + esc(d.title) + "</b><i>" + esc(d.group) + "</i><span>" + esc(txt) + "</span></span>" +
+        '<i class="dot"></i><span class="tt">' + esc(d.title) + "</span></button>";
+    }).join("");
+    $$("#nwDock .dtab").forEach(function (t) { t.addEventListener("click", function () { nwRestore(t.dataset.id); }); });
   }
 
   /* Options */
@@ -1281,6 +1738,7 @@
     setServers: function (list) { data.servers = { servers: Array.isArray(list) ? list : [] }; data.serversHooked = true; if (currentView === "sessions") drawSessions(); refreshInfo(); },
     setMods: function (m) { data.mods = { compatible: (m && m.compatible) || [], issues: (m && m.issues) || [] }; if (currentView === "mods") drawMods(); refreshInfo(); },
     setDevlog: function (list) { data.devlog = { entries: Array.isArray(list) ? list : [] }; if (currentView === "devlog") drawDevlog(); refreshInfo(); },
+    docsGraph: function () { return NW ? { ready: NW.ready, open: NW.open.slice(), min: NW.min.slice(), nodes: NW.nodes.map(function (n) { return { id: n.id, kind: n.kind, x: n.x, y: n.y, on: n.on, s: n.s }; }) } : null; },
     refresh: function () { session.clear("jo-gh:"); data.releases = undefined; data.issues = undefined; data.commits = undefined; preload(); if (currentView) route(); }
   };
 

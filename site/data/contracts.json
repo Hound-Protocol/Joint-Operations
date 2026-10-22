@@ -171,7 +171,7 @@
       "deliverable": "research/state-inventory.md",
       "acceptance": [
         "Table of state items: owner (host or client), update rate, size estimate, priority",
-        "Covers players, enemies, vehicles, world objects, mission flags, time and weather",
+        "Covers players, enemies, vehicles, world objects, mission flags, time and weather, plus the shared alert status and who has joined it (ADR 0012)",
         "Bandwidth estimate per player at 16 players",
         "Reviewed by the networking module owner"
       ],

@@ -6,7 +6,7 @@ labels: contract
 ---
 
 Module: <!-- launcher, hooks, session, net, modapi, lobby, web, docs, testing, legal -->
-Difficulty: <!-- easy (anyone), medium (rank A+), hard (rank S); add "core" for 0.1 critical-path work (Development Dept only) -->
+Difficulty: <!-- easy, medium or hard (information only); add "core" for 0.1 critical-path work (Development Dept only) -->
 Effort: <!-- for example: up to 1 day, 2–3 days, 1 week -->
 Skills:
 

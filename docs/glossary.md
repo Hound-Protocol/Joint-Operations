@@ -4,6 +4,8 @@
 |---|---|
 | Acceptance criteria | The checklist a reviewer uses to accept a contract (see contracts.md) |
 | ADR | Architecture decision record, kept in `docs/decisions/` |
+| Alert status | The one session-wide state, hidden, searched for or detected, that players join (ADR 0012) |
+| Client | A player other than the host, playing a Mother Base staff member |
 | Contract | A task on the contract board: a GitHub issue labeled `contract` |
 | Contractor rank | A, A+, A++, S, S+ or S++, by number of completed contracts |
 | Contributor record | A signed statement that a person completed a contract, checked on the Verify page |
@@ -25,7 +27,6 @@
 | SDR | Steam Datagram Relay, Valve's relay network for game traffic |
 | Seat | A role with duties, a term and at least two holders (see governance) |
 | Session registry | Proposed public API that lists live Joint Operations sessions for the website (ADR 0008) |
-| Client | A player other than the host, playing a Mother Base staff member |
 | Sortie Prep | The game's pre-deployment screen: equipment, buddy, time and landing zone |
 | Spike | A time-boxed experiment to answer one technical question |
 | Strategy A / B | Engine-native multiplayer / our own netcode (ADR 0002) |

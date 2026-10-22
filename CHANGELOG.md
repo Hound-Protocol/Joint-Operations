@@ -2,6 +2,26 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.5 · Neural docs · 2026-10-22
+The documentation becomes a living map, and the Contribute board gets columns.
+
+### Added
+- **Neural web for Docs:** every document is a neuron, grouped around colored hubs (Project, Technical, Decisions, Research, Community, Legal, Handbook), with synapses for the links between documents. Real physics: neurons collide, keep their distance and can be dragged.
+  - Builds itself from the first neuron to the last in 3 seconds each time you open it, with signals travelling along the synapses.
+  - Point at a neuron to highlight it and its connections. It lifts toward you by 10%.
+  - Click to slide the web aside and open the document as an A4 window with minimize and close.
+  - Several open documents stack: their headers stay visible and the focused one sits at the bottom.
+  - Minimize sends a document to a dock at the bottom center (up to 5). Hover a tab for a preview, click to restore with an animation.
+  - Close everything and the web resets and rebuilds.
+  - Search, group filters, a keyboard-accessible list, and a **Classic view** switch (remembered per browser).
+- **Contribute board in columns by field:** Programming, Reverse engineering, Testing, Design and web, Docs and legal, each with a progress bar. Cards now show their status clearly: open (green), planned (dashed), claimed or in review (amber), blocked (red stripes), done (green stamp, struck-through title, sorted last).
+- **About: one shared alert** ([ADR 0012](docs/decisions/0012-shared-alert.md)). Enemies target players individually by distance and detection, but the session has one status, hidden, searched for or detected, that players join.
+- **Session Browser empty state:** a faster, flashier area scan with a green grid radar, sweep, pings, enemy blips, static bursts, frequency tuning and a glitching "No sessions detected" alert.
+
+### Changed
+- **Contract difficulty is information, not a gate.** Anyone can take any contract. Ranks now give claim capacity and review rights instead.
+- Wording: the host runs the missions, clients share the session. "Friends" is gone.
+
 ## v0.0.4 · Security and keycards · 2026-10-22
 Backups, verified staff identities, keycard access levels and clearer wording.
 

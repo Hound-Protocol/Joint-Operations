@@ -45,9 +45,16 @@ async def check(browser, name, size):
     await page.goto(BASE + "#/roadmap"); await page.wait_for_timeout(900)
     if await page.locator(".bf-road .ph").count() < 3:
         failures.append("roadmap: phases missing")
-    await page.goto(BASE + "#/docs/plan"); await page.wait_for_timeout(900)
+    await page.goto(BASE + "#/docs/plan"); await page.wait_for_timeout(3600)
+    if len(await page.inner_text("#nwBody")) < 200:
+        failures.append("docs: plan did not open in the neural web")
+    graph = await page.evaluate("JO.docsGraph()")
+    if not graph or not graph["ready"] or not all(n["on"] for n in graph["nodes"]):
+        failures.append("docs: neural web did not finish building in time")
+    await page.evaluate("document.querySelector('#nwClassic').click()"); await page.wait_for_timeout(900)
     if len(await page.inner_text("#docBody")) < 200:
-        failures.append("docs: plan did not render")
+        failures.append("docs: classic view did not render")
+    await page.evaluate("document.querySelector('#toNeural').click()"); await page.wait_for_timeout(300)
     await page.goto(BASE + "#/options"); await page.wait_for_timeout(500)
     await page.click('[data-opt="grid"]')
     if "no-grid" not in (await page.evaluate("document.body.className")):

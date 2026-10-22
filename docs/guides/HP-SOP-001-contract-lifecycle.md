@@ -9,7 +9,7 @@ How a piece of work goes from an idea to a signed contributor record.
 |---|---|---|---|
 | 1 | **Draft** | Development | Entry in `site/data/contracts.json` with goal, deliverable, acceptance criteria, difficulty and effort |
 | 2 | **Publish** | Development | Issue created with `tools/publish_contracts.py`, labels `contract`, `module:*`, `difficulty:easy|medium|hard`, and `core` where it applies |
-| 3 | **Claim** | Contractor | Comment "I'll take this". A maintainer checks the rank against the difficulty and assigns |
+| 3 | **Claim** | Contractor | Comment "I'll take this". A maintainer checks the claim limit and assigns |
 | 4 | **Deliver** | Contractor | Pull request with `Closes #<issue>`, template filled in |
 | 5 | **Review** | Quality | Every acceptance criterion checked, CI green ([HP-SOP-002](HP-SOP-002-pull-request-review.md)) |
 | 6 | **Merge** | Quality | Pull request merged, issue closes |
@@ -22,7 +22,7 @@ How a piece of work goes from an idea to a signed contributor record.
 - List dependencies, and background links to research and decisions.
 
 ## Claiming
-- One open contract per person below rank S. Two from S upward.
+- One open contract per person, two from rank A+ upward. Difficulty never limits who can take a contract.
 - If there is no progress update for 14 days, a maintainer asks. After 7 more days without an answer, the contract is unassigned.
 
 ## Handoff when leaving

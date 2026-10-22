@@ -21,7 +21,7 @@ SITE = "https://hound-protocol.github.io/Joint-Operations/"
 MODULES = {"launcher": "Launcher / Injector", "hooks": "Game Hooks", "session": "Session / Host", "net": "Networking", "modapi": "Mod API",
            "lobby": "Lobby App", "web": "Web", "docs": "Docs", "testing": "Testing", "legal": "Legal"}
 LABEL_COLORS = {"contract": "c9a24a", "module": "4a6b7a", "difficulty:easy": "7fbf8a", "difficulty:medium": "e3c45a", "difficulty:hard": "d77a6e", "core": "e9edee"}
-DIFF = {"easy": "Easy (anyone)", "medium": "Medium (rank A+)", "hard": "Hard (rank S)"}
+DIFF = {"easy": "Easy", "medium": "Medium", "hard": "Hard"}
 
 
 def gh(*args, body=None):
