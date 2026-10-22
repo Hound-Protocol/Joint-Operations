@@ -80,6 +80,97 @@
       "path": "docs/guides/HP-GDE-006-admin-handbook.md"
     },
     {
+      "id": "hp-gde-007",
+      "code": "HP-GDE-007",
+      "title": "Sessions Guide: Hosting, Joining and the Shared Alert",
+      "type": "Guide",
+      "audience": "Players",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Development",
+      "for": "players",
+      "summary": "Hosting, joining from the Session Browser, and how the one shared alert works.",
+      "path": "docs/guides/HP-GDE-007-sessions.md"
+    },
+    {
+      "id": "hp-gde-008",
+      "code": "HP-GDE-008",
+      "title": "Discord Member Guide",
+      "type": "Guide",
+      "audience": "Everyone",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "everyone on the Hound Protocol Discord",
+      "summary": "Joining the Discord, the channels, how roles and ranks are given, and the rules in short.",
+      "path": "docs/guides/HP-GDE-008-discord-members.md"
+    },
+    {
+      "id": "hp-gde-009",
+      "code": "HP-GDE-009",
+      "title": "Contractor Grades, Records and Hound IDs",
+      "type": "Guide",
+      "audience": "Contributors",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "contractors and staff",
+      "summary": "Grades E to S++ per field, signed contributor records, and checking a Hound ID.",
+      "path": "docs/guides/HP-GDE-009-grades-records-hound-ids.md"
+    },
+    {
+      "id": "hp-gde-010",
+      "code": "HP-GDE-010",
+      "title": "Account Security Setup",
+      "type": "Guide",
+      "audience": "Contributors",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "department members, contractors and anyone with access",
+      "summary": "Two-factor, passkeys, signed commits and Discord security, step by step.",
+      "path": "docs/guides/HP-GDE-010-account-security.md"
+    },
+    {
+      "id": "hp-gde-011",
+      "code": "HP-GDE-011",
+      "title": "Brand and Media Guide",
+      "type": "Guide",
+      "audience": "Everyone",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "everyone who makes graphics, posts or videos about the project",
+      "summary": "Using the two brands, their colors and files, third-party graphics and posting rules.",
+      "path": "docs/guides/HP-GDE-011-brand-and-media.md"
+    },
+    {
+      "id": "hp-gde-012",
+      "code": "HP-GDE-012",
+      "title": "Website Maintainer Guide",
+      "type": "Guide",
+      "audience": "Contributors",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Development",
+      "for": "contributors who change the website",
+      "summary": "How the website is built, where content lives, and how to change it safely.",
+      "path": "docs/guides/HP-GDE-012-website-maintainers.md"
+    },
+    {
+      "id": "hp-gde-013",
+      "code": "HP-GDE-013",
+      "title": "Writing Research Notes",
+      "type": "Guide",
+      "audience": "Contributors",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Development",
+      "for": "contractors in Architecture Research and anyone writing in research/",
+      "summary": "How to write clean-room research notes: header, structure, evidence and sources.",
+      "path": "docs/guides/HP-GDE-013-research-notes.md"
+    },
+    {
       "id": "hp-pol-001",
       "code": "HP-POL-001",
       "title": "Contributor Policy",
@@ -169,6 +260,19 @@
       "for": "everyone in Hound Protocol, on GitHub, Discord and the website",
       "summary": "Who decides what: social, technical and organizational authority, open communication and appeals.",
       "path": "docs/guides/HP-POL-007-chain-of-command.md"
+    },
+    {
+      "id": "hp-pol-008",
+      "code": "HP-POL-008",
+      "title": "Licensing and Attribution Policy",
+      "type": "Policy",
+      "audience": "Everyone",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Administration",
+      "for": "all code, documents, graphics and contributions",
+      "summary": "Our licenses, credit for people and AI agents, third-party material and forks.",
+      "path": "docs/guides/HP-POL-008-licensing-and-attribution.md"
     },
     {
       "id": "hp-sop-001",
@@ -286,6 +390,19 @@
       "for": "the owner (LV7) and Administration",
       "summary": "Weekly encrypted backups on the owner's computer and Google Drive, and how to restore.",
       "path": "docs/guides/HP-SOP-009-backup-and-restore.md"
+    },
+    {
+      "id": "hp-sop-010",
+      "code": "HP-SOP-010",
+      "title": "Publishing Contracts as GitHub Issues",
+      "type": "Procedure",
+      "audience": "Administration",
+      "version": "1.0",
+      "effective": "2026-10-22",
+      "owner": "Development",
+      "for": "Development and Administration, from version 0.1",
+      "summary": "Turning planned contracts into GitHub issues when contracts open at 0.1.",
+      "path": "docs/guides/HP-SOP-010-publishing-contracts.md"
     }
   ]
 }

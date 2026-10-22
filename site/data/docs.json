@@ -350,6 +350,48 @@
       "path": "docs/guides/HP-GDE-006-admin-handbook.md"
     },
     {
+      "id": "hp-gde-007",
+      "title": "HP-GDE-007 Sessions Guide: Hosting, Joining and the Shared Alert",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-007-sessions.md"
+    },
+    {
+      "id": "hp-gde-008",
+      "title": "HP-GDE-008 Discord Member Guide",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-008-discord-members.md"
+    },
+    {
+      "id": "hp-gde-009",
+      "title": "HP-GDE-009 Contractor Grades, Records and Hound IDs",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-009-grades-records-hound-ids.md"
+    },
+    {
+      "id": "hp-gde-010",
+      "title": "HP-GDE-010 Account Security Setup",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-010-account-security.md"
+    },
+    {
+      "id": "hp-gde-011",
+      "title": "HP-GDE-011 Brand and Media Guide",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-011-brand-and-media.md"
+    },
+    {
+      "id": "hp-gde-012",
+      "title": "HP-GDE-012 Website Maintainer Guide",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-012-website-maintainers.md"
+    },
+    {
+      "id": "hp-gde-013",
+      "title": "HP-GDE-013 Writing Research Notes",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-013-research-notes.md"
+    },
+    {
       "id": "hp-pol-001",
       "title": "HP-POL-001 Contributor Policy",
       "group": "Handbook",
@@ -390,6 +432,12 @@
       "title": "HP-POL-007 Chain of Command and Open Communication",
       "group": "Handbook",
       "path": "docs/guides/HP-POL-007-chain-of-command.md"
+    },
+    {
+      "id": "hp-pol-008",
+      "title": "HP-POL-008 Licensing and Attribution Policy",
+      "group": "Handbook",
+      "path": "docs/guides/HP-POL-008-licensing-and-attribution.md"
     },
     {
       "id": "hp-sop-001",
@@ -444,6 +492,12 @@
       "title": "HP-SOP-009 Backup and Restore",
       "group": "Handbook",
       "path": "docs/guides/HP-SOP-009-backup-and-restore.md"
+    },
+    {
+      "id": "hp-sop-010",
+      "title": "HP-SOP-010 Publishing Contracts as GitHub Issues",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-010-publishing-contracts.md"
     }
   ]
 }

@@ -2,6 +2,20 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.12 · Handbook expansion · 2026-10-22
+Nine new handbook documents, so everything in the docs has a practical guide (31 in total):
+
+- **HP-GDE-007 Sessions Guide:** hosting, joining from the Session Browser, and the one shared alert.
+- **HP-GDE-008 Discord Member Guide:** channels, roles and ranks, who decides what, the rules in short.
+- **HP-GDE-009 Contractor Grades, Records and Hound IDs.**
+- **HP-GDE-010 Account Security Setup:** two-factor, passkeys, signed commits, Discord.
+- **HP-GDE-011 Brand and Media Guide:** the two brands, their colors and files, third-party graphics, posting.
+- **HP-GDE-012 Website Maintainer Guide:** how the site is built and changed safely.
+- **HP-GDE-013 Writing Research Notes:** clean-room notes with evidence and sources.
+- **HP-POL-008 Licensing and Attribution Policy:** our licenses, credit for people and AI agents, third-party material.
+- **HP-SOP-010 Publishing Contracts as GitHub Issues** (from 0.1).
+- `THIRD_PARTY_NOTICES.md` started (fonts).
+
 ## v0.0.11 · Click to copy · 2026-10-22
 - **Click to copy:** commands, file names and code in documents, guides and steps copy to the clipboard with one click. Pointing at them types "click to copy this text"; after a click it says "copied to clipboard". Works by keyboard (Tab, then Enter) and in older browsers.
 - **Handbook PDFs:** every guide has a **Download PDF** button. The PDFs are built from the print layout when the site deploys (`tools/guides_pdf.py`), so they work even where the browser's print dialog does not open (for example Flatpak browsers without a print portal).
