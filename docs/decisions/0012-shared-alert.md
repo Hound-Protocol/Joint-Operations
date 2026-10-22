@@ -1,27 +1,28 @@
-# 0012: One shared alert status
-Status: Accepted · Date: 2026-10-22 · Deciders: project lead
+# 0012: One shared detection status
+Status: Accepted (revised 2026-10-23; the two additions in Decision 4 and 5 are proposed, awaiting the project lead's confirmation) · Date: 2026-10-22 · Deciders: project lead
 
 ## Context
-In single-player, the game has one alert state for one player. With a host and up to 15 clients, we must decide how detection works: does each player have their own alert, or does the session share one?
+In single player the game has one player to notice, report and hunt. With a host and up to 15 clients we must decide how detection works. How the game's AI does it today is in [research/ai-system.md](../../research/ai-system.md): soldiers notice by sight and sound, report by radio to their command post (CP), and **each CP keeps its own alert phase** (Sneak, Caution, Evasion, Alert).
 
 ## Decision
-1. **Enemies target players individually.** Each enemy reacts to the players it can actually perceive, by distance and by detection (sight, noise, evidence). Who gets shot at depends on who is seen and who is close.
-2. **The alert status is shared.** The session has **one** status, and players **join** it. Nobody has a private alert of their own.
+1. **The session has one detection status:** Hidden, Searching or Detected.
+2. **A player who is spotted joins the status.** Enemies hunt the players who are part of it.
+3. **Everyone else stays Hidden** unless they are spotted too. Then they join the same status, not a new one. When it winds down, everyone in it returns to Hidden together.
+4. *Proposed:* **Suspicion without a culprit.** When guards find a body or hear a noise without seeing anyone, the status goes to Searching but **nobody joins** until a player is actually seen.
+5. *Proposed:* **Per-outpost underneath.** Internally each CP keeps its own phase, as the game does; the session shows the highest one. So a fight at one outpost does not wake an outpost on the other side of the map, while players still see one status.
 
-| Status | Meaning |
+| Status | Game phase |
 |---|---|
-| **Hidden** | Not noticed by enemies. |
-| **Searched for** | Enemies are suspicious and searching. A player who draws suspicion joins the search. |
-| **Detected** | Spotted. The first detected player starts the detection pipeline. Every player spotted after that **joins the same pipeline and status**, not a new one. |
-
-3. Example: if one client is detected, only that client is hunted while the others stay hidden. If a second player is spotted, they join the existing alert. When the alert ends, everyone in it returns together through the game's normal phases.
+| Hidden | Sneak |
+| Searching | Caution or Evasion |
+| Detected | Alert (combat) |
 
 ## Consequences
-- The host owns the single alert state machine (see [ADR 0007](0007-host-authority.md)) and a membership list: which players are hidden, searched for or detected.
-- Sync needs the alert state and the membership list, plus per-enemy targeting. This goes into the state inventory (R4, contract C08).
-- Phase 1 research must find how the game's own alert phases and enemy perception can be driven per player (R3, R4).
-- HUD: each player sees the session status and whether they are part of it.
+- The host owns every CP's phase and a **membership list**: which players each CP knows about ([ADR 0007](0007-host-authority.md)).
+- Perception must see the clients' characters, and search and combat must target members only. These are the main research questions (C28, C06, C19).
+- Sync carries the session status, the membership list and the CP phases (contract C08).
+- HUD: each player sees the session status and whether they are part of it (contract C23).
 
 ## Alternatives considered
-- **One alert for everyone** (anyone detected puts all players on alert): simple, but it punishes stealthy players for others' mistakes.
-- **Fully separate alerts per player:** breaks the shared world, because enemies cannot be in two alert states at once.
+- **One alert for everyone** (anyone spotted puts all players on alert): simple, but punishes stealthy players for others' mistakes.
+- **A separate alert per player:** breaks the shared world; a guard cannot be calm and in combat at the same time.

@@ -19,9 +19,9 @@
         '<ol class="bf-steps">' + (b.how || []).map(function (h, k) {
           return '<li style="--k:' + k + '"><span class="st-n">' + (ICONS[h[0]] || k + 1) + '</span><div><h4>' + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div></li>";
         }).join("") + "</ol></section>" +
-        (b.alert ? '<section class="bf-sec"><div class="label">' + esc(b.alert.title) + '</div><p class="bf-lead">' + hl(b.alert.text) + '</p><div class="alerts">' + (b.alert.states || []).map(function (s, k) {
-          return '<div class="al ' + esc(s[0]) + '" style="--k:' + k + '"><b>' + esc(s[1]) + "</b><p>" + hl(s[2]) + "</p></div>";
-        }).join("") + '</div><p class="source">' + hl(b.alert.foot || "") + ' · <a href="#/docs/adr-0012">ADR 0012</a></p></section>' : "") +
+        ((b.faq || []).length ? '<section class="bf-sec"><div class="label">Frequently asked</div><div class="faq">' + b.faq.map(function (f, k) {
+          return '<details style="--k:' + k + '"><summary>' + esc(f[0]) + "</summary><p>" + hl(f[1]) + "</p></details>";
+        }).join("") + "</div></section>" : "") +
         "</div>";
       revealSections();
       refreshInfo();

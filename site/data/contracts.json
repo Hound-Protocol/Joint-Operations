@@ -570,6 +570,7 @@
     "Clean-room: notes in our own words, no game files"
    ],
    "refs": [
+    "r-ai",
     "adr-0012",
     "phase1:R3",
     "phase1:R4"

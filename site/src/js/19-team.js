@@ -2,7 +2,8 @@
   function viewTeam() {
     var v = $("#view");
     v.innerHTML = shell("Hound Protocol", "Team", loading("Loading team"));
-    loadLocal("team").then(function (t) {
+    Promise.all([loadLocal("team"), loadLocal("records")]).then(function (res) {
+      var t = res[0];
       if (currentView !== "team") return;
       t = t || { members: [], seats: [], roles: [], departments: [] };
       var still = !opts.motion;
@@ -33,7 +34,7 @@
             "<p>" + esc(n.job) + "</p>" +
             (n.authority.length ? '<div class="auth">' : '<div class="auth" hidden>') + n.authority.map(function (a) { return '<span class="au ' + a + '" title="' + esc((A[a] || [a, ""])[1]) + '">' + esc((A[a] || [a])[0]) + "</span>"; }).join("") + "</div>" +
             (d && d.units && d.units.length ? '<ul class="chips small">' + d.units.map(function (u) { return "<li>" + esc(u) + "</li>"; }).join("") + "</ul>" : "") +
-            '<div class="d-who">' + (n.holders.length ? esc(n.holders.join(" · ")) : "No one yet") + (n.open ? ' <span class="pill warn">' + esc(n.open) + "</span>" : "") + "</div></article>";
+            '<div class="d-who">' + (n.holders.length ? esc(n.holders.join(" · ")) : "No one yet") + (n.open ? ' <span class="pill warn">' + esc(n.open) + "</span>" : "") + "</div>" + (n.dept === "con" ? activeStrip() : "") + "</article>";
         }).join("") + "</div></div>";
       }).join("") + "</div>" +
       '<div class="auth-key">' + Object.keys(A).map(function (k) { return '<span><i class="au ' + k + '">' + esc(A[k][0]) + "</i>" + esc(A[k][1]) + "</span>"; }).join("") + "</div>" +
@@ -61,4 +62,16 @@
         }).join("") + "</section>";
       }).join("") + "</div>" +
       '<div class="toolbar" style="margin-top:18px"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/docs/governance">How seats work</a></div></section>';
+  }
+
+  // Contractors active in the last 7 days, from signed contributor records (live from data/records.json)
+  function activeStrip() {
+    var recs = (data.records && data.records.records) || [], since = Date.now() - 7 * 864e5, seen = {}, list = [];
+    recs.slice().reverse().forEach(function (r) {
+      var t = Date.parse(r.date); if (isNaN(t) || t < since || seen[r.login]) return;
+      seen[r.login] = 1; list.push(r);
+    });
+    return '<div class="active-strip"><span class="as-k"><i></i>Active this week</span>' + (list.length ? list.map(function (r) {
+      return '<a class="as-b" href="#/verify" title="Last delivery ' + esc(r.date) + (r.assisted && r.assisted.length ? ", with " + esc(r.assisted.join(", ")) : "") + '">' + esc(r.name || r.login) + "</a>";
+    }).join("") : '<span class="as-none">No deliveries in the last 7 days</span>') + "</div>";
   }
