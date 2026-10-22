@@ -18,12 +18,12 @@
   function fetchJSON(url, opts) {
     var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 9000);
-    return fetch(url, Object.assign({ signal: ctl ? ctl.signal : undefined }, opts || {})).then(function (r) {
+    return fetch(url, Object.assign({ signal: ctl ? ctl.signal : undefined, cache: /^https?:/.test(url) ? "default" : "no-cache" }, opts || {})).then(function (r) {
       clearTimeout(timer);
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();
     }, function (e) { clearTimeout(timer); throw e; });
   }
   function fetchText(url) {
-    return fetch(url).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); });
+    return fetch(url, { cache: /^https?:/.test(url) ? "default" : "no-cache" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); });
   }
