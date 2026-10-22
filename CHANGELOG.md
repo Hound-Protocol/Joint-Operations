@@ -2,6 +2,9 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.14 · Badge backdrop · 2026-10-22
+- The main menu background is now the Joint Operations badge, large and faint behind the menu (Options → Background logo turns it off).
+
 ## v0.0.13 · Insignia and accountability · 2026-10-22
 - **New logos:** Hound Protocol is a geometric hound over a red slash, with a heavy HOUND / PROTOCOL wordmark. Joint Operations is a unit badge with a sixteen-point star around the host diamond, plus a wordmark with the star inside the O. Full color, one color and light versions, avatars, favicon and link banner. Drawn in code (`tools/brand/logos.py`); the old emblem is retired.
 - **Accountability** ([HP-POL-009](docs/guides/HP-POL-009-accountability.md), [ADR 0016](docs/decisions/0016-accountability.md)): infractions for careless work (contributor track) and duty breaches (role holders, leads included). Three active infractions suspend; five clean deliveries clear one; appeals any time. Never for speed or inactivity: no time limits.

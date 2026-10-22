@@ -1119,3 +1119,7 @@ a, button, .field, summary { transition: color .3s ease, background-color .3s ea
 .pos.k-later { opacity: .7; }
 @media (max-width: 900px) { .posgrid { grid-template-columns: 1fr; } }
 @media (max-width: 520px) { .pos { grid-template-columns: minmax(0, 1fr) auto; } .pos-who { grid-column: 1; align-items: flex-start; text-align: left; } }
+
+/* Main menu background: the Joint Operations badge, large and faint behind the menu */
+.logo .emblem.badge { width: 62vmin; width: min(62vmin, 640px); max-width: none; max-height: none; height: auto; opacity: .09; animation: none; filter: saturate(.85); }
+.in-view .logo .emblem.badge { opacity: .04; }
