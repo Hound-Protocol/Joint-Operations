@@ -5,6 +5,7 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 ## v0.0.11 · Click to copy · 2026-10-22
 - **Click to copy:** commands, file names and code in documents, guides and steps copy to the clipboard with one click. Pointing at them types "click to copy this text"; after a click it says "copied to clipboard". Works by keyboard (Tab, then Enter) and in older browsers.
 - **Handbook PDFs:** every guide has a **Download PDF** button. The PDFs are built from the print layout when the site deploys (`tools/guides_pdf.py`), so they work even where the browser's print dialog does not open (for example Flatpak browsers without a print portal).
+- **Session Browser:** the counters are Sessions, Online and Total players (the 16-player limit is known).
 - **Print:** if no print dialog appears, the status line says to press Ctrl+P (Cmd+P on Mac) or to use Download PDF.
 
 ## v0.0.10 · Salute · 2026-10-22
