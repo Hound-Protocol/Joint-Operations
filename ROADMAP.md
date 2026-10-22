@@ -7,13 +7,14 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Repository created (public) and website built
 - [x] Core docs written: team, legal, architecture, governance, process, decisions, research
 - [x] CI checks for pull requests
-- [ ] Docs reviewed and pull request #1 merged
+- [x] Website live on GitHub Pages, main branch protected
+- [x] Docs reviewed and pull request #1 merged
 - [ ] License chosen (ADR 0005)
 - [ ] Steam App ID position recorded (legal.md)
 - [ ] Donation and hosting policy decided (legal.md)
 - [ ] Critical seats filled, human technical delegate appointed (governance.md)
 - [ ] Proton test environment defined
-- [ ] Discord structure set up (see docs/discord.md)
+- [x] Discord structure set up (see docs/discord.md)
 - [ ] Recruiting post reviewed (see docs/recruiting.md)
 
 ## Phase 1: Research (see docs/phase1-research-plan.md)

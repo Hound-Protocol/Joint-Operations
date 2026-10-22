@@ -48,10 +48,10 @@ All items in the [Phase 1 research plan](phase1-research-plan.md). The ones that
 
 ### G5 Infrastructure
 - [ ] Apply the [GitHub setup checklist](github-setup.md): merge pull request #1 (squash), repository details, Pages, security settings, organization two-factor
-- [ ] Branch protection on `main`: pull requests required, one approving review, CI must pass
+- [x] Branch protection on `main`: pull requests required, CI must pass (ruleset `main`)
 - [x] CI checks for pull requests: data files, site script, doc links, no game files, single-file build (`.github/workflows/checks.yml`)
 - [ ] CI later: build and sign binaries
-- [ ] Discord server built from [the blueprint](discord.md)
+- [x] Discord server built from [the blueprint](discord.md)
 
 ## 3. Sequence
 Steps in order. Steps on the same line can run in parallel.
