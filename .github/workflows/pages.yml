@@ -40,7 +40,7 @@ jobs:
           pip install fonttools brotli
           python3 tools/assemble_site.py _site --woff2
           for f in _site/data/*.json; do python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
