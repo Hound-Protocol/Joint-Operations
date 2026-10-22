@@ -206,6 +206,12 @@
       "path": "CONTRIBUTING.md"
     },
     {
+      "id": "records",
+      "title": "Contributor Records",
+      "group": "Community",
+      "path": "docs/contributor-records.md"
+    },
+    {
       "id": "conduct",
       "title": "Code of Conduct",
       "group": "Community",

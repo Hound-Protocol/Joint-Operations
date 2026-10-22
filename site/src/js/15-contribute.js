@@ -80,7 +80,7 @@
         }).join("") + "</div>",
       ranks:
         '<div class="tw"><table><tr><th>Rank</th><th>Points</th><th>Unlocks</th></tr>' + RANKS.map(function (r) { return "<tr><td>" + r[0] + '</td><td class="num">' + r[1] + "</td><td>" + r[2] + "</td></tr>"; }).join("") + "</table></div>" +
-        '<p class="sub" style="margin-top:10px">Points per completed contract: small 1, medium 3, large 5.</p>' +
+        '<p class="sub" style="margin-top:10px">Points per completed contract: small 1, medium 3, large 5. Each completed contract also earns a <a href="#/verify">signed contributor record</a>.</p>' +
         '<div class="label">Operatives</div>' +
         (ops.length ? '<div class="tw"><table><tr><th>Operative</th><th>Contracts</th><th>Points</th><th>Rank</th></tr>' + ops.map(function (u) {
           return '<tr><td><a href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u) + '</a></td><td class="num">' + pts[u].n + '</td><td class="num">' + pts[u].p + "</td><td>" + rankFor(pts[u].p)[0] + "</td></tr>";

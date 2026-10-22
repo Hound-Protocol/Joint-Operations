@@ -1,5 +1,5 @@
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");
@@ -41,7 +41,7 @@
     currentView = name; lastView = name;
     menu.hidden = true; view.hidden = false; document.body.classList.add("in-view");
     if (!same || name !== "docs") { view.innerHTML = ""; $("#center").scrollTop = 0; }
-    var item = ITEMS.filter(function (i) { return i.id === name; })[0];
+    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" } })[name];
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
