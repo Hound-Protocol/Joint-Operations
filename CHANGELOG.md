@@ -2,6 +2,15 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.37 · Steady drawers · 2026-10-23
+- **Top bar:** the sign-in badge is now a small access credential. It shows your GitHub picture, your name over "Access Credential" and your card, and a large level number, with an edge and texture in your level's colour. Signed out, it reads **Sign in · Hound ID · GitHub**.
+- **Library drawers keep their size:** an open drawer no longer slides sideways. It keeps exactly the same frame as the closed ones, with its colour edge drawn inside (layout stability rule).
+- **Docs always opens on the Overview,** whether it is your first visit or you have been there before.
+- **The Handbook always opens on its folders,** with "Select a folder to display content" beneath them. Click a folder to lay out its sheets. **Return to Handbook Library** still brings you back to the folder you came from, and the filter opens the folder that matches.
+- **Opening a sheet** takes 1 second in all, in one continuous motion: the sheet glides to the middle and zooms straight into the reading view, without the pause.
+- **About:** the "Konami servers touched" figure is gone; three figures remain.
+- **Roadmap:** this release's base detail is a shooting star crossing the night sky now and then.
+
 ## v0.0.36 · Dev Log moves into Documentation · 2026-10-23
 - **Dev Log is part of Documentation:** it no longer has its own tab. Documentation now has three zones, **Library**, **Handbook** and **Dev Log**, and the Docs tab stays lit in all three. Old `#/devlog` links still open it. [HP-GDE-015](docs/guides/HP-GDE-015-using-the-website.md) is updated.
 - **Cards:** they read **Access Credential** instead of Security card. The chip is gone, so a card without a picture is plain, and the Hound Protocol logo in the background is more pronounced.

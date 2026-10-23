@@ -54,6 +54,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F14 | Deploy without the package mirror; incidents close themselves | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F15 | Tester's Field Manual | docs | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F16 | Dev Log inside Documentation; Access Credential cards | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F17 | Steady drawers; Docs and Handbook open on their overview | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -697,3 +698,15 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - No Dev Log tab; the Docs tab shows three zones
 - Cards read Access Credential
+
+## F17
+**Steady drawers; Docs and Handbook open on their overview**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Documentation always starts in the same place and nothing shifts size.
+
+**Deliverable.** Drawer frame fixed; Docs → Overview; Handbook folders first; 1 s sheet opening.
+
+**Acceptance criteria**
+- Open and closed drawers have the same frame
+- Handbook shows folders first with a hint

@@ -986,6 +986,30 @@
     "Forge77"
    ],
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F17",
+   "title": "Steady drawers; Docs and Handbook open on their overview",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Documentation always starts in the same place and nothing shifts size.",
+   "deliverable": "Drawer frame fixed; Docs → Overview; Handbook folders first; 1 s sheet opening.",
+   "acceptance": [
+    "Open and closed drawers have the same frame",
+    "Handbook shows folders first with a hint"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"
