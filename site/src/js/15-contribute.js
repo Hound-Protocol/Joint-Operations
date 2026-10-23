@@ -61,11 +61,56 @@
       u.best = best; return u;
     }).sort(function (a, b) { return gradeIdx(b.best) - gradeIdx(a.best) || b.n - a.n || a.login.localeCompare(b.login); });
   }
+  /* Claims made on the website: the relay keeps them, GitHub vouches for who made each one (tools/signin-relay) */
+  var conClaims = {}, conClaimOn = false, conFresh = "";
+  function conLoadClaims() {
+    if (!siOn() || typeof fetch !== "function") return Promise.resolve();
+    return fetch(siRelay() + "/claims", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { conClaimOn = !!(j && j.claims); conClaims = (j && j.claims) || {}; }, function () { conClaimOn = false; });
+  }
+  function conMine(c) { return siIn() && (conClaims[c.id] || []).some(function (x) { return String(x.id) === String(SI.user.id); }); }
+  /* Every card lists its contributors: who completed it, who is working on it, and who claimed it on the website */
+  function conPeople(c, done) {
+    var rows = [], seen = {};
+    function add(login, role, at) { var k = String(login).toLowerCase(); if (seen[k]) return; seen[k] = 1; rows.push({ login: login, role: role, at: at }); }
+    (done ? (c.by || []) : []).forEach(function (u) { add(u, "Completed"); });
+    (c.working || []).forEach(function (u) { add(u, "Working on it"); });
+    (conClaims[c.id] || []).forEach(function (x) { add(x.login, "Claimed", x.at); });
+    if (!done && c.live) (c.by || []).forEach(function (u) { add(u, "Claimed"); });
+    if (!rows.length) return "";
+    var fresh = conFresh === c.id;
+    return '<details class="kc-contrib ' + (done ? "done" : "wip") + '"' + (fresh ? " open" : "") + '><summary><span class="kp-l">' + (done ? "✓ " : '<i class="kp-dot"></i>') + "Contributors <em class=\"kp-n\">" + rows.length + '</em></span><span class="kp-faces">' +
+      rows.slice(0, 5).map(function (r) { return '<img src="https://github.com/' + encodeURIComponent(r.login) + '.png?size=40" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'">'; }).join("") + "</span></summary><ul>" +
+      rows.map(function (r, k) {
+        return '<li class="' + (fresh && SI && SI.user && r.login === SI.user.login ? "new" : "") + '" style="--k:' + k + '"><a href="https://github.com/' + encodeURIComponent(r.login) + '" target="_blank" rel="noopener noreferrer"><img src="https://github.com/' + encodeURIComponent(r.login) + '.png?size=40" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'">' + esc(r.login) + "</a><small>" + esc(r.role) + (r.at ? " · " + esc(fmtDate(new Date(r.at).toISOString().slice(0, 10))) : "") + "</small></li>";
+      }).join("") + "</ul>" + (c.agents && c.agents.length ? '<p class="kp-agent">With ' + esc(c.agents.join(", ")) + " (credited as the contributors' tool)</p>" : "") + "</details>";
+  }
+  function conClaimBtn(c) {
+    if (!conClaimOn) return "";
+    if (!siIn()) return '<button type="button" class="btn small primary" data-claim-in="' + esc(c.id) + '">Sign in to claim</button>';
+    return conMine(c) ? '<button type="button" class="btn small" data-unclaim="' + esc(c.id) + '">Unclaim</button>' : '<button type="button" class="btn small primary" data-claim="' + esc(c.id) + '">Claim</button>';
+  }
+  function conClaimWire() {
+    $$("[data-claim-in]").forEach(function (b) { b.addEventListener("click", function () { siStart().then(function () { if (currentView === "contribute") drawContribute(); }); }); });
+    $$("[data-claim], [data-unclaim]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var id = b.getAttribute("data-claim") || b.getAttribute("data-unclaim"), un = b.hasAttribute("data-unclaim");
+        var go = function () {
+          b.disabled = true; b.textContent = un ? "Leaving…" : "Verifying with GitHub…";
+          fetch(siRelay() + (un ? "/unclaim" : "/claim") + "?c=" + encodeURIComponent(id), { method: "POST", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" })
+            .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "HTTP " + r.status); return j; }); })
+            .then(function (j) { conClaims[id] = j.claims; conFresh = un ? "" : id; status(un ? "Claim left" : "Claimed " + id); blip("go"); drawContribute(); conFresh = ""; },
+              function (e) { b.disabled = false; b.textContent = un ? "Unclaim" : "Claim"; status(e.message); hpModal({ kicker: "Contract " + id, title: "Not claimed", tone: "danger", html: "<p>" + esc(e.message) + "</p>", actions: [{ label: "OK", primary: true }] }); });
+        };
+        if (un) hpConfirm("Leave contract " + id + "?", "Your name comes off its contributors. Post a short handoff note on the issue if you started work.", "Unclaim", "Keep it", "danger").then(function (y) { if (y) go(); });
+        else go();
+      });
+    });
+  }
   function viewContribute() {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Contribute", loading("Loading the contract board"));
     cardsAnim = true;
-    Promise.all([loadContracts(), loadLocal("contracts")]).then(function () { if (currentView === "contribute") drawContribute(); refreshInfo(); });
+    Promise.all([loadContracts(), loadLocal("contracts"), conLoadClaims()]).then(function () { if (currentView === "contribute") drawContribute(); refreshInfo(); });
   }
   function drawContribute() {
     var list = contractList(), live = !!(data.issues && data.issues.length);
@@ -82,19 +127,21 @@
     var STATUS = { planned: ["○", "Planned"], open: ["●", "Open"], blocked: ["✕", "Blocked"], claimed: ["◐", "Claimed"], review: ["◑", "In review"], done: ["✓", "Done"] };
     var rank = { open: 0, planned: 1, claimed: 2, review: 3, blocked: 4, done: 5 };
     function card(c, n) {
-      var st = c.blocked && c.status === "open" ? "blocked" : c.status, S = STATUS[st] || ["", st];
+      var st = c.blocked && c.status === "open" ? "blocked" : c.status;
+      if ((st === "planned" || st === "open") && (conClaims[c.id] || []).length) st = "claimed";
+      var S = STATUS[st] || ["", st];
       var action = "";
-      if (c.live) action = (st !== "done" ? '<a class="btn small primary" href="' + esc(c.url) + '#new_comment_field" target="_blank" rel="noopener noreferrer" title="Comment /claim on the issue. Several people can claim the same contract.">' + ((c.by || []).length ? "Join claim" : "Claim") + "</a>" : "") +
+      if (c.live) action = (st !== "done" ? conClaimBtn(c) : "") +
         '<a class="btn small" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a>';
-      else action = '<a class="btn small issuebtn" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nDifficulty: " + ((DIFF[c.difficulty] || [c.difficulty])[0]) + (c.core ? " (Core: Development Department only)" : "") + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",difficulty:" + c.difficulty + (c.core ? ",core" : ""))) + '" target="_blank" rel="noopener noreferrer">Open as issue <span aria-hidden="true">↗</span></a>';
+      else action = conClaimBtn(c);
       var done = st === "done";
       return '<article class="kc st-' + esc(st) + " d-" + esc(c.difficulty || "none") + '" style="--i:' + n + '">' +
         '<div class="kc-top"><span class="kc-id">' + esc(c.id) + '</span><span class="kc-st">' + S[0] + " " + S[1] + (c.by && c.by.length > 1 && !done ? " · " + c.by.length : "") + "</span></div>" +
         "<h3>" + esc(c.title) + "</h3>" +
-        ((c.by || []).length && !done ? '<div class="kc-claims" aria-label="Claimed by">' + c.by.map(function (u) { return '<a class="tok" href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer"><i>◆</i>' + esc(u) + "</a>"; }).join("") + "</div>" : "") +
+        conPeople(c, done) +
         '<div class="kc-tags">' + diffPill(c) + (c.module ? '<span class="pill mod">' + esc(MODULES[c.module] || c.module) + "</span>" : "") + "</div>" +
         (done
-          ? '<div class="kc-stamp">Completed' + (c.by && c.by.length ? " by " + esc(c.by.join(", ")) : "") + "</div>" + (c.live ? '<div class="actions">' + action + "</div>" : "")
+          ? '<div class="kc-stamp">Completed' + (c.completed ? " · " + esc(fmtDate(c.completed)) : "") + "</div>" + (c.live ? '<div class="actions">' + action + "</div>" : "")
           : (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">' + (c.blocked ? "Waiting for " : "After ") + esc(c.depends.join(", ")) + "</div>" : "") +
             (c.goal ? '<p class="goal">' + esc(c.goal) + "</p>" : "") +
             ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary><span>Acceptance criteria</span><i aria-hidden="true">' + (c.acceptance ? c.acceptance.length : 0) + "</i></summary>" +
@@ -130,7 +177,7 @@
       '<div class="conbar"><div class="tabs" role="tablist">' + [["board", "Contract board"], ["ranks", "Contractor grades"]].map(function (t) {
         return '<button role="tab" data-tab="' + t[0] + '" aria-selected="' + (conTab === t[0]) + '">' + t[1] + "</button>";
       }).join("") + "</div>" +
-      '<div class="howbox"><button class="btn howbtn' + (conTab === "how" ? " on" : "") + '" data-tab="how" aria-pressed="' + (conTab === "how") + '">How it works</button><small>Discover how the contribution system works</small></div>' +
+      '<div class="howbox"><a class="btn howbtn" href="#/guides/hp-gde-019">How it works</a><small>The contribution guidelines, in the Handbook</small></div>' +
       '<div class="conupd">' + conUpdated(live) + "</div></div>" +
       '<div id="ctab"></div>';
     var tabHtml = {
@@ -156,15 +203,6 @@
         (shown.length ? '<div class="kanban' + (cardsAnim ? " anim" : "") + '">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
         (live ? '<p class="sub claimnote">To claim, comment <code>/claim</code> on the contract\'s GitHub issue. Several people can claim the same contract, and every claimant shows here with their token. <code>/unclaim</code> leaves it. The board refreshes every 2 minutes.</p>' : "") +
         '<p class="source">Source: ' + (live ? "GitHub issues labeled contract, live" : data.issues === null ? "data/contracts.json · GitHub could not be reached" : "data/contracts.json") + "</p>",
-      how:
-        '<div class="cols"><div class="panel"><div class="label">Taking a contract</div><ol class="steps">' +
-        "<li>Pick any open contract. An <b class=\"tint easy\">Easy</b> one is a good start.</li><li>Comment on the GitHub issue to claim it. A maintainer assigns you.</li><li>Do the work on a branch in your fork. Sign off every commit.</li><li>Open a pull request that says Closes #number.</li><li><b class=\"tint key\">Quality</b> checks it against the acceptance criteria and merges it. You get a <b class=\"tint key\">signed record</b> and move up in rank.</li></ol></div>" +
-        '<div class="panel"><div class="label">Rules</div><ol class="steps">' +
-        "<li>Pull requests only. Nobody pushes to main.</li><li>No game files and no code copied from other mods.</li><li>AI tools are welcome for code and docs. No generative AI art, music or voices.</li><li>Nothing that touches Konami's servers or anti-cheat.</li><li>Leaving is fine. Post a short handoff note first.</li></ol></div></div>" +
-        '<div class="toolbar" style="margin-top:14px"><a class="btn primary" href="#/guides/hp-gde-003">Quick start</a><a class="btn" href="#/guides/hp-gde-017">Can I contribute?</a><a class="btn" href="#/guides/hp-gde-018">Working with AI</a><a class="btn" href="' + repoUrl("/fork") + '" target="_blank" rel="noopener noreferrer">Fork on GitHub</a><a class="btn" href="' + repoUrl("/issues?q=is%3Aopen+label%3Acontract") + '" target="_blank" rel="noopener noreferrer">Contracts on GitHub</a></div>' +
-        '<div class="label">Module progress</div><div class="cols">' + mods.map(function (m) {
-          return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
-        }).join("") + "</div>",
       ranks:
         '<p class="sub">Contractors are graded like Mother Base staff, from <b>E</b> to <b>S++</b>. As in the game, you hold a grade in <b>each field</b>, the way staff hold a grade in each unit. Every completed contract earns points in its field: <b class="tint easy">Easy</b> ' + CP.easy + ', <b class="tint medium">Medium</b> ' + CP.medium + ', <b class="tint hard">Hard</b> ' + CP.hard + '. Each grade needs more points than the last, so the top grades take real work. Your best grade is your rank on Discord.</p>' +
         '<div class="ranks">' + GRADES.map(function (r, k) { return '<div class="rank' + (r[2] ? "" : " quiet") + '" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " point" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + (r[2] ? tint(r[2]) : "Experience in the field") + "</span></div>"; }).join("") + "</div>" +
@@ -180,9 +218,11 @@
             FIELDS.map(function (f) { var g = gradeFor(u.f[f[0]] || 0); return '<td class="num">' + (g ? esc(g[0]) : "–") + "</td>"; }).join("") + "</tr>";
         }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Contractors appear here when contracts are closed on GitHub.</small></div>')
     };
+    if (!tabHtml[conTab]) conTab = "board";
     $("#ctab").innerHTML = tabHtml[conTab];
     cardsAnim = false;
     $$('[data-tab]').forEach(function (b) { b.addEventListener("click", function () { conTab = b.dataset.tab; drawContribute(); }); });
+    conClaimWire();
     if (conTab === "board") {
       $("#cq").addEventListener("input", function (e) { conState.q = e.target.value; var p = e.target.selectionStart; drawContribute(); var n = $("#cq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ } });
       $("#cm").addEventListener("change", function (e) { conState.module = e.target.value; drawContribute(); });

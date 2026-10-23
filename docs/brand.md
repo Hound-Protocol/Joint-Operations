@@ -25,7 +25,7 @@ Also: `site/assets/img/favicon.svg` (simplified mark for small sizes) and `site/
 | Night | `#0b0e10` | Backgrounds, and the Hound Protocol insignia field |
 | Paper | `#f3efe6` | Light backgrounds (use the `-light` files) |
 | Site gold | `#c9a24a` | The website's interface accent only, not the logos |
-| Keycard colours | LV1 `#8b9599` · LV2 `#c9d0d2` · LV3 `#7fbf8a` · LV4 `#5aa7d6` · LV5 `#f28c28` · LV6 `#e0453f` · LV7 `#d4ae52` | Keycards and clearance labels on the website |
+| Keycard colours | LV0 `#5d6468` (greyed, inactive) · LV1 `#7d93a6` slate · LV2 `#dfe5e7` silver · LV3 `#7fbf8a` green · LV4 `#4fb3d9` cyan · LV5 `#f28c28` orange · LV6 `#a77de0` violet · LV7 `#c0141f` blood red · guest pass `#d4ae52` gold ribbon | Keycards and clearance labels on the website |
 | Document classes | Policy `#b02a22` · Procedure `#1d6a8a` · Guide `#a86f00` | Handbook sheets and their type stripes |
 
 Type: **Barlow Semi Condensed** (light, wide letter-spacing, uppercase) for names. **Share Tech Mono** for labels. Both are licensed under the SIL Open Font License.

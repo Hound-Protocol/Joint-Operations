@@ -4,8 +4,8 @@
      the key must be one of the signing keys on the GitHub account the card is tied to (by account number), and if the card
      pins a key fingerprint, it must be that key. Everything is checked in this browser (ADR 0017). */
   var KC_LV = {
-    LV1: ["Visitor", "#8b9599"], LV2: ["Member", "#c9d0d2"], LV3: ["Contractor", "#7fbf8a"], LV4: ["Quality", "#5aa7d6"],
-    LV5: ["Development", "#f28c28"], LV6: ["Administration", "#e0453f"], LV7: ["Owner", "#d4ae52"]
+    LV0: ["Banned", "#5d6468"], LV1: ["Visitor", "#7d93a6"], LV2: ["Member", "#dfe5e7"], LV3: ["Contractor", "#7fbf8a"], LV4: ["Quality", "#4fb3d9"],
+    LV5: ["Development", "#f28c28"], LV6: ["Administration", "#a77de0"], LV7: ["Owner", "#c0141f"]
   };
   var KC_NS = "hound-id";
   function kcHash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (Math.imul ? Math.imul(h, 16777619) : h * 16777619) >>> 0; } return h; }

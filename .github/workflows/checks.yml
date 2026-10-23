@@ -38,6 +38,7 @@ jobs:
           git fetch -q --depth=50 origin "$BASE"
           if git diff "origin/$BASE" -- site/data/config.json | grep -q '^[-+].*"version"'; then
             if git diff --quiet "origin/$BASE" -- ROADMAP.md; then echo "The version changed but ROADMAP.md was not updated (HP-SOP-003)."; exit 1; fi
+            if git diff --quiet "origin/$BASE" -- site/data/contracts.json; then echo "The version changed but no work was checked off on the board: run tools/work.py done (HP-SOP-003)."; exit 1; fi
           fi
           echo "Roadmap check passed."
       - name: Infraction record is valid

@@ -10,6 +10,13 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 - **Bans (LV0):** banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. One ban covers linked GitHub, Discord and Steam accounts; no IP bans. New: [HP-SOP-012 Banning an Account](docs/guides/HP-SOP-012-bans.md) and [ADR 0019](docs/decisions/0019-bans-across-accounts.md).
 - **Roster:** the Team page lists everyone with a signed card, grouped by clearance, as keycards. Member cards (LV2) can now be issued too.
 - **About:** the session diagram is gone; the introduction is centered.
+- **Contribute:** the "How it works" panel is gone. The button opens the new [How to Contribute](docs/guides/HP-GDE-019-how-to-contribute.md) guide, the contribution guidelines, which link to Can I Contribute first.
+- **Handbook previews:** hovering or focusing any button that opens a Handbook document shows a small preview of it, as wide as the button.
+- **Claim on the website:** every contract card has a **Claim** button. Signed in with GitHub, you claim it from the card; the relay asks GitHub who you are, records the claim, and you appear in the card's expandable **Contributors** list straight away. **Unclaim** asks first. Banned accounts cannot claim. Needs the relay's KV storage ([setup](docs/signin.md)).
+- **All work on the board:** every piece of work, the owner's and AI-assisted work included, goes on the contract board when it starts and is checked off when done (`tools/work.py`). Each card lists who is working on it or who completed it, with any agent named. Releases fail their check if no work was checked off. The current foundation work (F01 to F08) is on the board.
+- **Clearance colours:** LV0 grey and inactive, LV1 slate, LV2 silver, LV3 green, LV4 cyan, LV5 orange, LV6 violet with a banded edge, LV7 blood red on black. Guest passes keep the gold ribbon.
+- **Signed out:** under the sign-in card, every clearance card is lined up with a line on what it opens, and three short points on how clearance works.
+- **Update notice:** now a slim strip that slides into the top bar, centered, with Reload and a close button.
 - **Layout stability:** every section uses the same width, so nothing grows or shrinks when you switch; the smoke test checks it ([HP-GDE-012](docs/guides/HP-GDE-012-website-maintainers.md)).
 
 ## v0.0.28 · Keycards · 2026-10-23

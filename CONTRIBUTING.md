@@ -40,7 +40,7 @@ Status on the board:
 
 ## How to take a contract
 1. Pick an open contract on the board whose dependencies are done.
-2. Comment `/claim` on the issue. You are assigned automatically, and your name shows on the website's board. Several people can claim the same contract. `/unclaim` leaves it.
+2. Sign in on the website and press **Claim** on the card, or comment `/claim` on the issue. Your name shows in the card's Contributors list. Several people can claim the same contract. `/unclaim` leaves it.
 3. Do the work on a branch in your fork.
 4. Open a pull request that says `Closes #<issue>`.
 5. The Quality Department reviews it against the acceptance criteria and merges. The contract closes, you get a signed [contributor record](docs/contributor-records.md), and it counts toward your grade.

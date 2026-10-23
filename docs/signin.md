@@ -56,7 +56,7 @@ Setup, once:
    - `GITHUB_APP_PRIVATE_KEY` (Secret): the whole content of the `.pem` file, including the BEGIN and END lines
    - `GUEST_SECRET` (Secret): a long random string, for example 40 characters from a password manager
 4. Paste the current `tools/signin-relay/worker.js` into the worker (**Edit code** → **Deploy**) and check the variables are all still listed.
-5. **To revoke passes instantly** (optional but recommended): Cloudflare → **Storage & Databases → KV** → **Create** a namespace named `hp-guest`. Then hp-signin → **Settings → Bindings → Add → KV namespace**: variable name `GUEST_KV`, namespace `hp-guest` → **Deploy**. Your Profile then lists live passes with **Revoke pass**; a revoked guest is told within a minute.
+5. **Storage for claims and revoking passes:** Cloudflare → **Storage & Databases → KV** → **Create** a namespace named `hp-relay`. Then hp-signin → **Settings → Bindings → Add → KV namespace**: variable name `HP_KV`, namespace `hp-relay` → **Deploy**. It enables **Claim** on the contract board, and your Profile lists live guest passes with **Revoke pass** (a revoked guest is told within a minute). It holds only contract claims (GitHub name and number) and pass numbers.
 
 ## 7. Bans (LV0)
 Banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. Add the GitHub account numbers to `BANNED_GITHUB_IDS` (Secret), separated by commas. The full procedure, across GitHub, Discord and Steam, is [HP-SOP-012](guides/HP-SOP-012-bans.md).
