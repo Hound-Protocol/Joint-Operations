@@ -2,6 +2,16 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.29 · Roster and bans · 2026-10-23
+- **Handbook folders:** guides, policies and procedures sit in three colour-coded kraft folders. Click one and its sheets fly out and lay themselves down; click another and they fly back into their folder before the next one opens. Filters and search still work across all three.
+- **Sign-in window:** signing in opens a centered window in the site's own design that explains the three steps, waits for GitHub, and says **Access granted** before your keycard rises. GitHub itself opens in a small window centered over the site (GitHub cannot be shown inside another page).
+- **Sign out:** a larger button at the foot of your Profile, and it asks first: "Are you sure you want to log out?"
+- **Guest passes:** the owner's Profile lists live passes with **Revoke pass**; a revoked guest sees a small window telling them, within a minute. Needs a KV store on the relay ([setup](docs/signin.md)).
+- **Bans (LV0):** banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. One ban covers linked GitHub, Discord and Steam accounts; no IP bans. New: [HP-SOP-012 Banning an Account](docs/guides/HP-SOP-012-bans.md) and [ADR 0019](docs/decisions/0019-bans-across-accounts.md).
+- **Roster:** the Team page lists everyone with a signed card, grouped by clearance, as keycards. Member cards (LV2) can now be issued too.
+- **About:** the session diagram is gone; the introduction is centered.
+- **Layout stability:** every section uses the same width, so nothing grows or shrinks when you switch; the smoke test checks it ([HP-GDE-012](docs/guides/HP-GDE-012-website-maintainers.md)).
+
 ## v0.0.28 · Keycards · 2026-10-23
 - **One card per clearance:** every level has its own card. LV1 a grey day ticket with punched edges, LV2 brushed silver, LV3 a green contract network, LV4 a blue inspection grid with a QA seal, LV5 orange circuit traces, LV6 red with a hazard edge and embossed frame, LV7 black and gold with a moving foil sheen. Guest passes use the LV3 card with the gold 24-hour ribbon.
 - **Sign-in reveal:** right after you sign in or open a guest pass, your card rises and fades in from below, every credential is scrambled and clears left to right into your details, and the level counts up to yours. Calm mode and reduced motion skip it.

@@ -1,5 +1,5 @@
 # Website Maintainer Guide
-Code: HP-GDE-012 · Version 1.1 · Effective 2026-10-23 · Owner: Development · For: contributors who change the website
+Code: HP-GDE-012 · Version 1.2 · Effective 2026-10-23 · Owner: Development · For: contributors who change the website
 
 How the website is built, where its content lives, and how to change it safely.
 
@@ -50,6 +50,7 @@ python3 tools/check_links.py
 - **Brand change:** edit `tools/brand/*.py` and run `python3 tools/brand/build_brand.py`. Never edit the generated SVG files by hand.
 
 ## Rules for site code
+- **Layout stability:** switching sections, zones, tabs or filters must not resize the interface. Every section uses the same frame width (`.view`, 80% of the 16:9 frame); controls keep their size when selected (change colour, not padding or font size); long text keeps its own reading width inside the frame. The smoke test fails if two sections have different widths.
 - Plain JavaScript in the existing style (`var`, functions), so older browsers keep working. No build step beyond the tools above, no frameworks.
 - Every new layout value that uses `min()`, `max()` or `clamp()` gets a fallback: `tools/css_compat.py` adds it for you.
 - Respect **Options**: animations stop when Animations is off (`.no-motion`), and nothing flashes.

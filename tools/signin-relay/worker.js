@@ -9,7 +9,11 @@
    Settings (Worker → Settings → Variables and Secrets):
      GITHUB_CLIENT_ID (text), GITHUB_CLIENT_SECRET (secret), SITE_ORIGIN (text, https://hound-protocol.github.io)
      For guest passes: OWNER_GITHUB_ID (text), GUEST_SECRET (secret, a long random string), GITHUB_APP_ID (text),
-     GITHUB_APP_PRIVATE_KEY (secret, the app's .pem file), GUEST_REPO (text, Hound-Protocol/hp-staff) */
+     GITHUB_APP_PRIVATE_KEY (secret, the app's .pem file), GUEST_REPO (text, Hound-Protocol/hp-staff)
+     For revoking passes: a KV namespace bound as GUEST_KV (Worker → Settings → Bindings → KV namespace). It holds the
+     list of live passes (number and expiry only) and the revoked ones, each deleted automatically when the pass expires.
+     Bans (LV0): BANNED_GITHUB_IDS (secret), the banned GitHub account numbers separated by commas. A banned account is
+     refused at sign-in and never receives a token. The list is private; see docs/guides/HP-SOP-012-bans.md. */
 const PASS_HOURS = 24;
 export default {
   async fetch(req, env) {
@@ -48,6 +52,13 @@ export default {
         if (!env.GITHUB_CLIENT_SECRET) return page(site, { error: "The relay has no GITHUB_CLIENT_SECRET setting (code: missing_secret)." });
         return page(site, { error: "GitHub did not accept the sign-in" + (why ? ": " + why : "") + ". (code: " + (j.error || "http_" + r.status) + ")" });
       }
+      /* LV0: refuse banned GitHub accounts before they ever get a token. GitHub account numbers survive renames. */
+      if (env.BANNED_GITHUB_IDS) {
+        const u = await fetch("https://api.github.com/user", { headers: { Authorization: "Bearer " + j.access_token, Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
+        const who = u.ok ? await u.json() : null;
+        const banned = String(env.BANNED_GITHUB_IDS).split(/[\s,]+/).filter(Boolean);
+        if (!who || banned.indexOf(String(who.id)) > -1) return page(site, { error: who ? "This GitHub account is banned from Hound Protocol." : "Could not check your GitHub account. Try again.", code: who ? "banned" : "check_failed" });
+      }
       return page(site, { token: j.access_token, expires_in: j.expires_in || 0 });
     }
     return new Response("Hound Protocol sign-in relay", { status: 200, headers: { "Content-Type": "text/plain" } });
@@ -58,22 +69,42 @@ export default {
 async function guest(req, env, url) {
   const site = env.SITE_ORIGIN, auth = req.headers.get("Authorization") || "";
   if (!env.GUEST_SECRET || !env.OWNER_GITHUB_ID) return json(site, { error: "Guest passes are not set up on the relay yet (code: guest_off)." }, 503);
-  /* The owner mints a pass. GitHub tells us who holds the token; only the owner's account ID may grant. */
-  if (url.pathname === "/guest/grant" && req.method === "POST") {
+  /* Owner actions. GitHub tells us who holds the token; only the owner's account ID may grant, list or revoke. */
+  if (/^\/guest\/(grant|list|revoke)$/.test(url.pathname)) {
     const m = /^Bearer\s+(\S+)$/.exec(auth);
     if (!m) return json(site, { error: "Sign in first." }, 401);
     const u = await fetch("https://api.github.com/user", { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
     if (!u.ok) return json(site, { error: "GitHub did not recognise your sign-in. Sign in again." }, 401);
     const who = await u.json();
-    if (String(who.id) !== String(env.OWNER_GITHUB_ID)) return json(site, { error: "Only the owner can grant guest passes." }, 403);
-    const exp = Date.now() + PASS_HOURS * 3600 * 1000;
-    const body = b64u(new TextEncoder().encode(JSON.stringify({ v: 1, lvl: 3, exp, n: crypto.randomUUID().slice(0, 8) })));
-    return json(site, { pass: body + "." + await hmac(env.GUEST_SECRET, body), exp, hours: PASS_HOURS });
+    if (String(who.id) !== String(env.OWNER_GITHUB_ID)) return json(site, { error: "Only the owner can manage guest passes." }, 403);
+    const kv = env.GUEST_KV;
+    if (url.pathname === "/guest/grant" && req.method === "POST") {
+      const exp = Date.now() + PASS_HOURS * 3600 * 1000, n = crypto.randomUUID().slice(0, 8);
+      const body = b64u(new TextEncoder().encode(JSON.stringify({ v: 1, lvl: 3, exp, n })));
+      if (kv) await kv.put("pass:" + n, JSON.stringify({ n, exp, at: Date.now() }), { expiration: Math.ceil(exp / 1000) + 60 });
+      return json(site, { pass: body + "." + await hmac(env.GUEST_SECRET, body), exp, n, hours: PASS_HOURS, revocable: !!kv });
+    }
+    if (!kv) return json(site, { error: "Revoking needs the GUEST_KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
+    if (url.pathname === "/guest/list") {
+      const keys = (await kv.list({ prefix: "pass:" })).keys;
+      const out = [];
+      for (const k of keys) { const v = await kv.get(k.name, "json"); if (v && v.exp > Date.now()) out.push(Object.assign(v, { revoked: !!(await kv.get("revoked:" + v.n)) })); }
+      return json(site, { passes: out.sort((a, b) => b.at - a.at) });
+    }
+    if (url.pathname === "/guest/revoke" && req.method === "POST") {
+      const n = String(url.searchParams.get("n") || "");
+      if (!/^[0-9a-f-]{8}$/.test(n)) return json(site, { error: "Bad pass number." }, 400);
+      const v = await kv.get("pass:" + n, "json");
+      await kv.put("revoked:" + n, "1", { expiration: Math.ceil(((v && v.exp) || Date.now() + PASS_HOURS * 3600 * 1000) / 1000) + 60 });
+      return json(site, { ok: true, n });
+    }
+    return json(site, { error: "Unknown request." }, 404);
   }
   /* Everything else needs a valid, unexpired pass */
   const g = /^Guest\s+(\S+)$/.exec(auth);
   const p = g && await checkPass(env.GUEST_SECRET, g[1]);
-  if (!p) return json(site, { error: "This guest pass is not valid or has expired." }, 401);
+  if (!p) return json(site, { error: "This guest pass is not valid or has expired.", code: "invalid" }, 401);
+  if (env.GUEST_KV && await env.GUEST_KV.get("revoked:" + p.n)) return json(site, { error: "This guest pass has been revoked by the owner.", code: "revoked" }, 401);
   if (url.pathname === "/guest/check") return json(site, { ok: true, exp: p.exp, lvl: p.lvl });
   const repo = env.GUEST_REPO || "Hound-Protocol/hp-staff", tok = await appToken(env, repo);
   const gh = (path, raw) => fetch("https://api.github.com/repos/" + repo + path, { headers: { Authorization: "Bearer " + tok, Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });

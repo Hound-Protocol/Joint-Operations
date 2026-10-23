@@ -14,7 +14,7 @@ Commands:
       [--title T --difficulty easy|medium|hard] [--date YYYY-MM-DD] [--key-id ID]
       [--assisted-by "Claude"]   (AI agents used; detected from the pull request when left out)
                                 sign and append a record
-  staff-add --login LOGIN --card LV3..LV7 --department NAME [--name NAME] [--discord-id ID]
+  staff-add --login LOGIN --card LV2..LV7 --department NAME [--name NAME] [--discord-id ID]
                                 issue a signed staff card with a permanent Hound ID (HND-NNNN)
   staff-add ... --ssh-key SHA256:...
                                 also pin the holder's SSH signing key (ssh-keygen -lf KEY.pub)
@@ -35,8 +35,8 @@ RECORDS = ROOT / "site/data/records.json"
 KEYS = ROOT / "site/data/records-key.json"
 CONTRACTS = ROOT / "site/data/contracts.json"
 STAFF = ROOT / "site/data/staff.json"
-CARDS = ("LV3", "LV4", "LV5", "LV6", "LV7")
-DEPARTMENTS = ("Administration", "Development", "Quality", "Contractor")
+CARDS = ("LV2", "LV3", "LV4", "LV5", "LV6", "LV7")
+DEPARTMENTS = ("Administration", "Development", "Quality", "Contractor", "Member")
 STAFF_FIELDS = {"id", "kind", "login", "github_id", "name", "discord_id", "ssh_key", "card", "department", "since", "status", "revoked", "reason", "key", "sig"}
 STAFF_REQUIRED = {"id", "kind", "login", "github_id", "card", "department", "since", "status", "key", "sig"}
 KEY_DIR = pathlib.Path(os.environ.get("HP_RECORDS_KEY_DIR", pathlib.Path.home() / ".config/hound-protocol"))

@@ -632,6 +632,43 @@
   });
   document.addEventListener("scroll", hideTip, true);
 
+  /* ---------------- Modal window ----------------
+     A centered window in the site's own design, used for sign-in and confirmations. Esc or the backdrop cancels. */
+  function hpModal(o) {
+    var old = $("#hpModal"); if (old) old.remove();
+    document.body.insertAdjacentHTML("beforeend", '<div class="hm" id="hpModal" role="dialog" aria-modal="true" aria-labelledby="hmTitle"><div class="hm-back"></div>' +
+      '<div class="hm-win' + (o.tone ? " hm-" + o.tone : "") + '"><div class="hm-bar"><span>' + esc(o.kicker || "Hound Protocol") + '</span><button type="button" class="hm-x" aria-label="Close">✕</button></div>' +
+      '<div class="hm-body"><h3 id="hmTitle">' + esc(o.title || "") + '</h3><div class="hm-content">' + (o.html || "") + '</div></div><div class="hm-act"></div></div></div>');
+    var el = $("#hpModal"), act = $(".hm-act", el), done = null, prev = document.activeElement;
+    var m = {
+      el: el,
+      body: function (html) { $(".hm-content", el).innerHTML = html; },
+      actions: function (list) {
+        act.innerHTML = (list || []).map(function (a, i) { return '<button type="button" class="btn' + (a.primary ? " primary" : "") + (a.danger ? " danger" : "") + '" data-i="' + i + '">' + esc(a.label) + "</button>"; }).join("");
+        $$("button", act).forEach(function (b) { b.addEventListener("click", function () { var a = list[+b.getAttribute("data-i")]; if (a.run) a.run(m); else m.close(a.value); }); });
+        var f = $(".primary, .danger", act) || $("button", act); if (f) f.focus();
+      },
+      close: function (v) {
+        document.removeEventListener("keydown", key);
+        el.classList.add("out"); setTimeout(function () { el.remove(); if (prev && prev.focus) prev.focus(); }, opts.motion ? 220 : 0);
+        if (done) { var d = done; done = null; d(v); }
+      },
+      result: new Promise(function (ok) { done = ok; })
+    };
+    function key(e) { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (o.cancel) o.cancel(); m.close(null); } }
+    document.addEventListener("keydown", key);
+    $(".hm-x", el).addEventListener("click", function () { if (o.cancel) o.cancel(); m.close(null); });
+    $(".hm-back", el).addEventListener("click", function () { if (o.cancel) o.cancel(); m.close(null); });
+    m.actions(o.actions);
+    blip();
+    return m;
+  }
+  /* A yes-or-no question in a modal window; resolves true when confirmed */
+  function hpConfirm(title, text, yes, no, tone) {
+    var m = hpModal({ kicker: "Confirm", title: title, html: "<p>" + esc(text) + "</p>", tone: tone, actions: [{ label: no || "Cancel", value: false }, { label: yes || "OK", value: true, danger: tone === "danger", primary: tone !== "danger" }] });
+    return m.result.then(function (v) { return !!v; });
+  }
+
   /* Briefing */
   function hl(t) { return esc(t).replace(/\{\{([^}]+)\}\}/g, '<mark class="key">$1</mark>'); }
   var ICONS = {
@@ -645,23 +682,11 @@
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || {};
-      /* Hero with a live session diagram: one host, fifteen clients, state flowing out and inputs flowing back */
-      var nodes = "", links = "";
-      for (var n = 0; n < 15; n++) {
-        var a = -Math.PI / 2 + n * Math.PI * 2 / 15, r = n % 2 ? 128 : 150, x = 180 + Math.cos(a) * r, y = 180 + Math.sin(a) * r;
-        links += '<line class="ab-link" x1="180" y1="180" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '" style="--k:' + n + '"/>' +
-          '<circle class="ab-pkt" r="2.4" style="--k:' + n + "; --x:" + (x - 180).toFixed(1) + "px; --y:" + (y - 180).toFixed(1) + 'px" cx="180" cy="180"/>';
-        nodes += '<g class="ab-cl" style="--k:' + n + '" transform="translate(' + x.toFixed(1) + " " + y.toFixed(1) + ')"><circle r="9"/><circle class="d" r="3"/></g>';
-      }
-      var diagram = '<svg class="ab-net" viewBox="0 0 360 360" role="img" aria-label="One host and fifteen clients in one session">' +
-        '<circle class="ab-ring" cx="180" cy="180" r="150"/><circle class="ab-ring" cx="180" cy="180" r="128"/>' + links + nodes +
-        '<g class="ab-host" transform="translate(180 180)"><circle class="p" r="34"/><circle r="26"/><path d="M0 -12l12 12-12 12-12-12z"/><text y="48">HOST</text></g></svg>';
       var stats = [[16, "players in one session"], [1, "host, the authority"], [0, "Konami servers touched"], [100, "% free and open source"]];
       $("#vb").innerHTML = '<div class="bf ab">' +
         '<section class="bf-sec ab-hero"><div class="ab-copy"><span class="ab-kick">MGSV: Joint Operations · by Hound Protocol</span><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
           (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
-          '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides/hp-gde-001">Player Guide</a></div></div>' +
-          '<div class="ab-vis">' + diagram + "</div></section>" +
+          '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides/hp-gde-001">Player Guide</a></div></div></section>' +
         '<section class="bf-sec ab-stats">' + stats.map(function (st, k) { return '<div style="--k:' + k + '"><b data-to="' + st[0] + '">0</b><span>' + esc(st[1]) + "</span></div>"; }).join("") + "</section>" +
         '<section class="bf-sec"><div class="label">How a session works</div><ol class="ab-steps">' + (b.how || []).map(function (h, k) {
           return '<li style="--k:' + k + '"><span class="ab-n">0' + (k + 1) + '</span><span class="st-n">' + (ICONS[h[0]] || k + 1) + "</span><h4>" + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></li>";
@@ -2047,6 +2072,7 @@
         (t.hierarchy ? teamChain(t) : "") +
         (t.positions ? teamPositions(t.positions) : "") + "</div>";
       revealSections();
+      teamRoster();
     });
   }
 
@@ -2103,6 +2129,25 @@
     return '<div class="active-strip"><span class="as-k"><i></i>Active this week</span>' + (list.length ? list.map(function (r) {
       return '<a class="as-b" href="#/verify" title="Last delivery ' + esc(r.date) + (r.assisted && r.assisted.length ? ", with " + esc(r.assisted.join(", ")) : "") + '">' + esc(r.name || r.login) + "</a>";
     }).join("") : '<span class="as-none">No deliveries in the last 7 days</span>') + "</div>";
+  }
+
+  /* The public roster: every signed card, grouped by clearance, highest first. Cards are checked in the browser
+     against the records key; banned accounts (LV0) are kept privately and never listed (docs/guides/HP-SOP-012-bans.md). */
+  function teamRoster() {
+    Promise.all([loadLocal("staff"), loadLocal("records-key")]).then(function (res) {
+      if (currentView !== "team") return;
+      var staff = ((res[0] && res[0].staff) || []).filter(function (x) { return x.status === "active"; }), keys = (res[1] && res[1].keys) || [];
+      var by = {}; staff.forEach(function (x) { (by[x.card] = by[x.card] || []).push(x); });
+      var lv = ["LV7", "LV6", "LV5", "LV4", "LV3", "LV2"].filter(function (l) { return by[l]; });
+      var html = '<section class="bf-sec in roster"><div class="label">Roster</div>' +
+        '<p class="sub">Everyone holding a signed Hound ID card, by clearance. Each card is checked against the records key in your browser. Prove that someone really holds a card on <a href="#/verify">Verify</a>.</p>' +
+        (lv.length ? lv.map(function (l) {
+          return '<div class="ro-lv" style="--hk:' + (KC_LV[l] || KC_LV.LV3)[1] + '"><h4><i>' + esc(l) + "</i>" + esc((KC_LV[l] || [""])[0]) + "<small>" + plural(by[l].length, "member") + '</small></h4><div class="hks">' + by[l].map(function (x, n) { return keycard(x, { link: true, i: n }); }).join("") + "</div></div>";
+        }).join("") : '<div class="empty">No signed cards yet<small>The roster fills as the owner issues signed cards (<a href="#/guides/hp-gde-009">how</a>).</small></div>') +
+        "</section>";
+      $(".bf", $("#vb")).insertAdjacentHTML("beforeend", html);
+      if (keys.length) markVerified(staff, keys);
+    });
   }
 
   /* Verify: signed contributor records and the contributor wall */
@@ -2292,7 +2337,7 @@
       '<p class="sub">Everything you need to play, contribute, test and run Hound Protocol, written down. Every document is versioned, owned by a department and printable on A4.</p>' +
       '<div class="hb-tools"><label class="cab-q hb-q"><span aria-hidden="true">⌕</span><input id="hq" type="search" placeholder="' + (guideMode === "text" ? "Filter by what the documents say" : "Filter by name: a word, part of one, or a topic") + '" aria-label="Filter the Handbook" aria-controls="hbList" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' + smSwitch("hb", guideMode) +
       '<div class="tabs" role="tablist">' + GUIDE_AUD.map(function (a) { return '<button role="tab" data-aud="' + a + '" aria-selected="' + (guideAud === a) + '">' + a + "</button>"; }).join("") + "</div></div>" +
-      '<div class="cab-count" id="hbCount" aria-live="polite"></div><div id="hbList"></div>' +
+      '<div class="cab-count" id="hbCount" aria-live="polite"></div><div class="hb-folders" id="hbFolders"></div><div id="hbList"></div>' +
       '<p class="source">Source: docs/guides/ · index generated by tools/guides_index.py</p>';
     var q = $("#hq");
     q.value = guideQ;
@@ -2307,32 +2352,53 @@
       else if (e.key === "Enter") { var a = $("#hbList .mini"); if (a) { e.preventDefault(); a.click(); } }
     });
     $$("[data-aud]").forEach(function (b) { b.addEventListener("click", function () { guideAud = b.dataset.aud; $$("[data-aud]").forEach(function (x) { x.setAttribute("aria-selected", String(x === b)); }); drawGuideSheets(list); }); });
-    drawGuideSheets(list);
+    drawGuideSheets(list, true);
     if (guideQ.trim() && !guideIdx && guideMode === "text") guideIndex(list).then(function () { if (currentView === "guides" && $("#hbList")) drawGuideSheets(list); });
   }
-  function drawGuideSheets(list) {
+  function drawGuideSheets(list, fly) {
     var words = guideWords(), filtering = !!words.length;
     var shown = list.filter(function (g) { return (guideAud === "All" || g.audience === guideAud) && (!filtering || guideMatch(g, words)); });
     var re = filtering ? new RegExp("(" + words.map(function (a) { return a[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")", "ig") : null;
     function hl(t) { return re ? esc(t).replace(re, "<mark>$1</mark>") : esc(t); }
     var byType = { Guide: [], Policy: [], Procedure: [] };
     shown.forEach(function (g) { (byType[g.type] = byType[g.type] || []).push(g); });
-    var section = function (type, label, note) {
-      var l = byType[type] || [];
-      if (!l.length) return "";
-      return '<div class="label">' + label + '</div><p class="sub">' + note + '</p><div class="sheets">' + l.map(function (g, n) {
+    /* Folders: one per type. The open folder lays its sheets out below; switching folders sends the sheets back in first */
+    if (!(byType[guideOpen] || []).length) { var first = HB_FOLDERS.filter(function (f) { return byType[f[0]].length; })[0]; if (first) guideOpen = first[0]; }
+    var bar = $("#hbFolders");
+    bar.innerHTML = HB_FOLDERS.map(function (f, k) {
+      var n = byType[f[0]].length;
+      return '<button type="button" class="hbf t-' + f[0].toLowerCase() + (f[0] === guideOpen ? " open" : "") + (n ? "" : " empty") + '" data-t="' + f[0] + '" style="--k:' + k + '" aria-expanded="' + (f[0] === guideOpen) + '"' + (n ? "" : " disabled") + '>' +
+        '<span class="hbf-tab">' + esc(f[1]) + '</span><span class="hbf-body"><b>' + n + "</b><small>" + esc(f[2]) + '</small></span><span class="hbf-papers" aria-hidden="true"><i></i><i></i><i></i></span></button>';
+    }).join("");
+    $$("#hbFolders .hbf").forEach(function (b) { b.addEventListener("click", function () { var t = b.getAttribute("data-t"); if (t !== guideOpen) hbSwitch(list, t); }); });
+    var l = byType[guideOpen] || [];
+    $("#hbList").innerHTML = (l.length ? '<div class="sheets">' + l.map(function (g, n) {
         return '<a class="mini t-' + esc(g.type.toLowerCase()) + '" style="--i:' + n + '" href="#/guides/' + esc(g.id) + '"><span class="m-top"><b>' + hl(g.code) + "</b><i>v" + esc(g.version) + "</i></span>" +
           '<span class="m-title">' + hl(g.title) + '</span><span class="m-sum">' + hl(g.summary) + "</span>" +
           '<span class="m-foot">' + esc(g.owner) + " Dept</span>" + typeStripe(g.type, 3) + "</a>";
-      }).join("") + "</div>";
-    };
-    $("#hbList").innerHTML =
-      section("Guide", "Guides", "How-to help for each audience.") +
-      section("Policy", "Policies", "Rules everyone follows.") +
-      section("Procedure", "Standard operating procedures", "Step by step, the same way every time.") +
+      }).join("") + "</div>" : "") +
       (shown.length ? "" : filtering ? '<div class="cab-none"><b>No match</b>No handbook document matches “' + esc(guideQ.trim()) + '”' + (guideAud !== "All" ? " for " + esc(guideAud) : "") + '.<small>Try fewer words, part of a word, or the All tab.</small></div>' : '<div class="empty">No documents for this audience yet</div>');
+    if (fly) hbFly(true);
     $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx || guideMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
     $("#hbList").classList.toggle("filtering", filtering);
+  }
+  var HB_FOLDERS = [["Guide", "Guides", "How-to help for each audience"], ["Policy", "Policies", "Rules everyone follows"], ["Procedure", "Procedures", "Step by step, the same way every time"]];
+  var guideOpen = "Guide", hbBusy = false;
+  /* Sheets fly between the open folder and the grid (Web Animations; without it, they simply appear) */
+  function hbFly(out, done) {
+    var f = $("#hbFolders .hbf.open"), sheets = $$("#hbList .mini");
+    if (!f || !sheets.length || !opts.motion || !sheets[0].animate) { if (done) done(); return; }
+    var fr = f.getBoundingClientRect(), fx = fr.left + fr.width / 2, fy = fr.top + fr.height / 2, left = sheets.length;
+    sheets.forEach(function (m, i) {
+      var r = m.getBoundingClientRect(), dx = fx - (r.left + r.width / 2), dy = fy - (r.top + r.height / 2);
+      var away = { transform: "translate(" + dx + "px," + dy + "px) scale(.18) rotate(" + (i % 2 ? 8 : -8) + "deg)", opacity: 0 }, home = { transform: "none", opacity: 1 };
+      var a = m.animate(out ? [away, home] : [home, away], { duration: out ? 520 : 320, delay: out ? i * 40 : (sheets.length - 1 - i) * 22, easing: out ? "cubic-bezier(.2,.8,.2,1)" : "cubic-bezier(.5,0,.8,.4)", fill: "both" });
+      a.onfinish = function () { if (out) a.cancel(); if (--left === 0 && done) done(); };
+    });
+  }
+  function hbSwitch(list, t) {
+    if (hbBusy) return; hbBusy = true; blip();
+    hbFly(false, function () { guideOpen = t; drawGuideSheets(list, true); hbBusy = false; });
   }
   /* Ctrl+K or / jumps to the Handbook filter */
   document.addEventListener("keydown", function (e) {
@@ -2621,10 +2687,22 @@
     if (typeof fetch !== "function") return Promise.reject(new Error("This browser cannot open guest passes"));
     return fetch(siRelay() + path, { headers: { Authorization: "Guest " + (pass || SG.pass) }, cache: "no-store" }).then(function (r) {
       if (r.status === 401 && !pass) { SG = null; sgSave(); siBadge(); }
-      if (!r.ok) return r.json().catch(function () { return {}; }).then(function (j) { var e = new Error(j.error || "HTTP " + r.status); e.status = r.status; throw e; });
+      if (!r.ok) return r.json().catch(function () { return {}; }).then(function (j) { var e = new Error(j.error || "HTTP " + r.status); e.status = r.status; e.code = j.code; if (j.code === "revoked" && !pass) sgRevoked(); throw e; });
       return raw ? r.text() : r.json();
     });
   }
+  /* A revoked pass: tell the guest in a small window, then return them to the signed-out profile */
+  function sgRevoked() {
+    if ($("#hpModal.revoked")) return;
+    SG = null; sgSave(); siBadge();
+    var m = hpModal({ kicker: "Hound ID · Guest pass", title: "Your guest pass has been revoked", tone: "danger",
+      html: "<p>The owner has ended this guest pass. Restricted documents are closed to you now.</p><p class=\"hm-note\">If you think this is a mistake, ask the person who sent you the link.</p>", actions: [{ label: "OK", primary: true, value: true }] });
+    m.el.classList.add("revoked");
+    m.result.then(function () { if (currentView === "profile" || currentView === "docs") route(); });
+  }
+  /* While a guest pass is open, check it now and then, so a revoked pass closes within a minute */
+  setInterval(function () { if (sgIn() && !document.hidden) sgApi("/guest/check").catch(function () { /* handled in sgApi */ }); }, 60 * 1000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && sgIn()) sgApi("/guest/check").catch(function () { /* handled in sgApi */ }); });
   function siOwner() { return siIn() && String(SI.user.id) === String(siCfg().owner || ""); }
   /* Reads one restricted file, with the person's own sign-in or, for a guest, through the relay */
   function siRead(repo, path) {
@@ -2645,7 +2723,9 @@
     if (!siOn()) return Promise.reject(new Error("Sign-in is not switched on yet."));
     var relay = siCfg().relay.replace(/\/$/, ""), origin;
     try { origin = new URL(relay).origin; } catch (e) { return Promise.reject(new Error("The sign-in relay address is not valid.")); }
-    var w = window.open(relay + "/login", "hpsignin", "width=520,height=720");
+    /* GitHub cannot be shown inside another page, so it opens in a small window centered over this one */
+    var W = 520, H = 720, L = Math.round((window.screenX || window.screenLeft || 0) + ((window.outerWidth || screen.width) - W) / 2), T = Math.round((window.screenY || window.screenTop || 0) + ((window.outerHeight || screen.height) - H) / 2);
+    var w = window.open(relay + "/login", "hpsignin", "width=" + W + ",height=" + H + ",left=" + L + ",top=" + T);
     if (!w) return Promise.reject(new Error("Allow pop-ups for this site to sign in."));
     return new Promise(function (ok, fail) {
       var done = false, t;
@@ -2653,7 +2733,7 @@
         if (e.origin !== origin || !e.data || !e.data.houndSignin) return;
         done = true; clearInterval(t); window.removeEventListener("message", on);
         var m = e.data.houndSignin;
-        if (m.error || !m.token) { fail(new Error(m.error || "Sign-in failed.")); return; }
+        if (m.error || !m.token) { var er = new Error(m.error || "Sign-in failed."); er.code = m.code; fail(er); return; }
         SI = { token: m.token, exp: m.expires_in ? Date.now() + m.expires_in * 1000 : 0 };
         siApi("/user").then(function (u) {
           SI.user = { id: u.id, login: u.login, name: u.name || "", avatar: u.avatar_url };
@@ -2665,6 +2745,31 @@
     });
   }
   var siFresh = 0;
+  /* The sign-in window: explains the three steps, opens GitHub, waits, and reports back in the site's own design */
+  function siStart() {
+    var m = hpModal({ kicker: "Hound ID · Sign in", title: "Sign in with GitHub",
+      html: '<ol class="hm-steps"><li><b>GitHub opens</b> in a small window in the middle of your screen.</li><li><b>Authorize Hound ID Sign-in</b> the first time. It can only read what your GitHub teams already allow.</li><li><b>Your keycard</b> appears here, at your clearance.</li></ol><p class="hm-note">We never see your password, and nothing about you is stored on a server.</p>',
+      actions: [{ label: "Cancel", value: null }, { label: "Continue with GitHub", primary: true, run: go }] });
+    function go() {
+      m.body('<div class="hm-wait"><span class="spin"></span><b>Waiting for GitHub…</b><small>Finish signing in in the GitHub window. If nothing opened, allow pop-ups for this site.</small></div>');
+      m.actions([{ label: "Cancel", value: null }]);
+      signIn().then(function () {
+        status("Signed in"); blip("go");
+        m.body('<div class="hm-ok"><b>Access granted</b><small>Opening your keycard…</small></div>'); m.actions([]);
+        setTimeout(function () { m.close(true); if (currentView === "profile") viewProfile(); else location.hash = "#/profile"; }, opts.motion ? 700 : 0);
+      }, function (e) {
+        if (e.code === "banned") {
+          m.el.querySelector(".hm-win").classList.add("hm-danger");
+          m.body('<div class="hm-lv0"><span>LV0</span><b>Access revoked</b><small>This GitHub account is banned from Hound Protocol. It cannot sign in, take contracts or join sessions, on any linked account.</small><small>Appeals: <a href="#/guides/hp-sop-011">HP-SOP-011</a>.</small></div>');
+          m.actions([{ label: "Close", value: null }]);
+          return;
+        }
+        m.body('<div class="hm-err"><b>Not signed in</b><small>' + esc(e.message) + "</small></div>");
+        m.actions([{ label: "Close", value: null }, { label: "Try again", primary: true, run: go }]);
+      });
+    }
+    return m.result;
+  }
   function signOut() { SI = null; siSave(); siBadge(); }
   /* Organization owners hold LV7, as GitHub itself reports it (ADR 0011: keycards come from the organization). This needs
      the sign-in app's read-only "Members" permission; without it the check fails quietly and nothing changes. */
@@ -2745,18 +2850,25 @@
       var c = siCard(), lvl = siLevel(), areas = siCfg().areas || [];
       $("#vb").innerHTML =
         '<div class="kc-profile">' + keycard(c, { big: true }) +
-        (c.guest ? '<dl class="kc-facts"><div><dt>Pass</dt><dd>Guest pass with <b>LV3</b> (Staff) clearance, granted by the owner.</dd></div>' +
+        '<div class="kc-side">' + (c.guest ? '<dl class="kc-facts"><div><dt>Pass</dt><dd>Guest pass with <b>LV3</b> (Staff) clearance, granted by the owner.</dd></div>' +
           "<div><dt>Expires</dt><dd>" + esc(fmtDate(new Date(c.exp).toISOString().slice(0, 10))) + " at " + esc(new Date(c.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(c.exp)) + " left. It cannot be extended.</dd></div>" +
           "<div><dt>Session</dt><dd>This tab only. Nothing is stored on a server.</dd></div>" +
-          '<div><dt></dt><dd><button class="btn small" id="siOut">End guest pass</button></dd></div></dl></div>' :
+          '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>End guest pass<small>You will need the link again to come back</small></span></button></div></div>' :
         '<dl class="kc-facts"><div><dt>GitHub</dt><dd><a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id) + "</dd></div>" +
           "<div><dt>Card</dt><dd>" + (c.owner ? "Owner card: GitHub confirms you own the Hound-Protocol organization." : c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
           "<div><dt>Session</dt><dd>" + (SI.exp ? "Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab" : "Signed in, in this tab") + "</dd></div>" +
-          '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>') +
+          '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>Sign out<small>Ends your Hound ID session in this tab</small></span></button></div></div>') +
         (siOwner() ? sgPanel() : "") +
         siAccess(lvl, areas) +
         '<article class="dossier si-reader" id="siDoc" hidden></article>';
-      $("#siOut").addEventListener("click", function () { if (c.guest) { SG = null; sgSave(); siBadge(); status("Guest pass ended"); } else { signOut(); status("Signed out"); } viewProfile(); });
+      $("#siOut").addEventListener("click", function () {
+        (c.guest ? hpConfirm("End your guest pass?", "You will need the link again to come back, while it is still valid.", "End guest pass", "Stay", "danger")
+          : hpConfirm("Are you sure you want to log out?", "Your Hound ID session in this tab ends. You can sign in again at any time.", "Log out", "Stay signed in", "danger")).then(function (yes) {
+          if (!yes) return;
+          if (c.guest) { SG = null; sgSave(); siBadge(); status("Guest pass ended"); } else { signOut(); status("Signed out"); }
+          viewProfile();
+        });
+      });
       if (siOwner()) sgPanelWire();
       /* Right after signing in (the owner check may redraw the card once, so allow a few seconds) */
       if (siFresh && Date.now() - siFresh < 5000) kcReveal($(".kc-profile .hk")); else siFresh = 0;
@@ -2817,18 +2929,51 @@
   function sgItem(x) {
     return '<li><code>' + esc(x.pass.slice(0, 10)) + '…</code><span>Expires ' + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + ' left</span><button class="btn small" data-gp="' + esc(x.pass) + '">Copy link</button></li>';
   }
+  function sgOwnerApi(path, method) {
+    return fetch(siRelay() + path, { method: method || "GET", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || "HTTP " + r.status); e.code = j.code; throw e; } return j; });
+    });
+  }
+  /* The live passes, from the relay: number, expiry, status, and Revoke */
+  function sgLoad() {
+    var ul = $("#gpList"); if (!ul) return;
+    sgOwnerApi("/guest/list").then(function (j) {
+      var local = {}; sgIssued().forEach(function (x) { try { local[JSON.parse(atob(x.pass.split(".")[0].replace(/-/g, "+").replace(/_/g, "/"))).n] = x.pass; } catch (e) { /* older pass */ } });
+      ul.innerHTML = (j.passes || []).map(function (x) {
+        return '<li class="' + (x.revoked ? "rv" : "") + '"><code>Pass ' + esc(x.n) + '</code><span>' + (x.revoked ? "Revoked" : "Expires " + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + " left") + "</span>" +
+          (local[x.n] && !x.revoked ? '<button class="btn small" data-gp="' + esc(local[x.n]) + '">Copy link</button>' : "") +
+          (x.revoked ? "" : '<button class="btn small danger" data-rv="' + esc(x.n) + '">Revoke pass</button>') + "</li>";
+      }).join("") || '<li class="none"><span>No live guest passes.</span></li>';
+      sgWireList();
+    }, function (e) {
+      if (e.code === "no_kv") { $("#gpMsg").textContent = "Passes can be granted. To revoke them instantly, add the GUEST_KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
+      else $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay." : e.message;
+    });
+  }
+  function sgWireList() {
+    $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; });
+    $$("[data-rv]").forEach(function (b) {
+      b.onclick = function () {
+        var n = b.getAttribute("data-rv");
+        hpConfirm("Revoke guest pass " + n + "?", "Whoever holds this link loses access at once. This cannot be undone.", "Revoke pass", "Keep it", "danger").then(function (yes) {
+          if (!yes) return;
+          b.disabled = true;
+          sgOwnerApi("/guest/revoke?n=" + encodeURIComponent(n), "POST").then(function () { status("Guest pass revoked"); blip("go"); sgLoad(); }, function (e) { b.disabled = false; $("#gpMsg").textContent = e.message; });
+        });
+      };
+    });
+  }
   function sgPanelWire() {
-    function wire() { $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; }); }
-    wire();
+    sgLoad();
     var g = $("#gpGrant"); if (!g) return;
     g.addEventListener("click", function () {
       g.disabled = true; $("#gpMsg").textContent = "Asking the relay…";
       fetch(siRelay() + "/guest/grant", { method: "POST", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "HTTP " + r.status); return j; }); }).then(function (j) {
         var list = sgIssued(); list.unshift({ pass: j.pass, exp: j.exp });
         try { sessionStorage.setItem(SG_ISSUED, JSON.stringify(list.slice(0, 10))); } catch (e) { /* this page only */ }
-        $("#gpList").innerHTML = list.map(sgItem).join(""); wire();
-        $("#gpMsg").textContent = "Pass granted. Copy its link and send it privately; anyone with the link has LV3 until it expires.";
-        var b = $("#gpList [data-gp]"); if (b) b.click();
+        $("#gpMsg").textContent = "Pass granted and its link copied. Send it privately; anyone with the link has LV3 until it expires or you revoke it.";
+        var u = sgLink(j.pass); if (navigator.clipboard) navigator.clipboard.writeText(u).catch(function () { window.prompt("Copy the guest link", u); }); else window.prompt("Copy the guest link", u);
+        sgLoad();
         blip("go");
       }, function (e) { $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay. If guest passes were just set up, check that the relay runs the current code (sign-in setup, section 6)." : e.message; }).then(function () { g.disabled = false; });
     });
@@ -2871,8 +3016,7 @@
         '<p class="sub">How it works and what is kept: <a href="#/docs/signin">sign-in</a> · <a href="#/docs/privacy">privacy</a></p></div></div>';
     var go = $("#siGo");
     if (go) go.addEventListener("click", function () {
-      go.disabled = true; $("#siMsg").textContent = "Waiting for GitHub…";
-      signIn().then(function () { status("Signed in"); blip("go"); viewProfile(); }, function (e) { go.disabled = false; $("#siMsg").textContent = e.message; });
+      siStart();
     });
   }
 

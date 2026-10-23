@@ -8,6 +8,7 @@ The project lead wants access levels on the website like the keycards in Metal G
 ### Seven keycard levels
 | Card | Who | Can do |
 |---|---|---|
+| **LV0** | Banned | Nothing beyond the public site; refused at sign-in ([ADR 0019](0019-bans-across-accounts.md)) |
 | **LV1** | Visitor | Read the public site |
 | **LV2** | Member (signed in) | Profile, report content, follow sessions |
 | **LV3** | Contractor | Claim contracts, upload mods for review |

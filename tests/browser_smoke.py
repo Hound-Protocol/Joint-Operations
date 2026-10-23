@@ -32,13 +32,17 @@ async def check(browser, name, size):
     await page.wait_for_timeout(1200)
     if await page.locator("#menu a").count() != 8:
         failures.append("menu does not have 8 items")
+    widths = {}
     for v in VIEWS:
         await page.goto(BASE + "#/" + v)
         await page.wait_for_timeout(900)
+        widths[v] = await page.evaluate("Math.round(document.getElementById('view').getBoundingClientRect().width)")
         if not await page.locator(".vh h2").count():
             failures.append(f"{v}: no heading")
         if await page.evaluate("document.documentElement.scrollWidth > innerWidth + 1"):
             failures.append(f"{v}: horizontal overflow")
+    if len(set(widths.values())) > 1:
+        failures.append("layout stability: sections have different widths " + str(widths))
     await page.goto(BASE + "#/briefing"); await page.wait_for_timeout(900)
     if await page.locator(".ab-steps li").count() < 3:
         failures.append("briefing: session steps missing")
