@@ -1,5 +1,5 @@
 # GitHub Basics
-Code: HP-GDE-014 · Version 1.0 · Effective 2026-10-23 · Owner: Development · For: everyone new to GitHub
+Code: HP-GDE-014 · Version 1.1 · Effective 2026-10-23 · Owner: Development · For: everyone new to GitHub
 
 GitHub is where Joint Operations lives: the code, the documents, the contract board, the releases and the website. You need a free account to report problems, take contracts or sign in to the website. This guide takes you from no account to your first pull request. No programming is needed for most of it.
 
@@ -43,7 +43,7 @@ Most of this is easier to read on our website: the **Roadmap**, **Contribute** (
 ## 5. Take a contract
 Contracts open to contractors after version 0.1; the board already shows the plan ([CONTRIBUTING](../../CONTRIBUTING.md)).
 1. On the website's **Contribute** page, pick a contract whose dependencies are done, and open it on GitHub.
-2. Comment exactly `/claim`. You are assigned at once and your name shows on the board. `/unclaim` leaves it.
+2. Press **Claim** on the card on the website (signed in), or comment exactly `/claim` on the issue. Your name shows in the card's Contributors list. **Unclaim** (or `/unclaim`) leaves it.
 3. Read the goal, the deliverable and the acceptance criteria. Ask questions on the issue, so everyone can see the answer.
 
 ## 6. Change a document in the browser (no tools needed)

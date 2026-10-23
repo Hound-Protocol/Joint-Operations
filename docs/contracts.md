@@ -4,40 +4,48 @@ Generated from `site/data/contracts.json` by `tools/contracts_md.py`. Edit the J
 
 Every contract has a goal, a deliverable and acceptance criteria. The Quality Department checks each criterion before merging. Difficulty (Easy, Medium, Hard) tells you how demanding a contract is. It is information only: anyone can take any contract. Core contracts are on the 0.1 critical path and reserved for the Development Department. Each completed contract earns points toward the contractor's grade in its field (E to S++). See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).
 
-Version 0.1 is built by the project lead. These contracts open to contractors after 0.1.
+Version 0.1 is built by the project lead. These contracts open to contractors after 0.1. Foundation work (IDs starting with F) is everyone's current work on the project, the owner's and AI-assisted work included: it goes on the board when it starts and is checked off when it is done (`tools/work.py`, [HP-SOP-003](guides/HP-SOP-003-release.md)).
 
-| ID | Contract | Module | Difficulty | Depends on | Status |
-|---|---|---|---|---|---|
-| C01 | Pin game build and set up Windows test rig | testing | 🟢 Easy | — | planned |
-| C02 | Proton test rig and setup guide | testing | 🟡 Medium | C01 | planned |
-| C03 | Survey public MGSV modding tools and docs | hooks | 🟡 Medium | — | planned |
-| C04 | Document mod loading path (Windows) | launcher | 🔴 Hard · Core | C03 | planned |
-| C05 | Document mod loading path (Proton) | launcher | 🟡 Medium · Core | C04 | planned |
-| C06 | Player and companion representation notes | hooks | 🔴 Hard · Core | C04 | planned |
-| C07 | Mother Base roster notes | hooks | 🟡 Medium | C04 | planned |
-| C08 | State inventory and sync priorities | session | 🟡 Medium | C06 | planned |
-| C09 | Spike: GameNetworkingSockets, Steam Messages vs Sockets | net | 🔴 Hard | — | planned |
-| C10 | Simulate 16 clients and measure bandwidth | net | 🟡 Medium | C09 | planned |
-| C11 | Mock Steam DLL for one-PC testing | testing | 🔴 Hard | — | planned |
-| C12 | Bad-network test profiles (clumsy, tc netem) | testing | 🟢 Easy | — | planned |
-| C13 | Summarize networking playbook in our own words | docs | 🟢 Easy | — | done |
-| C14 | Draft Steam App ID and rights position | legal | 🟡 Medium | — | planned |
-| C15 | Publish Phase 1 contracts as GitHub issues | web | 🟢 Easy | — | planned |
-| C16 | Lobby app wireframes | lobby | 🟡 Medium | — | planned |
-| C17 | Mod API draft v0 | modapi | 🔴 Hard | C08 | planned |
-| C18 | Join and leave feasibility notes | hooks | 🔴 Hard | C06 | planned |
-| C19 | Engine session spike: can 3+ players join? | session | 🔴 Hard · Core | C04 | planned |
-| C20 | Steam interfaces from inside the game (rig test) | net | 🟡 Medium · Core | C04 | planned |
-| C21 | Join links: Steam lobby links and launch arguments | launcher | 🟡 Medium | C20 | planned |
-| C22 | Website accessibility pass | web | 🟢 Easy | — | planned |
-| C23 | HUD design for the detection status | lobby | 🟡 Medium | — | planned |
-| C24 | Session Browser against a mock registry | web | 🟡 Medium | — | planned |
-| C25 | Player FAQ | docs | 🟢 Easy | — | planned |
-| C26 | Engine terms glossary | docs | 🟡 Medium | C03 | planned |
-| C27 | Steam Deck and Bazzite test checklist | testing | 🟡 Medium | C02 | planned |
-| C28 | Alert phases and enemy perception notes | hooks | 🔴 Hard | C03 | planned |
-| C29 | Mission flow and checkpoint notes | hooks | 🟡 Medium | C03 | planned |
-| C30 | Third-party notices | legal | 🟢 Easy | — | planned |
+| ID | Contract | Module | Difficulty | Depends on | Status | People |
+|---|---|---|---|---|---|---|
+| C01 | Pin game build and set up Windows test rig | testing | 🟢 Easy | — | planned | — |
+| C02 | Proton test rig and setup guide | testing | 🟡 Medium | C01 | planned | — |
+| C03 | Survey public MGSV modding tools and docs | hooks | 🟡 Medium | — | planned | — |
+| C04 | Document mod loading path (Windows) | launcher | 🔴 Hard · Core | C03 | planned | — |
+| C05 | Document mod loading path (Proton) | launcher | 🟡 Medium · Core | C04 | planned | — |
+| C06 | Player and companion representation notes | hooks | 🔴 Hard · Core | C04 | planned | — |
+| C07 | Mother Base roster notes | hooks | 🟡 Medium | C04 | planned | — |
+| C08 | State inventory and sync priorities | session | 🟡 Medium | C06 | planned | — |
+| C09 | Spike: GameNetworkingSockets, Steam Messages vs Sockets | net | 🔴 Hard | — | planned | — |
+| C10 | Simulate 16 clients and measure bandwidth | net | 🟡 Medium | C09 | planned | — |
+| C11 | Mock Steam DLL for one-PC testing | testing | 🔴 Hard | — | planned | — |
+| C12 | Bad-network test profiles (clumsy, tc netem) | testing | 🟢 Easy | — | planned | — |
+| C13 | Summarize networking playbook in our own words | docs | 🟢 Easy | — | done | — |
+| C14 | Draft Steam App ID and rights position | legal | 🟡 Medium | — | planned | — |
+| C15 | Publish Phase 1 contracts as GitHub issues | web | 🟢 Easy | — | planned | — |
+| C16 | Lobby app wireframes | lobby | 🟡 Medium | — | planned | — |
+| C17 | Mod API draft v0 | modapi | 🔴 Hard | C08 | planned | — |
+| C18 | Join and leave feasibility notes | hooks | 🔴 Hard | C06 | planned | — |
+| C19 | Engine session spike: can 3+ players join? | session | 🔴 Hard · Core | C04 | planned | — |
+| C20 | Steam interfaces from inside the game (rig test) | net | 🟡 Medium · Core | C04 | planned | — |
+| C21 | Join links: Steam lobby links and launch arguments | launcher | 🟡 Medium | C20 | planned | — |
+| C22 | Website accessibility pass | web | 🟢 Easy | — | planned | — |
+| C23 | HUD design for the detection status | lobby | 🟡 Medium | — | planned | — |
+| C24 | Session Browser against a mock registry | web | 🟡 Medium | — | planned | — |
+| C25 | Player FAQ | docs | 🟢 Easy | — | planned | — |
+| C26 | Engine terms glossary | docs | 🟡 Medium | C03 | planned | — |
+| C27 | Steam Deck and Bazzite test checklist | testing | 🟡 Medium | C02 | planned | — |
+| C28 | Alert phases and enemy perception notes | hooks | 🔴 Hard | C03 | planned | — |
+| C29 | Mission flow and checkpoint notes | hooks | 🟡 Medium | C03 | planned | — |
+| C30 | Third-party notices | legal | 🟢 Easy | — | planned | — |
+| F01 | Bans (LV0) across linked accounts and the public roster | web | 🟡 Medium | — | done | Forge77 (with Claude) |
+| F02 | Handbook folders and button previews | web | 🟡 Medium | — | done | Forge77 (with Claude) |
+| F03 | Contribution guidelines in the Handbook | docs | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F04 | Link previews with their own thumbnail for every page | web | 🟡 Medium | — | claimed | Forge77 (with Claude) |
+| F05 | Profile page entrance animation | web | 🟢 Easy | — | claimed | Forge77 (with Claude) |
+| F06 | Records key and the owner's signed card | legal | 🟢 Easy | — | claimed | Forge77 |
+| F07 | Branch protection on main | legal | 🟢 Easy | — | claimed | Forge77 |
+| F08 | Steam sign-in for sessions, linked to the Hound ID | lobby | 🔴 Hard | — | planned | — |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -501,3 +509,96 @@ Module: legal · Difficulty: 🟢 Easy · Skills: Licenses
 - Checked against the project license decision (ADR 0005)
 
 Background: [adr-0005](decisions/0005-license.md), [legal](legal.md)
+
+## F01
+**Bans (LV0) across linked accounts and the public roster**  
+Module: web · Difficulty: 🟡 Medium · Skills: 
+
+**Goal.** Keep banned people out by GitHub account number across GitHub, Discord and Steam, and list every signed card by clearance.
+
+**Deliverable.** HP-SOP-012, ADR 0019, relay ban check, Team roster
+
+**Acceptance criteria**
+- Relay refuses banned GitHub accounts
+- Roster lists signed cards by clearance
+
+## F02
+**Handbook folders and button previews**  
+Module: web · Difficulty: 🟡 Medium · Skills: 
+
+**Goal.** Colour-coded folders for guides, policies and procedures, and a small preview on every button that opens a Handbook document.
+
+**Deliverable.** Handbook and site-wide previews
+
+**Acceptance criteria**
+- Sheets fly between folder and grid
+- Preview as wide as the button
+
+## F03
+**Contribution guidelines in the Handbook**  
+Module: docs · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** One guide that explains exactly how to contribute, linking to Can I Contribute first.
+
+**Deliverable.** HP-GDE-019
+
+**Acceptance criteria**
+- Linked from How it works on Contribute
+
+## F04
+**Link previews with their own thumbnail for every page**  
+Module: web · Difficulty: 🟡 Medium · Skills: 
+
+**Goal.** Every shared link shows its own title, description and a thumbnail drawn by code from our brand.
+
+**Deliverable.** Share pages and generated thumbnails at build time
+
+**Acceptance criteria**
+- Each section, guide and document has a share link with its own preview
+- Restricted documents get a neutral preview
+
+## F05
+**Profile page entrance animation**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Opening the Profile animates its parts in, not only right after signing in.
+
+**Deliverable.** Profile view
+
+**Acceptance criteria**
+- No pop-in when opening the Profile
+
+## F06
+**Records key and the owner's signed card**  
+Module: legal · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Create the project's records signing key on the owner's computer and issue the first signed card (HND-0001).
+
+**Deliverable.** records-key.json and staff.json
+
+**Acceptance criteria**
+- Key made and kept offline
+- HND-0001 verifies on the website
+
+## F07
+**Branch protection on main**  
+Module: legal · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Nobody pushes straight to main; checks and review are required.
+
+**Deliverable.** GitHub settings (github-setup.md)
+
+**Acceptance criteria**
+- Checks, Browsers and Contributor standing required, no bypass
+
+## F08
+**Steam sign-in for sessions, linked to the Hound ID**  
+Module: lobby · Difficulty: 🔴 Hard · Skills: 
+
+**Goal.** Joining a session needs a Steam sign-in linked to the person's GitHub account, so bans reach Steam too.
+
+**Deliverable.** Session registry sign-in (ADR 0008, ADR 0019)
+
+**Acceptance criteria**
+- Steam ID linked to the GitHub account
+- Banned Steam IDs refused

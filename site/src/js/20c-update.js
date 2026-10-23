@@ -12,9 +12,9 @@
   }
   function upShow(b, version) {
     if ($("#upNote")) return;
-    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><i aria-hidden="true"></i><div><b>Update available</b><span>' +
-      esc("Build " + (version || "") + (b.build ? "." + b.build : "")) + ' is live. Reload to get the latest version.</span></div>' +
-      '<button class="btn small primary" id="upGo">Reload</button><button class="btn small" id="upLater">Later</button></div>');
+    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><i aria-hidden="true"></i><b>Update available</b><span>' +
+      esc("Build " + (version || "") + (b.build ? "." + b.build : "")) + ' is live</span>' +
+      '<button class="up-go" id="upGo">Reload</button><button class="up-x" id="upLater" aria-label="Later">✕</button></div>');
     blip();
     $("#upGo").addEventListener("click", function () { location.reload(); });
     $("#upLater").addEventListener("click", function () { upSeen = b.sha; var n = $("#upNote"); n.classList.add("out"); setTimeout(function () { n.remove(); }, 400); });

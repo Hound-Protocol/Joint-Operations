@@ -32,11 +32,16 @@ def render():
            "Difficulty (Easy, Medium, Hard) tells you how demanding a contract is. It is information only: anyone can take any contract. Core contracts are on the 0.1 critical path and reserved for the Development Department. "
            "Each completed contract earns points toward the contractor's grade in its field (E to S++). "
            "See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).", "",
-           "Version 0.1 is built by the project lead. These contracts open to contractors after 0.1.", "",
-           "| ID | Contract | Module | Difficulty | Depends on | Status |", "|---|---|---|---|---|---|"]
+           "Version 0.1 is built by the project lead. These contracts open to contractors after 0.1. "
+           "Foundation work (IDs starting with F) is everyone's current work on the project, the owner's and AI-assisted work included: "
+           "it goes on the board when it starts and is checked off when it is done (`tools/work.py`, [HP-SOP-003](guides/HP-SOP-003-release.md)).", "",
+           "| ID | Contract | Module | Difficulty | Depends on | Status | People |", "|---|---|---|---|---|---|---|"]
     cs = data["contracts"]
     for c in cs:
-        out.append(f"| {c['id']} | {c['title']} | {c['module']} | {DIFF[c['difficulty']][0]}{' · Core' if c.get('core') else ''} | {', '.join(c.get('depends') or []) or '—'} | {c.get('status', 'planned')} |")
+        who = ", ".join(c.get("by") or []) if c.get("status") == "done" else ", ".join(c.get("working") or [])
+        if who and c.get("agents"):
+            who += " (with " + ", ".join(c["agents"]) + ")"
+        out.append(f"| {c['id']} | {c['title']} | {c['module']} | {DIFF[c['difficulty']][0]}{' · Core' if c.get('core') else ''} | {', '.join(c.get('depends') or []) or '—'} | {c.get('status', 'planned')} | {who or '—'} |")
     for c in cs:
         out += ["", f"## {c['id']}", f"**{c['title']}**  ", f"Module: {c['module']} · Difficulty: {DIFF[c['difficulty']][0]}{' (Core: Development Department)' if c.get('core') else ''} · Skills: {c.get('skills', '')}"
                 + (f" · Depends on: {', '.join(c['depends'])}" if c.get("depends") else ""), ""]

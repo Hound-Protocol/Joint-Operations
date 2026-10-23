@@ -1,5 +1,5 @@
 # Contributor Quick Start
-Code: HP-GDE-003 · Version 1.1 · Effective 2026-10-23 · Owner: Development · For: new contributors and contractors
+Code: HP-GDE-003 · Version 1.2 · Effective 2026-10-23 · Owner: Development · For: new contributors and contractors
 
 ## 1. Read first (20 minutes)
 - Not sure where you fit? [Can I Contribute?](HP-GDE-017-can-i-contribute.md)
@@ -25,7 +25,7 @@ Code: HP-GDE-003 · Version 1.1 · Effective 2026-10-23 · Owner: Development ·
 
 ## 3. Take a contract
 1. Open the **Contribute** page. Pick a contract whose dependencies are done. The difficulty tells you what to expect. Easy is a good first one.
-2. Comment `/claim` on the issue. You are assigned at once, and your name appears on the board. Others may claim it too: say hello and split the work.
+2. Sign in on the website and press **Claim** on the card, or comment `/claim` on the issue. Your name appears in the card's Contributors list at once. Others may claim it too: say hello and split the work.
 3. Read its goal, deliverable and acceptance criteria. Ask questions on the issue, not in private.
 
 ## 4. Deliver
