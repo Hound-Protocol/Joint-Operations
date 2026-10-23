@@ -114,7 +114,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -275,6 +275,10 @@
     var winEls = $$("#mbWin .mb-win");
     /* Shooting star (v0.0.37): now and then a streak crosses the night sky */
     var star = { t: 20, x: 0, y: 0 }, starEl = $("#mbStar");
+    /* Vents (v0.0.41): puffs of steam rising from two vents on the command platform */
+    var vents = [[-0.42, -0.2], [0.38, 0.18]].map(function (q, i) { var w = mbWorld(core, [q[0] * core.g.R, q[1] * core.g.R]); return { x: w[0], y: w[1], t: i * 1.3 }; });
+    $("#mbVent").innerHTML = vents.map(function () { return '<circle class="mb-puff" r="3"/><circle class="mb-puff" r="3"/><circle class="mb-puff" r="3"/>'; }).join("");
+    var puffEls = $$("#mbVent .mb-puff");
     /* Sonar (v0.0.39): every 20 seconds a slow ring pulses out from the command platform */
     var sonarT = 4;
     var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
@@ -430,6 +434,7 @@
       var fw = Math.sin(T * 4.2), fw2 = Math.sin(T * 4.2 + 1.3);
       flagP.setAttribute("d", "M0 -26 Q7 " + mbF(-27 + fw * 2) + " 15 " + mbF(-23 + fw2 * 1.6) + " Q7 " + mbF(-20 + fw * 1.6) + " 0 -19 Z");
       wins.forEach(function (w, i) { w.t -= dt; if (w.t <= 0) { w.on = !w.on; w.t = 3 + r() * 9; } winEls[i].style.opacity = w.on ? "1" : "0.12"; });
+      vents.forEach(function (v, i) { v.t += dt; for (var k = 0; k < 3; k++) { var ph = ((v.t + k * 1.1) % 3.3) / 3.3, el2 = puffEls[i * 3 + k]; el2.setAttribute("cx", mbF(v.x + Math.sin(ph * 5 + i) * 3 + ph * 10)); el2.setAttribute("cy", mbF(v.y - ph * 26)); el2.setAttribute("r", mbF(2 + ph * 5)); el2.style.opacity = (Math.sin(ph * Math.PI) * 0.5).toFixed(2); } });
       sonarT -= dt; if (sonarT <= 0) { sonarT = 20; ring(core.x, core.y, core.g.R * 1.1, core.g.R * 4.2, 5.5, false); }
       star.t += dt;
       if (star.t > 38) { star.t = 0; star.x = 80 + r() * (MB_W - 480); star.y = 30 + r() * 160; }

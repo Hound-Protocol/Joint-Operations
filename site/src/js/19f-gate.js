@@ -113,13 +113,19 @@
   setInterval(function () { if (!document.hidden && askGet()) askCheck(); }, 20 * 1000);
 
   /* ---- Messages: a small list in the top bar, kept in this browser (clearance changes, guest passes, requests) ---- */
-  var MSG_KEY = "hp.msgs";
+  /* Once you open the menu, each message shows a bar that runs out; when it does, the message clears itself */
+  var MSG_KEY = "hp.msgs", MSG_LIFE = 20 * 1000;
   function msgAll() { try { return JSON.parse(lsv(MSG_KEY) || "[]") || []; } catch (e) { return []; } }
   function msgAdd(id, title, body, tone) {
     var all = msgAll(); if (all.some(function (x) { return x.id === id; })) return;
     all.unshift({ id: id, t: title, b: body, k: tone || "info", at: Date.now(), r: 0 });
     lsv(MSG_KEY, JSON.stringify(all.slice(0, 30))); msgDraw();
   }
+  /* Clear messages whose timer has run out (the timer starts the first time the menu shows them) */
+  setInterval(function () {
+    var all = msgAll(), keep = all.filter(function (x) { return !x.s || Date.now() - x.s < MSG_LIFE; });
+    if (keep.length !== all.length) { lsv(MSG_KEY, JSON.stringify(keep)); msgDraw(); }
+  }, 1000);
   function msgAgo(t) { var s = Math.round((Date.now() - t) / 1000); return s < 60 ? "just now" : s < 3600 ? Math.floor(s / 60) + " min ago" : s < 86400 ? Math.floor(s / 3600) + " h ago" : fmtDate(new Date(t).toISOString().slice(0, 10)); }
   function msgDraw() {
     var b = $("#tbMsg"); if (!b) return;
@@ -129,14 +135,18 @@
     b.setAttribute("aria-label", "Messages" + (n ? ", " + n + " unread" : ""));
     var menu = $("#msgMenu");
     if (menu && !menu.hidden) menu.innerHTML = '<div class="mm-head"><b>Messages</b>' + (all.length ? '<button type="button" id="mmClear">Clear all</button>' : "") + "</div>" +
-      (all.length ? "<ul>" + all.map(function (x) { return '<li class="mm-' + esc(x.k) + (x.r ? "" : " new") + '"><i aria-hidden="true"></i><div><b>' + esc(x.t) + "</b><p>" + esc(x.b) + "</p><small>" + esc(msgAgo(x.at)) + "</small></div></li>"; }).join("") + "</ul>" : '<p class="mm-none">No messages yet.</p>');
+      (all.length ? "<ul>" + all.map(function (x) {
+        var left = x.s ? Math.max(0, MSG_LIFE - (Date.now() - x.s)) : MSG_LIFE;
+        return '<li class="mm-' + esc(x.k) + (x.r ? "" : " new") + '"><i aria-hidden="true"></i><div><b>' + esc(x.t) + "</b><p>" + esc(x.b) + "</p><small>" + esc(msgAgo(x.at)) + "</small></div>" +
+          '<span class="mm-bar" aria-hidden="true"><em style="--f:' + (left / MSG_LIFE).toFixed(3) + "; --t:" + left + 'ms"></em></span></li>';
+      }).join("") + "</ul>" : '<p class="mm-none">No messages yet.</p>');
     var c = $("#mmClear"); if (c) c.onclick = function (e) { e.stopPropagation(); lsv(MSG_KEY, "[]"); msgDraw(); };
   }
   function msgToggle(open) {
     var menu = $("#msgMenu"), b = $("#tbMsg"); if (!menu || !b) return;
     if (open == null) open = menu.hidden;
     menu.hidden = !open; b.setAttribute("aria-expanded", String(open));
-    if (open) { msgDraw(); var all = msgAll(); all.forEach(function (x) { x.r = 1; }); lsv(MSG_KEY, JSON.stringify(all)); setTimeout(function () { var bb = $("#tbMsg"); if (bb) { bb.querySelector(".tb-n").textContent = ""; bb.classList.remove("unread"); } }, 600); blip(); }
+    if (open) { var all = msgAll(), now = Date.now(); all.forEach(function (x) { x.r = 1; if (!x.s) x.s = now; }); lsv(MSG_KEY, JSON.stringify(all)); msgDraw(); setTimeout(function () { var bb = $("#tbMsg"); if (bb) { bb.querySelector(".tb-n").textContent = ""; bb.classList.remove("unread"); } }, 600); blip(); }
   }
   /* The top bar: messages, then the gear (Profile details), then the access credential */
   function tbMount() {

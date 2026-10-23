@@ -2,6 +2,12 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.41 · Messages that clear · 2026-10-23
+- **Message timer:** when you open Messages, a thin bar under each message starts running out. When it empties (20 seconds), the message clears itself.
+- **One clearance message:** right after sign-in, the site briefly shows LV2 while GitHub confirms an owner card or a staff card's signature is checked. Clearance messages now wait until that is settled, so you are told only the clearance Hound ID actually granted.
+- **Guest pass panel:** when the sign-in relay still runs older code, the panel now says so plainly: the pass list, Revoke, Clear, Clear all and requests need its update. It no longer shows the misleading "This guest pass is not valid".
+- **Roadmap:** this release's base detail is steam rising from two vents on the command platform.
+
 ## v0.0.40 · Start here · 2026-10-23
 - **About is shorter:** the session steps and the FAQ are gone from the page. Under the introduction there is one set of **Start here** buttons: a big **Overview** on top, joined like a triangle to **Can I Contribute?**, **Linux and Proton** and **Using the Website** beneath it. Each has its own colour, icon and hover light.
 - **FAQ is a document:** [Frequently Asked Questions](docs/faq.md) in the Library's Project drawer, with every answer from the About page plus how a session works. "Does it touch Konami's servers?" became "Is it connected to Konami?" (no, it is an independent fan project).

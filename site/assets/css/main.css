@@ -1889,6 +1889,8 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .mb-drop .ln { stroke: rgba(217,223,225,.7); stroke-width: .8; fill: none; }
 .mb-drop .cr { fill: #c9a24a; stroke: #6b5524; stroke-width: .8; }
 .no-motion .mb-drop { display: none; }
+.mb-puff { fill: #dfe7ea; filter: blur(1px); }
+.no-motion .mb-puff { display: none; }
 .mb-tip { fill: #ff3b30; filter: drop-shadow(0 0 3px #ff3b30); animation: mbBlink 1.3s steps(1) infinite; }
 .no-motion .mb-tip { animation: none; }
 .mb-win { fill: #ffd98a; filter: drop-shadow(0 0 2px rgba(255,200,110,.85)); transition: opacity .6s; }
@@ -1915,7 +1917,7 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .mm-head b { font: 400 12px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--fg); }
 .mm-head button { background: none; border: 0; color: var(--dim); font: 400 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; } .mm-head button:hover { color: var(--fg); }
 .msg-menu ul { list-style: none; margin: 0; padding: 0; }
-.msg-menu li { --m: var(--jo); display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 12px; padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.05); }
+.msg-menu li { --m: var(--jo); position: relative; display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 12px; padding: 11px 14px 14px; border-bottom: 1px solid rgba(255,255,255,.05); }
 .msg-menu li i { width: 8px; height: 8px; margin-top: 5px; border: 1px solid var(--m); }
 .msg-menu li.new i { background: var(--m); box-shadow: 0 0 8px var(--m); }
 .msg-menu li b { display: block; font: 400 12.5px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fg); }
@@ -2010,3 +2012,9 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .tri-faq { margin: 22px 0 0; text-align: center; font: 300 15px/1.5 var(--ui); color: var(--dim); }
 .tri-faq a { color: var(--fg-2); }
 @media (max-width: 860px) { .tri-top { width: 100%; } .tri-lines { display: none; } .tri-row { grid-template-columns: 1fr; margin-top: 12px; } .tri-top .tri-t b { font-size: 24px; } }
+
+/* Message timer: a thin bar under each message that runs out, then the message clears itself */
+.mm-bar { position: absolute; left: 14px; right: 14px; bottom: 5px; height: 2px; background: rgba(255,255,255,.06); }
+.mm-bar em { display: block; height: 100%; width: calc(var(--f) * 100%); background: var(--m); box-shadow: 0 0 6px var(--m); animation: mmRun var(--t) linear forwards; }
+@keyframes mmRun { to { width: 0; } }
+.no-motion .mm-bar em { animation-timing-function: steps(10, end); }
