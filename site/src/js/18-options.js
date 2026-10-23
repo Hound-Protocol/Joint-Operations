@@ -45,10 +45,12 @@
         '<section class="ogroup"><div class="label">Data</div>' +
           '<div class="orow"><span>GitHub data<small>Releases and contracts are cached for ' + (cfg.cacheMinutes || 10) + ' minutes</small></span><button class="btn small" id="oclr">Refresh now</button></div>' +
           '<div class="orow"><span>Site build<small>' + esc(buildLabel()) + " · " + esc(cfg.stage) + (data.build && data.build.date ? " · " + esc(fmtDate(data.build.date)) : "") + "</small></span><a class=\"btn small\" href=\"#/docs/devlog\">Dev log</a></div>" +
+          '<div class="orow"><span>Sign-in relay<small id="oRelay">Checking…</small></span><a class="btn small" href="#/docs/signin">Setup</a></div>' +
           '<div class="orow"><span>Privacy<small>No cookies, analytics or trackers. Settings stay in this browser</small></span><a class="btn small" href="#/docs/privacy">Read</a></div>' +
           '<div class="orow"><span>Restore defaults<small>Resets every setting on this page</small></span><button class="btn small" id="orst">Reset</button></div>' +
         "</section>" +
       "</div>");
+    relayHealth().then(function (h) { var el = $("#oRelay"); if (el) el.textContent = relayLine(h); });
     function changed(msg) { store.set(OPT_KEY, opts); applyOpts(); status(msg); var p = presetNow(); $$("[data-preset]").forEach(function (b) { b.classList.toggle("on", b.dataset.preset === p); }); }
     $$("[data-opt]").forEach(function (b) {
       b.addEventListener("click", function () {

@@ -11,7 +11,7 @@
  *   data/records-key.json public keys for those records
  *   data/staff.json      signed staff cards with Hound IDs, checked on the Verify page
  *   data/guides.json     handbook index (tools/guides_index.py), shown on the Guides page
- *   GitHub API           releases, contract issues and commits, read live
+ *   GitHub API           releases and contract issues, read live (2 calls per visit)
  *
  * Hooks (for the future session service or tools)
  *   window.JO.setServers(list)   replace the session list
@@ -107,7 +107,7 @@
     cacheMinutes: 10
   };
   var cfg = DEFAULT_CFG;
-  var data = { servers: null, mods: null, docs: null, contracts: null, briefing: null, releases: undefined, issues: undefined, commits: undefined, roadmap: undefined };
+  var data = { servers: null, mods: null, docs: null, contracts: null, briefing: null, releases: undefined, issues: undefined, roadmap: undefined };
   var docCache = {};
 
   var OPT_KEY = "hp-jo-options";
@@ -189,16 +189,6 @@
     }, function () { data.issues = null; return null; });
   }
 
-  function loadCommits() {
-    if (data.commits !== undefined) return Promise.resolve(data.commits);
-    return gh("/repos/" + cfg.repo + "/commits?sha=" + encodeURIComponent(cfg.branch) + "&per_page=30").then(function (list) {
-      data.commits = (list || []).map(function (c) {
-        var msg = (c.commit && c.commit.message) || "";
-        return { date: (c.commit && c.commit.author && c.commit.author.date) || "", title: msg.split("\n")[0], tag: "Commit", url: c.html_url, by: (c.author && c.author.login) || (c.commit && c.commit.author && c.commit.author.name) || "" };
-      });
-      return data.commits;
-    }, function () { data.commits = null; return null; });
-  }
   function parseRoadmap(md) {
     var phases = [], cur = null;
     String(md).split("\n").forEach(function (l) {
@@ -354,7 +344,7 @@
       case "download":
         if (data.releases === undefined) return "Checking releases";
         if (playableReleases().length) return "Latest " + (playableReleases()[0].tag_name || "") + " · " + fmtDate(playableReleases()[0].published_at);
-        return buildLabel() + " · " + cfg.stage + " · No playable release yet";
+        return cfg.stage + " · No playable release yet";
       case "sessions":
         var n = data.servers ? (data.servers.servers || []).length : 0;
         return n ? plural(n, "session") + " listed" : "No sessions online";
@@ -633,7 +623,9 @@
     document.body.insertAdjacentHTML("beforeend", '<div class="hm" id="hpModal" role="dialog" aria-modal="true" aria-labelledby="hmTitle"><div class="hm-back"></div>' +
       '<div class="hm-win' + (o.tone ? " hm-" + o.tone : "") + '"><div class="hm-bar"><span>' + esc(o.kicker || "Hound Protocol") + '</span><button type="button" class="hm-x" aria-label="Close">✕</button></div>' +
       '<div class="hm-body"><h3 id="hmTitle">' + esc(o.title || "") + '</h3><div class="hm-content">' + (o.html || "") + '</div></div><div class="hm-act"></div></div></div>');
-    var el = $("#hpModal"), act = $(".hm-act", el), done = null, prev = document.activeElement;
+    var el = $("#hpModal"), act = $(".hm-act", el), done = null, prev = document.activeElement, stage = $("#stage");
+    /* While a window is open, the page behind it is out of reach for the keyboard and screen readers */
+    if (stage) stage.setAttribute("inert", "");
     var m = {
       el: el,
       body: function (html) { $(".hm-content", el).innerHTML = html; },
@@ -644,12 +636,28 @@
       },
       close: function (v) {
         document.removeEventListener("keydown", key);
-        el.classList.add("out"); setTimeout(function () { el.remove(); if (prev && prev.focus) prev.focus(); }, opts.motion ? 220 : 0);
+        el.classList.add("out");
+        setTimeout(function () {
+          el.remove();
+          if (stage && !document.querySelector(".hm:not(.out)")) stage.removeAttribute("inert");
+          if (prev && prev.focus && document.body.contains(prev) && !document.querySelector(".hm:not(.out)")) prev.focus();
+        }, opts.motion ? 220 : 0);
         if (done) { var d = done; done = null; d(v); }
       },
       result: new Promise(function (ok) { done = ok; })
     };
-    function key(e) { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (o.cancel) o.cancel(); m.close(null); } }
+    function key(e) {
+      if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (o.cancel) o.cancel(); m.close(null); return; }
+      /* Tab stays inside the window */
+      if (e.key === "Tab") {
+        var f = $$("button:not([disabled]), a[href], input:not([disabled]), textarea, select, [tabindex]:not([tabindex='-1'])", el).filter(function (x) { return x.offsetParent !== null; });
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        else if (!el.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+      }
+    }
     document.addEventListener("keydown", key);
     $(".hm-x", el).addEventListener("click", function () { if (o.cancel) o.cancel(); m.close(null); });
     $(".hm-back", el).addEventListener("click", function () { if (o.cancel) o.cancel(); m.close(null); });
@@ -662,6 +670,15 @@
     var m = hpModal({ kicker: "Confirm", title: title, html: "<p>" + esc(text) + "</p>", tone: tone, actions: [{ label: no || "Cancel", value: false }, { label: yes || "OK", value: true, danger: tone === "danger", primary: tone !== "danger" }] });
     return m.result.then(function (v) { return !!v; });
   }
+  /* Broken pictures (a GitHub avatar that does not load): one handler for the whole page instead of inline onerror
+     attributes, which the Content Security Policy does not allow. data-err says what to do. */
+  document.addEventListener("error", function (e) {
+    var t = e.target; if (!t || t.tagName !== "IMG" || !t.hasAttribute("data-err")) return;
+    var how = t.getAttribute("data-err");
+    if (how === "hide") t.style.visibility = "hidden";
+    else if (how === "photo") { var box = t.parentNode, card = box && box.parentNode; if (card && card.classList) card.classList.remove("has-photo"); if (box) box.remove(); }
+    else t.remove();
+  }, true);
 
   /* Briefing */
   function hl(t) { return esc(t).replace(/\{\{([^}]+)\}\}/g, '<mark class="key">$1</mark>'); }
@@ -825,7 +842,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -1410,9 +1427,9 @@
     if (!rows.length) return "";
     var fresh = conFresh === c.id;
     return '<details class="kc-contrib ' + (done ? "done" : "wip") + '"' + (fresh ? " open" : "") + '><summary><span class="kp-l">' + (done ? "✓ " : '<i class="kp-dot"></i>') + "Contributors <em class=\"kp-n\">" + rows.length + '</em></span><span class="kp-faces">' +
-      rows.slice(0, 5).map(function (r) { return '<img src="https://github.com/' + encodeURIComponent(r.login) + '.png?size=40" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'">'; }).join("") + "</span></summary><ul>" +
+      rows.slice(0, 5).map(function (r) { return '<img src="https://github.com/' + encodeURIComponent(r.login) + '.png?size=40" alt="" loading="lazy" referrerpolicy="no-referrer" data-err="hide">'; }).join("") + "</span></summary><ul>" +
       rows.map(function (r, k) {
-        return '<li class="' + (fresh && SI && SI.user && r.login === SI.user.login ? "new" : "") + '" style="--k:' + k + '"><a href="https://github.com/' + encodeURIComponent(r.login) + '" target="_blank" rel="noopener noreferrer"><img src="https://github.com/' + encodeURIComponent(r.login) + '.png?size=40" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'">' + esc(r.login) + "</a><small>" + esc(r.role) + (r.at ? " · " + esc(fmtDate(new Date(r.at).toISOString().slice(0, 10))) : "") + "</small></li>";
+        return '<li class="' + (fresh && SI && SI.user && r.login === SI.user.login ? "new" : "") + '" style="--k:' + k + '"><a href="https://github.com/' + encodeURIComponent(r.login) + '" target="_blank" rel="noopener noreferrer"><img src="https://github.com/' + encodeURIComponent(r.login) + '.png?size=40" alt="" loading="lazy" referrerpolicy="no-referrer" data-err="hide">' + esc(r.login) + "</a><small>" + esc(r.role) + (r.at ? " · " + esc(fmtDate(new Date(r.at).toISOString().slice(0, 10))) : "") + "</small></li>";
       }).join("") + "</ul>" + (c.agents && c.agents.length ? '<p class="kp-agent">With ' + esc(c.agents.join(", ")) + " (credited as the contributors' tool)</p>" : "") + "</details>";
   }
   function conClaimBtn(c) {
@@ -2042,10 +2059,12 @@
         '<section class="ogroup"><div class="label">Data</div>' +
           '<div class="orow"><span>GitHub data<small>Releases and contracts are cached for ' + (cfg.cacheMinutes || 10) + ' minutes</small></span><button class="btn small" id="oclr">Refresh now</button></div>' +
           '<div class="orow"><span>Site build<small>' + esc(buildLabel()) + " · " + esc(cfg.stage) + (data.build && data.build.date ? " · " + esc(fmtDate(data.build.date)) : "") + "</small></span><a class=\"btn small\" href=\"#/docs/devlog\">Dev log</a></div>" +
+          '<div class="orow"><span>Sign-in relay<small id="oRelay">Checking…</small></span><a class="btn small" href="#/docs/signin">Setup</a></div>' +
           '<div class="orow"><span>Privacy<small>No cookies, analytics or trackers. Settings stay in this browser</small></span><a class="btn small" href="#/docs/privacy">Read</a></div>' +
           '<div class="orow"><span>Restore defaults<small>Resets every setting on this page</small></span><button class="btn small" id="orst">Reset</button></div>' +
         "</section>" +
       "</div>");
+    relayHealth().then(function (h) { var el = $("#oRelay"); if (el) el.textContent = relayLine(h); });
     function changed(msg) { store.set(OPT_KEY, opts); applyOpts(); status(msg); var p = presetNow(); $$("[data-preset]").forEach(function (b) { b.classList.toggle("on", b.dataset.preset === p); }); }
     $$("[data-opt]").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -2603,7 +2622,7 @@
     var tag = o.link ? 'a href="#/verify/' + encodeURIComponent(s.id) + '"' : "div";
     return "<" + tag + ' class="hk' + (o.big ? " big" : "") + " hk-l" + esc(n) + (s.guest ? " guest" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + (photo ? " has-photo" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
       '<span class="hk-pat" aria-hidden="true"></span>' + (n === "4" ? '<span class="hk-seal" aria-hidden="true">QA</span>' : "") +
-      (photo ? '<span class="hk-photo"><img src="' + esc(photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.parentNode.parentNode;c.classList.remove(\'has-photo\');this.parentNode.remove()"></span>' : "") +
+      (photo ? '<span class="hk-photo"><img src="' + esc(photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" data-err="photo"></span>' : "") +
       '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Access Credential · ' + esc(lv[0]) + '</small></span></span>' +
       '<span class="hk-lv" aria-label="Keycard level ' + n + '"><small>LV</small><b class="hk-n">' + esc(n) + "</b></span>" +
       '<img class="hk-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
@@ -2946,7 +2965,7 @@
     var lv = c ? KC_LV[c.card] || KC_LV.LV2 : null, ph = c && !c.guest ? kcPhoto(c) : "";
     b.style.setProperty("--hk", lv ? lv[1] : "var(--jo)");
     b.innerHTML = c
-      ? '<span class="sb-pic">' + (ph ? '<img src="' + esc(ph) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : "") + "</span>" +
+      ? '<span class="sb-pic">' + (ph ? '<img src="' + esc(ph) + '" alt="" referrerpolicy="no-referrer" data-err="remove">' : "") + "</span>" +
         '<span class="sb-txt"><b>' + esc(c.guest ? "Guest pass" : c.name || c.login) + "</b><small>Access Credential · " + esc(lv[0]) + "</small></span>" +
         '<span class="sb-lv"><small>LV</small>' + esc(String(c.card).slice(2)) + "</span>"
       : '<span class="sb-pic id">ID</span><span class="sb-txt"><b>Visitor</b><small>Temporary pass · Restricted</small></span><span class="sb-lv"><small>LV</small>1</span>';
@@ -3405,7 +3424,7 @@
     var keys = $("#keys"); if (!keys) return false;
     keys.insertAdjacentHTML("beforebegin", '<div class="tb-id" id="tbId">' +
       '<div class="tb-wrap"><button type="button" class="tb-btn" id="tbMsg" aria-haspopup="true" aria-expanded="false" title="Messages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17z"/><path d="M3.5 7l8.5 6.5L20.5 7"/></svg><span class="tb-n"></span></button><div class="msg-menu" id="msgMenu" hidden></div></div>' +
-      '<a class="tb-btn" id="tbGear" href="#/profile" title="Profile details" aria-label="Profile details"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9"/><circle cx="12" cy="12" r="6.6"/></svg></a>' +
+      '<a class="tb-btn tb-prof" id="tbGear" href="#/profile" title="View Profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9"/><circle cx="12" cy="12" r="6.6"/></svg><span>View Profile</span></a>' +
       '<div class="si-badge" id="siBadge" role="status"></div></div>');
     $("#tbMsg").addEventListener("click", function (e) { e.stopPropagation(); msgToggle(); });
     document.addEventListener("click", function (e) { var m = $("#msgMenu"); if (m && !m.hidden && !m.contains(e.target)) msgToggle(false); });
@@ -3427,7 +3446,35 @@
     }, function () { /* relay not updated yet */ });
   }
   setInterval(asksWatch, 5 * 60 * 1000);
+  /* The relay's health: its version against the one this site expects (config signin.relayVersion). An older relay
+     answers /health with its plain greeting, so anything that is not JSON counts as older than version 3. */
+  var RH = null;
+  function relayHealth() {
+    if (RH) return RH;
+    var want = +(siCfg().relayVersion || 0);
+    RH = !siOn() || typeof fetch !== "function" ? Promise.resolve({ state: "off", want: want }) : fetch(siRelay() + "/health", { cache: "no-store" }).then(function (r) {
+      return r.text().then(function (t) { var j = null; try { j = JSON.parse(t); } catch (e) { j = null; } return j; });
+    }).then(function (j) {
+      var v = j && j.ok ? +j.relay || 0 : 0;
+      return { state: v >= want ? "ok" : "behind", v: v, want: want, kv: !!(j && j.kv) };
+    }, function () { return { state: "down", want: want }; });
+    return RH;
+  }
+  function relayLine(h) {
+    return h.state === "ok" ? "Up to date (version " + h.v + ")" + (h.kv ? "" : " · storage not connected")
+      : h.state === "behind" ? (h.v ? "Runs version " + h.v + ", this site needs " + h.want : "Runs older code, this site needs version " + h.want) + ": deploy the current worker.js"
+      : h.state === "down" ? "Not reachable right now" : "Sign-in is off";
+  }
+  /* LV7 is told once per relay version when the relay is behind the site */
+  function relayWatch() {
+    if (!siOwner()) return;
+    relayHealth().then(function (h) {
+      if (h.state === "behind") msgAdd("relay-old-" + h.want, "The sign-in relay needs its update", relayLine(h) + ". Until then, guest pass requests, Clear and claims may not work. Steps: sign-in setup, section 6b.", "bad");
+      else if (h.state === "ok" && !h.kv) msgAdd("relay-nokv", "The relay has no storage", "Bind the KV namespace as HP_KV on the relay (sign-in setup, section 6).", "bad");
+    });
+  }
   function gateBoot() {
+    setTimeout(relayWatch, 2500);
     askCheck(); setTimeout(asksWatch, 3000);
     setTimeout(gateWelcome, 1200);
   }
@@ -3509,6 +3556,11 @@
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
     gateApply(name);
+    /* Screen readers hear the new section's name (one short line, not the whole page), and focus moves to its heading */
+    if (!same) {
+      var sr = $("#srNav"); if (sr) sr.textContent = item ? item.title : "";
+      var h2 = $("#view .vh h2"); if (h2 && booted && document.activeElement !== h2 && !$("#hpModal")) { h2.setAttribute("tabindex", "-1"); try { h2.focus({ preventScroll: true }); } catch (e) { h2.focus(); } }
+    }
     if (!same) readyView();
     var tab = $('.secbar a[aria-current="page"]');
     if (tab) { var bar = tab.parentNode; bar.scrollLeft = Math.max(0, tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2); }
@@ -3576,7 +3628,7 @@
   function upShow(b, version) {
     if ($("#upNote")) return;
     document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><svg class="up-spin" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 6.2A5.5 5.5 0 0 0 3.1 5"/><path d="M2.8 9.8A5.5 5.5 0 0 0 12.9 11"/><path class="hd" d="M3.1 1.9V5h3.1"/><path class="hd" d="M12.9 14.1V11H9.8"/></svg><b>Update available</b><span>' +
-      esc("Build " + (version || "") + (b.build ? "." + b.build : "")) + ' is live</span>' +
+      esc("Site " + (version || "") + (b.build ? " · build " + b.build : "")) + ' is live</span>' +
       '<button class="up-go" id="upGo">Reload</button><button class="up-x" id="upLater" aria-label="Later">✕</button></div>');
     blip();
     $("#upGo").addEventListener("click", function () { location.reload(); });
@@ -3610,13 +3662,14 @@
     setServers: function (list) { data.servers = { servers: Array.isArray(list) ? list : [] }; data.serversHooked = true; if (currentView === "sessions") drawSessions(); refreshInfo(); },
     setMods: function (m) { data.mods = { compatible: (m && m.compatible) || [], issues: (m && m.issues) || [] }; if (currentView === "mods") drawMods(); refreshInfo(); },
     docsView: function () { var f = document.querySelector(".fold.on"); return { mode: "cabinet", open: f ? f.getAttribute("data-id") : "", drawers: document.querySelectorAll(".drawer").length }; },
-    refresh: function () { session.clear("jo-gh:"); data.releases = undefined; data.issues = undefined; data.commits = undefined; preload(); if (currentView) route(); }
+    refresh: function () { session.clear("jo-gh:"); data.releases = undefined; data.issues = undefined; preload(); if (currentView) route(); }
   };
 
   /* ---------------- Boot ---------------- */
   function buildLabel() {
     var b = data.build;
-    return "Build " + cfg.version + (b && b.build ? "." + b.build : "") + (b && b.sha ? " · " + String(b.sha).slice(0, 7) : "");
+    /* The website has its own version line (Site X.Y.Z); the mod's versions start at 0.1 (HP-SOP-003) */
+    return "Site " + cfg.version + (b && b.build ? " · build " + b.build : "") + (b && b.sha ? " · " + String(b.sha).slice(0, 7) : "");
   }
   function applyConfig() {
     $("#teamName").textContent = cfg.team;
@@ -3633,7 +3686,7 @@
   }
   function preload() {
     loadLocal("staff").then(function () { siBadge(); });
-    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("team"), loadRoadmap(), loadReleases(), loadContracts(), loadCommits()]).then(function () {
+    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("team"), loadRoadmap(), loadReleases(), loadContracts()]).then(function () {
       refreshInfo();
       if (data.releases === null || data.issues === null) status("GitHub unreachable · showing bundled data");
     });

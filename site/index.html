@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Content Security Policy: only this site's own scripts run; data comes only from GitHub, the sign-in relay and Discord (site 1.0.0). Update connect-src if the relay moves. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com; connect-src 'self' https://api.github.com https://raw.githubusercontent.com https://hp-signin.trueman-truetown.workers.dev https://discord.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hound Protocol · Joint Operations</title>
 <meta name="description" content="MGSV: Joint Operations is a free, unofficial multiplayer mod for Metal Gear Solid V: The Phantom Pain. Up to 16 players in the open world, on Windows and Linux. Built in the open by Hound Protocol.">
@@ -55,7 +57,8 @@
       </div>
       <aside class="side r" id="aboutTeam" aria-label="About Hound Protocol"></aside>
     </div>
-    <section class="view" id="view" hidden aria-live="polite"></section>
+    <section class="view" id="view" hidden></section>
+    <p class="sr-only" id="srNav" aria-live="polite"></p>
   </main>
 
   <footer class="bar bot">
@@ -71,20 +74,7 @@
   <p><a style="color:#c9a24a" href="https://github.com/Hound-Protocol/Joint-Operations">Project and documentation</a> &middot; <a style="color:#c9a24a" href="https://github.com/Hound-Protocol/Joint-Operations/releases">Releases</a> &middot; <a style="color:#c9a24a" href="https://discord.gg/QTpJ89kMCM">Discord</a></p>
   <p style="color:#8b9599;font-size:14px">The full site works in any browser from about 2018 onwards: Chrome or Edge 49+, Firefox 52+, Safari 10+.</p>
 </div>
-<script>
-/* Old-browser check (ES3 only). Without Promise or CSS variables the app cannot run, so show a plain page instead. */
-(function () {
-  var ok = false;
-  try { ok = !!(window.Promise && window.JSON && document.querySelector && window.CSS && CSS.supports && CSS.supports("--a", "0")); } catch (e) { ok = false; }
-  if (!ok) {
-    window.JO_LEGACY = true;
-    var st = document.getElementById("stage") || document.querySelector(".stage");
-    if (st) st.style.display = "none";
-    document.getElementById("legacy").style.display = "block";
-    document.body.style.overflow = "auto";
-  }
-})();
-</script>
+<script src="assets/js/legacy.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>

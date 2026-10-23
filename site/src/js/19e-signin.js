@@ -166,7 +166,7 @@
     var lv = c ? KC_LV[c.card] || KC_LV.LV2 : null, ph = c && !c.guest ? kcPhoto(c) : "";
     b.style.setProperty("--hk", lv ? lv[1] : "var(--jo)");
     b.innerHTML = c
-      ? '<span class="sb-pic">' + (ph ? '<img src="' + esc(ph) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : "") + "</span>" +
+      ? '<span class="sb-pic">' + (ph ? '<img src="' + esc(ph) + '" alt="" referrerpolicy="no-referrer" data-err="remove">' : "") + "</span>" +
         '<span class="sb-txt"><b>' + esc(c.guest ? "Guest pass" : c.name || c.login) + "</b><small>Access Credential · " + esc(lv[0]) + "</small></span>" +
         '<span class="sb-lv"><small>LV</small>' + esc(String(c.card).slice(2)) + "</span>"
       : '<span class="sb-pic id">ID</span><span class="sb-txt"><b>Visitor</b><small>Temporary pass · Restricted</small></span><span class="sb-lv"><small>LV</small>1</span>';

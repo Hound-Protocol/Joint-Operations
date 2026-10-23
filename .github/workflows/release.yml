@@ -47,6 +47,8 @@ jobs:
           fi
           flag=""
           [ "$CHANNEL" = "prerelease" ] && flag="--prerelease"
+          # Website releases never take GitHub's Latest label: that is kept for the mod's builds
+          [ "$CHANNEL" = "site" ] && flag="--latest=false"
           gh release create "$TAG" --target "$GITHUB_SHA" --title "$TITLE" --notes-file notes.md $flag
           echo "Published $TAG"
           echo "done=yes" >> "$GITHUB_OUTPUT"

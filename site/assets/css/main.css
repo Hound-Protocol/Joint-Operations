@@ -1893,6 +1893,12 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .no-motion .mb-puff { display: none; }
 .mb-tip { fill: #ff3b30; filter: drop-shadow(0 0 3px #ff3b30); animation: mbBlink 1.3s steps(1) infinite; }
 .no-motion .mb-tip { animation: none; }
+/* Radar on the comms mast (Site 1.0.0): a CSS animation, so it costs no script per frame */
+.mb-radar .rd { fill: rgba(127,191,138,.08); stroke: rgba(127,191,138,.55); stroke-width: .8; }
+.mb-rad-spin line { stroke: #9fe0aa; stroke-width: 1.2; stroke-linecap: round; filter: drop-shadow(0 0 2px rgba(127,191,138,.9)); }
+.mb-rad-spin { animation: mbSpin 3.2s linear infinite; }
+@keyframes mbSpin { to { transform: rotate(360deg); } }
+.no-motion .mb-rad-spin { animation: none; }
 .mb-win { fill: #ffd98a; filter: drop-shadow(0 0 2px rgba(255,200,110,.85)); transition: opacity .6s; }
 .mb-star { stroke: #fff6dc; stroke-width: 1.6; stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(255,240,200,.9)); }
 .no-motion .mb-star { display: none; }
@@ -2018,3 +2024,21 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .mm-bar em { display: block; height: 100%; width: calc(var(--f) * 100%); background: var(--m); box-shadow: 0 0 6px var(--m); animation: mmRun var(--t) linear forwards; }
 @keyframes mmRun { to { width: 0; } }
 .no-motion .mm-bar em { animation-timing-function: steps(10, end); }
+
+/* Site 1.0.0: View Profile carries its words; on phones the top bar keeps only messages, the profile button and a compact credential */
+.tb-btn.tb-prof { width: auto; grid-auto-flow: column; gap: 8px; padding: 0 12px 0 9px; font: 400 11.5px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+.tb-btn.tb-prof span { white-space: nowrap; }
+@media (max-width: 700px) {
+  .bar.top #build { display: none; }
+  .tb-id { margin-left: auto; margin-right: 0; }
+  .tb-btn.tb-prof { padding: 0 8px; }
+  .tb-btn.tb-prof span { display: none; }
+  .si-badge { padding-left: 5px; gap: 6px; }
+  .si-badge .sb-txt { display: none; }
+  .si-badge .sb-lv { padding: 0 9px 0 8px; font-size: 21px; }
+}
+
+/* Site 1.0.0: small text in a clearance colour uses a lighter shade, so LV7 red and LV0 grey reach 4.5:1 on the dark page (WCAG AA) */
+.hk-key, .ax-lv header b, .ax-doc .ax-t, .roster h4, .si-badge .sb-txt small { color: color-mix(in srgb, var(--hk) 70%, #fff); }
+.vh h2:focus { outline: none; }
+.gp-ch { min-height: 50px; box-sizing: border-box; }

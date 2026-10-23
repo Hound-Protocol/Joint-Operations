@@ -22,6 +22,8 @@ jobs:
         run: python3 tools/build_js.py --check
       - name: Check site script syntax
         run: node -e "new Function(require('fs').readFileSync('site/assets/js/app.js','utf8'))"
+      - name: Relay tests (guest passes, requests, health; no network)
+        run: node tests/relay_test.mjs
       - name: Handbook index is generated from docs/guides
         run: python3 tools/guides_index.py --check
       - name: Contract specs are generated from the data
@@ -40,6 +42,7 @@ jobs:
             if git diff --quiet "origin/$BASE" -- ROADMAP.md; then echo "The version changed but ROADMAP.md was not updated (HP-SOP-003)."; exit 1; fi
             if git diff --quiet "origin/$BASE" -- site/data/contracts.json; then echo "The version changed but no work was checked off on the board: run tools/work.py done (HP-SOP-003)."; exit 1; fi
           fi
+          if git diff "origin/$BASE" -- site/data/config.json | grep -q '^[-+].*"version"'; then python3 tools/release_notes.py /tmp/notes.md >/dev/null; fi
           echo "Roadmap check passed."
       - name: Infraction record is valid
         run: python3 tools/infractions.py verify
@@ -80,4 +83,12 @@ jobs:
         timeout-minutes: 20
         run: |
           docker run --rm -v "$PWD:/w" -w /w mcr.microsoft.com/playwright/python:v1.52.0-noble \
-            bash -c 'python3 -c "import playwright" 2>/dev/null || pip install -q --break-system-packages playwright==1.52.0; python3 tests/browser_smoke.py _site chromium firefox webkit'
+            bash -c 'python3 -c "import playwright" 2>/dev/null || pip install -q --break-system-packages playwright==1.52.0; python3 tests/browser_smoke.py _site chromium firefox webkit && python3 tests/screens.py _site _screens'
+      - name: Keep the screenshots for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screens
+          path: _screens/
+          if-no-files-found: ignore
+          retention-days: 14

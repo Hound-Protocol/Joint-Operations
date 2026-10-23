@@ -31,7 +31,7 @@
 
 It is a **multiplayer mod**. Hound Protocol and Joint Operations are an independent fan project: Konami has no part in it and no connection to it.
 
-> **Status: Foundation (v0.0.x).** The project's organization, documentation, website and research are in place. The first playable build is **0.1** (two players), developed by the project lead. Nothing is playable yet.
+> **Status: Website Site 1.x · Mod in development.** The project's organization, documentation, website and research are in place. The first playable build is **0.1** (two players), developed by the project lead. Nothing is playable yet.
 
 ## Highlights
 | | |

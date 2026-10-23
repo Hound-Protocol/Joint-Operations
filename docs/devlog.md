@@ -2,6 +2,13 @@
 
 News and notes from Hound Protocol, newest first. It is updated regularly, whenever there is something worth telling. Every release, with its full list of changes, is in the [Changelog](../CHANGELOG.md); the plan is in the [Roadmap](../ROADMAP.md).
 
+## 2026-10-24
+
+### Site 1.0.0: the website gets its own version line
+*Website*
+
+The website is now **Site 1.0.0**, with its own version line, so **0.1** will mean only the mod's first playable build. The release also adds a Content Security Policy, screen-reader and focus fixes, a health check for the sign-in relay, and relay tests on every pull request.
+
 ## 2026-10-23
 
 ### Clearance at the door

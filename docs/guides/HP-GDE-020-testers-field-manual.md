@@ -1,5 +1,5 @@
 # Tester's Field Manual
-Code: HP-GDE-020 · Version 1.0 · Effective 2026-10-23 · Owner: Quality · For: testers and anyone asked to test a feature
+Code: HP-GDE-020 · Version 1.1 · Effective 2026-10-24 · Owner: Quality · For: testers and anyone asked to test a feature
 
 This is the hands-on manual for testing: what to click, what to try to break, and how to measure. It works for the website now and for the game from version 0.1. You do not need to code.
 
@@ -30,7 +30,7 @@ This is the hands-on manual for testing: what to click, what to try to break, an
 
 ```
 Charter: Explore <feature> with <method or data> to find <kind of problem>
-Build:   0.0.xx · Rig: Firefox 13x, Fedora, 1920×1080
+Build:   Site 1.0.0 · Rig: Firefox 13x, Fedora, 1920×1080
 Time:    45 min
 Notes:   what you tried, in order, and what you saw
 Found:   links to the reports
@@ -149,7 +149,7 @@ Write down every run, also the passes: "it worked" is a result.
 
 ```
 Test:     <charter or checklist name>
-Build:    mod 0.x.y · site 0.0.xx · game 1.0.15.4
+Build:    mod 0.x.y · Site 1.x.y · game 1.0.15.4
 Rig:      <OS / Proton / browser / GPU>
 Result:   Pass / Fail / Blocked
 Numbers:  <Lighthouse scores, FPS avg / 1 % low, ping>
