@@ -68,8 +68,8 @@ async def check(browser, name, size):
     if len(set(widths.values())) > 1:
         failures.append("layout stability: sections have different widths " + str(widths))
     await page.goto(BASE + "#/briefing"); await page.wait_for_timeout(900)
-    if await page.locator(".ab-steps li").count() < 3:
-        failures.append("briefing: session steps missing")
+    if await page.locator(".ab-tri .tri-top").count() != 1 or await page.locator(".ab-tri .tri-row .tri-b").count() != 3:
+        failures.append("briefing: Start here buttons missing (one on top, three beneath)")
     await page.goto(BASE + "#/team"); await page.wait_for_timeout(900)
     if await page.locator(".chain .tier").count() < 6:
         failures.append("team: chain of command missing")

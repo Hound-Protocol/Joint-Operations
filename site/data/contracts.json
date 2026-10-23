@@ -1059,6 +1059,30 @@
     "Forge77"
    ],
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F20",
+   "title": "About: Start here triangle; FAQ as a document",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "About gets people to the right place fast.",
+   "deliverable": "Pyramid of four buttons; docs/faq.md.",
+   "acceptance": [
+    "Overview on top, three guides beneath",
+    "FAQ in the Library"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"
