@@ -7,7 +7,6 @@
  *   data/docs.json       documentation library manifest
  *   data/contracts.json  planned contracts, used until GitHub issues carry the "contract" label
  *   data/briefing.json   text for the About page (route #/briefing)
- *   data/devlog.json     manual dev log entries
  *   data/records.json    signed contributor records (tools/records.py), checked on the Verify page
  *   data/records-key.json public keys for those records
  *   data/staff.json      signed staff cards with Hound IDs, checked on the Verify page
@@ -108,7 +107,7 @@
     cacheMinutes: 10
   };
   var cfg = DEFAULT_CFG;
-  var data = { servers: null, mods: null, docs: null, contracts: null, briefing: null, devlog: null, releases: undefined, issues: undefined, commits: undefined, roadmap: undefined };
+  var data = { servers: null, mods: null, docs: null, contracts: null, briefing: null, releases: undefined, issues: undefined, commits: undefined, roadmap: undefined };
   var docCache = {};
 
   var OPT_KEY = "hp-jo-options";
@@ -336,7 +335,6 @@
     contribute: '<path d="M8 4h8v3H8z"/><path d="M8 5.5H5V21h14V5.5h-3"/><path d="M8.5 13.5l2.5 2.5 4.5-5"/>',
     team: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M16 5.5a3 3 0 010 5.5M18 14.5c1.8.9 3 2.9 3 5.5"/>',
     mods: '<path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M3.5 7.3L12 12l8.5-4.7M12 12v9.5"/>',
-    devlog: '<path d="M3 5h18v14H3z"/><path d="M6.5 9.5l3 2.5-3 2.5M11.5 15h6"/>',
     guides: '<path d="M12 6.5C10 5 7 4.5 3 5v14c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v14"/>',
     docs: '<path d="M4 6h6l2 2h8v11H4z"/><path d="M4 10h16"/>',
     options: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>'
@@ -353,9 +351,6 @@
         return "Roadmap";
       case "team":
         return "Team";
-      case "devlog":
-        var n2 = devlogEntries().length;
-        return n2 ? plural(n2, "entry", "entries") : "Dev log";
       case "download":
         if (data.releases === undefined) return "Checking releases";
         if (playableReleases().length) return "Latest " + (playableReleases()[0].tag_name || "") + " · " + fmtDate(playableReleases()[0].published_at);
@@ -510,8 +505,8 @@
 
   /* ---------------- Views ---------------- */
   var currentView = "";
-  /* The Handbook (guides) and the Dev Log are zones of Documentation, so they light the Docs tab */
-  function tabOf(v) { return v === "guides" || v === "devlog" ? "docs" : v; }
+  /* The Handbook (guides) is a zone of Documentation, so it lights the Docs tab */
+  function tabOf(v) { return v === "guides" ? "docs" : v; }
   function shell(kicker, title, body) {
     var cv = tabOf(currentView), now = ITEMS.filter(function (it) { return it.id === cv; })[0];
     var tabs = '<div class="secwrap"><nav class="secbar" aria-label="Sections">' + ITEMS.map(function (it) {
@@ -832,7 +827,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -987,6 +982,10 @@
     /* Flag (v0.0.36): a pennant waving on the command platform */
     var flagEl = $("#mbFlag"), flagP = $("#mbFlag path"), flagAt = mbWorld(core, [core.g.R * 0.42, -core.g.R * 0.32]);
     flagEl.setAttribute("transform", "translate(" + mbF(flagAt[0]) + " " + mbF(flagAt[1]) + ")");
+    /* Lit windows (v0.0.38): a row of windows on the command platform, switching on and off now and then */
+    var wins = [], winAt = [[-0.28, 0.42], [-0.14, 0.42], [0, 0.42], [0.14, 0.42], [0.28, 0.42]];
+    $("#mbWin").innerHTML = winAt.map(function (q) { var w = mbWorld(core, [q[0] * core.g.R, q[1] * core.g.R]); wins.push({ on: r() > 0.4, t: 2 + r() * 8 }); return '<rect class="mb-win" x="' + mbF(w[0] - 3) + '" y="' + mbF(w[1] - 2) + '" width="6" height="4"/>'; }).join("");
+    var winEls = $$("#mbWin .mb-win");
     /* Shooting star (v0.0.37): now and then a streak crosses the night sky */
     var star = { t: 20, x: 0, y: 0 }, starEl = $("#mbStar");
     var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
@@ -1141,6 +1140,7 @@
       srchEl.setAttribute("transform", "translate(" + mbF(core.x) + " " + mbF(core.y) + ") rotate(" + mbF((T * 14) % 360) + ")");
       var fw = Math.sin(T * 4.2), fw2 = Math.sin(T * 4.2 + 1.3);
       flagP.setAttribute("d", "M0 -26 Q7 " + mbF(-27 + fw * 2) + " 15 " + mbF(-23 + fw2 * 1.6) + " Q7 " + mbF(-20 + fw * 1.6) + " 0 -19 Z");
+      wins.forEach(function (w, i) { w.t -= dt; if (w.t <= 0) { w.on = !w.on; w.t = 3 + r() * 9; } winEls[i].style.opacity = w.on ? "1" : "0.12"; });
       star.t += dt;
       if (star.t > 38) { star.t = 0; star.x = 80 + r() * (MB_W - 480); star.y = 30 + r() * 160; }
       var sk = star.t / 0.9;
@@ -1208,73 +1208,6 @@
     MB.raf = requestAnimationFrame(frame);
   }
 
-  /* Dev log */
-  var logFilter = "all", logQ = "";
-  function plainExcerpt(md, n) {
-    var t = String(md || "").replace(/```[\s\S]*?```/g, " ").replace(/^#+\s.*$/gm, " ").replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`>#|-]+/g, " ").replace(/\s+/g, " ").trim();
-    return t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : t;
-  }
-  function devlogEntries() {
-    var out = [];
-    ((data.devlog && data.devlog.entries) || []).forEach(function (e) { out.push(Object.assign({ kind: "note" }, e)); });
-    /* Release merges are already listed as releases, so their commits are left out */
-    var rel = (data.releases || []).map(function (r) { return r.tag_name; });
-    (data.commits || []).forEach(function (c) { var m = /^Release (v[\d.]+)/.exec(c.title || ""); if (m && rel.indexOf(m[1]) > -1) return; out.push(Object.assign({ kind: "commit" }, c)); });
-    (data.releases || []).forEach(function (r) {
-      out.push({ kind: "release", tag: isPlayable(r) ? "Release" : "Foundation", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url, body: plainExcerpt(r.body, 260), ver: r.tag_name });
-    });
-    return out.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
-  }
-  function viewDevlog() {
-    var v = $("#view");
-    v.innerHTML = shell("Documentation", "Dev Log", loading("Loading the dev log")); addZones("log");
-    Promise.all([loadLocal("devlog"), loadCommits(), loadReleases(), loadRoadmap()]).then(function () { if (currentView === "devlog") drawDevlog(); refreshInfo(); });
-  }
-  function markQ(text) {
-    var t = esc(text);
-    if (!logQ) return t;
-    var q = esc(logQ).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return t.replace(new RegExp("(" + q + ")", "ig"), "<mark>$1</mark>");
-  }
-  function drawDevlog() {
-    var all = devlogEntries(), q = logQ.toLowerCase();
-    var list = all.filter(function (e) {
-      if (logFilter !== "all" && e.kind !== logFilter) return false;
-      return !q || [e.title, e.body, e.tag, e.by, e.ver].join(" ").toLowerCase().indexOf(q) > -1;
-    });
-    var groups = [], by = {};
-    list.forEach(function (e) { var d = fmtDate(e.date); if (!by[d]) { by[d] = []; groups.push(d); } by[d].push(e); });
-    var count = function (k) { return all.filter(function (e) { return e.kind === k; }).length; };
-    var rel = (data.releases || [])[0], ph = currentPhase(), last = all[0];
-    var ctx = '<div class="log-ctx">' +
-      '<div><span>Current build</span><b>' + esc(cfg.version) + "</b></div>" +
-      '<div><span>Latest release</span><b>' + (rel ? esc(rel.tag_name) + " · " + fmtDate(rel.published_at) : "–") + "</b></div>" +
-      '<div><span>Roadmap</span><b>' + (ph ? "Phase " + ph.n + " · " + ph.done + " of " + ph.total + " done" : "–") + "</b></div>" +
-      '<div><span>Last update</span><b>' + (last ? fmtDate(last.date) : "–") + "</b></div></div>";
-    $("#vb").innerHTML = ctx +
-      '<div class="toolbar log-tools"><input class="field grow" id="lq" type="search" placeholder="Search notes, releases and commits" value="' + esc(logQ) + '" aria-label="Search the dev log"></div>' +
-      '<div class="tabs" role="tablist">' + [["all", "All", all.length], ["note", "Notes", count("note")], ["release", "Releases", count("release")], ["commit", "Commits", count("commit")]].map(function (t) {
-        return '<button role="tab" data-lf="' + t[0] + '" aria-selected="' + (logFilter === t[0]) + '">' + t[1] + '<span class="count">' + t[2] + "</span></button>";
-      }).join("") + "</div>" +
-      (q ? '<p class="sub">' + plural(list.length, "result") + " for “" + esc(logQ) + "”</p>" : "") +
-      (groups.length ? groups.map(function (g) {
-        return '<section class="day"><div class="day-d">' + esc(g) + "</div>" + by[g].map(function (e) {
-          var title = e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener noreferrer">' + markQ(e.title) + "</a>" : markQ(e.title);
-          var kindTxt = { note: "Team note", release: e.tag === "Release" ? "Playable release" : "Foundation release", commit: "Change on " + cfg.branch }[e.kind] || "";
-          return '<article class="entry k-' + e.kind + '"><span class="pill ' + (e.kind === "release" ? "ok" : e.kind === "note" ? "hot" : "") + '">' + esc(e.tag || e.kind) + "</span><div><h3>" + title + "</h3>" +
-            (e.body ? "<p>" + markQ(e.body) + "</p>" : "") +
-            '<div class="meta">' + esc(kindTxt) + (e.by ? " · " + markQ(e.by) : "") + "</div></div></article>";
-        }).join("") + "</section>";
-      }).join("") : '<div class="empty">No entries<small>' + (q ? "Nothing matches that search." : logFilter === "commit" && data.commits === null ? "GitHub could not be reached." : "Nothing logged here yet.") + "</small></div>") +
-      '<p class="source">Sources: data/devlog.json' + (data.commits ? " · commits on " + esc(cfg.branch) : "") + (data.releases && data.releases.length ? " · releases" : "") + (data.commits === null ? " · GitHub unreachable" : "") + "</p>";
-    $$("[data-lf]").forEach(function (b) { b.addEventListener("click", function () { logFilter = b.dataset.lf; drawDevlog(); }); });
-    var t = 0;
-    $("#lq").addEventListener("input", function (e) {
-      clearTimeout(t); var val = e.target.value;
-      t = setTimeout(function () { logQ = val.trim(); var pos = $("#lq").selectionStart; drawDevlog(); var n = $("#lq"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (x) { /* older browsers */ } }, 160);
-    });
-  }
-
   /* Download */
   var dlOS = null;
   function guessOS() {
@@ -1288,7 +1221,7 @@
   function viewDownload() {
     var v = $("#view");
     v.innerHTML = shell("Releases", "Download", loading("Checking releases on GitHub"));
-    // Everything on this page is about the game mod. Website and foundation updates live in the Dev Log.
+    // Everything on this page is about the game mod. Website and foundation updates are in the Changelog and the Dev Log (Library).
     Promise.all([loadReleases(), loadRoadmap()]).then(function (res) {
       var rel = res[0];
       if (currentView !== "download") return;
@@ -1676,8 +1609,7 @@
      The Docs section is the dossier cabinet (17b-cabinet.js). loadDoc reads a document from the bundled copy,
      the deployed site or GitHub. */
   function viewDocs(id) { return viewCabinet(id); }
-  /* Documentation has three zones: the Library (plans, decisions, research…), the Handbook (guides, policies, procedures)
-     and the Dev Log (releases, notes and changes) */
+  /* Documentation has two zones: the Library (plans, decisions, research, the Dev Log…) and the Handbook (guides, policies, procedures) */
   function docZones(active) {
     var all = (data.docs && data.docs.docs) || [], hb = ((data.guides && data.guides.guides) || []).length || all.filter(function (d) { return d.group === "Handbook"; }).length;
     var lib = all.filter(function (d) { return d.group !== "Handbook"; }).length;
@@ -1685,9 +1617,8 @@
       return '<a class="zone z-' + id + (active === id ? " on" : "") + '" href="' + href + '"' + (active === id ? ' aria-current="page"' : "") + '><span class="z-ico" aria-hidden="true"></span><b>' + name + "</b><small>" + sub + "</small></a>";
     }
     return '<nav class="zones" aria-label="Documentation zones">' +
-      z("lib", "#/docs", "Library", (lib ? lib + " documents · " : "") + "plans, decisions, research, technical and legal") +
-      z("hb", "#/guides", "Handbook", (hb ? hb + " documents · " : "") + "guides, policies and procedures, printable on A4") +
-      z("log", "#/devlog", "Dev Log", "releases, notes and changes, newest first") + "</nav>";
+      z("lib", "#/docs", "Library", (lib ? lib + " documents · " : "") + "plans, decisions, research, the dev log, technical and legal") +
+      z("hb", "#/guides", "Handbook", (hb ? hb + " documents · " : "") + "guides, policies and procedures, printable on A4") + "</nav>";
   }
   function addZones(active) { var vh = $(".vh"); if (vh && !$(".zones")) vh.insertAdjacentHTML("afterend", docZones(active)); }
   function loadDoc(doc) {
@@ -1763,6 +1694,15 @@
     return [cabGroup(d.group)[0] + "-" + (n < 10 ? "0" : "") + n, d.title];
   }
   /* The document's class: the handbook type from its code, otherwise its library group */
+  /* Classification stamp, in the middle of a Library document's header: public documents are not classified,
+     LV3 to LV5 are low-clearance classified, LV6 and LV7 high-clearance classified */
+  function cabStamp(x) {
+    if (!x) return '<span class="ds-cls c-open"><b>Not classified</b><small>Public</small></span>';
+    return '<span class="ds-cls ' + (x.need >= 6 ? 'c-high"><b>Classified</b><small>High clearance</small>' : 'c-low"><b>Classified</b><small>Low clearance</small>') + "</span>";
+  }
+  function cabWarn(x) {
+    return x ? '<p class="ds-warn"><b>Classified LV' + esc(x.need) + ".</b> Do not share this document, or anything in it, with anyone below LV" + esc(x.need) + ".</p>" : "";
+  }
   function cabClass(d, code) {
     if (/-POL-/.test(code)) return ["policy", "Policy"];
     if (/-SOP-/.test(code)) return ["procedure", "Procedure"];
@@ -1928,7 +1868,7 @@
     var msg = why === "level" ? "LV" + x.need + " clearance required." : why === "github" ? "Your card allows it, but GitHub has not given your account access yet." : "Could not reach GitHub to check your clearance.";
     body.innerHTML = cabClr(false, x, x.card) +
       '<div class="ds-tab"><b>' + esc(c[0]) + "</b>" + esc(doc.group) + '</div><div class="ds-folder denied"><div class="ds-page">' +
-      '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Restricted · ' + esc(x.card) + "</span></header>" +
+      '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span>' + cabStamp(x) + '<span class="ds-class">Restricted · ' + esc(x.card) + "</span></header>" +
       '<div class="ad-draft" aria-hidden="true"><b></b>' + lines + "</div>" +
       '<div class="ad" role="alert"><div class="ad-box"><small>Security</small><strong>Access denied</strong><em>' + esc(msg) + "</em>" +
         "<p>Please contact Administration.</p>" +
@@ -1959,7 +1899,7 @@
         '<div class="ds-tab"><b>' + esc(c[0]) + "</b>" + esc(doc.group) + "</div>" +
         '<div class="ds-folder"><div class="ds-page">' +
           '<span class="ds-clip" aria-hidden="true"></span><span class="ds-holes" aria-hidden="true"></span>' +
-          '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Class: ' + esc(k[1]) + "</span></header>" +
+          '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span>' + cabStamp(x) + '<span class="ds-class">Class: ' + esc(k[1]) + "</span></header>" + cabWarn(x) +
           '<h1 class="ds-title">' + esc(c[1]) + "</h1>" +
           '<div class="ds-meta"><span>' + esc(c[0]) + " · " + esc(doc.path) + "</span>" +
             '<a href="' + esc(gh) + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
@@ -2095,7 +2035,7 @@
         "</section>" +
         '<section class="ogroup"><div class="label">Data</div>' +
           '<div class="orow"><span>GitHub data<small>Releases and contracts are cached for ' + (cfg.cacheMinutes || 10) + ' minutes</small></span><button class="btn small" id="oclr">Refresh now</button></div>' +
-          '<div class="orow"><span>Site build<small>' + esc(buildLabel()) + " · " + esc(cfg.stage) + (data.build && data.build.date ? " · " + esc(fmtDate(data.build.date)) : "") + "</small></span><a class=\"btn small\" href=\"#/devlog\">Dev log</a></div>" +
+          '<div class="orow"><span>Site build<small>' + esc(buildLabel()) + " · " + esc(cfg.stage) + (data.build && data.build.date ? " · " + esc(fmtDate(data.build.date)) : "") + "</small></span><a class=\"btn small\" href=\"#/docs/devlog\">Dev log</a></div>" +
           '<div class="orow"><span>Privacy<small>No cookies, analytics or trackers. Settings stay in this browser</small></span><a class="btn small" href="#/docs/privacy">Read</a></div>' +
           '<div class="orow"><span>Restore defaults<small>Resets every setting on this page</small></span><button class="btn small" id="orst">Reset</button></div>' +
         "</section>" +
@@ -3258,7 +3198,7 @@
   document.addEventListener("scroll", function () { hbpHide(true); }, true);
 
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guest: viewGuest, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: function () { location.replace("#/docs/devlog"); }, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guest: viewGuest, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");
@@ -3302,7 +3242,7 @@
     menu.hidden = true; view.hidden = false; document.body.classList.add("in-view");
     view.dataset.v = name;
     if (!same || name !== "docs") { view.innerHTML = ""; var ce = $("#center"); ce.style.scrollBehavior = "auto"; ce.scrollTop = 0; ce.style.scrollBehavior = ""; }
-    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" }, guides: { title: "Handbook" }, devlog: { title: "Dev Log" }, profile: { title: "Profile" } })[name];
+    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" }, guides: { title: "Handbook" }, profile: { title: "Profile" } })[name];
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
@@ -3406,7 +3346,6 @@
     env: ENV,
     setServers: function (list) { data.servers = { servers: Array.isArray(list) ? list : [] }; data.serversHooked = true; if (currentView === "sessions") drawSessions(); refreshInfo(); },
     setMods: function (m) { data.mods = { compatible: (m && m.compatible) || [], issues: (m && m.issues) || [] }; if (currentView === "mods") drawMods(); refreshInfo(); },
-    setDevlog: function (list) { data.devlog = { entries: Array.isArray(list) ? list : [] }; if (currentView === "devlog") drawDevlog(); refreshInfo(); },
     docsView: function () { var f = document.querySelector(".fold.on"); return { mode: "cabinet", open: f ? f.getAttribute("data-id") : "", drawers: document.querySelectorAll(".drawer").length }; },
     refresh: function () { session.clear("jo-gh:"); data.releases = undefined; data.issues = undefined; data.commits = undefined; preload(); if (currentView) route(); }
   };
@@ -3431,7 +3370,7 @@
   }
   function preload() {
     loadLocal("staff").then(function () { siBadge(); });
-    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("devlog"), loadLocal("team"), loadRoadmap(), loadReleases(), loadContracts(), loadCommits()]).then(function () {
+    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("team"), loadRoadmap(), loadReleases(), loadContracts(), loadCommits()]).then(function () {
       refreshInfo();
       if (data.releases === null || data.issues === null) status("GitHub unreachable · showing bundled data");
     });

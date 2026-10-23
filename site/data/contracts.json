@@ -1010,6 +1010,30 @@
     "Forge77"
    ],
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F18",
+   "title": "Classification stamps; the Dev Log as a document",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Readers see at a glance how a Library document is classified; the Dev Log is a plain document.",
+   "deliverable": "Stamp and warning in the dossier header; docs/devlog.md; Dev Log zone removed.",
+   "acceptance": [
+    "Not classified / low / high clearance stamps with colours",
+    "Old #/devlog links open the document"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

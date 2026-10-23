@@ -10,7 +10,7 @@ from playwright.async_api import async_playwright
 
 site = sys.argv[1]
 engines = sys.argv[2:] or ["chromium", "firefox", "webkit"]
-VIEWS = ["briefing", "roadmap", "download", "sessions", "contribute", "team", "mods", "devlog", "guides", "guides/hp-pol-002", "verify", "docs/architecture", "options"]
+VIEWS = ["briefing", "roadmap", "download", "sessions", "contribute", "team", "mods", "guides", "guides/hp-pol-002", "verify", "docs/architecture", "options"]
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *args):
@@ -55,10 +55,9 @@ async def check(browser, name, size):
     await page.click('[data-tab="ranks"]'); await page.wait_for_timeout(300)
     if await page.locator(".ranks .rank").count() != 10:
         failures.append("contribute: expected 10 grades, E to S++")
-    await page.goto(BASE + "#/devlog"); await page.wait_for_timeout(900)
-    await page.fill("#lq", "zzzz-no-match"); await page.wait_for_timeout(500)
-    if not await page.locator(".empty").count():
-        failures.append("devlog: search did not filter")
+    await page.goto(BASE + "#/devlog"); await page.wait_for_timeout(1200)
+    if "#/docs/devlog" not in page.url or await page.locator("#docBody[data-id=devlog]").count() != 1:
+        failures.append("devlog: old link does not open the Dev Log document")
     await page.goto(BASE + "#/profile"); await page.wait_for_timeout(900)
     if not await page.locator("#vb .hk").count() or not await page.locator("#siGo, .si-intro .note").count():
         failures.append("profile: signed-out view missing")

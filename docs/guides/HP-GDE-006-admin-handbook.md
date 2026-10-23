@@ -1,5 +1,5 @@
 # Administration Handbook
-Code: HP-GDE-006 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · For: Administration Department and seat holders
+Code: HP-GDE-006 · Version 1.3 · Effective 2026-10-23 · Owner: Administration · For: Administration Department and seat holders
 
 ## What Administration owns
 Direction and decisions, seats and access, legal stance and funding, the community and moderation, and recruiting. See [governance.md](../governance.md) and [departments.md](../departments.md).
@@ -31,7 +31,7 @@ The full checklist is in [github-setup.md](../github-setup.md).
 ## Decisions
 - Day-to-day: lazy consensus in pull requests (72 hours).
 - Lasting decisions: a decision record in `docs/decisions/`, **Proposed** until the project lead accepts it.
-- Record accepted decisions on the website's Dev Log.
+- Record accepted decisions in the [Dev Log](../devlog.md).
 
 ## Funding (from 0.1)
 Donations open at 0.1 through a fiscal host ([ADR 0010](../decisions/0010-funding.md)). Every expense is published. Money never buys influence.

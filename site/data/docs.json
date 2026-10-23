@@ -32,6 +32,12 @@
       "path": "CHANGELOG.md"
     },
     {
+      "id": "devlog",
+      "title": "Dev Log",
+      "group": "Project",
+      "path": "docs/devlog.md"
+    },
+    {
       "id": "risks",
       "title": "Risk Register",
       "group": "Project",

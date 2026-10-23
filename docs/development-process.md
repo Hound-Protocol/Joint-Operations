@@ -46,7 +46,7 @@ Test reports always include: game build, OS, Proton version (if any), number of 
 
 ## 4. Versions and releases
 - Versions follow `0.MINOR.PATCH` until 1.0. Foundation releases are **0.0.x** (website, docs, tools); Phase 2 ends with **0.1**, the first playable build. Details: [HP-SOP-003](guides/HP-SOP-003-release.md).
-- Every release has: a changelog entry, a dev log entry on the website, SHA-256 checksums, and binaries built by GitHub Actions only.
+- Every release has: a changelog entry, a Dev Log entry when there is news ([docs/devlog.md](devlog.md)), SHA-256 checksums, and binaries built by GitHub Actions only.
 - Code signing through an open-source signing program (the license is final: [ADR 0005](decisions/0005-license.md)).
 - Release checklist: all contract issues for the milestone closed, in-game checklist passed on both platforms, release notes reviewed by the project lead.
 

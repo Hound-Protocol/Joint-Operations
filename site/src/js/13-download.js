@@ -11,7 +11,7 @@
   function viewDownload() {
     var v = $("#view");
     v.innerHTML = shell("Releases", "Download", loading("Checking releases on GitHub"));
-    // Everything on this page is about the game mod. Website and foundation updates live in the Dev Log.
+    // Everything on this page is about the game mod. Website and foundation updates are in the Changelog and the Dev Log (Library).
     Promise.all([loadReleases(), loadRoadmap()]).then(function (res) {
       var rel = res[0];
       if (currentView !== "download") return;

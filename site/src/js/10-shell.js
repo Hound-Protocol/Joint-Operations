@@ -1,7 +1,7 @@
   /* ---------------- Views ---------------- */
   var currentView = "";
-  /* The Handbook (guides) and the Dev Log are zones of Documentation, so they light the Docs tab */
-  function tabOf(v) { return v === "guides" || v === "devlog" ? "docs" : v; }
+  /* The Handbook (guides) is a zone of Documentation, so it lights the Docs tab */
+  function tabOf(v) { return v === "guides" ? "docs" : v; }
   function shell(kicker, title, body) {
     var cv = tabOf(currentView), now = ITEMS.filter(function (it) { return it.id === cv; })[0];
     var tabs = '<div class="secwrap"><nav class="secbar" aria-label="Sections">' + ITEMS.map(function (it) {
