@@ -54,7 +54,7 @@ async def check(browser, name, size):
     if not await page.locator(".empty").count():
         failures.append("devlog: search did not filter")
     await page.goto(BASE + "#/verify"); await page.wait_for_timeout(900)
-    if not await page.locator(".kcs .kc").count() or not await page.locator("#kcCh").inner_text():
+    if not await page.locator(".hks .hk").count() or not await page.locator("#kcCh").inner_text():
         failures.append("verify: keycards or Hound ID challenge missing")
     await page.goto(BASE + "#/roadmap"); await page.wait_for_timeout(900)
     if await page.locator(".mb-mod").count() < 3:

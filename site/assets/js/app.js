@@ -2001,7 +2001,7 @@
         '<div class="label">Hound staff</div>' +
         '<p class="sub">Every staff member has a permanent <b class="tint key">Hound ID</b>, tied to their GitHub account number, which never changes even if they rename the account. Check anyone who claims to be staff here.</p>' +
         '<div class="toolbar"><input class="field grow" id="sfind" type="search" placeholder="Hound ID, GitHub name or Discord ID" aria-label="Find staff"><span id="sres"></span></div>' +
-        '<div class="kcs">' + (staff.length ? staff.map(function (s, n) { return keycard(s, { link: true, i: n }); }).join("") :
+        '<div class="hks">' + (staff.length ? staff.map(function (s, n) { return keycard(s, { link: true, i: n }); }).join("") :
           keycard(KC_SPECIMEN, { link: true, specimen: true }) + '<div class="empty">No staff cards issued yet<small>This is a specimen. The owner issues real cards once the signing key exists.</small></div>') + "</div>" +
         '<div class="label">Prove a Hound ID</div>' +
         '<p class="sub">A card can be copied, so it only shows what someone claims. To check that a person really holds a Hound ID, give them a challenge to sign with the SSH key on their GitHub account. You can try it now with any GitHub name.</p>' +
@@ -2135,7 +2135,7 @@
   function kcBars(id) {
     var h = kcHash(id), x = 0, out = "";
     for (var i = 0; i < 34; i++) { h = (h ^ (h << 13)) >>> 0; h = (h ^ (h >>> 17)) >>> 0; h = (h ^ (h << 5)) >>> 0; var w = 1 + (h % 3); if (i % 2 === 0) out += '<rect x="' + x + '" y="0" width="' + w + '" height="18"/>'; x += w + 1; }
-    return '<svg class="kc-bars" viewBox="0 0 ' + x + ' 18" preserveAspectRatio="none" aria-hidden="true">' + out + "</svg>";
+    return '<svg class="hk-bars" viewBox="0 0 ' + x + ' 18" preserveAspectRatio="none" aria-hidden="true">' + out + "</svg>";
   }
   function kcGrade(login) {
     var recs = (data.records && data.records.records) || [], specs = {};
@@ -2150,14 +2150,14 @@
     o = o || {};
     var lv = KC_LV[s.card] || KC_LV.LV3, n = String(s.card || "LV3").slice(2), revoked = s.status === "revoked";
     var tag = o.link ? 'a href="#/verify/' + encodeURIComponent(s.id) + '"' : "div";
-    return "<" + tag + ' class="kc' + (o.big ? " big" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + '" style="--kc:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
-      '<span class="kc-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Security card · ' + esc(lv[0]) + '</small></span></span>' +
-      '<span class="kc-lv" aria-label="Keycard level ' + n + '"><small>LV</small>' + esc(n) + "</span>" +
-      '<span class="kc-chip" aria-hidden="true"></span><img class="kc-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
-      '<span class="kc-who"><b>' + esc(s.name || s.login) + "</b><small>" + esc(s.name ? "@" + s.login : "GitHub #" + s.github_id) + "</small></span>" +
-      '<span class="kc-meta"><span><i>Hound ID</i>' + esc(s.id) + "</span><span><i>Clearance</i>Level " + esc(n) + "</span><span><i>Dept</i>" + esc(s.department) + "</span><span><i>Grade</i>" + esc(o.specimen ? "B" : kcGrade(s.login)) + "</span><span class=\"k-since\"><i>Since</i>" + esc(fmtDate(s.since)) + "</span></span>" +
-      '<span class="kc-foot">' + kcBars(s.id) + '<span class="vs">' + (o.specimen ? '<span class="status planned">Specimen</span>' : revoked ? '<span class="status bad">Revoked</span>' : vBadge("wait")) + "</span>" + (s.ssh_key ? '<span class="kc-key" title="SSH signing key pinned to this card">KEY</span>' : "") + "</span>" +
-      (revoked ? '<span class="kc-void" aria-hidden="true">VOID</span>' : "") +
+    return "<" + tag + ' class="hk' + (o.big ? " big" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
+      '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Security card · ' + esc(lv[0]) + '</small></span></span>' +
+      '<span class="hk-lv" aria-label="Keycard level ' + n + '"><small>LV</small>' + esc(n) + "</span>" +
+      '<span class="hk-chip" aria-hidden="true"></span><img class="hk-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
+      '<span class="hk-who"><b>' + esc(s.name || s.login) + "</b><small>" + esc(s.name ? "@" + s.login : "GitHub #" + s.github_id) + "</small></span>" +
+      '<span class="hk-meta"><span><i>Hound ID</i>' + esc(s.id) + "</span><span><i>Clearance</i>Level " + esc(n) + "</span><span><i>Dept</i>" + esc(s.department) + "</span><span><i>Grade</i>" + esc(o.specimen ? "B" : kcGrade(s.login)) + "</span><span class=\"k-since\"><i>Since</i>" + esc(fmtDate(s.since)) + "</span></span>" +
+      '<span class="hk-foot">' + kcBars(s.id) + '<span class="vs">' + (o.specimen ? '<span class="status planned">Specimen</span>' : revoked ? '<span class="status bad">Revoked</span>' : vBadge("wait")) + "</span>" + (s.ssh_key ? '<span class="hk-key" title="SSH signing key pinned to this card">KEY</span>' : "") + "</span>" +
+      (revoked ? '<span class="hk-void" aria-hidden="true">VOID</span>' : "") +
       "</" + (o.link ? "a" : "div") + ">";
   }
   var KC_SPECIMEN = { id: "HND-0000", login: "your-github-name", name: "Your Name", github_id: 0, card: "LV5", department: "Development", since: "2026-10-23", status: "active" };

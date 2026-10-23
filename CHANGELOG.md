@@ -8,6 +8,7 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 - **Folders:** smoother hover and opening; drawers open in place without redrawing the others.
 - **Classic list removed.** The cabinet is the only Docs view.
 - **Main menu:** "Join the Hound" is now "Explore the Hound", linking to the Hound Protocol website.
+- **Fixed:** the contract board was broken by the keycard styles (both used the same class name). Keycards now have their own names, contract cards are back, and "Acceptance criteria" stays on one line.
 
 ## v0.0.19 · Dossier cabinet · 2026-10-23
 - **Roadmap:** the ticker line and the radar sweep are gone, and the hint reads "Click a platform for details".
