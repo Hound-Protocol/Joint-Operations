@@ -24,7 +24,7 @@ AUDIENCE = {  # who the website lists each document for
     "HP-GDE-003": "Contributors", "HP-GDE-005": "Contributors", "HP-POL-001": "Contributors", "HP-POL-002": "Contributors",
     "HP-POL-003": "Contributors", "HP-SOP-001": "Contributors", "HP-SOP-002": "Contributors",
     "HP-GDE-004": "Quality", "HP-POL-006": "Quality", "HP-SOP-003": "Quality", "HP-SOP-005": "Quality",
-    "HP-GDE-014": "Everyone", "HP-GDE-015": "Everyone", "HP-GDE-016": "Players",
+    "HP-GDE-014": "Everyone", "HP-GDE-015": "Everyone", "HP-GDE-016": "Players", "HP-GDE-017": "Contributors", "HP-GDE-018": "Contributors",
     "HP-GDE-006": "Administration", "HP-POL-007": "Everyone", "HP-POL-004": "Administration", "HP-POL-005": "Administration", "HP-SOP-004": "Administration",
     "HP-SOP-006": "Administration", "HP-SOP-007": "Administration", "HP-SOP-008": "Administration", "HP-SOP-009": "Administration",
 }
@@ -53,6 +53,8 @@ SUMMARY = {  # one line for the Guides page
     "HP-GDE-014": "From no account to your first pull request: issues, forks, branches, commits and reviews, step by step.",
     "HP-GDE-015": "Every section of the website, the two Documentation zones, searching, and signing in with GitHub.",
     "HP-GDE-016": "Where to report a problem, what to include, and what happens next.",
+    "HP-GDE-017": "Not sure you can help? Five questions to find where you fit, what is open now, and your first step.",
+    "HP-GDE-018": "Using Claude, ChatGPT or Gemini well: a working loop, checking the output, and submitting AI-assisted work.",
     "HP-SOP-010": "Turning planned contracts into GitHub issues when contracts open at 0.1.",
     "HP-POL-009": "Infractions for careless work and duty breaches, three suspend, clearing by good work, appeals. No time limits.",
     "HP-SOP-011": "Handling broken main, issuing infractions fairly, recording clean work and deciding appeals.",

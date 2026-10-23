@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.0 · Effective 2026-10-23 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -27,22 +27,25 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 
 ## 3. Documentation: two zones
 **Library:** plans, decision records, research, technical, community, project and legal documents, kept in drawers like a filing cabinet.
-- Open a drawer to see its folders; each folder shows a file number such as ADR-0012 or RES-03.
+- Open a drawer to see its folders; each folder shows a file number such as ADR-0012 or RES-03. One drawer is open at a time: opening another closes the rest.
 - The open document lies on the right. Its paper shows its class: ruled paper for decisions, triangle grid for research, millimetre paper for technical, green bars for community, pinstripes for project, a yellow pad for legal.
 - **GitHub** opens the source file; **Suggest an edit** lets you propose a change ([GitHub Basics](HP-GDE-014-github-basics.md)); **Copy link** copies a direct link to that document.
 
 **Handbook:** the guides, policies and procedures, as A4 sheets you can print or download as PDF.
-- Filter by audience: Players, Contributors, Quality, Administration.
+- **Filter:** type a word, part of one, or a topic in the box (Ctrl+K or / jumps there). The sheets narrow as you type; the text of every document counts too, and everyday words find their handbook terms (`ban` finds suspensions, `linux` finds Proton, `login` finds sign-in). Enter opens the first sheet, Esc clears.
+- Filter by audience: Players, Contributors, Quality, Administration. Both filters work together.
 - The coloured stripe on the right edge names the type: Guide (ochre), Policy (red), Procedure (blue).
 - **Print** prints the sheet on A4; **Download PDF** saves it.
 
 ## 4. Searching
-The search box on the Docs page searches **both zones**. Press **Ctrl+K** or **/** from anywhere on the Docs page to jump to it.
-- Every word you type must appear, so add words to narrow the results: `appeal suspension`.
-- **File numbers** work, even shortened: `pol 9` finds HP-POL-009, `adr 12` finds ADR-0012, `sop 3` finds HP-SOP-003.
+The search box in the Library searches **the Library only**, and shows its results **as the folders themselves**: drawers without a match disappear, and the matching folders stay in their drawers, best match first. Press **Ctrl+K** or **/** anywhere on the page to jump to it.
+- Every word you type must appear, in the file number, the title or the text. Add words to narrow the results: `steam sockets`.
+- **File numbers** work, even shortened: `adr 12` finds ADR-0012, `res 3` finds RES-03.
 - Word endings are forgiven: `appeals` also finds `appeal`.
-- Each result shows the section it comes from. **↑ ↓** move through results, **Enter** opens one, **Esc** clears the search.
+- A folder marked **In text** matches inside the document, not in its title.
+- **↑ ↓** move between the matching folders, **Enter** opens the selected one, **Esc** clears the search. You stay in the Library.
 - The opened document highlights your words and scrolls to the first one.
+- Guides, policies and procedures live in the **Handbook**, which has its own filter (section 3).
 
 ## 5. Signing in
 Signing in is optional. It uses your GitHub account ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).

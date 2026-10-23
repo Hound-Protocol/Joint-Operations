@@ -2,7 +2,7 @@
      Seen from above. Phase 0 is the command platform in the centre, every later phase is a platform on its own bridge,
      named after the phase. The fill inside a platform is the share of that phase's tasks that are done; the hatched part
      above it is still scaffolding. Point at a platform to light it, click it to read its tasks.
-     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls)
+     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys)
      is decoration and stops with Options → Animations. The data comes live from ROADMAP.md. */
   var MB_SLOTS = [[-345, -220], [345, -220], [345, 220], [-345, 220], [0, -330], [0, 330]];
   var MB_W = 1600, MB_H = 900, MB_CX = 600, MB_CY = 470;
@@ -111,7 +111,7 @@
     for (var w = 0; w < 46; w++) waves += '<line class="mb-wave"/>';
     var svg = '<svg class="mb-svg" viewBox="0 0 ' + MB_W + " " + MB_H + '" role="group" aria-label="Base under construction: one platform per roadmap phase">' + defs +
       '<rect class="mb-sea" x="0" y="0" width="' + MB_W + '" height="' + MB_H + '" fill="url(#mbSea)"/>' +
-      '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
+      '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
       '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
@@ -248,6 +248,11 @@
     for (var gi = 0; gi < 6; gi++) gulls.push({ cx: 260 + r() * 1000, cy: 160 + r() * 560, R: 26 + r() * 46, w: (r() < 0.5 ? -1 : 1) * (0.32 + r() * 0.22), ph: r() * 6.3, fl: r() * 6.3, vx: 6 + r() * 6, vy: (r() - 0.5) * 4 });
     $("#mbGulls").innerHTML = gulls.map(function () { return '<g class="mb-gull"><path class="gs" d="M-10 1.5Q-5 -4.5 0 0Q5 -4.5 10 1.5"/><path class="gb" d="M-10 1.5Q-5 -4.5 0 0Q5 -4.5 10 1.5"/></g>'; }).join("");
     var gullEls = $$("#mbGulls .mb-gull");
+    /* Channel buoys (v0.0.25): red and green marks along the shipping lane, bobbing and blinking out of step */
+    var buoys = [];
+    [[0.18, 0.5], [0.42, 0.28], [0.62, 0.9], [0.86, 0.3], [0.08, 0.86], [0.6, 0.62]].forEach(function (q, k) { buoys.push({ x: q[0] * 1150 + 30, y: q[1] * MB_H, red: k % 2 === 0, ph: r() * 6.3, per: 2.2 + r() * 1.6 }); });
+    $("#mbBuoys").innerHTML = buoys.map(function (b) { return '<g class="mb-buoy ' + (b.red ? "red" : "grn") + '" transform="translate(' + mbF(b.x) + " " + mbF(b.y) + ')"><circle class="bw" r="7"/><circle class="bb" r="4.6"/><circle class="bl" r="2.2"/></g>'; }).join("");
+    var buoyEls = $$("#mbBuoys .mb-buoy");
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
 
     function step(dt) {
@@ -391,6 +396,12 @@
       });
       commsEl.setAttribute("transform", "translate(" + mbF(comms[0]) + " " + mbF(comms[1]) + ") rotate(" + mbF((T * 40) % 360) + ")");
       commsT -= dt; if (commsT <= 0) { commsT = 2.6; ring(comms[0], comms[1], 6, 70, 2.4, false); }
+      buoys.forEach(function (b, i) {
+        var e = buoyEls[i], t = (T + b.ph) % b.per, bob = 1 + 0.08 * Math.sin(T * 1.7 + b.ph);
+        e.lastChild.style.opacity = t < 0.35 ? "1" : "0.15";
+        e.childNodes[1].setAttribute("r", mbF(4.6 * bob));
+        e.firstChild.setAttribute("r", mbF(5 + ((T * 0.6 + b.ph) % 1) * 9)); e.firstChild.style.opacity = (0.35 * (1 - ((T * 0.6 + b.ph) % 1))).toFixed(2);
+      });
       gulls.forEach(function (g, i) {
         g.cx += g.vx * dt; g.cy += g.vy * dt;
         if (g.cx > MB_W + 120) { g.cx = -120; g.cy = 160 + r() * 560; }

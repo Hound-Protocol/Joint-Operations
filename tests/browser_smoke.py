@@ -72,17 +72,29 @@ async def check(browser, name, size):
         failures.append("docs: cabinet did not open the plan file")
     if len(await page.inner_text("#docBody")) < 200:
         failures.append("docs: case file is empty")
-    await page.fill("#cq", "pol 9"); await page.wait_for_timeout(1800)
-    first = await page.locator(".cab-hits a").first.inner_text() if await page.locator(".cab-hits a").count() else ""
-    if "HP-POL-009" not in first:
-        failures.append("docs: search by file number did not rank HP-POL-009 first")
+    await page.fill("#cq", "adr 12"); await page.wait_for_timeout(1800)
+    first = await page.locator("#cabDrawers .fold").first.get_attribute("data-id") if await page.locator("#cabDrawers .fold").count() else ""
+    if first != "adr-0012":
+        failures.append("docs: search by file number did not put ADR-0012 first")
     await page.fill("#cq", "keycard signing"); await page.wait_for_timeout(800)
-    if not await page.locator(".cab-hits a").count():
-        failures.append("docs: full-text search found nothing")
+    if not await page.locator("#cabDrawers .fold.hit").count():
+        failures.append("docs: full-text search found no folder")
     await page.press("#cq", "Enter"); await page.wait_for_timeout(1500)
+    if not page.url.split("#")[1].startswith("/docs/"):
+        failures.append("docs: a search result left the Library")
     if not await page.locator("#vb mark.hl").count():
         failures.append("docs: opening a result did not highlight the match")
-    await page.fill("#cq", "")
+    await page.fill("#cq", ""); await page.wait_for_timeout(300)
+    await page.click('.dr-head[data-g="Research"]'); await page.wait_for_timeout(200)
+    await page.click('.dr-head[data-g="Legal"]'); await page.wait_for_timeout(200)
+    if await page.locator("#cabDrawers .drawer.open").count() != 1:
+        failures.append("docs: opening a drawer did not close the others")
+    await page.goto(BASE + "#/guides"); await page.wait_for_timeout(1200)
+    await page.fill("#hq", "linux"); await page.wait_for_timeout(1500)
+    codes = await page.locator("#hbList .mini .m-top b").all_inner_texts()
+    if "HP-GDE-002" not in codes or len(codes) > 20:
+        failures.append("handbook: filter did not narrow to the Proton guide")
+    await page.fill("#hq", "")
     await page.goto(BASE + "#/options"); await page.wait_for_timeout(500)
     await page.click('[data-opt="grid"]')
     if "no-grid" not in (await page.evaluate("document.body.className")):

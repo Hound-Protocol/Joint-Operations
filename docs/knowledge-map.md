@@ -13,6 +13,7 @@ Everything the project knows, and the one document that holds it. If a topic is 
 | Join the community | [Discord Member Guide](guides/HP-GDE-008-discord-members.md) |
 | Use GitHub for the first time | [GitHub Basics](guides/HP-GDE-014-github-basics.md) |
 | Report a problem | [Reporting a Problem](guides/HP-GDE-016-reporting-a-problem.md) |
+| Find out whether you can contribute (you probably can) | [Can I Contribute?](guides/HP-GDE-017-can-i-contribute.md) |
 | Contribute | [Contributor Quick Start](guides/HP-GDE-003-contributor-quick-start.md), [CONTRIBUTING](../CONTRIBUTING.md) |
 | Look up a word | [Glossary](glossary.md) |
 
@@ -39,6 +40,7 @@ Everything the project knows, and the one document that holds it. If a topic is 
 | Signed contributor records | [Contributor records](contributor-records.md), [HP-SOP-004](guides/HP-SOP-004-records-and-ranks.md) |
 | Infractions, suspensions and appeals | [HP-POL-009](guides/HP-POL-009-accountability.md), [HP-SOP-011](guides/HP-SOP-011-infractions-and-appeals.md), [ADR 0016](decisions/0016-accountability.md) |
 | AI agents as tools, and how they are credited | [HP-POL-002](guides/HP-POL-002-ai-use-policy.md), [ADR 0015](decisions/0015-ai-agents-and-attribution.md) |
+| Using Claude, ChatGPT or Gemini well, and submitting the work | [HP-GDE-018](guides/HP-GDE-018-working-with-ai-assistants.md) |
 | Recruiting texts and where to post (after 0.1) | [Recruiting kit](recruiting.md) |
 | Running the organization | [Administration Handbook](guides/HP-GDE-006-admin-handbook.md) |
 

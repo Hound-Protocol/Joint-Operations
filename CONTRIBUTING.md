@@ -6,6 +6,8 @@ Hound Protocol works like a contract network. Anyone can pick up a contract, del
 
 > **Before 0.1:** version 0.1 is being built by the project lead. The contract board shows the plan, and contracts open to contractors after 0.1. Testers and reviewers are welcome now.
 >
+> **Not sure you can contribute?** Read [Can I Contribute?](docs/guides/HP-GDE-017-can-i-contribute.md): almost certainly yes. Using AI tools? See [Working with AI Assistants](docs/guides/HP-GDE-018-working-with-ai-assistants.md).
+>
 > **New to GitHub?** Start with [GitHub Basics](docs/guides/HP-GDE-014-github-basics.md) and [joining the Discord](docs/guides/HP-GDE-008-discord-members.md).
 
 ## Ground rules
