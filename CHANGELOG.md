@@ -2,6 +2,12 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.30 · Rules & Standards · 2026-10-23
+- **Completes v0.0.29:** the last part of v0.0.29 was left out of its release by a timing problem in our merge script. It is in this release: claiming from contract cards, all work on the board, the How to Contribute guide and Handbook previews, the new clearance colours, the clearance cards for visitors, and the slim update strip. The merge script now waits until GitHub has registered the latest commit before merging.
+- **Handbook:** the Policies folder now reads **Rules & Standards**.
+- **Guest passes for every LV7:** any organization owner can grant and manage passes, not only the first owner. The Profile lists passes as **Active**, **Expired** and **Revoked**, with who granted each; expired and revoked ones can be deleted one by one or with **Delete expired**. Records are kept 30 days after a pass ends. Needs the new relay code.
+- **Roadmap:** this release's base detail is navigation lights on the helicopter: red and green steady, a white tail light blinking.
+
 ## v0.0.29 · Roster and bans · 2026-10-23
 - **Handbook folders:** guides, policies and procedures sit in three colour-coded kraft folders. Click one and its sheets fly out and lay themselves down; click another and they fly back into their folder before the next one opens. Filters and search still work across all three.
 - **Sign-in window:** signing in opens a centered window in the site's own design that explains the three steps, waits for GitHub, and says **Access granted** before your keycard rises. GitHub itself opens in a small window centered over the site (GitHub cannot be shown inside another page).
@@ -10,6 +16,13 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 - **Bans (LV0):** banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. One ban covers linked GitHub, Discord and Steam accounts; no IP bans. New: [HP-SOP-012 Banning an Account](docs/guides/HP-SOP-012-bans.md) and [ADR 0019](docs/decisions/0019-bans-across-accounts.md).
 - **Roster:** the Team page lists everyone with a signed card, grouped by clearance, as keycards. Member cards (LV2) can now be issued too.
 - **About:** the session diagram is gone; the introduction is centered.
+- **Contribute:** the "How it works" panel is gone. The button opens the new [How to Contribute](docs/guides/HP-GDE-019-how-to-contribute.md) guide, the contribution guidelines, which link to Can I Contribute first.
+- **Handbook previews:** hovering or focusing any button that opens a Handbook document shows a small preview of it, as wide as the button.
+- **Claim on the website:** every contract card has a **Claim** button. Signed in with GitHub, you claim it from the card; the relay asks GitHub who you are, records the claim, and you appear in the card's expandable **Contributors** list straight away. **Unclaim** asks first. Banned accounts cannot claim. Needs the relay's KV storage ([setup](docs/signin.md)).
+- **All work on the board:** every piece of work, the owner's and AI-assisted work included, goes on the contract board when it starts and is checked off when done (`tools/work.py`). Each card lists who is working on it or who completed it, with any agent named. Releases fail their check if no work was checked off. The current foundation work (F01 to F08) is on the board.
+- **Clearance colours:** LV0 grey and inactive, LV1 slate, LV2 silver, LV3 green, LV4 cyan, LV5 orange, LV6 violet with a banded edge, LV7 blood red on black. Guest passes keep the gold ribbon.
+- **Signed out:** under the sign-in card, every clearance card is lined up with a line on what it opens, and three short points on how clearance works.
+- **Update notice:** now a slim strip that slides into the top bar, centered, with Reload and a close button.
 - **Layout stability:** every section uses the same width, so nothing grows or shrinks when you switch; the smoke test checks it ([HP-GDE-012](docs/guides/HP-GDE-012-website-maintainers.md)).
 
 ## v0.0.28 · Keycards · 2026-10-23
@@ -20,7 +33,7 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 
 ## v0.0.27 · Guest pass · 2026-10-23
 - **Owner card (LV7) from GitHub:** if GitHub confirms you own the Hound-Protocol organization, your Profile shows an Owner card, LV7, "Confirmed by GitHub". It needs the sign-in app's read-only Members permission ([setup](docs/signin.md#5-owner-card-lv7-from-github)). No file can fake it.
-- **Guest passes:** the owner (only the owner, checked by GitHub through the relay) can **Grant Guest Pass** on the Profile: a link that gives LV3 (Staff) access for 24 hours, no account needed. The guest gets a gold guest card with the time left; the relay signs and checks the pass and reads the Staff documents for them. A pass cannot be extended ([setup](docs/signin.md#6-guest-passes-owner-only)).
+- **Guest passes:** the owner (only the owner, checked by GitHub through the relay) can **Grant Guest Pass** on the Profile: a link that gives LV3 (Staff) access for 24 hours, no account needed. The guest gets a gold guest card with the time left; the relay signs and checks the pass and reads the Staff documents for them. A pass cannot be extended ([setup](docs/signin.md#6-guest-passes-lv7-only)).
 - **Update notice:** when a new release goes live while the site is open, a small notice slides in at the top and offers to reload.
 - **Search by name or content:** a switch under the search in the Library and the Handbook. Name (the default) searches numbers and titles; Content searches what the documents say.
 - **Fix:** opening a guide from the Handbook no longer highlights words, and one- or two-letter words are never highlighted.

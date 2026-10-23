@@ -15,7 +15,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Accountability: infractions, suspensions and appeals, no time limits (ADR 0016, HP-POL-009)
 - [x] AI agents credited as tools, detected automatically (ADR 0015)
 - [x] Signed contributor records and Hound IDs
-- [x] Handbook: 39 policies, procedures and guides, with PDFs, including GitHub, Discord and website basics, "Can I contribute?" and working with AI assistants
+- [x] Handbook: 40 policies, procedures and guides, with PDFs, including GitHub, Discord and website basics, "Can I contribute?" and working with AI assistants
 - [x] Documentation aligned with the project, with a knowledge map and a link checker in CI
 - [x] Brand: Hound Protocol and Joint Operations logos, Hound Protocol website
 - [x] Roadmap shown as a base under construction, one platform per phase, with cargo operations (a new detail each release)
@@ -28,6 +28,8 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Owner card from GitHub, 24-hour guest passes, update notice
 - [x] A keycard design per clearance level and a sign-in reveal
 - [x] Public roster, bans (LV0) across linked accounts, revocable guest passes, Handbook folders
+- [x] All work tracked on the contract board, with who is working on it and who completed it
+- [x] Handbook folders: Guides, Policies (Rules & Standards), Procedures
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)
 - [ ] Steam App ID position recorded (legal.md, contract C14)

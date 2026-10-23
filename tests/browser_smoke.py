@@ -26,6 +26,8 @@ BASE = f"http://127.0.0.1:{server.server_address[1]}/"
 async def check(browser, name, size):
     failures = []
     page = await browser.new_page(viewport=size)
+    # Never call the live sign-in relay from tests: answer as a relay without storage would, with CORS headers
+    await page.route("https://hp-signin.trueman-truetown.workers.dev/**", lambda r: r.fulfill(status=503, body='{"error":"test","code":"no_kv"}', content_type="application/json", headers={"Access-Control-Allow-Origin": "*"}))
     errors = []
     page.on("pageerror", lambda e: errors.append(str(e)))
     await page.goto(BASE)

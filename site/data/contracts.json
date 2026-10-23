@@ -624,7 +624,225 @@
     "adr-0005",
     "legal"
    ]
+  },
+  {
+   "id": "F01",
+   "title": "Bans (LV0) across linked accounts and the public roster",
+   "module": "web",
+   "difficulty": "medium",
+   "skills": "",
+   "depends": [],
+   "goal": "Keep banned people out by GitHub account number across GitHub, Discord and Steam, and list every signed card by clearance.",
+   "deliverable": "HP-SOP-012, ADR 0019, relay ban check, Team roster",
+   "acceptance": [
+    "Relay refuses banned GitHub accounts",
+    "Roster lists signed cards by clearance"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
+  },
+  {
+   "id": "F02",
+   "title": "Handbook folders and button previews",
+   "module": "web",
+   "difficulty": "medium",
+   "skills": "",
+   "depends": [],
+   "goal": "Colour-coded folders for guides, policies and procedures, and a small preview on every button that opens a Handbook document.",
+   "deliverable": "Handbook and site-wide previews",
+   "acceptance": [
+    "Sheets fly between folder and grid",
+    "Preview as wide as the button"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
+  },
+  {
+   "id": "F03",
+   "title": "Contribution guidelines in the Handbook",
+   "module": "docs",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "One guide that explains exactly how to contribute, linking to Can I Contribute first.",
+   "deliverable": "HP-GDE-019",
+   "acceptance": [
+    "Linked from How it works on Contribute"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
+  },
+  {
+   "id": "F04",
+   "title": "Link previews with their own thumbnail for every page",
+   "module": "web",
+   "difficulty": "medium",
+   "skills": "",
+   "depends": [],
+   "goal": "Every shared link shows its own title, description and a thumbnail drawn by code from our brand.",
+   "deliverable": "Share pages and generated thumbnails at build time",
+   "acceptance": [
+    "Each section, guide and document has a share link with its own preview",
+    "Restricted documents get a neutral preview"
+   ],
+   "refs": [],
+   "kind": "work",
+   "working": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "claimed"
+  },
+  {
+   "id": "F05",
+   "title": "Profile page entrance animation",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Opening the Profile animates its parts in, not only right after signing in.",
+   "deliverable": "Profile view",
+   "acceptance": [
+    "No pop-in when opening the Profile"
+   ],
+   "refs": [],
+   "kind": "work",
+   "working": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "claimed"
+  },
+  {
+   "id": "F06",
+   "title": "Records key and the owner's signed card",
+   "module": "legal",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Create the project's records signing key on the owner's computer and issue the first signed card (HND-0001).",
+   "deliverable": "records-key.json and staff.json",
+   "acceptance": [
+    "Key made and kept offline",
+    "HND-0001 verifies on the website"
+   ],
+   "refs": [],
+   "kind": "work",
+   "working": [
+    "Forge77"
+   ],
+   "status": "claimed"
+  },
+  {
+   "id": "F07",
+   "title": "Branch protection on main",
+   "module": "legal",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Nobody pushes straight to main; checks and review are required.",
+   "deliverable": "GitHub settings (github-setup.md)",
+   "acceptance": [
+    "Checks, Browsers and Contributor standing required, no bypass"
+   ],
+   "refs": [],
+   "kind": "work",
+   "working": [
+    "Forge77"
+   ],
+   "status": "claimed"
+  },
+  {
+   "id": "F08",
+   "title": "Steam sign-in for sessions, linked to the Hound ID",
+   "module": "lobby",
+   "difficulty": "hard",
+   "skills": "",
+   "depends": [],
+   "goal": "Joining a session needs a Steam sign-in linked to the person's GitHub account, so bans reach Steam too.",
+   "deliverable": "Session registry sign-in (ADR 0008, ADR 0019)",
+   "acceptance": [
+    "Steam ID linked to the GitHub account",
+    "Banned Steam IDs refused"
+   ],
+   "refs": [],
+   "kind": "work"
+  },
+  {
+   "id": "F09",
+   "title": "Handbook wording: Policies are Rules & Standards",
+   "module": "docs",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "The Policies folder reads Rules & Standards.",
+   "deliverable": "",
+   "acceptance": [
+    "Folder description updated"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
+  },
+  {
+   "id": "F10",
+   "title": "Guest pass list for every LV7: active, expired, revoked, delete",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "All LV7 profiles list their guest passes by status and can delete expired ones.",
+   "deliverable": "",
+   "acceptance": [
+    "Org owners can manage passes",
+    "Expired passes can be deleted"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
   }
  ],
- "updated": "2026-10-22"
+ "updated": "2026-10-23"
 }

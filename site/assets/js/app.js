@@ -721,7 +721,7 @@
      Seen from above. Phase 0 is the command platform in the centre, every later phase is a platform on its own bridge,
      named after the phase. The fill inside a platform is the share of that phase's tasks that are done; the hatched part
      above it is still scaffolding. Point at a platform to light it, click it to read its tasks.
-     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys, helipad lights, a windsock)
+     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys, helipad lights, a windsock, helicopter lights)
      is decoration and stops with Options → Animations. The data comes live from ROADMAP.md. */
   var MB_SLOTS = [[-345, -220], [345, -220], [345, 220], [-345, 220], [0, -330], [0, 330]];
   var MB_W = 1600, MB_H = 900, MB_CX = 600, MB_CY = 470;
@@ -932,7 +932,7 @@
     $("#mbCarry").innerHTML = carriers.map(function () { return '<g class="mb-carrier"><rect class="crate" x="-3.5" y="-9" width="7" height="6"/><circle r="2.4"/></g>'; }).join("");
     $("#mbPile").innerHTML = pile.map(function () { return '<rect class="mb-crate" width="8" height="7"/>'; }).join("");
     $("#mbRings").innerHTML = rings.map(function () { return '<circle class="mb-ring"/>'; }).join("");
-    $("#mbHeli").innerHTML = '<ellipse class="mb-hsh" rx="9" ry="4"/><g class="mb-heli"><g class="hb"><ellipse rx="8" ry="3.4"/><line x1="-6" y1="0" x2="-20" y2="0"/><line x1="-20" y1="-4" x2="-20" y2="4"/></g><line class="rotor" x1="-14" y1="0" x2="14" y2="0"/><line class="rotor" x1="0" y1="-14" x2="0" y2="14"/></g>';
+    $("#mbHeli").innerHTML = '<ellipse class="mb-hsh" rx="9" ry="4"/><g class="mb-heli"><g class="hb"><ellipse rx="8" ry="3.4"/><line x1="-6" y1="0" x2="-20" y2="0"/><line x1="-20" y1="-4" x2="-20" y2="4"/><circle class="nav-r" cx="2" cy="-3.6" r="1.3"/><circle class="nav-g" cx="2" cy="3.6" r="1.3"/><circle class="nav-w" cx="-20" cy="0" r="1.2"/></g><line class="rotor" x1="-14" y1="0" x2="14" y2="0"/><line class="rotor" x1="0" y1="-14" x2="0" y2="14"/></g>';
     var el = {
       men: $$("#mbCrew .mb-man"), sp: $$("#mbCrew .mb-spark"), walk: $$("#mbWalk circle"), cr: $$("#mbCranes .mb-crane"),
       wake: $$("#mbBoats .mb-wake"), hull: $$("#mbBoats .mb-hull"), swake: $$("#mbShips .mb-wake"), ship: $$("#mbShips .mb-ship"), gang: $$("#mbShips .mb-gang"),
@@ -1165,6 +1165,8 @@
       el.heli.setAttribute("transform", "translate(" + mbF(H.x) + " " + mbF(H.y) + ") scale(" + (1 + H.alt * 0.2).toFixed(2) + ")");
       el.hb.setAttribute("transform", "rotate(" + mbF(H.h) + ")");
       var spin = (T * (H.st === "wait" && H.alt < 0.05 ? 160 : 1500)) % 360;
+      /* Navigation lights (v0.0.30): red and green steady, the white tail light blinks */
+      el.hb.lastChild.style.opacity = (T % 1.2) < 0.15 ? "1" : "0.15";
       el.rot[0].setAttribute("transform", "rotate(" + mbF(spin) + ")"); el.rot[1].setAttribute("transform", "rotate(" + mbF(spin) + ")");
     }
     if (!opts.motion) { MB.t = 30; step(0); return; }
@@ -1423,11 +1425,56 @@
       u.best = best; return u;
     }).sort(function (a, b) { return gradeIdx(b.best) - gradeIdx(a.best) || b.n - a.n || a.login.localeCompare(b.login); });
   }
+  /* Claims made on the website: the relay keeps them, GitHub vouches for who made each one (tools/signin-relay) */
+  var conClaims = {}, conClaimOn = false, conFresh = "";
+  function conLoadClaims() {
+    if (!siOn() || typeof fetch !== "function") return Promise.resolve();
+    return fetch(siRelay() + "/claims", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { conClaimOn = !!(j && j.claims); conClaims = (j && j.claims) || {}; }, function () { conClaimOn = false; });
+  }
+  function conMine(c) { return siIn() && (conClaims[c.id] || []).some(function (x) { return String(x.id) === String(SI.user.id); }); }
+  /* Every card lists its contributors: who completed it, who is working on it, and who claimed it on the website */
+  function conPeople(c, done) {
+    var rows = [], seen = {};
+    function add(login, role, at) { var k = String(login).toLowerCase(); if (seen[k]) return; seen[k] = 1; rows.push({ login: login, role: role, at: at }); }
+    (done ? (c.by || []) : []).forEach(function (u) { add(u, "Completed"); });
+    (c.working || []).forEach(function (u) { add(u, "Working on it"); });
+    (conClaims[c.id] || []).forEach(function (x) { add(x.login, "Claimed", x.at); });
+    if (!done && c.live) (c.by || []).forEach(function (u) { add(u, "Claimed"); });
+    if (!rows.length) return "";
+    var fresh = conFresh === c.id;
+    return '<details class="kc-contrib ' + (done ? "done" : "wip") + '"' + (fresh ? " open" : "") + '><summary><span class="kp-l">' + (done ? "✓ " : '<i class="kp-dot"></i>') + "Contributors <em class=\"kp-n\">" + rows.length + '</em></span><span class="kp-faces">' +
+      rows.slice(0, 5).map(function (r) { return '<img src="https://github.com/' + encodeURIComponent(r.login) + '.png?size=40" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'">'; }).join("") + "</span></summary><ul>" +
+      rows.map(function (r, k) {
+        return '<li class="' + (fresh && SI && SI.user && r.login === SI.user.login ? "new" : "") + '" style="--k:' + k + '"><a href="https://github.com/' + encodeURIComponent(r.login) + '" target="_blank" rel="noopener noreferrer"><img src="https://github.com/' + encodeURIComponent(r.login) + '.png?size=40" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'">' + esc(r.login) + "</a><small>" + esc(r.role) + (r.at ? " · " + esc(fmtDate(new Date(r.at).toISOString().slice(0, 10))) : "") + "</small></li>";
+      }).join("") + "</ul>" + (c.agents && c.agents.length ? '<p class="kp-agent">With ' + esc(c.agents.join(", ")) + " (credited as the contributors' tool)</p>" : "") + "</details>";
+  }
+  function conClaimBtn(c) {
+    if (!conClaimOn) return "";
+    if (!siIn()) return '<button type="button" class="btn small primary" data-claim-in="' + esc(c.id) + '">Sign in to claim</button>';
+    return conMine(c) ? '<button type="button" class="btn small" data-unclaim="' + esc(c.id) + '">Unclaim</button>' : '<button type="button" class="btn small primary" data-claim="' + esc(c.id) + '">Claim</button>';
+  }
+  function conClaimWire() {
+    $$("[data-claim-in]").forEach(function (b) { b.addEventListener("click", function () { siStart().then(function () { if (currentView === "contribute") drawContribute(); }); }); });
+    $$("[data-claim], [data-unclaim]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var id = b.getAttribute("data-claim") || b.getAttribute("data-unclaim"), un = b.hasAttribute("data-unclaim");
+        var go = function () {
+          b.disabled = true; b.textContent = un ? "Leaving…" : "Verifying with GitHub…";
+          fetch(siRelay() + (un ? "/unclaim" : "/claim") + "?c=" + encodeURIComponent(id), { method: "POST", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" })
+            .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "HTTP " + r.status); return j; }); })
+            .then(function (j) { conClaims[id] = j.claims; conFresh = un ? "" : id; status(un ? "Claim left" : "Claimed " + id); blip("go"); drawContribute(); conFresh = ""; },
+              function (e) { b.disabled = false; b.textContent = un ? "Unclaim" : "Claim"; status(e.message); hpModal({ kicker: "Contract " + id, title: "Not claimed", tone: "danger", html: "<p>" + esc(e.message) + "</p>", actions: [{ label: "OK", primary: true }] }); });
+        };
+        if (un) hpConfirm("Leave contract " + id + "?", "Your name comes off its contributors. Post a short handoff note on the issue if you started work.", "Unclaim", "Keep it", "danger").then(function (y) { if (y) go(); });
+        else go();
+      });
+    });
+  }
   function viewContribute() {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Contribute", loading("Loading the contract board"));
     cardsAnim = true;
-    Promise.all([loadContracts(), loadLocal("contracts")]).then(function () { if (currentView === "contribute") drawContribute(); refreshInfo(); });
+    Promise.all([loadContracts(), loadLocal("contracts"), conLoadClaims()]).then(function () { if (currentView === "contribute") drawContribute(); refreshInfo(); });
   }
   function drawContribute() {
     var list = contractList(), live = !!(data.issues && data.issues.length);
@@ -1444,19 +1491,21 @@
     var STATUS = { planned: ["○", "Planned"], open: ["●", "Open"], blocked: ["✕", "Blocked"], claimed: ["◐", "Claimed"], review: ["◑", "In review"], done: ["✓", "Done"] };
     var rank = { open: 0, planned: 1, claimed: 2, review: 3, blocked: 4, done: 5 };
     function card(c, n) {
-      var st = c.blocked && c.status === "open" ? "blocked" : c.status, S = STATUS[st] || ["", st];
+      var st = c.blocked && c.status === "open" ? "blocked" : c.status;
+      if ((st === "planned" || st === "open") && (conClaims[c.id] || []).length) st = "claimed";
+      var S = STATUS[st] || ["", st];
       var action = "";
-      if (c.live) action = (st !== "done" ? '<a class="btn small primary" href="' + esc(c.url) + '#new_comment_field" target="_blank" rel="noopener noreferrer" title="Comment /claim on the issue. Several people can claim the same contract.">' + ((c.by || []).length ? "Join claim" : "Claim") + "</a>" : "") +
+      if (c.live) action = (st !== "done" ? conClaimBtn(c) : "") +
         '<a class="btn small" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a>';
-      else action = '<a class="btn small issuebtn" href="' + esc(newIssueUrl("[" + c.id + "] " + c.title, "Module: " + (MODULES[c.module] || c.module) + "\nDifficulty: " + ((DIFF[c.difficulty] || [c.difficulty])[0]) + (c.core ? " (Core: Development Department only)" : "") + "\nSkills: " + (c.skills || "") + (c.depends && c.depends.length ? "\nDepends on: " + c.depends.join(", ") : "") + "\n\n## Goal\n" + (c.goal || "") + (c.deliverable ? "\n\n## Deliverable\n" + c.deliverable : "") + "\n\n## Definition of done\n" + ((c.acceptance && c.acceptance.length) ? c.acceptance.map(function (a) { return "- [ ] " + a; }).join("\n") : "- ") + "\n", "contract,module:" + c.module + ",difficulty:" + c.difficulty + (c.core ? ",core" : ""))) + '" target="_blank" rel="noopener noreferrer">Open as issue <span aria-hidden="true">↗</span></a>';
+      else action = conClaimBtn(c);
       var done = st === "done";
       return '<article class="kc st-' + esc(st) + " d-" + esc(c.difficulty || "none") + '" style="--i:' + n + '">' +
         '<div class="kc-top"><span class="kc-id">' + esc(c.id) + '</span><span class="kc-st">' + S[0] + " " + S[1] + (c.by && c.by.length > 1 && !done ? " · " + c.by.length : "") + "</span></div>" +
         "<h3>" + esc(c.title) + "</h3>" +
-        ((c.by || []).length && !done ? '<div class="kc-claims" aria-label="Claimed by">' + c.by.map(function (u) { return '<a class="tok" href="https://github.com/' + encodeURIComponent(u) + '" target="_blank" rel="noopener noreferrer"><i>◆</i>' + esc(u) + "</a>"; }).join("") + "</div>" : "") +
+        conPeople(c, done) +
         '<div class="kc-tags">' + diffPill(c) + (c.module ? '<span class="pill mod">' + esc(MODULES[c.module] || c.module) + "</span>" : "") + "</div>" +
         (done
-          ? '<div class="kc-stamp">Completed' + (c.by && c.by.length ? " by " + esc(c.by.join(", ")) : "") + "</div>" + (c.live ? '<div class="actions">' + action + "</div>" : "")
+          ? '<div class="kc-stamp">Completed' + (c.completed ? " · " + esc(fmtDate(c.completed)) : "") + "</div>" + (c.live ? '<div class="actions">' + action + "</div>" : "")
           : (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">' + (c.blocked ? "Waiting for " : "After ") + esc(c.depends.join(", ")) + "</div>" : "") +
             (c.goal ? '<p class="goal">' + esc(c.goal) + "</p>" : "") +
             ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary><span>Acceptance criteria</span><i aria-hidden="true">' + (c.acceptance ? c.acceptance.length : 0) + "</i></summary>" +
@@ -1492,7 +1541,7 @@
       '<div class="conbar"><div class="tabs" role="tablist">' + [["board", "Contract board"], ["ranks", "Contractor grades"]].map(function (t) {
         return '<button role="tab" data-tab="' + t[0] + '" aria-selected="' + (conTab === t[0]) + '">' + t[1] + "</button>";
       }).join("") + "</div>" +
-      '<div class="howbox"><button class="btn howbtn' + (conTab === "how" ? " on" : "") + '" data-tab="how" aria-pressed="' + (conTab === "how") + '">How it works</button><small>Discover how the contribution system works</small></div>' +
+      '<div class="howbox"><a class="btn howbtn" href="#/guides/hp-gde-019">How it works</a><small>The contribution guidelines, in the Handbook</small></div>' +
       '<div class="conupd">' + conUpdated(live) + "</div></div>" +
       '<div id="ctab"></div>';
     var tabHtml = {
@@ -1518,15 +1567,6 @@
         (shown.length ? '<div class="kanban' + (cardsAnim ? " anim" : "") + '">' + board + "</div>" : '<div class="empty">No contracts match<small>Change the filters.</small></div>') +
         (live ? '<p class="sub claimnote">To claim, comment <code>/claim</code> on the contract\'s GitHub issue. Several people can claim the same contract, and every claimant shows here with their token. <code>/unclaim</code> leaves it. The board refreshes every 2 minutes.</p>' : "") +
         '<p class="source">Source: ' + (live ? "GitHub issues labeled contract, live" : data.issues === null ? "data/contracts.json · GitHub could not be reached" : "data/contracts.json") + "</p>",
-      how:
-        '<div class="cols"><div class="panel"><div class="label">Taking a contract</div><ol class="steps">' +
-        "<li>Pick any open contract. An <b class=\"tint easy\">Easy</b> one is a good start.</li><li>Comment on the GitHub issue to claim it. A maintainer assigns you.</li><li>Do the work on a branch in your fork. Sign off every commit.</li><li>Open a pull request that says Closes #number.</li><li><b class=\"tint key\">Quality</b> checks it against the acceptance criteria and merges it. You get a <b class=\"tint key\">signed record</b> and move up in rank.</li></ol></div>" +
-        '<div class="panel"><div class="label">Rules</div><ol class="steps">' +
-        "<li>Pull requests only. Nobody pushes to main.</li><li>No game files and no code copied from other mods.</li><li>AI tools are welcome for code and docs. No generative AI art, music or voices.</li><li>Nothing that touches Konami's servers or anti-cheat.</li><li>Leaving is fine. Post a short handoff note first.</li></ol></div></div>" +
-        '<div class="toolbar" style="margin-top:14px"><a class="btn primary" href="#/guides/hp-gde-003">Quick start</a><a class="btn" href="#/guides/hp-gde-017">Can I contribute?</a><a class="btn" href="#/guides/hp-gde-018">Working with AI</a><a class="btn" href="' + repoUrl("/fork") + '" target="_blank" rel="noopener noreferrer">Fork on GitHub</a><a class="btn" href="' + repoUrl("/issues?q=is%3Aopen+label%3Acontract") + '" target="_blank" rel="noopener noreferrer">Contracts on GitHub</a></div>' +
-        '<div class="label">Module progress</div><div class="cols">' + mods.map(function (m) {
-          return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
-        }).join("") + "</div>",
       ranks:
         '<p class="sub">Contractors are graded like Mother Base staff, from <b>E</b> to <b>S++</b>. As in the game, you hold a grade in <b>each field</b>, the way staff hold a grade in each unit. Every completed contract earns points in its field: <b class="tint easy">Easy</b> ' + CP.easy + ', <b class="tint medium">Medium</b> ' + CP.medium + ', <b class="tint hard">Hard</b> ' + CP.hard + '. Each grade needs more points than the last, so the top grades take real work. Your best grade is your rank on Discord.</p>' +
         '<div class="ranks">' + GRADES.map(function (r, k) { return '<div class="rank' + (r[2] ? "" : " quiet") + '" style="--i:' + k + '"><b class="r-grade">' + esc(r[0]) + '</b><span class="r-n">' + r[1] + " point" + (r[1] === 1 ? "" : "s") + '</span><span class="r-u">' + (r[2] ? tint(r[2]) : "Experience in the field") + "</span></div>"; }).join("") + "</div>" +
@@ -1542,9 +1582,11 @@
             FIELDS.map(function (f) { var g = gradeFor(u.f[f[0]] || 0); return '<td class="num">' + (g ? esc(g[0]) : "–") + "</td>"; }).join("") + "</tr>";
         }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Contractors appear here when contracts are closed on GitHub.</small></div>')
     };
+    if (!tabHtml[conTab]) conTab = "board";
     $("#ctab").innerHTML = tabHtml[conTab];
     cardsAnim = false;
     $$('[data-tab]').forEach(function (b) { b.addEventListener("click", function () { conTab = b.dataset.tab; drawContribute(); }); });
+    conClaimWire();
     if (conTab === "board") {
       $("#cq").addEventListener("input", function (e) { conState.q = e.target.value; var p = e.target.selectionStart; drawContribute(); var n = $("#cq"); n.focus(); try { n.setSelectionRange(p, p); } catch (x) { /* ignore */ } });
       $("#cm").addEventListener("change", function (e) { conState.module = e.target.value; drawContribute(); });
@@ -1635,7 +1677,7 @@
   var CAB_GROUPS = {
     Handbook: ["HB", "#c9a24a", "#7d5f15"], Decisions: ["ADR", "#e0453f", "#a3352b"], Research: ["RES", "#5aa7d6", "#1d6a8a"],
     Technical: ["TEC", "#f28c28", "#a8560f"], Community: ["COM", "#7fbf8a", "#3b7446"], Project: ["PRJ", "#c9d0d2", "#4d5a60"], Legal: ["LEG", "#b07cd6", "#6e4a96"],
-    Staff: ["LV3", "#7fbf8a", "#3b7446"], Leads: ["LV5", "#f28c28", "#a8560f"], Administration: ["LV6", "#e0453f", "#a3352b"]
+    Staff: ["LV3", "#7fbf8a", "#3b7446"], Leads: ["LV5", "#f28c28", "#a8560f"], Administration: ["LV6", "#a77de0", "#5e3d8f"]
   };
   var CAB_CLASS = { Decisions: ["decision", "Decision record"], Research: ["research", "Research"], Technical: ["technical", "Technical"],
     Community: ["community", "Community"], Project: ["project", "Project"], Legal: ["legal", "Legal"],
@@ -2382,7 +2424,7 @@
     $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx || guideMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
     $("#hbList").classList.toggle("filtering", filtering);
   }
-  var HB_FOLDERS = [["Guide", "Guides", "How-to help for each audience"], ["Policy", "Policies", "Rules everyone follows"], ["Procedure", "Procedures", "Step by step, the same way every time"]];
+  var HB_FOLDERS = [["Guide", "Guides", "How-to help for each audience"], ["Policy", "Policies", "Rules & Standards"], ["Procedure", "Procedures", "Step by step, the same way every time"]];
   var guideOpen = "Guide", hbBusy = false;
   /* Sheets fly between the open folder and the grid (Web Animations; without it, they simply appear) */
   function hbFly(out, done) {
@@ -2462,8 +2504,8 @@
      the key must be one of the signing keys on the GitHub account the card is tied to (by account number), and if the card
      pins a key fingerprint, it must be that key. Everything is checked in this browser (ADR 0017). */
   var KC_LV = {
-    LV1: ["Visitor", "#8b9599"], LV2: ["Member", "#c9d0d2"], LV3: ["Contractor", "#7fbf8a"], LV4: ["Quality", "#5aa7d6"],
-    LV5: ["Development", "#f28c28"], LV6: ["Administration", "#e0453f"], LV7: ["Owner", "#d4ae52"]
+    LV0: ["Banned", "#5d6468"], LV1: ["Visitor", "#7d93a6"], LV2: ["Member", "#dfe5e7"], LV3: ["Contractor", "#7fbf8a"], LV4: ["Quality", "#4fb3d9"],
+    LV5: ["Development", "#f28c28"], LV6: ["Administration", "#a77de0"], LV7: ["Owner", "#c0141f"]
   };
   var KC_NS = "hound-id";
   function kcHash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (Math.imul ? Math.imul(h, 16777619) : h * 16777619) >>> 0; } return h; }
@@ -2703,7 +2745,8 @@
   /* While a guest pass is open, check it now and then, so a revoked pass closes within a minute */
   setInterval(function () { if (sgIn() && !document.hidden) sgApi("/guest/check").catch(function () { /* handled in sgApi */ }); }, 60 * 1000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden && sgIn()) sgApi("/guest/check").catch(function () { /* handled in sgApi */ }); });
-  function siOwner() { return siIn() && String(SI.user.id) === String(siCfg().owner || ""); }
+  /* LV7 holders (the owner, and any organization owner GitHub confirms) manage guest passes; the relay checks again */
+  function siOwner() { if (!siIn()) return false; if (String(SI.user.id) === String(siCfg().owner || "")) return true; var c = siCard(); return !!(c && c.card === "LV7"); }
   /* Reads one restricted file, with the person's own sign-in or, for a guest, through the relay */
   function siRead(repo, path) {
     if (siIn()) return siApi("/repos/" + repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/"), true);
@@ -2923,7 +2966,7 @@
   function sgLink(pass) { return (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guest/" + pass; }
   function sgPanel() {
     var list = sgIssued();
-    return '<section class="gp"><header><span class="gp-ico" aria-hidden="true"></span><div><b>Guest passes</b><small>Owner only · LV3 (Staff) access for 24 hours to whoever has the link. A pass cannot be extended.</small></div>' +
+    return '<section class="gp"><header><span class="gp-ico" aria-hidden="true"></span><div><b>Guest passes</b><small>LV7 only · LV3 (Staff) access for 24 hours to whoever has the link. A pass cannot be extended.</small></div>' +
       '<button class="btn primary" id="gpGrant">Grant Guest Pass</button></header><p class="sub" id="gpMsg" aria-live="polite"></p><ul class="gp-list" id="gpList">' + list.map(sgItem).join("") + "</ul></section>";
   }
   function sgItem(x) {
@@ -2939,11 +2982,17 @@
     var ul = $("#gpList"); if (!ul) return;
     sgOwnerApi("/guest/list").then(function (j) {
       var local = {}; sgIssued().forEach(function (x) { try { local[JSON.parse(atob(x.pass.split(".")[0].replace(/-/g, "+").replace(/_/g, "/"))).n] = x.pass; } catch (e) { /* older pass */ } });
-      ul.innerHTML = (j.passes || []).map(function (x) {
-        return '<li class="' + (x.revoked ? "rv" : "") + '"><code>Pass ' + esc(x.n) + '</code><span>' + (x.revoked ? "Revoked" : "Expires " + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + " left") + "</span>" +
-          (local[x.n] && !x.revoked ? '<button class="btn small" data-gp="' + esc(local[x.n]) + '">Copy link</button>' : "") +
-          (x.revoked ? "" : '<button class="btn small danger" data-rv="' + esc(x.n) + '">Revoke pass</button>') + "</li>";
-      }).join("") || '<li class="none"><span>No live guest passes.</span></li>';
+      var ps = j.passes || [], live = ps.filter(function (x) { return !x.expired && !x.revoked; }), old = ps.filter(function (x) { return x.expired || x.revoked; });
+      function row(x) {
+        var stc = x.revoked ? "rv" : x.expired ? "ex" : "ok", stl = x.revoked ? "Revoked" : x.expired ? "Expired" : "Active";
+        return '<li class="' + stc + '"><span class="gp-st">' + stl + '</span><code>Pass ' + esc(x.n) + "</code><span>" +
+          (x.expired ? "Ended " + esc(fmtDate(new Date(x.exp).toISOString().slice(0, 10))) + " " + esc(new Date(x.exp).toTimeString().slice(0, 5)) : x.revoked ? "Closed early · would have run until " + esc(new Date(x.exp).toTimeString().slice(0, 5)) : "Expires " + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + " left") +
+          (x.by ? " · by " + esc(x.by) : "") + "</span>" +
+          (local[x.n] && stc === "ok" ? '<button class="btn small" data-gp="' + esc(local[x.n]) + '">Copy link</button>' : "") +
+          (stc === "ok" ? '<button class="btn small danger" data-rv="' + esc(x.n) + '">Revoke pass</button>' : '<button class="btn small" data-del="' + esc(x.n) + '">Delete</button>') + "</li>";
+      }
+      ul.innerHTML = '<li class="gp-h"><b>Active</b><span>' + live.length + "</span></li>" + (live.map(row).join("") || '<li class="none"><span>No live guest passes.</span></li>') +
+        (old.length ? '<li class="gp-h"><b>Expired and revoked</b><span>' + old.length + ' · records are kept ' + (j.keepDays || 30) + ' days</span><button class="btn small" id="gpPurge">Delete expired</button></li>' + old.map(row).join("") : "");
       sgWireList();
     }, function (e) {
       if (e.code === "no_kv") { $("#gpMsg").textContent = "Passes can be granted. To revoke them instantly, add the GUEST_KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
@@ -2951,6 +3000,19 @@
     });
   }
   function sgWireList() {
+    $$("[data-del]").forEach(function (b) {
+      b.onclick = function () {
+        var n = b.getAttribute("data-del"); b.disabled = true;
+        sgOwnerApi("/guest/delete?n=" + encodeURIComponent(n), "POST").then(function () { status("Pass record deleted"); sgLoad(); }, function (e) { b.disabled = false; $("#gpMsg").textContent = e.message; });
+      };
+    });
+    var pg = $("#gpPurge");
+    if (pg) pg.onclick = function () {
+      hpConfirm("Delete every expired pass?", "Their records disappear from this list. Live passes are not touched.", "Delete expired", "Cancel", "danger").then(function (y) {
+        if (!y) return; pg.disabled = true;
+        sgOwnerApi("/guest/purge", "POST").then(function (j) { status(plural(j.deleted || 0, "expired pass") + " deleted"); sgLoad(); }, function (e) { pg.disabled = false; $("#gpMsg").textContent = e.message; });
+      });
+    };
     $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; });
     $$("[data-rv]").forEach(function (b) {
       b.onclick = function () {
@@ -3005,6 +3067,22 @@
       if (d.scrollIntoView) d.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "start" });
     }, function () { d.innerHTML = '<div class="empty">Could not open this document</div>'; });
   }
+  /* For visitors: every card lined up, with one line on how clearance works */
+  var SI_LV_INFO = {
+    LV0: "Banned: refused at sign-in, on every linked account.", LV1: "Anyone reading the public website.", LV2: "Signed in with GitHub: your profile and keycard.", LV3: "Contractors: Staff documents, claiming contracts.",
+    LV4: "Quality: reviews and testing.", LV5: "Development: Leads documents, site and contract data.", LV6: "Administration: moderation, Administration documents.", LV7: "The owner: everything."
+  };
+  function siLevelsIntro() {
+    var lv = ["LV0", "LV1", "LV2", "LV3", "LV4", "LV5", "LV6", "LV7"];
+    return '<section class="si-levels"><div class="label">Clearance levels</div>' +
+      '<ol class="si-how"><li><b>Sign in with GitHub</b> and you hold a member card, <b>LV2</b>.</li><li><b>Higher cards are earned:</b> a completed contract brings LV3; LV4 to LV6 come with a department. Each staff card is signed, so it cannot be faked.</li>' +
+      '<li><b>GitHub guards the doors:</b> restricted documents live in private repositories that open at their level. A <b>guest pass</b> opens LV3 for 24 hours; banned accounts are <b>LV0</b>.</li></ol>' +
+      '<div class="si-lvrow">' + lv.map(function (l, k) {
+        var n = +l.slice(2), spec = { id: n > 2 ? "HND-000" + n : ["REVOKED", "VISITOR", "MEMBER"][n], login: "agent", name: "Agent", github_id: 0, card: l, department: (KC_LV[l] || [""])[0], since: "", status: n === 0 ? "revoked" : "active" };
+        return '<figure style="--k:' + k + '">' + keycard(spec, { specimen: true }) + "<figcaption><b>" + esc(l) + " · " + esc((KC_LV[l] || [""])[0]) + "</b>" + esc(SI_LV_INFO[l]) + "</figcaption></figure>";
+      }).join("") + "</div>" +
+      '<p class="sub">Full details: <a href="#/guides/hp-gde-009">Grades, Records and Hound IDs</a> · <a href="#/docs/adr-0011">ADR 0011</a></p></section>';
+  }
   function drawSignedOut() {
     var on = siOn();
     $("#vb").innerHTML =
@@ -3013,12 +3091,39 @@
         "<p>Sign in with GitHub to see your keycard and the documents your clearance opens. Staff get their signed staff card; everyone else gets a member card.</p>" +
         (on ? '<button class="btn primary" id="siGo">Sign in with GitHub</button><p class="sub" id="siMsg">A small GitHub window opens. We never see your password, and nothing is stored on a server.</p>'
             : '<p class="note">Sign-in is not switched on yet.</p>') +
-        '<p class="sub">How it works and what is kept: <a href="#/docs/signin">sign-in</a> · <a href="#/docs/privacy">privacy</a></p></div></div>';
+        '<p class="sub">How it works and what is kept: <a href="#/docs/signin">sign-in</a> · <a href="#/docs/privacy">privacy</a></p></div></div>' + siLevelsIntro();
     var go = $("#siGo");
     if (go) go.addEventListener("click", function () {
       siStart();
     });
   }
+
+  /* ---------------- Handbook previews ----------------
+     Hovering or focusing any button that links to a Handbook document shows a small preview of that sheet, as wide
+     as the button: its code, type, title and summary. The Handbook is the source of truth, so buttons point there. */
+  var hbpT = null, HBP_SEL = 'a.btn[href^="#/' + 'guides/hp-"], a.hb-link';
+  function hbpFor(el) {
+    var m = /#\/guides\/(hp-(?:gde|pol|sop)-\d{3})/.exec(el.getAttribute("href") || "");
+    var list = (data.guides && data.guides.guides) || [];
+    return m && list.filter(function (g) { return g.id === m[1]; })[0];
+  }
+  function hbpShow(el) {
+    var g = hbpFor(el); if (!g) return;
+    hbpHide(true);
+    var r = el.getBoundingClientRect(), w = Math.max(r.width, 200);
+    document.body.insertAdjacentHTML("beforeend", '<div class="hbp t-' + esc(g.type.toLowerCase()) + '" id="hbp" role="tooltip"><span class="hbp-top"><b>' + esc(g.code) + "</b><i>" + esc(g.type) + " · v" + esc(g.version) + '</i></span><span class="hbp-t">' + esc(g.title) + '</span><span class="hbp-s">' + esc(g.summary) + '</span><span class="hbp-go">Open in the Handbook →</span></div>');
+    var p = $("#hbp"), left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8), below = r.bottom + 10 + 170 < window.innerHeight;
+    p.style.width = w + "px"; p.style.left = left + "px";
+    if (below) p.style.top = (r.bottom + 8) + "px"; else { p.style.top = (r.top - 8) + "px"; p.classList.add("up"); }
+  }
+  function hbpHide(now) { clearTimeout(hbpT); var p = $("#hbp"); if (!p) return; if (now || !opts.motion) { p.remove(); return; } p.classList.add("out"); setTimeout(function () { if (p.parentNode) p.remove(); }, 160); }
+  function hbpTarget(e) { var t = e.target && e.target.closest ? e.target.closest(HBP_SEL) : null; return t && hbpFor(t) ? t : null; }
+  document.addEventListener("mouseover", function (e) { var t = hbpTarget(e); if (!t) return; clearTimeout(hbpT); hbpT = setTimeout(function () { hbpShow(t); }, 180); });
+  document.addEventListener("mouseout", function (e) { if (hbpTarget(e)) { clearTimeout(hbpT); hbpHide(); } });
+  document.addEventListener("focusin", function (e) { var t = hbpTarget(e); if (t) hbpShow(t); });
+  document.addEventListener("focusout", function (e) { if (hbpTarget(e)) hbpHide(); });
+  window.addEventListener("hashchange", function () { hbpHide(true); });
+  document.addEventListener("scroll", function () { hbpHide(true); }, true);
 
   /* ---------------- Router ---------------- */
   var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guest: viewGuest, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
@@ -3135,9 +3240,9 @@
   }
   function upShow(b, version) {
     if ($("#upNote")) return;
-    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><i aria-hidden="true"></i><div><b>Update available</b><span>' +
-      esc("Build " + (version || "") + (b.build ? "." + b.build : "")) + ' is live. Reload to get the latest version.</span></div>' +
-      '<button class="btn small primary" id="upGo">Reload</button><button class="btn small" id="upLater">Later</button></div>');
+    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><i aria-hidden="true"></i><b>Update available</b><span>' +
+      esc("Build " + (version || "") + (b.build ? "." + b.build : "")) + ' is live</span>' +
+      '<button class="up-go" id="upGo">Reload</button><button class="up-x" id="upLater" aria-label="Later">✕</button></div>');
     blip();
     $("#upGo").addEventListener("click", function () { location.reload(); });
     $("#upLater").addEventListener("click", function () { upSeen = b.sha; var n = $("#upNote"); n.classList.add("out"); setTimeout(function () { n.remove(); }, 400); });

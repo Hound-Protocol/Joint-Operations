@@ -2,7 +2,7 @@
      Seen from above. Phase 0 is the command platform in the centre, every later phase is a platform on its own bridge,
      named after the phase. The fill inside a platform is the share of that phase's tasks that are done; the hatched part
      above it is still scaffolding. Point at a platform to light it, click it to read its tasks.
-     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys, helipad lights, a windsock)
+     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys, helipad lights, a windsock, helicopter lights)
      is decoration and stops with Options → Animations. The data comes live from ROADMAP.md. */
   var MB_SLOTS = [[-345, -220], [345, -220], [345, 220], [-345, 220], [0, -330], [0, 330]];
   var MB_W = 1600, MB_H = 900, MB_CX = 600, MB_CY = 470;
@@ -213,7 +213,7 @@
     $("#mbCarry").innerHTML = carriers.map(function () { return '<g class="mb-carrier"><rect class="crate" x="-3.5" y="-9" width="7" height="6"/><circle r="2.4"/></g>'; }).join("");
     $("#mbPile").innerHTML = pile.map(function () { return '<rect class="mb-crate" width="8" height="7"/>'; }).join("");
     $("#mbRings").innerHTML = rings.map(function () { return '<circle class="mb-ring"/>'; }).join("");
-    $("#mbHeli").innerHTML = '<ellipse class="mb-hsh" rx="9" ry="4"/><g class="mb-heli"><g class="hb"><ellipse rx="8" ry="3.4"/><line x1="-6" y1="0" x2="-20" y2="0"/><line x1="-20" y1="-4" x2="-20" y2="4"/></g><line class="rotor" x1="-14" y1="0" x2="14" y2="0"/><line class="rotor" x1="0" y1="-14" x2="0" y2="14"/></g>';
+    $("#mbHeli").innerHTML = '<ellipse class="mb-hsh" rx="9" ry="4"/><g class="mb-heli"><g class="hb"><ellipse rx="8" ry="3.4"/><line x1="-6" y1="0" x2="-20" y2="0"/><line x1="-20" y1="-4" x2="-20" y2="4"/><circle class="nav-r" cx="2" cy="-3.6" r="1.3"/><circle class="nav-g" cx="2" cy="3.6" r="1.3"/><circle class="nav-w" cx="-20" cy="0" r="1.2"/></g><line class="rotor" x1="-14" y1="0" x2="14" y2="0"/><line class="rotor" x1="0" y1="-14" x2="0" y2="14"/></g>';
     var el = {
       men: $$("#mbCrew .mb-man"), sp: $$("#mbCrew .mb-spark"), walk: $$("#mbWalk circle"), cr: $$("#mbCranes .mb-crane"),
       wake: $$("#mbBoats .mb-wake"), hull: $$("#mbBoats .mb-hull"), swake: $$("#mbShips .mb-wake"), ship: $$("#mbShips .mb-ship"), gang: $$("#mbShips .mb-gang"),
@@ -446,6 +446,8 @@
       el.heli.setAttribute("transform", "translate(" + mbF(H.x) + " " + mbF(H.y) + ") scale(" + (1 + H.alt * 0.2).toFixed(2) + ")");
       el.hb.setAttribute("transform", "rotate(" + mbF(H.h) + ")");
       var spin = (T * (H.st === "wait" && H.alt < 0.05 ? 160 : 1500)) % 360;
+      /* Navigation lights (v0.0.30): red and green steady, the white tail light blinks */
+      el.hb.lastChild.style.opacity = (T % 1.2) < 0.15 ? "1" : "0.15";
       el.rot[0].setAttribute("transform", "rotate(" + mbF(spin) + ")"); el.rot[1].setAttribute("transform", "rotate(" + mbF(spin) + ")");
     }
     if (!opts.motion) { MB.t = 30; step(0); return; }

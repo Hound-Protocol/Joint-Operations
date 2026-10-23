@@ -43,8 +43,8 @@ Organization owners hold LV7 (ADR 0011). The website asks GitHub whether the sig
 - Sign out and in again on the website. The Profile shows an **Owner card**, LV7, "Confirmed by GitHub".
 A signed staff card (`records.py staff-add`) adds a permanent Hound ID later; it is not needed for LV7.
 
-## 6. Guest passes (owner only)
-A guest pass gives LV3 (Staff) access for 24 hours to whoever has its link, without a GitHub account. The owner grants it from the Profile (**Grant Guest Pass**). The relay checks with GitHub that the request comes from the owner's account, signs the pass, and later reads the Staff documents for the guest with the app's own short-lived token, limited to `hp-staff` and to reading. A pass cannot be extended; to cancel every pass at once, change `GUEST_SECRET`.
+## 6. Guest passes (LV7 only)
+A guest pass gives LV3 (Staff) access for 24 hours to whoever has its link, without a GitHub account. LV7 holders grant it from the Profile (**Grant Guest Pass**): the owner (`OWNER_GITHUB_ID`) and any owner of the organization, which GitHub confirms on every request. The Profile lists every pass as **Active**, **Expired** or **Revoked**, with who granted it; expired and revoked records can be deleted one by one or all at once (**Delete expired**), and are removed automatically 30 days after they end. The relay checks with GitHub who is asking, signs the pass, and later reads the Staff documents for the guest with the app's own short-lived token, limited to `hp-staff` and to reading. A pass cannot be extended; to cancel every pass at once, change `GUEST_SECRET`.
 
 Setup, once:
 1. GitHub App → **Credentials** → **Private keys** → **Generate a private key**. A `.pem` file downloads. Keep it private; delete the download after step 3.
@@ -56,7 +56,7 @@ Setup, once:
    - `GITHUB_APP_PRIVATE_KEY` (Secret): the whole content of the `.pem` file, including the BEGIN and END lines
    - `GUEST_SECRET` (Secret): a long random string, for example 40 characters from a password manager
 4. Paste the current `tools/signin-relay/worker.js` into the worker (**Edit code** → **Deploy**) and check the variables are all still listed.
-5. **To revoke passes instantly** (optional but recommended): Cloudflare → **Storage & Databases → KV** → **Create** a namespace named `hp-guest`. Then hp-signin → **Settings → Bindings → Add → KV namespace**: variable name `GUEST_KV`, namespace `hp-guest` → **Deploy**. Your Profile then lists live passes with **Revoke pass**; a revoked guest is told within a minute.
+5. **Storage for claims and revoking passes:** Cloudflare → **Storage & Databases → KV** → **Create** a namespace named `hp-relay`. Then hp-signin → **Settings → Bindings → Add → KV namespace**: variable name `HP_KV`, namespace `hp-relay` → **Deploy**. It enables **Claim** on the contract board, and your Profile lists live guest passes with **Revoke pass** (a revoked guest is told within a minute). It holds only contract claims (GitHub name and number) and pass numbers.
 
 ## 7. Bans (LV0)
 Banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. Add the GitHub account numbers to `BANNED_GITHUB_IDS` (Secret), separated by commas. The full procedure, across GitHub, Discord and Steam, is [HP-SOP-012](guides/HP-SOP-012-bans.md).

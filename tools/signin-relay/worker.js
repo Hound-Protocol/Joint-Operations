@@ -14,11 +14,16 @@
      list of live passes (number and expiry only) and the revoked ones, each deleted automatically when the pass expires.
      Bans (LV0): BANNED_GITHUB_IDS (secret), the banned GitHub account numbers separated by commas. A banned account is
      refused at sign-in and never receives a token. The list is private; see docs/guides/HP-SOP-012-bans.md. */
-const PASS_HOURS = 24;
+const PASS_HOURS = 24, KEEP_DAYS = 30;
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
     const site = env.SITE_ORIGIN;
+    if (url.pathname === "/claims" || url.pathname === "/claim" || url.pathname === "/unclaim") {
+      if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(site) });
+      try { return await claims(req, env, url); }
+      catch (e) { return json(site, { error: "The relay could not finish that (" + (e && e.message || "error") + ")." }, 500); }
+    }
     if (url.pathname.startsWith("/guest/")) {
       if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(site) });
       try { return await guest(req, env, url); }
@@ -65,38 +70,88 @@ export default {
   }
 };
 
+/* ---------------- Contract claims ----------------
+   Anyone signed in with GitHub (and not banned) can claim a contract from the website. GitHub tells the relay who is
+   asking, so a claim always carries the real account. Claims are public: contract, GitHub name and number, time. */
+async function claims(req, env, url) {
+  const site = env.SITE_ORIGIN, kv = env.HP_KV || env.GUEST_KV;
+  if (!kv) return json(site, { error: "Claims need the KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
+  if (url.pathname === "/claims") {
+    const keys = (await kv.list({ prefix: "claim:" })).keys, out = {};
+    for (const k of keys) { const v = await kv.get(k.name, "json"); if (v && v.length) out[k.name.slice(6)] = v; }
+    return json(site, { claims: out });
+  }
+  if (req.method !== "POST") return json(site, { error: "Use POST." }, 405);
+  const m = /^Bearer\s+(\S+)$/.exec(req.headers.get("Authorization") || "");
+  if (!m) return json(site, { error: "Sign in first." }, 401);
+  const c = String(url.searchParams.get("c") || "").toUpperCase();
+  if (!/^[CF]\d{2,3}$/.test(c)) return json(site, { error: "Unknown contract." }, 400);
+  const u = await fetch("https://api.github.com/user", { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
+  if (!u.ok) return json(site, { error: "GitHub did not recognise your sign-in. Sign in again." }, 401);
+  const who = await u.json();
+  if (String(env.BANNED_GITHUB_IDS || "").split(/[\s,]+/).indexOf(String(who.id)) > -1) return json(site, { error: "This GitHub account is banned from Hound Protocol.", code: "banned" }, 403);
+  const key = "claim:" + c, list = (await kv.get(key, "json")) || [];
+  const rest = list.filter(x => String(x.id) !== String(who.id));
+  const next = url.pathname === "/claim" ? rest.concat([{ login: who.login, id: who.id, at: Date.now() }]) : rest;
+  if (next.length) await kv.put(key, JSON.stringify(next)); else await kv.delete(key);
+  return json(site, { ok: true, contract: c, claims: next });
+}
+
 /* ---------------- Guest passes ---------------- */
 async function guest(req, env, url) {
   const site = env.SITE_ORIGIN, auth = req.headers.get("Authorization") || "";
   if (!env.GUEST_SECRET || !env.OWNER_GITHUB_ID) return json(site, { error: "Guest passes are not set up on the relay yet (code: guest_off)." }, 503);
-  /* Owner actions. GitHub tells us who holds the token; only the owner's account ID may grant, list or revoke. */
-  if (/^\/guest\/(grant|list|revoke)$/.test(url.pathname)) {
+  /* LV7 actions. GitHub tells us who holds the token: the owner's account, or any owner of the organization. */
+  if (/^\/guest\/(grant|list|revoke|delete|purge)$/.test(url.pathname)) {
     const m = /^Bearer\s+(\S+)$/.exec(auth);
     if (!m) return json(site, { error: "Sign in first." }, 401);
     const u = await fetch("https://api.github.com/user", { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
     if (!u.ok) return json(site, { error: "GitHub did not recognise your sign-in. Sign in again." }, 401);
     const who = await u.json();
-    if (String(who.id) !== String(env.OWNER_GITHUB_ID)) return json(site, { error: "Only the owner can manage guest passes." }, 403);
-    const kv = env.GUEST_KV;
+    let lv7 = String(who.id) === String(env.OWNER_GITHUB_ID);
+    if (!lv7) {
+      const org = env.GITHUB_ORG || "Hound-Protocol";
+      const mm = await fetch("https://api.github.com/user/memberships/orgs/" + org, { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
+      const ms = mm.ok ? await mm.json() : null;
+      lv7 = !!(ms && ms.state === "active" && ms.role === "admin");
+    }
+    if (!lv7) return json(site, { error: "Only LV7 can manage guest passes." }, 403);
+    const kv = env.HP_KV || env.GUEST_KV;
     if (url.pathname === "/guest/grant" && req.method === "POST") {
       const exp = Date.now() + PASS_HOURS * 3600 * 1000, n = crypto.randomUUID().slice(0, 8);
       const body = b64u(new TextEncoder().encode(JSON.stringify({ v: 1, lvl: 3, exp, n })));
-      if (kv) await kv.put("pass:" + n, JSON.stringify({ n, exp, at: Date.now() }), { expiration: Math.ceil(exp / 1000) + 60 });
+      /* The record stays 30 days after the pass expires, so LV7 can see expired passes and delete them */
+      if (kv) await kv.put("pass:" + n, JSON.stringify({ n, exp, at: Date.now(), by: who.login }), { expiration: Math.ceil(exp / 1000) + KEEP_DAYS * 86400 });
       return json(site, { pass: body + "." + await hmac(env.GUEST_SECRET, body), exp, n, hours: PASS_HOURS, revocable: !!kv });
     }
     if (!kv) return json(site, { error: "Revoking needs the GUEST_KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
     if (url.pathname === "/guest/list") {
       const keys = (await kv.list({ prefix: "pass:" })).keys;
       const out = [];
-      for (const k of keys) { const v = await kv.get(k.name, "json"); if (v && v.exp > Date.now()) out.push(Object.assign(v, { revoked: !!(await kv.get("revoked:" + v.n)) })); }
-      return json(site, { passes: out.sort((a, b) => b.at - a.at) });
+      for (const k of keys) { const v = await kv.get(k.name, "json"); if (v) out.push(Object.assign(v, { revoked: !!(await kv.get("revoked:" + v.n)), expired: v.exp <= Date.now() })); }
+      return json(site, { passes: out.sort((a, b) => b.at - a.at), keepDays: KEEP_DAYS });
     }
     if (url.pathname === "/guest/revoke" && req.method === "POST") {
       const n = String(url.searchParams.get("n") || "");
       if (!/^[0-9a-f-]{8}$/.test(n)) return json(site, { error: "Bad pass number." }, 400);
       const v = await kv.get("pass:" + n, "json");
-      await kv.put("revoked:" + n, "1", { expiration: Math.ceil(((v && v.exp) || Date.now() + PASS_HOURS * 3600 * 1000) / 1000) + 60 });
+      await kv.put("revoked:" + n, "1", { expiration: Math.ceil(((v && v.exp) || Date.now() + PASS_HOURS * 3600 * 1000) / 1000) + KEEP_DAYS * 86400 });
       return json(site, { ok: true, n });
+    }
+    /* Delete the record of one expired or revoked pass, or of every expired one. A live pass must be revoked first. */
+    if (url.pathname === "/guest/delete" && req.method === "POST") {
+      const n = String(url.searchParams.get("n") || "");
+      if (!/^[0-9a-f-]{8}$/.test(n)) return json(site, { error: "Bad pass number." }, 400);
+      const v = await kv.get("pass:" + n, "json"), rv = await kv.get("revoked:" + n);
+      if (v && v.exp > Date.now() && !rv) return json(site, { error: "This pass is still live. Revoke it first." }, 409);
+      await kv.delete("pass:" + n);
+      if (!v || v.exp <= Date.now()) await kv.delete("revoked:" + n);
+      return json(site, { ok: true, n });
+    }
+    if (url.pathname === "/guest/purge" && req.method === "POST") {
+      let gone = 0;
+      for (const k of (await kv.list({ prefix: "pass:" })).keys) { const v = await kv.get(k.name, "json"); if (!v || v.exp <= Date.now()) { await kv.delete(k.name); if (v) await kv.delete("revoked:" + v.n); gone++; } }
+      return json(site, { ok: true, deleted: gone });
     }
     return json(site, { error: "Unknown request." }, 404);
   }
@@ -104,7 +159,7 @@ async function guest(req, env, url) {
   const g = /^Guest\s+(\S+)$/.exec(auth);
   const p = g && await checkPass(env.GUEST_SECRET, g[1]);
   if (!p) return json(site, { error: "This guest pass is not valid or has expired.", code: "invalid" }, 401);
-  if (env.GUEST_KV && await env.GUEST_KV.get("revoked:" + p.n)) return json(site, { error: "This guest pass has been revoked by the owner.", code: "revoked" }, 401);
+  if ((env.HP_KV || env.GUEST_KV) && await (env.HP_KV || env.GUEST_KV).get("revoked:" + p.n)) return json(site, { error: "This guest pass has been revoked by the owner.", code: "revoked" }, 401);
   if (url.pathname === "/guest/check") return json(site, { ok: true, exp: p.exp, lvl: p.lvl });
   const repo = env.GUEST_REPO || "Hound-Protocol/hp-staff", tok = await appToken(env, repo);
   const gh = (path, raw) => fetch("https://api.github.com/repos/" + repo + path, { headers: { Authorization: "Bearer " + tok, Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
