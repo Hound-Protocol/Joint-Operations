@@ -19,5 +19,5 @@
  *   window.JO.setMods({compatible, issues})
  *   window.JO.setDevlog(entries) replace the manual dev log entries
  *   window.JO.refresh()          clear cached GitHub data and reload the current view
- *   window.JO.docsGraph()        read-only snapshot of the Docs neural web (used by tests)
+ *   window.JO.docsView()         which Docs view is open and which file (used by tests)
  */

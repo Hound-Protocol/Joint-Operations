@@ -63,22 +63,20 @@ async def check(browser, name, size):
         await page.dispatch_event('.mb-mod[data-i="1"]', "click"); await page.wait_for_timeout(300)
         if "Phase 1" not in await page.inner_text("#mbPanel"):
             failures.append("roadmap: clicking a platform did not open its progress")
-    await page.goto(BASE + "#/docs/plan")
-    # Wait for the neural web to finish building (about 3 s), with headroom for slower engines
-    try:
-        await page.wait_for_function("window.JO && JO.docsGraph() && JO.docsGraph().ready", timeout=12000)
-    except Exception:
-        pass
-    await page.wait_for_timeout(800)
-    if len(await page.inner_text("#nwBody")) < 200:
-        failures.append("docs: plan did not open in the neural web")
-    graph = await page.evaluate("JO.docsGraph()")
-    if not graph or not graph["ready"] or not all(n["on"] for n in graph["nodes"]):
-        failures.append("docs: neural web did not finish building in time")
-    await page.evaluate("document.querySelector('#nwClassic').click()"); await page.wait_for_timeout(900)
+    await page.goto(BASE + "#/docs/plan"); await page.wait_for_timeout(1500)
+    view = await page.evaluate("JO.docsView()")
+    if view["mode"] != "cabinet" or view["open"] != "plan" or view["drawers"] < 3:
+        failures.append("docs: cabinet did not open the plan file")
+    if len(await page.inner_text("#docBody")) < 200:
+        failures.append("docs: case file is empty")
+    await page.fill("#cq", "keycard"); await page.wait_for_timeout(1500)
+    if not await page.locator(".cab-hits a").count():
+        failures.append("docs: full-text search found nothing")
+    await page.fill("#cq", "")
+    await page.evaluate("document.querySelector('#toClassic').click()"); await page.wait_for_timeout(900)
     if len(await page.inner_text("#docBody")) < 200:
         failures.append("docs: classic view did not render")
-    await page.evaluate("document.querySelector('#toNeural').click()"); await page.wait_for_timeout(300)
+    await page.evaluate("document.querySelector('#toCabinet').click()"); await page.wait_for_timeout(300)
     await page.goto(BASE + "#/options"); await page.wait_for_timeout(500)
     await page.click('[data-opt="grid"]')
     if "no-grid" not in (await page.evaluate("document.body.className")):
