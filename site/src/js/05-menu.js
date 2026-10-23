@@ -7,8 +7,7 @@
     { id: "contribute", title: "Contribute", desc: "Take a contract and help build Joint Operations", tab: "Contribute" },
     { id: "team", title: "Team", desc: "Chain of command and the people behind Hound Protocol", tab: "Team", tabOnly: true },
     { id: "mods", title: "Mods", desc: "Mods tested to work with Joint Operations", tab: "Mods" },
-    { id: "devlog", title: "Dev Log", desc: "News, decisions and releases", tab: "Dev Log" },
-    { id: "docs", title: "Documentation", desc: "The handbook, plans, decisions and research", tab: "Docs" },
+    { id: "docs", title: "Documentation", desc: "The handbook, plans, decisions, research and the dev log", tab: "Docs" },
     { id: "options", title: "Options", desc: "Sound, motion and display settings", tab: "Options" }
   ];
   /* Menu icons: simple line glyphs drawn for this site, on a 24 x 24 grid */

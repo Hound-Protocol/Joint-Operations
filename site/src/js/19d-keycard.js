@@ -23,7 +23,7 @@
     return t && t.best ? t.best[0] : "–";
   }
   /* s: a staff card (or a member card from sign-in). o.specimen marks a sample card, o.big the profile size, o.link wraps it
-     in a link to the profile. The holder's GitHub picture is shown when the card knows their account; the chip stays if it fails. */
+     in a link to the profile. The holder's GitHub picture is shown when the card knows their account; without a picture the card is plain. */
   function kcPhoto(s) { return s.avatar || (s.github_id ? "https://avatars.githubusercontent.com/u/" + encodeURIComponent(s.github_id) + "?s=176&v=4" : ""); }
   function keycard(s, o) {
     o = o || {};
@@ -32,9 +32,9 @@
     return "<" + tag + ' class="hk' + (o.big ? " big" : "") + " hk-l" + esc(n) + (s.guest ? " guest" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + (photo ? " has-photo" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
       '<span class="hk-pat" aria-hidden="true"></span>' + (n === "4" ? '<span class="hk-seal" aria-hidden="true">QA</span>' : "") +
       (photo ? '<span class="hk-photo"><img src="' + esc(photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.parentNode.parentNode;c.classList.remove(\'has-photo\');this.parentNode.remove()"></span>' : "") +
-      '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Security card · ' + esc(lv[0]) + '</small></span></span>' +
+      '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Access Credential · ' + esc(lv[0]) + '</small></span></span>' +
       '<span class="hk-lv" aria-label="Keycard level ' + n + '"><small>LV</small><b class="hk-n">' + esc(n) + "</b></span>" +
-      '<span class="hk-chip" aria-hidden="true"></span><img class="hk-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
+      '<img class="hk-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
       '<span class="hk-who"><b class="hk-v">' + esc(s.name || s.login) + '</b><small class="hk-v">' + esc(s.name ? "@" + s.login : "GitHub #" + s.github_id) + "</small></span>" +
       '<span class="hk-meta"><span><i>Hound ID</i><em class="hk-v">' + esc(s.member ? "Member" : s.id) + '</em></span><span><i>Clearance</i><em class="hk-v">Level ' + esc(n) + '</em></span><span><i>Dept</i><em class="hk-v">' + esc(s.department) + '</em></span><span><i>Grade</i><em class="hk-v">' + esc(o.specimen ? "B" : kcGrade(s.login)) + "</em></span>" + (s.since ? '<span class="k-since"><i>Since</i><em class="hk-v">' + esc(fmtDate(s.since)) + "</em></span>" : "") + "</span>" +
       '<span class="hk-foot">' + kcBars(s.id) + '<span class="vs">' + (o.specimen ? '<span class="status planned">Specimen</span>' : revoked ? '<span class="status bad">Revoked</span>' : s.member ? '<span class="status claimed">Signed in</span>' : vBadge("wait")) + "</span>" + (s.ssh_key ? '<span class="hk-key" title="SSH signing key pinned to this card">KEY</span>' : "") + "</span>" +

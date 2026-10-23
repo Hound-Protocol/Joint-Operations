@@ -29,7 +29,7 @@
 ## About
 **Joint Operations** brings the game's online functionality into the single-player world. One player is the **host**: they run the session and command it from the helicopter, the Command Center and Mother Base. Up to 15 **clients** join the host's session and deploy into the same world. Players arrive and leave through the game's own mechanics.
 
-It is a **multiplayer mod**, not a co-op add-on, and it never touches Konami's online services, FOBs or anti-cheat.
+It is a **multiplayer mod**. Hound Protocol and Joint Operations are an independent fan project: Konami has no part in it and no connection to it.
 
 > **Status: Foundation (v0.0.x).** The project's organization, documentation, website and research are in place. The first playable build is **0.1** (two players), developed by the project lead. Nothing is playable yet.
 

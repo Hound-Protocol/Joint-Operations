@@ -2,7 +2,8 @@
      The Docs section is the dossier cabinet (17b-cabinet.js). loadDoc reads a document from the bundled copy,
      the deployed site or GitHub. */
   function viewDocs(id) { return viewCabinet(id); }
-  /* Documentation has two zones: the Library (plans, decisions, research…) and the Handbook (guides, policies, procedures) */
+  /* Documentation has three zones: the Library (plans, decisions, research…), the Handbook (guides, policies, procedures)
+     and the Dev Log (releases, notes and changes) */
   function docZones(active) {
     var all = (data.docs && data.docs.docs) || [], hb = ((data.guides && data.guides.guides) || []).length || all.filter(function (d) { return d.group === "Handbook"; }).length;
     var lib = all.filter(function (d) { return d.group !== "Handbook"; }).length;
@@ -11,7 +12,8 @@
     }
     return '<nav class="zones" aria-label="Documentation zones">' +
       z("lib", "#/docs", "Library", (lib ? lib + " documents · " : "") + "plans, decisions, research, technical and legal") +
-      z("hb", "#/guides", "Handbook", (hb ? hb + " documents · " : "") + "guides, policies and procedures, printable on A4") + "</nav>";
+      z("hb", "#/guides", "Handbook", (hb ? hb + " documents · " : "") + "guides, policies and procedures, printable on A4") +
+      z("log", "#/devlog", "Dev Log", "releases, notes and changes, newest first") + "</nav>";
   }
   function addZones(active) { var vh = $(".vh"); if (vh && !$(".zones")) vh.insertAdjacentHTML("afterend", docZones(active)); }
   function loadDoc(doc) {
