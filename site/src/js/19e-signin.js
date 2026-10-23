@@ -57,13 +57,14 @@
         SI = { token: m.token, exp: m.expires_in ? Date.now() + m.expires_in * 1000 : 0 };
         siApi("/user").then(function (u) {
           SI.user = { id: u.id, login: u.login, name: u.name || "", avatar: u.avatar_url };
-          siSave(); siBadge(); siOrg(); ok(SI.user);
+          siSave(); siBadge(); siOrg(); siFresh = Date.now(); ok(SI.user);
         }, function () { SI = null; siSave(); fail(new Error("Could not read your GitHub account.")); });
       }
       window.addEventListener("message", on);
       t = setInterval(function () { if (w.closed && !done) { clearInterval(t); window.removeEventListener("message", on); fail(new Error("The sign-in window was closed.")); } }, 500);
     });
   }
+  var siFresh = 0;
   function signOut() { SI = null; siSave(); siBadge(); }
   /* Organization owners hold LV7, as GitHub itself reports it (ADR 0011: keycards come from the organization). This needs
      the sign-in app's read-only "Members" permission; without it the check fails quietly and nothing changes. */
@@ -157,6 +158,8 @@
         '<article class="dossier si-reader" id="siDoc" hidden></article>';
       $("#siOut").addEventListener("click", function () { if (c.guest) { SG = null; sgSave(); siBadge(); status("Guest pass ended"); } else { signOut(); status("Signed out"); } viewProfile(); });
       if (siOwner()) sgPanelWire();
+      /* Right after signing in (the owner check may redraw the card once, so allow a few seconds) */
+      if (siFresh && Date.now() - siFresh < 5000) kcReveal($(".kc-profile .hk")); else siFresh = 0;
       areas.forEach(function (a, i) {
         var box = $('.si-docs[data-a="' + i + '"]');
         if (!box || lvl < +String(a.card).slice(2)) return;
@@ -227,7 +230,7 @@
         $("#gpMsg").textContent = "Pass granted. Copy its link and send it privately; anyone with the link has LV3 until it expires.";
         var b = $("#gpList [data-gp]"); if (b) b.click();
         blip("go");
-      }, function (e) { $("#gpMsg").textContent = e.message; }).then(function () { g.disabled = false; });
+      }, function (e) { $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay. If guest passes were just set up, check that the relay runs the current code (sign-in setup, section 6)." : e.message; }).then(function () { g.disabled = false; });
     });
   }
   /* #/guest/PASS: check the pass with the relay, keep it in this tab, then open the profile */
@@ -236,7 +239,7 @@
     v.innerHTML = shell("Hound ID", "Guest pass", loading("Checking your guest pass"));
     if (!pass || !siOn()) { $("#vb").innerHTML = '<div class="empty">No guest pass in this link</div>'; return; }
     sgApi("/guest/check", false, pass).then(function (j) {
-      SG = { pass: pass, exp: j.exp }; sgSave(); siBadge(); status("Guest pass accepted"); blip("go");
+      SG = { pass: pass, exp: j.exp }; sgSave(); siBadge(); siFresh = Date.now(); status("Guest pass accepted"); blip("go");
       location.replace("#/profile");
     }, function (e) {
       if (currentView !== "guest") return;

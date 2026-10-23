@@ -1606,7 +1606,6 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .gp-list li { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 10px; border: 1px dashed rgba(212,174,82,.35); animation: up .35s ease both; }
 .gp-list code { font: 400 13px var(--mono); color: #d4ae52; }
 .gp-list span { flex: 1; font: 400 12.5px var(--mono); color: var(--dim); letter-spacing: .06em; }
-.hk.guest { --hk: #d4ae52 !important; }
 .hk-guest { position: absolute; right: -40px; bottom: 30px; z-index: 2; width: 170px; padding: 3px 0; transform: rotate(-35deg); text-align: center; background: repeating-linear-gradient(-45deg, #d4ae52 0 10px, #b8923a 10px 20px); color: #1a1408; font: 400 10px/1.4 var(--mono); letter-spacing: .2em; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
 .hk.big .hk-guest { right: -46px; bottom: 40px; width: 210px; font-size: 11px; }
 .si-badge.guest i { background: #d4ae52 !important; }
@@ -1620,3 +1619,40 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .sm button[aria-pressed="true"] { background: var(--jo); border-color: var(--jo); color: #120c04; }
 .sm button:hover:not([aria-pressed="true"]) { color: var(--fg); border-color: var(--dim); }
 .hb-tools .sm { margin: 0; }
+/* One keycard identity per clearance (v0.0.28) */
+.hk { isolation: isolate; }
+.hk-pat { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.hk-n { font-weight: inherit; }
+.hk-meta em { font-style: normal; }
+.hk-v.scr { color: color-mix(in srgb, var(--hk) 70%, #fff); }
+/* LV1 Visitor: plain grey day ticket with punched edges */
+.hk.hk-l1 { background: linear-gradient(135deg, #22292c, #15191b); }
+.hk-l1 .hk-pat { background: radial-gradient(circle at 100% 50%, var(--bg) 9px, transparent 10px); }
+/* LV2 Member: brushed silver */
+.hk.hk-l2 { background: repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px), linear-gradient(135deg, #2a3236, #14191b); }
+.hk-l2 .hk-pat { background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.07) 45%, transparent 60%); }
+/* LV3 Contractor: green hex network */
+.hk.hk-l3 { background: linear-gradient(135deg, #16241a, #0c130e); }
+.hk-l3 .hk-pat { background: radial-gradient(circle, rgba(127,191,138,.22) 1.4px, transparent 1.6px) 0 0 / 18px 31px, radial-gradient(circle, rgba(127,191,138,.22) 1.4px, transparent 1.6px) 9px 15.5px / 18px 31px; }
+/* LV4 Quality: blue inspection grid with a QA seal */
+.hk.hk-l4 { background: linear-gradient(135deg, #13202a, #0a1218); }
+.hk-l4 .hk-pat { background: linear-gradient(rgba(90,167,214,.1) 1px, transparent 1px) 0 0 / 100% 12px, linear-gradient(90deg, rgba(90,167,214,.1) 1px, transparent 1px) 0 0 / 12px 100%; }
+.hk-seal { position: absolute; right: 20px; bottom: 34px; width: 40px; height: 40px; border-radius: 50%; border: 1.5px dashed var(--hk); display: grid; place-items: center; font: 400 10px var(--mono); letter-spacing: .1em; color: var(--hk); transform: rotate(-12deg); opacity: .85; }
+.hk.big .hk-seal { width: 54px; height: 54px; font-size: 12px; right: 28px; bottom: 46px; }
+/* LV5 Development: orange circuit traces */
+.hk.hk-l5 { background: linear-gradient(135deg, #24180c, #120c06); }
+.hk-l5 .hk-pat { background: linear-gradient(90deg, transparent 49%, rgba(242,140,40,.16) 49% 51%, transparent 51%) 0 0 / 46px 46px, linear-gradient(transparent 49%, rgba(242,140,40,.11) 49% 51%, transparent 51%) 0 23px / 46px 46px, radial-gradient(circle, rgba(242,140,40,.32) 2px, transparent 2.5px) 23px 23px / 46px 46px; }
+/* LV6 Administration: red, hazard edge, embossed frame */
+.hk.hk-l6 { background: linear-gradient(135deg, #26100f, #130807); box-shadow: 0 14px 30px rgba(0,0,0,.45), inset 0 0 0 3px rgba(224,69,63,.22), inset 0 0 0 4px rgba(0,0,0,.6); }
+.hk.hk-l6::before { background: repeating-linear-gradient(-45deg, var(--hk) 0 6px, #2a0c0b 6px 12px); }
+/* LV7 Owner: black and gold guilloche with a foil sheen */
+.hk.hk-l7 { background: linear-gradient(135deg, #16130b, #070605); border-color: #8a7032; }
+.hk-l7 .hk-pat { background: repeating-radial-gradient(circle at 80% 120%, transparent 0 7px, rgba(212,174,82,.09) 7px 8px), repeating-radial-gradient(circle at 10% -20%, transparent 0 9px, rgba(212,174,82,.07) 9px 10px); }
+.hk-l7 .hk-pat::after { content: ""; position: absolute; top: -40%; right: -40%; bottom: -40%; left: -40%; background: linear-gradient(110deg, transparent 40%, rgba(255,230,160,.16) 50%, transparent 60%); animation: hkFoil 6s ease-in-out infinite; }
+@keyframes hkFoil { 0%, 30% { transform: translateX(-60%); } 70%, 100% { transform: translateX(60%); } }
+/* Sign-in reveal: the card rises and fades in from below while its credentials decrypt */
+.hk.hk-reveal { animation: hkRise .8s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes hkRise { from { opacity: 0; transform: translateY(46px); filter: brightness(1.6); } 60% { filter: none; } }
+.no-motion .hk-l7 .hk-pat::after, .no-motion .hk.hk-reveal { animation: none; }
+@media (prefers-reduced-motion: reduce) { .hk-l7 .hk-pat::after, .hk.hk-reveal { animation: none; } }
+.ax-col > .sub { margin: 12px 16px; }

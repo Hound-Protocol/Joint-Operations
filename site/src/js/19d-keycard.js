@@ -29,17 +29,45 @@
     o = o || {};
     var lv = KC_LV[s.card] || KC_LV.LV3, n = String(s.card || "LV3").slice(2), revoked = s.status === "revoked", photo = o.specimen ? "" : kcPhoto(s);
     var tag = o.link ? 'a href="#/verify/' + encodeURIComponent(s.id) + '"' : "div";
-    return "<" + tag + ' class="hk' + (o.big ? " big" : "") + (s.guest ? " guest" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + (photo ? " has-photo" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
+    return "<" + tag + ' class="hk' + (o.big ? " big" : "") + " hk-l" + esc(n) + (s.guest ? " guest" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + (photo ? " has-photo" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
+      '<span class="hk-pat" aria-hidden="true"></span>' + (n === "4" ? '<span class="hk-seal" aria-hidden="true">QA</span>' : "") +
       (photo ? '<span class="hk-photo"><img src="' + esc(photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.parentNode.parentNode;c.classList.remove(\'has-photo\');this.parentNode.remove()"></span>' : "") +
       '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Security card · ' + esc(lv[0]) + '</small></span></span>' +
-      '<span class="hk-lv" aria-label="Keycard level ' + n + '"><small>LV</small>' + esc(n) + "</span>" +
+      '<span class="hk-lv" aria-label="Keycard level ' + n + '"><small>LV</small><b class="hk-n">' + esc(n) + "</b></span>" +
       '<span class="hk-chip" aria-hidden="true"></span><img class="hk-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
-      '<span class="hk-who"><b>' + esc(s.name || s.login) + "</b><small>" + esc(s.name ? "@" + s.login : "GitHub #" + s.github_id) + "</small></span>" +
-      '<span class="hk-meta"><span><i>Hound ID</i>' + esc(s.member ? "Member" : s.id) + "</span><span><i>Clearance</i>Level " + esc(n) + "</span><span><i>Dept</i>" + esc(s.department) + "</span><span><i>Grade</i>" + esc(o.specimen ? "B" : kcGrade(s.login)) + "</span>" + (s.since ? "<span class=\"k-since\"><i>Since</i>" + esc(fmtDate(s.since)) + "</span>" : "") + "</span>" +
+      '<span class="hk-who"><b class="hk-v">' + esc(s.name || s.login) + '</b><small class="hk-v">' + esc(s.name ? "@" + s.login : "GitHub #" + s.github_id) + "</small></span>" +
+      '<span class="hk-meta"><span><i>Hound ID</i><em class="hk-v">' + esc(s.member ? "Member" : s.id) + '</em></span><span><i>Clearance</i><em class="hk-v">Level ' + esc(n) + '</em></span><span><i>Dept</i><em class="hk-v">' + esc(s.department) + '</em></span><span><i>Grade</i><em class="hk-v">' + esc(o.specimen ? "B" : kcGrade(s.login)) + "</em></span>" + (s.since ? '<span class="k-since"><i>Since</i><em class="hk-v">' + esc(fmtDate(s.since)) + "</em></span>" : "") + "</span>" +
       '<span class="hk-foot">' + kcBars(s.id) + '<span class="vs">' + (o.specimen ? '<span class="status planned">Specimen</span>' : revoked ? '<span class="status bad">Revoked</span>' : s.member ? '<span class="status claimed">Signed in</span>' : vBadge("wait")) + "</span>" + (s.ssh_key ? '<span class="hk-key" title="SSH signing key pinned to this card">KEY</span>' : "") + "</span>" +
       (revoked ? '<span class="hk-void" aria-hidden="true">VOID</span>' : "") +
       (s.guest ? '<span class="hk-guest" aria-hidden="true">Guest pass · 24 h</span>' : "") +
       "</" + (o.link ? "a" : "div") + ">";
+  }
+  /* The sign-in reveal: the card rises and fades in from below, every credential is scrambled and clears left to right
+     into the real text, and the level counts up to the holder's. Played once, right after signing in or opening a pass. */
+  var KC_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&@$/<>[]";
+  function kcReveal(card) {
+    if (!card || !opts.motion || !window.requestAnimationFrame) return;
+    card.classList.add("hk-reveal");
+    $$(".hk-v", card).forEach(function (el, i) {
+      var target = el.textContent, t0 = null, delay = 380 + i * 110, dur = 620;
+      el.textContent = target.replace(/\S/g, function () { return KC_GLYPHS[Math.floor(Math.random() * KC_GLYPHS.length)]; });
+      el.classList.add("scr");
+      (function frame(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.max(0, (ts - t0 - delay) / dur), out = "";
+        for (var k = 0; k < target.length; k++) out += target[k] === " " || k / target.length < p ? target[k] : KC_GLYPHS[Math.floor(Math.random() * KC_GLYPHS.length)];
+        el.textContent = out;
+        if (p < 1) requestAnimationFrame(frame); else { el.textContent = target; el.classList.remove("scr"); }
+      })(0);
+    });
+    var nEl = $(".hk-n", card), to = nEl ? +nEl.textContent : 0, t1 = null;
+    if (nEl && to > 1) (function count(ts) {
+      if (!t1) t1 = ts || 0;
+      var p = Math.min(1, Math.max(0, ((ts || 0) - t1 - 300) / (180 * to)));
+      nEl.textContent = Math.max(1, Math.round(p * to));
+      if (p < 1) requestAnimationFrame(count);
+    })(0);
+    setTimeout(function () { card.classList.remove("hk-reveal"); }, 2200);
   }
   var KC_SPECIMEN = { id: "HND-0000", login: "your-github-name", name: "Your Name", github_id: 0, card: "LV5", department: "Development", since: "2026-10-23", status: "active" };
 

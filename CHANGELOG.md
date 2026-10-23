@@ -2,6 +2,12 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.28 · Keycards · 2026-10-23
+- **One card per clearance:** every level has its own card. LV1 a grey day ticket with punched edges, LV2 brushed silver, LV3 a green contract network, LV4 a blue inspection grid with a QA seal, LV5 orange circuit traces, LV6 red with a hazard edge and embossed frame, LV7 black and gold with a moving foil sheen. Guest passes use the LV3 card with the gold 24-hour ribbon.
+- **Sign-in reveal:** right after you sign in or open a guest pass, your card rises and fades in from below, every credential is scrambled and clears left to right into your details, and the level counts up to yours. Calm mode and reduced motion skip it.
+- **Guest passes:** a clear message instead of "Failed to fetch" when the relay is not reachable or still runs older code.
+- **Profile:** spacing fix in Access restricted for the highest card.
+
 ## v0.0.27 · Guest pass · 2026-10-23
 - **Owner card (LV7) from GitHub:** if GitHub confirms you own the Hound-Protocol organization, your Profile shows an Owner card, LV7, "Confirmed by GitHub". It needs the sign-in app's read-only Members permission ([setup](docs/signin.md#5-owner-card-lv7-from-github)). No file can fake it.
 - **Guest passes:** the owner (only the owner, checked by GitHub through the relay) can **Grant Guest Pass** on the Profile: a link that gives LV3 (Staff) access for 24 hours, no account needed. The guest gets a gold guest card with the time left; the relay signs and checks the pass and reads the Staff documents for them. A pass cannot be extended ([setup](docs/signin.md#6-guest-passes-owner-only)).
