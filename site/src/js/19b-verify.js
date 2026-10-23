@@ -58,8 +58,7 @@
         var c = sc || KC_SPECIMEN;
         $("#vb").innerHTML = '<p class="sub"><a href="#/verify">All staff and records</a></p>' +
           '<div class="kc-profile">' + keycard(c, { big: true, specimen: specimen }) +
-          '<dl class="kc-facts"><div><dt>Hound ID</dt><dd>' + esc(c.id) + "</dd></div><div><dt>GitHub</dt><dd>" + (specimen ? "–" : '<a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id)) + "</dd></div>" +
-          "<div><dt>Clearance</dt><dd>" + esc(c.card) + " · " + esc((KC_LV[c.card] || ["?"])[0]) + "</dd></div><div><dt>Department</dt><dd>" + esc(c.department) + "</dd></div>" +
+          '<dl class="kc-facts"><div><dt>GitHub</dt><dd>' + (specimen ? "–" : '<a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id)) + "</dd></div>" +
           (c.discord_id ? "<div><dt>Discord ID</dt><dd>" + esc(c.discord_id) + "</dd></div>" : "") +
           "<div><dt>Owner key</dt><dd>" + (c.ssh_key ? "<code>" + esc(c.ssh_key) + "</code> (pinned)" : "Any SSH signing key on the GitHub account") + "</dd></div>" +
           "<div><dt>Status</dt><dd>" + (c.status === "revoked" ? "Revoked " + esc(fmtDate(c.revoked)) + (c.reason ? " · " + esc(c.reason) : "") : specimen ? "Specimen, not a real card" : "Active") + "</dd></div></dl></div>" +

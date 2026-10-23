@@ -320,6 +320,12 @@
       "path": "docs/privacy.md"
     },
     {
+      "id": "signin",
+      "title": "Sign-in Setup",
+      "group": "Legal",
+      "path": "docs/signin.md"
+    },
+    {
       "id": "hp-gde-001",
       "title": "HP-GDE-001 Player Guide: Installing and Playing",
       "group": "Handbook",

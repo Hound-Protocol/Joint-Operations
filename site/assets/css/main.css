@@ -1002,7 +1002,7 @@ a, button, .field, summary { transition: color .3s ease, background-color .3s ea
 @media (max-width: 720px) { .sheet::before { top: 8px; right: 8px; bottom: 8px; left: 8px; } .sheet::after { display: none; } }
 
 /* Roadmap: the base under construction (site/src/js/11b-base.js). The stage is 80% of the 16:9 frame */
-.mb-stage { position: relative; width: 100%; width: min(100%, calc((100vh - 270px) * 16 / 9)); min-width: 100%; min-width: min(100%, 760px); margin: 0 auto; aspect-ratio: 16 / 9; overflow: hidden;
+.mb-stage { position: relative; width: 100%; width: min(100%, calc((100vh - 300px) * 16 / 9)); min-width: 100%; min-width: min(100%, 760px); margin: 0 auto; aspect-ratio: 16 / 9; overflow: hidden;
   border: 1px solid var(--line); background: #05090b; box-shadow: 0 30px 70px rgba(0,0,0,.55), inset 0 0 120px rgba(0,0,0,.6); }
 .mb-stage::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; background: repeating-linear-gradient(transparent 0 3px, rgba(255,255,255,.012) 3px 4px); }
 .mb-svg { display: block; width: 100%; height: 100%; }
@@ -1343,3 +1343,44 @@ a.hk:hover, a.hk:focus-visible { transform: translateY(-3px); border-color: var(
 .mb-stage:not(.narrow) .mb-hudtl small, .mb-stage:not(.narrow) .mb-hudtl .kicker { font-size: 10px; font-size: max(10px, .95cqw); }
 .mb-stage:not(.narrow) .mb-key { font-size: 9.5px; font-size: max(9.5px, .85cqw); gap: 4px 1.2cqw; }
 .mb-stage:not(.narrow) .mb-hudtl { top: 1.2cqw; }
+/* ---------------- Ready, then reveal (20b-ready.js) ---------------- */
+html.booting .center, html.booting .bar { opacity: 0; }
+.center, .bar { transition: opacity .5s ease; }
+#view #vb { transition: opacity .42s ease, transform .42s cubic-bezier(.2,.8,.2,1); }
+#view.vw-wait #vb { opacity: 0; transform: translate3d(0, 8px, 0); }
+#view.vw-ready #vb { opacity: 1; transform: none; }
+#view.vw-wait .vh { position: relative; }
+#view.vw-wait .vh::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 2px; width: 30%; background: linear-gradient(90deg, transparent, var(--jo), transparent); animation: vwLoad 1.1s ease-in-out infinite; }
+@keyframes vwLoad { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+.no-motion #view #vb, .no-motion .center, .no-motion .bar { transition: none; }
+.no-motion #view.vw-wait .vh::after { animation: none; width: 100%; opacity: .4; }
+/* ---------------- Sign-in and profile (19e-signin.js) ---------------- */
+.si-badge { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; margin-right: 18px; padding: 3px 10px 3px 4px; border: 1px solid var(--line); color: var(--fg-2); text-decoration: none; font: 400 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; transition: border-color .25s ease, color .25s ease; }
+.si-badge i { font-style: normal; padding: 3px 6px; background: var(--hk, #3d4a4f); color: #0c0f10; }
+.si-badge:not(.in) i { background: none; color: var(--jo); border: 1px solid var(--jo); padding: 2px 5px; }
+.si-badge:hover, .si-badge:focus-visible { border-color: var(--jo); color: var(--hot); outline: none; }
+.si-badge span { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 700px) { .si-badge { margin-right: 0; } .si-badge span { max-width: 90px; } }
+.si-intro h3 { margin: 0 0 8px; font: 300 24px/1.2 var(--ui); letter-spacing: .08em; text-transform: uppercase; }
+.si-intro p { margin: 0 0 12px; color: var(--fg-2); }
+.si-areas { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.si-area { border: 1px solid var(--line); border-top: 3px solid var(--hk); background: rgba(10,13,15,.6); padding: 12px 14px; }
+.si-area header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.si-area header b { font: 400 15px var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+.si-area header span { font: 400 12px var(--mono); color: var(--hk); letter-spacing: .1em; }
+.si-area.locked { opacity: .55; border-top-style: dashed; }
+.si-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.si-list button { width: 100%; text-align: left; padding: 7px 9px; background: none; border: 1px solid transparent; color: var(--fg); cursor: pointer; font: 400 15px/1.3 var(--ui); transition: border-color .2s ease, background .2s ease; }
+.si-list button:hover, .si-list button:focus-visible { border-color: var(--hk); background: rgba(255,255,255,.03); outline: none; }
+.si-list small { display: block; font: 400 11.5px var(--mono); color: var(--dim); }
+.si-reader { margin-top: 10px; }
+/* Keycard: the holder's picture in place of the chip; no notch on the edge */
+.hk::after { display: none; }
+.hk-photo { position: absolute; z-index: 1; left: 22px; top: 48px; width: 54px; height: 54px; padding: 2px; border: 1px solid var(--hk); background: #0c0f10; box-shadow: 0 0 14px color-mix(in srgb, var(--hk) 30%, transparent); }
+.hk-photo img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(.85) contrast(1.05); }
+.hk.has-photo .hk-chip { display: none; }
+.hk.has-photo .hk-who { padding-left: 74px; }
+.hk.big .hk-photo { left: 30px; top: 62px; width: 84px; height: 84px; }
+.hk.big.has-photo .hk-who { padding-left: 110px; }
+@media (max-width: 700px) { .hk.big .hk-photo { left: 22px; top: 46px; width: 54px; height: 54px; } .hk.big.has-photo .hk-who { padding-left: 74px; } }
+.mb-comms rect { fill: #3d4a4f; stroke: #9fc4cf; stroke-width: 1; } .mb-comms line { stroke: #9fc4cf; stroke-width: 2.4; stroke-linecap: round; } .mb-comms circle { fill: #cfe6ec; }

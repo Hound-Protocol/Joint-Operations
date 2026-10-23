@@ -96,5 +96,7 @@
   function loadLocal(name) {
     if (data[name]) return Promise.resolve(data[name]);
     if (EMBED && EMBED[name]) { data[name] = EMBED[name]; return Promise.resolve(data[name]); }
-    return fetchJSON("data/" + name + ".json").then(function (v) { data[name] = v; return v; }, function () { return null; });
+    // One retry after a short pause, for flaky connections
+    function get() { return fetchJSON("data/" + name + ".json").then(function (v) { data[name] = v; return v; }); }
+    return get().catch(function () { return new Promise(function (ok) { setTimeout(ok, 700); }).then(get); }).catch(function () { return null; });
   }

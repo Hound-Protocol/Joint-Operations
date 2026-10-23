@@ -27,6 +27,9 @@
   /* ---------------- Utilities ---------------- */
   // Browsers too old for the app get the plain page from index.html instead
   if (window.JO_LEGACY) return;
+  // Hide the interface until the first screen is ready (20b-ready.js); never longer than 3 s, even if something fails
+  document.documentElement.classList.add("booting");
+  setTimeout(function () { document.documentElement.classList.remove("booting"); }, 3000);
   // Small polyfills for older browsers (Safari 9, old Chromium on older systems)
   if (typeof Object.assign !== "function") {
     Object.assign = function (t) { for (var i = 1; i < arguments.length; i++) { var s = arguments[i]; if (s) for (var k in s) if (Object.prototype.hasOwnProperty.call(s, k)) t[k] = s[k]; } return t; };
@@ -221,7 +224,9 @@
   function loadLocal(name) {
     if (data[name]) return Promise.resolve(data[name]);
     if (EMBED && EMBED[name]) { data[name] = EMBED[name]; return Promise.resolve(data[name]); }
-    return fetchJSON("data/" + name + ".json").then(function (v) { data[name] = v; return v; }, function () { return null; });
+    // One retry after a short pause, for flaky connections
+    function get() { return fetchJSON("data/" + name + ".json").then(function (v) { data[name] = v; return v; }); }
+    return get().catch(function () { return new Promise(function (ok) { setTimeout(ok, 700); }).then(get); }).catch(function () { return null; });
   }
 
   /* ---------------- Markdown (small, safe renderer for project docs) ---------------- */
@@ -786,7 +791,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -818,7 +823,7 @@
       var b = mbBuild(r, now);
       $("#vb").innerHTML = '<div class="bf"><section class="bf-sec">' +
         '<div class="mb-stage">' + b.svg +
-          '<div class="mb-hudtl"><span class="kicker">Base construction</span><b>' + (all[1] ? Math.round(all[0] / all[1] * 100) : 0) + "%</b><small>" + all[0] + " of " + all[1] + " tasks done</small>" +
+          '<div class="mb-hudtl"><span class="kicker">Joint Operations Motherbase</span><b>' + (all[1] ? Math.round(all[0] / all[1] * 100) : 0) + "%</b><small>" + all[0] + " of " + all[1] + " tasks done</small>" +
           '<ul class="mb-key"><li class="k-done">Complete</li><li class="k-now">Under construction</li><li class="k-next">Planned</li></ul></div>' +
           '<p class="mb-hint">Click a platform for details</p>' +
           '<aside class="mb-panel" id="mbPanel" aria-live="polite"></aside>' +
@@ -913,6 +918,8 @@
     boats.forEach(function (b) { var e = edgePoint(), d = dockFor(); b.x = e[0]; b.y = e[1]; b.tx = d[0]; b.ty = d[1]; });
     function ring(x, y, r0, r1, dur, hot) { for (var k = 0; k < rings.length; k++) if (rings[k].t >= 1) { var g = rings[k]; g.x = x; g.y = y; g.r0 = r0; g.r1 = r1; g.dur = dur; g.t = 0; g.hot = !!hot; return; } }
     var piled = 0, ringT = 0;
+    /* Comms mast on the command platform (v0.0.22): a turning dish that sends a signal ring every few seconds */
+    var comms = mbWorld(mods[0], [-mods[0].g.R * 0.45, mods[0].g.R * 0.05]), commsT = 1.2, commsEl = $("#mbComms");
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
 
     function step(dt) {
@@ -1054,6 +1061,8 @@
         if (p.age > 7 + (i % 4)) { p.on = false; ring(p.x, p.y, 2, 14, 0.8, true); }
         e.setAttribute("x", mbF(p.x - 4)); e.setAttribute("y", mbF(p.y - 3.5)); e.style.opacity = "";
       });
+      commsEl.setAttribute("transform", "translate(" + mbF(comms[0]) + " " + mbF(comms[1]) + ") rotate(" + mbF((T * 40) % 360) + ")");
+      commsT -= dt; if (commsT <= 0) { commsT = 2.6; ring(comms[0], comms[1], 6, 70, 2.4, false); }
       /* Selection ring */
       var sm = mods[MB.sel];
       if (sm) {
@@ -1984,8 +1993,7 @@
         var c = sc || KC_SPECIMEN;
         $("#vb").innerHTML = '<p class="sub"><a href="#/verify">All staff and records</a></p>' +
           '<div class="kc-profile">' + keycard(c, { big: true, specimen: specimen }) +
-          '<dl class="kc-facts"><div><dt>Hound ID</dt><dd>' + esc(c.id) + "</dd></div><div><dt>GitHub</dt><dd>" + (specimen ? "–" : '<a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id)) + "</dd></div>" +
-          "<div><dt>Clearance</dt><dd>" + esc(c.card) + " · " + esc((KC_LV[c.card] || ["?"])[0]) + "</dd></div><div><dt>Department</dt><dd>" + esc(c.department) + "</dd></div>" +
+          '<dl class="kc-facts"><div><dt>GitHub</dt><dd>' + (specimen ? "–" : '<a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id)) + "</dd></div>" +
           (c.discord_id ? "<div><dt>Discord ID</dt><dd>" + esc(c.discord_id) + "</dd></div>" : "") +
           "<div><dt>Owner key</dt><dd>" + (c.ssh_key ? "<code>" + esc(c.ssh_key) + "</code> (pinned)" : "Any SSH signing key on the GitHub account") + "</dd></div>" +
           "<div><dt>Status</dt><dd>" + (c.status === "revoked" ? "Revoked " + esc(fmtDate(c.revoked)) + (c.reason ? " · " + esc(c.reason) : "") : specimen ? "Specimen, not a real card" : "Active") + "</dd></div></dl></div>" +
@@ -2167,18 +2175,21 @@
     var t = tallyGrades(mine.map(function (r) { return { login: r.login, name: r.name, difficulty: r.difficulty, module: (specs[r.contract] || {}).module }; }))[0];
     return t && t.best ? t.best[0] : "–";
   }
-  /* s: a staff card. o.specimen marks a sample card, o.big the profile size, o.link wraps it in a link to the profile */
+  /* s: a staff card (or a member card from sign-in). o.specimen marks a sample card, o.big the profile size, o.link wraps it
+     in a link to the profile. The holder's GitHub picture is shown when the card knows their account; the chip stays if it fails. */
+  function kcPhoto(s) { return s.avatar || (s.github_id ? "https://avatars.githubusercontent.com/u/" + encodeURIComponent(s.github_id) + "?s=176&v=4" : ""); }
   function keycard(s, o) {
     o = o || {};
-    var lv = KC_LV[s.card] || KC_LV.LV3, n = String(s.card || "LV3").slice(2), revoked = s.status === "revoked";
+    var lv = KC_LV[s.card] || KC_LV.LV3, n = String(s.card || "LV3").slice(2), revoked = s.status === "revoked", photo = o.specimen ? "" : kcPhoto(s);
     var tag = o.link ? 'a href="#/verify/' + encodeURIComponent(s.id) + '"' : "div";
-    return "<" + tag + ' class="hk' + (o.big ? " big" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
+    return "<" + tag + ' class="hk' + (o.big ? " big" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + (photo ? " has-photo" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
+      (photo ? '<span class="hk-photo"><img src="' + esc(photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.parentNode.parentNode;c.classList.remove(\'has-photo\');this.parentNode.remove()"></span>' : "") +
       '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Security card · ' + esc(lv[0]) + '</small></span></span>' +
       '<span class="hk-lv" aria-label="Keycard level ' + n + '"><small>LV</small>' + esc(n) + "</span>" +
       '<span class="hk-chip" aria-hidden="true"></span><img class="hk-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
       '<span class="hk-who"><b>' + esc(s.name || s.login) + "</b><small>" + esc(s.name ? "@" + s.login : "GitHub #" + s.github_id) + "</small></span>" +
-      '<span class="hk-meta"><span><i>Hound ID</i>' + esc(s.id) + "</span><span><i>Clearance</i>Level " + esc(n) + "</span><span><i>Dept</i>" + esc(s.department) + "</span><span><i>Grade</i>" + esc(o.specimen ? "B" : kcGrade(s.login)) + "</span><span class=\"k-since\"><i>Since</i>" + esc(fmtDate(s.since)) + "</span></span>" +
-      '<span class="hk-foot">' + kcBars(s.id) + '<span class="vs">' + (o.specimen ? '<span class="status planned">Specimen</span>' : revoked ? '<span class="status bad">Revoked</span>' : vBadge("wait")) + "</span>" + (s.ssh_key ? '<span class="hk-key" title="SSH signing key pinned to this card">KEY</span>' : "") + "</span>" +
+      '<span class="hk-meta"><span><i>Hound ID</i>' + esc(s.member ? "Member" : s.id) + "</span><span><i>Clearance</i>Level " + esc(n) + "</span><span><i>Dept</i>" + esc(s.department) + "</span><span><i>Grade</i>" + esc(o.specimen ? "B" : kcGrade(s.login)) + "</span>" + (s.since ? "<span class=\"k-since\"><i>Since</i>" + esc(fmtDate(s.since)) + "</span>" : "") + "</span>" +
+      '<span class="hk-foot">' + kcBars(s.id) + '<span class="vs">' + (o.specimen ? '<span class="status planned">Specimen</span>' : revoked ? '<span class="status bad">Revoked</span>' : s.member ? '<span class="status claimed">Signed in</span>' : vBadge("wait")) + "</span>" + (s.ssh_key ? '<span class="hk-key" title="SSH signing key pinned to this card">KEY</span>' : "") + "</span>" +
       (revoked ? '<span class="hk-void" aria-hidden="true">VOID</span>' : "") +
       "</" + (o.link ? "a" : "div") + ">";
   }
@@ -2319,8 +2330,156 @@
     $("#kcIn").addEventListener("input", cmds); cmds();
   }
 
+  /* ---------------- Sign-in with GitHub and the profile (ADR 0017, docs/signin.md) ----------------
+     The relay (tools/signin-relay/worker.js) swaps GitHub's one-time sign-in code for a short-lived user token and posts it
+     back to this window. The token stays in this tab only (sessionStorage) and can read nothing but the restricted document
+     repositories the person's GitHub teams already allow. The keycard comes from the person's signed staff card, matched by
+     GitHub account number; anyone else signed in holds a member card (LV2). While config.signin.relay is empty, sign-in is off. */
+  var SI_KEY = "hp.signin";
+  var SI = null;
+  try { SI = JSON.parse(sessionStorage.getItem(SI_KEY) || "null"); } catch (e) { SI = null; }
+  function siCfg() { return cfg.signin || {}; }
+  function siOn() { return !!siCfg().relay; }
+  function siSave() { try { if (SI) sessionStorage.setItem(SI_KEY, JSON.stringify(SI)); else sessionStorage.removeItem(SI_KEY); } catch (e) { /* private mode: the session lives in this page only */ } }
+  function siIn() { return !!(SI && SI.token && SI.user && (!SI.exp || SI.exp > Date.now())); }
+  function siApi(path, raw) {
+    var h = { Authorization: "Bearer " + SI.token, Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json" };
+    if (typeof fetch !== "function") return Promise.reject(new Error("This browser cannot sign in"));
+    return fetch("https://api.github.com" + path, { headers: h, cache: "no-store" }).then(function (r) {
+      if (r.status === 401) { SI = null; siSave(); siBadge(); }
+      if (!r.ok) { var e = new Error("HTTP " + r.status); e.status = r.status; throw e; }
+      return raw ? r.text() : r.json();
+    });
+  }
+  function signIn() {
+    if (!siOn()) return Promise.reject(new Error("Sign-in is not switched on yet."));
+    var relay = siCfg().relay.replace(/\/$/, ""), origin;
+    try { origin = new URL(relay).origin; } catch (e) { return Promise.reject(new Error("The sign-in relay address is not valid.")); }
+    var w = window.open(relay + "/login", "hpsignin", "width=520,height=720");
+    if (!w) return Promise.reject(new Error("Allow pop-ups for this site to sign in."));
+    return new Promise(function (ok, fail) {
+      var done = false, t;
+      function on(e) {
+        if (e.origin !== origin || !e.data || !e.data.houndSignin) return;
+        done = true; clearInterval(t); window.removeEventListener("message", on);
+        var m = e.data.houndSignin;
+        if (m.error || !m.token) { fail(new Error(m.error || "Sign-in failed.")); return; }
+        SI = { token: m.token, exp: m.expires_in ? Date.now() + m.expires_in * 1000 : 0 };
+        siApi("/user").then(function (u) {
+          SI.user = { id: u.id, login: u.login, name: u.name || "", avatar: u.avatar_url };
+          siSave(); siBadge(); ok(SI.user);
+        }, function () { SI = null; siSave(); fail(new Error("Could not read your GitHub account.")); });
+      }
+      window.addEventListener("message", on);
+      t = setInterval(function () { if (w.closed && !done) { clearInterval(t); window.removeEventListener("message", on); fail(new Error("The sign-in window was closed.")); } }, 500);
+    });
+  }
+  function signOut() { SI = null; siSave(); siBadge(); }
+  /* The person's card: their active staff card, or a member card (LV2) */
+  function siCard() {
+    if (!siIn()) return null;
+    var staff = (data.staff && data.staff.staff) || [];
+    var s = staff.filter(function (x) { return x.github_id === SI.user.id && x.status === "active"; })[0];
+    if (s) return Object.assign({}, s, { avatar: SI.user.avatar, name: s.name || SI.user.name });
+    return { id: "MEMBER", login: SI.user.login, name: SI.user.name, github_id: SI.user.id, avatar: SI.user.avatar, card: "LV2", department: "Member", since: "", status: "active", member: true };
+  }
+  function siLevel() { var c = siCard(); return c ? +String(c.card).slice(2) : 1; }
+  /* The badge in the top bar: "Sign in", or the person's level and name */
+  function siBadge() {
+    var b = $("#siBadge");
+    if (!siOn()) { if (b) b.remove(); return; }
+    if (!b) {
+      var keys = $("#keys"); if (!keys) return;
+      keys.insertAdjacentHTML("beforebegin", '<a class="si-badge" id="siBadge" href="#/profile"></a>');
+      b = $("#siBadge");
+    }
+    var c = siCard();
+    b.innerHTML = c ? '<i style="--hk:' + (KC_LV[c.card] || KC_LV.LV2)[1] + '">' + esc(c.card) + "</i><span>" + esc(c.name || c.login) + "</span>" : "<i>ID</i><span>Sign in</span>";
+    b.classList.toggle("in", !!c);
+    b.setAttribute("aria-label", c ? "Your profile, " + c.card : "Sign in with GitHub");
+  }
+
+  /* ---- Restricted document areas: one private repository per clearance ---- */
+  var siTrees = {};
+  function siArea(a) {
+    if (siTrees[a.repo]) return siTrees[a.repo];
+    return (siTrees[a.repo] = siApi("/repos/" + a.repo).then(function (r) {
+      return siApi("/repos/" + a.repo + "/git/trees/" + encodeURIComponent(r.default_branch) + "?recursive=1");
+    }).then(function (t) {
+      return (t.tree || []).filter(function (n) { return n.type === "blob" && /\.md$/i.test(n.path) && !/(^|\/)README\.md$/i.test(n.path); }).map(function (n) { return n.path; });
+    }, function (e) { delete siTrees[a.repo]; throw e; }));
+  }
+  function siTitle(path) { return path.replace(/\.md$/i, "").split("/").pop().replace(/[-_]+/g, " ").replace(/^\w/, function (c) { return c.toUpperCase(); }); }
+
+  function viewProfile() {
+    var v = $("#view");
+    v.innerHTML = shell("Hound ID", "Profile", loading("Opening your profile"));
+    Promise.all([loadLocal("staff"), loadLocal("records"), loadLocal("records-key"), loadLocal("contracts")]).then(function (res) {
+      if (currentView !== "profile") return;
+      var keys = (res[2] && res[2].keys) || [];
+      if (!siIn()) return drawSignedOut();
+      var c = siCard(), lvl = siLevel(), areas = siCfg().areas || [];
+      $("#vb").innerHTML =
+        '<div class="kc-profile">' + keycard(c, { big: true }) +
+        '<dl class="kc-facts"><div><dt>GitHub</dt><dd><a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id) + "</dd></div>" +
+          "<div><dt>Card</dt><dd>" + (c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
+          "<div><dt>Session</dt><dd>" + (SI.exp ? "Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab" : "Signed in, in this tab") + "</dd></div>" +
+          '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>' +
+        '<div class="label">Your documents</div>' +
+        '<p class="sub">Restricted documents live in private repositories, one per clearance. GitHub decides what you can read, through your teams; your card shows what your clearance should open.</p>' +
+        (areas.length ? '<div class="si-areas">' + areas.map(function (a, i) {
+          var need = +String(a.card).slice(2), open = lvl >= need;
+          return '<section class="si-area' + (open ? "" : " locked") + '" data-a="' + i + '" style="--hk:' + (KC_LV[a.card] || KC_LV.LV3)[1] + '"><header><b>' + esc(a.title) + "</b><span>" + esc(a.card) + " and up</span></header>" +
+            '<div class="si-list">' + (open ? loading("Checking access") : '<p class="sub">Needs ' + esc(a.card) + " clearance.</p>") + "</div></section>";
+        }).join("") + "</div>" : '<div class="empty">No restricted areas yet</div>') +
+        '<article class="dossier si-reader" id="siDoc" hidden></article>';
+      $("#siOut").addEventListener("click", function () { signOut(); status("Signed out"); viewProfile(); });
+      areas.forEach(function (a, i) {
+        if (lvl < +String(a.card).slice(2)) return;
+        var box = $('.si-area[data-a="' + i + '"] .si-list');
+        siArea(a).then(function (paths) {
+          if (currentView !== "profile") return;
+          box.innerHTML = paths.length ? "<ul>" + paths.map(function (p) { return '<li><button type="button" data-p="' + esc(p) + '">' + esc(siTitle(p)) + "<small>" + esc(p) + "</small></button></li>"; }).join("") + "</ul>" : '<p class="sub">No documents here yet.</p>';
+          $$("button[data-p]", box).forEach(function (b) { b.addEventListener("click", function () { siOpen(a, b.getAttribute("data-p")); }); });
+        }, function (e) {
+          box.innerHTML = '<p class="sub">' + (e.status === 404 || e.status === 403 ? "GitHub has not given your account access yet. Ask Administration to add you to the right team." : "Could not reach GitHub. Try again later.") + "</p>";
+        });
+      });
+      if (keys.length && !c.member) markVerified([c], keys);
+      else $$('.kc-profile [data-rid] .vs').forEach(function (el) { el.innerHTML = '<span class="status claimed">Signed in</span>'; });
+    });
+  }
+  function siOpen(a, path) {
+    var d = $("#siDoc"); if (!d) return;
+    d.hidden = false; d.className = "dossier si-reader k-project"; d.innerHTML = loading("Opening " + path);
+    siApi("/repos/" + a.repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/"), true).then(function (md) {
+      d.style.setProperty("--g", (KC_LV[a.card] || KC_LV.LV3)[1]); d.style.setProperty("--gd", "#4d5a60");
+      d.innerHTML = '<div class="ds-tab"><b>' + esc(a.card) + "</b>" + esc(a.title) + '</div><div class="ds-folder"><div class="ds-page">' +
+        '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Restricted · ' + esc(a.card) + "</span></header>" +
+        '<h1 class="ds-title">' + esc(siTitle(path)) + '</h1><div class="ds-meta"><span>' + esc(a.repo) + " · " + esc(path) + '</span><a href="https://github.com/' + esc(a.repo) + "/blob/HEAD/" + esc(path) + '" target="_blank" rel="noopener noreferrer">GitHub</a></div>' +
+        '<div class="sh-body ds-body">' + markdown(md.replace(/^# .*\n/, ""), path) + '</div><footer class="ds-foot"><span>Restricted to ' + esc(a.card) + " and up. Do not copy it to public places.</span></footer></div></div>";
+      d.classList.remove("in"); void d.offsetWidth; d.classList.add("in");
+      if (d.scrollIntoView) d.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "start" });
+    }, function () { d.innerHTML = '<div class="empty">Could not open this document</div>'; });
+  }
+  function drawSignedOut() {
+    var on = siOn();
+    $("#vb").innerHTML =
+      '<div class="kc-profile">' + keycard(KC_SPECIMEN, { big: true, specimen: true }) +
+      '<div class="si-intro"><h3>Sign in with your Hound ID</h3>' +
+        "<p>Sign in with GitHub to see your keycard and the documents your clearance opens. Staff get their signed staff card; everyone else gets a member card.</p>" +
+        (on ? '<button class="btn primary" id="siGo">Sign in with GitHub</button><p class="sub" id="siMsg">A small GitHub window opens. We never see your password, and nothing is stored on a server.</p>'
+            : '<p class="note">Sign-in is not switched on yet.</p>') +
+        '<p class="sub">How it works and what is kept: <a href="#/docs/signin">sign-in</a> · <a href="#/docs/privacy">privacy</a></p></div></div>';
+    var go = $("#siGo");
+    if (go) go.addEventListener("click", function () {
+      go.disabled = true; $("#siMsg").textContent = "Waiting for GitHub…";
+      signIn().then(function () { status("Signed in"); blip("go"); viewProfile(); }, function (e) { go.disabled = false; $("#siMsg").textContent = e.message; });
+    });
+  }
+
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");
@@ -2356,6 +2515,7 @@
         select(idx > -1 ? idx : cur, true);
       }
       document.title = cfg.team + " · " + cfg.project;
+      bootDone();
       return;
     }
     var same = currentView === name;
@@ -2363,14 +2523,61 @@
     menu.hidden = true; view.hidden = false; document.body.classList.add("in-view");
     view.dataset.v = name;
     if (!same || name !== "docs") { view.innerHTML = ""; var ce = $("#center"); ce.style.scrollBehavior = "auto"; ce.scrollTop = 0; ce.style.scrollBehavior = ""; }
-    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" }, guides: { title: "Handbook" } })[name];
+    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" }, guides: { title: "Handbook" }, profile: { title: "Profile" } })[name];
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
+    if (!same) readyView();
     var tab = $('.secbar a[aria-current="page"]');
     if (tab) { var bar = tab.parentNode; bar.scrollLeft = Math.max(0, tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2); }
   }
   var lastView = "";
+
+  /* ---------------- Ready, then reveal ----------------
+     A page stays hidden behind a thin loading line until its content is in place: the loading placeholder has been
+     replaced, web fonts are ready and the images inside have loaded (or 2.5 s have passed). Then it fades in at once,
+     so nothing pops in piece by piece. The first screen after a cold start is revealed the same way. */
+  var readyObs = null, readyTimer = 0;
+  function waitAssets(root) {
+    var imgs = Array.prototype.slice.call(root.querySelectorAll("img")).filter(function (i) { return !i.complete && i.loading !== "lazy"; });
+    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    var all = Promise.all([fonts].concat(imgs.map(function (i) { return new Promise(function (ok) { i.addEventListener("load", ok); i.addEventListener("error", ok); }); })));
+    return Promise.race([all, new Promise(function (ok) { setTimeout(ok, 2500); })]);
+  }
+  function readyView() {
+    var view = $("#view");
+    if (!view) return;
+    if (readyObs) { readyObs.disconnect(); readyObs = null; }
+    clearTimeout(readyTimer);
+    view.classList.remove("vw-ready"); view.classList.add("vw-wait");
+    var done = false, waiting = false;
+    function reveal() {
+      if (done) return; done = true;
+      if (readyObs) { readyObs.disconnect(); readyObs = null; }
+      clearTimeout(readyTimer);
+      requestAnimationFrame(function () { view.classList.remove("vw-wait"); view.classList.add("vw-ready"); bootDone(); });
+    }
+    function check() {
+      if (done || waiting) return;
+      var vb = $("#vb");
+      if (!vb || !vb.children.length || $(".spin", vb)) return;
+      waiting = true;
+      waitAssets(vb).then(reveal);
+    }
+    if (window.MutationObserver) { readyObs = new MutationObserver(check); readyObs.observe(view, { childList: true, subtree: true }); }
+    readyTimer = setTimeout(reveal, 4000);
+    check();
+  }
+  /* The whole interface fades in once, after the config, the first screen and the fonts are ready */
+  var booting = true;
+  function bootDone() {
+    if (!booting) return;
+    booting = false;
+    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    Promise.race([fonts, new Promise(function (ok) { setTimeout(ok, 1500); })]).then(function () {
+      requestAnimationFrame(function () { document.documentElement.classList.remove("booting"); });
+    });
+  }
 
   /* ---------------- Keyboard ---------------- */
   document.addEventListener("keydown", function (e) {
@@ -2420,6 +2627,7 @@
     }
   }
   function preload() {
+    loadLocal("staff").then(function () { siBadge(); });
     Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("devlog"), loadLocal("team"), loadRoadmap(), loadReleases(), loadContracts(), loadCommits()]).then(function () {
       refreshInfo();
       if (data.releases === null || data.issues === null) status("GitHub unreachable · showing bundled data");
@@ -2431,7 +2639,7 @@
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });
   }, function () { /* keep defaults */ }).then(function () {
-    loadLocal("build").then(function () { applyConfig(); renderMenu(); select(cur, false); route(); preload(); });
+    loadLocal("build").then(function () { applyConfig(); siBadge(); renderMenu(); select(cur, false); route(); preload(); });
   });
   window.addEventListener("hashchange", route);
 })();

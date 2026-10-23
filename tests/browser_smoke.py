@@ -53,6 +53,9 @@ async def check(browser, name, size):
     await page.fill("#lq", "zzzz-no-match"); await page.wait_for_timeout(500)
     if not await page.locator(".empty").count():
         failures.append("devlog: search did not filter")
+    await page.goto(BASE + "#/profile"); await page.wait_for_timeout(900)
+    if not await page.locator("#vb .hk").count() or not await page.locator("#siGo, .si-intro .note").count():
+        failures.append("profile: signed-out view missing")
     await page.goto(BASE + "#/verify"); await page.wait_for_timeout(900)
     if not await page.locator(".hks .hk").count() or not await page.locator("#kcCh").inner_text():
         failures.append("verify: keycards or Hound ID challenge missing")

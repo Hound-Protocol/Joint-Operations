@@ -1,6 +1,9 @@
   /* ---------------- Utilities ---------------- */
   // Browsers too old for the app get the plain page from index.html instead
   if (window.JO_LEGACY) return;
+  // Hide the interface until the first screen is ready (20b-ready.js); never longer than 3 s, even if something fails
+  document.documentElement.classList.add("booting");
+  setTimeout(function () { document.documentElement.classList.remove("booting"); }, 3000);
   // Small polyfills for older browsers (Safari 9, old Chromium on older systems)
   if (typeof Object.assign !== "function") {
     Object.assign = function (t) { for (var i = 1; i < arguments.length; i++) { var s = arguments[i]; if (s) for (var k in s) if (Object.prototype.hasOwnProperty.call(s, k)) t[k] = s[k]; } return t; };
