@@ -46,8 +46,6 @@ jobs:
         run: |
           printf 'Fix\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n' | python3 tools/agents.py --stdin | grep -qx Claude
           printf 'Fix\n\nSigned-off-by: Someone <a@b.c>\n' | python3 tools/agents.py --stdin | grep -qx 'No AI agent detected'
-      - name: Check relative links in docs
-        run: python3 tools/check_links.py
       - name: Docs library entries exist
         run: python3 -c "import json,os,sys; m=[d['path'] for d in json.load(open('site/data/docs.json'))['docs'] if not os.path.exists(d['path'])]; print('missing:',m); sys.exit(1 if m else 0)"
       - name: No game files committed

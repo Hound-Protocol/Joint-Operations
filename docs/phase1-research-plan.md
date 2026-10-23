@@ -17,12 +17,12 @@ Learn what is needed to run a 16-player session in MGSV, and prove the networkin
 | ID | Topic | Question | Owner role | Deliverable |
 |---|---|---|---|---|
 | R1 | Test environment | Windows rig and Proton rig, pinned game build, repeatable setup | Proton Tester | research/environment.md |
-| R2 | Mod loading path | How does a mod get loaded into the game on Windows and under Proton? What public modding tools and docs exist? | RE / Hooks | research/loading.md |
-| R3 | Player representation | How are the player character and companions created and controlled? Can additional controllable characters exist in a session? | RE / Hooks | research/players.md |
-| R4 | State inventory | What state must sync: transforms, animation, weapons, health, enemies, world objects, mission flags, time, weather? Rank by cost and value. | RE / Hooks, Networking | research/state-inventory.md |
+| R2 | Mod loading path | How does a mod get loaded into the game on Windows and under Proton? What public modding tools and docs exist? | RE / Hooks | research/loading.md (desk part in [launch-and-second-player.md](../research/launch-and-second-player.md), rig test open) |
+| R3 | Player representation | How are the player character and companions created and controlled? Can additional controllable characters exist in a session? | RE / Hooks | research/players.md (desk part in [launch-and-second-player.md](../research/launch-and-second-player.md), rig test open) |
+| R4 | State inventory | What state must sync: transforms, animation, weapons, health, enemies, world objects, mission flags, time, weather? Rank by cost and value. | RE / Hooks, Networking | [research/state-inventory.md](../research/state-inventory.md) (**draft**, rig data open) |
 | R5 | Mother Base roster | How is Mother Base staff stored and selected? How do staff members map to client slots? | RE / Hooks | research/roster.md |
 | R6 | Join and leave | What in-game mechanisms (arrivals, departures, animations) can make joins and leaves seamless? | RE / Hooks | research/join-leave.md |
-| R7 | Networking spike | Prototype outside the game: GameNetworkingSockets, Steam Networking Messages vs Sockets, direct IP. Simulate 16 clients. | Networking | research/networking-spike.md |
+| R7 | Networking spike | Prototype outside the game: GameNetworkingSockets, Steam Networking Messages vs Sockets, direct IP. Simulate 16 clients. | Networking | research/networking-spike.md (desk comparison in [steam-networking-api.md](../research/steam-networking-api.md), proposes ADR 0018; spike open) |
 | R8 | Test harness | Mock Steam DLL, clumsy and tc netem profiles, state hash logging | Networking, Proton Tester | tools/ scripts and research/test-harness.md |
 | R9 | Performance budget | CPU, memory, bandwidth targets on a modest PC at 2, 4, 8, 16 players | Networking | research/performance.md |
 | R10 | Legal gate | Steam App ID and rights position, license text, donation policy | Lead | docs/legal.md updated (license and donations **decided**; App ID open) |
@@ -33,7 +33,7 @@ Learn what is needed to run a 16-player session in MGSV, and prove the networkin
 | R14 | Joining from outside the game | Do Steam lobby links and launch arguments reach the game through Konami's launcher? Do `steam://` and `jointops://` links work from Flatpak browsers on Bazzite? | Networking, Proton Tester | research/browser-launch.md, informs ADR 0008 |
 
 ## Background reading
-Start with the desk research in research/: game-and-engine.md, modding-ecosystem.md, steam-networking.md, proton.md and prior-art/dynamite.md.
+Start with the desk research in research/: game-and-engine.md, launch-and-second-player.md, modding-ecosystem.md, steam-networking.md, steam-networking-api.md, state-inventory.md, proton.md and prior-art/dynamite.md.
 
 ## Suggested order
 1. R1, R10, R13 (can start immediately).

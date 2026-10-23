@@ -8,7 +8,7 @@ Status values: **Proposed** (waiting for the project lead), **Accepted**, **Supe
 |---|---|---|
 | [0001](0001-multiplayer-scope.md) | Joint Operations is a multiplayer mod that brings online functionality into the single-player world | Accepted |
 | [0002](0002-integration-strategy.md) | Build on the engine's own multiplayer layer first; own netcode as fallback | Proposed |
-| [0003](0003-transport.md) | Steam networking through the game's Steam API; open-source GNS for direct connections | Proposed |
+| [0003](0003-transport.md) | Steam networking through the game's Steam API; open-source GNS for direct connections (Messages or Sockets: see 0018) | Proposed |
 | [0004](0004-loader.md) | Native code ships as an IHHook-compatible plugin, with a standalone proxy fallback | Proposed |
 | [0005](0005-license.md) | Code GPL-3.0-only with a Steamworks/MGSV linking permission; docs CC BY-SA 4.0; brand reserved | Accepted |
 | [0006](0006-no-konami-services.md) | Never use Konami online services; matchmaking by Steam or our own server | Accepted |
@@ -23,6 +23,7 @@ Status values: **Proposed** (waiting for the project lead), **Accepted**, **Supe
 | [0015](0015-ai-agents-and-attribution.md) | AI agents are contractors' tools; work credited to the person with the agent named, detected from commit trailers | Accepted |
 | [0016](0016-accountability.md) | Accountability: infractions for contributors and role holders, three suspend, no time limits, appeals | Accepted |
 | [0017](0017-hound-id-sign-in.md) | Hound ID proof with the holder's SSH signing key; GitHub sign-in with restricted documents in private repositories (live since v0.0.22) | Accepted |
+| [0018](0018-steam-networking-sockets.md) | Steam Networking Sockets for the Steam path: listen socket on the host, poll group, lanes, status callback by config; Messages as fallback | Proposed |
 
 ## Template
 ```

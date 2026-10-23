@@ -100,7 +100,7 @@ Module: launcher · Difficulty: 🔴 Hard (Core: Development Department) · Skil
 - Load order and timing relative to the game's Lua start recorded
 - Recommendation for ADR 0004 with evidence
 
-Background: [R2](phase1-research-plan.md), [adr-0004](decisions/0004-loader.md)
+Background: [R2](phase1-research-plan.md), [adr-0004](decisions/0004-loader.md), [r-launch](../research/launch-and-second-player.md)
 
 ## C05
 **Document mod loading path (Proton)**  
@@ -115,7 +115,7 @@ Module: launcher · Difficulty: 🟡 Medium (Core: Development Department) · Sk
 - Any differences in timing, file paths or logging recorded
 - Exact launch options players need, ready to paste
 
-Background: [R2](phase1-research-plan.md), [r-proton](../research/proton.md)
+Background: [R2](phase1-research-plan.md), [r-proton](../research/proton.md), [r-launch](../research/launch-and-second-player.md)
 
 ## C06
 **Player and companion representation notes**  
@@ -131,7 +131,7 @@ Module: hooks · Difficulty: 🔴 Hard (Core: Development Department) · Skills:
 - How FOB and MGO create additional players, as far as observable
 - Confidence marked for every claim
 
-Background: [R3](phase1-research-plan.md), [adr-0007](decisions/0007-host-authority.md)
+Background: [R3](phase1-research-plan.md), [adr-0007](decisions/0007-host-authority.md), [r-launch](../research/launch-and-second-player.md), [r-state](../research/state-inventory.md)
 
 ## C07
 **Mother Base roster notes**  
@@ -162,7 +162,7 @@ Module: session · Difficulty: 🟡 Medium · Skills: Netcode, research · Depen
 - Bandwidth estimate per player at 16 players
 - Reviewed by the networking module owner
 
-Background: [R4](phase1-research-plan.md), [r-netcode](../research/networking-playbook-summary.md)
+Background: [R4](phase1-research-plan.md), [r-netcode](../research/networking-playbook-summary.md), [r-state](../research/state-inventory.md)
 
 ## C09
 **Spike: GameNetworkingSockets, Steam Messages vs Sockets**  
@@ -176,9 +176,9 @@ Module: net · Difficulty: 🔴 Hard · Skills: C++, networking
 - Builds on Windows and Linux from a clean checkout with written steps
 - Reliable and unreliable messages between two machines on both paths
 - Messages vs Sockets compared: API fit, NAT behavior, latency
-- Recommendation for ADR 0003
+- Confirms or overturns the proposed ADR 0018 (Sockets) for ADR 0003
 
-Background: [R7](phase1-research-plan.md), [adr-0003](decisions/0003-transport.md), [r-steam](../research/steam-networking.md)
+Background: [R7](phase1-research-plan.md), [adr-0003](decisions/0003-transport.md), [r-steam](../research/steam-networking.md), [r-steam-api](../research/steam-networking-api.md), [adr-0018](decisions/0018-steam-networking-sockets.md)
 
 ## C10
 **Simulate 16 clients and measure bandwidth**  
@@ -330,7 +330,7 @@ Module: session · Difficulty: 🔴 Hard (Core: Development Department) · Skill
 - What blocks it, if anything
 - No Konami online services contacted at any point
 
-Background: [R12](phase1-research-plan.md), [adr-0002](decisions/0002-integration-strategy.md), [r-engine](../research/game-and-engine.md)
+Background: [R12](phase1-research-plan.md), [adr-0002](decisions/0002-integration-strategy.md), [r-engine](../research/game-and-engine.md), [r-launch](../research/launch-and-second-player.md)
 
 ## C20
 **Steam interfaces from inside the game (rig test)**  
@@ -346,7 +346,7 @@ Module: net · Difficulty: 🟡 Medium (Core: Development Department) · Skills:
 - Which callback approach works
 - ADR 0003 updated with the result
 
-Background: [R13](phase1-research-plan.md), [r-steam-interfaces](../research/steam-interfaces.md), [adr-0003](decisions/0003-transport.md)
+Background: [R13](phase1-research-plan.md), [r-steam-interfaces](../research/steam-interfaces.md), [adr-0003](decisions/0003-transport.md), [adr-0018](decisions/0018-steam-networking-sockets.md)
 
 ## C21
 **Join links: Steam lobby links and launch arguments**  

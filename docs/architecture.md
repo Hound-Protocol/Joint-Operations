@@ -23,7 +23,7 @@ Decided by the Phase 1 spike R12 ([ADR 0002](decisions/0002-integration-strategy
 | 3 | Hook layer | C++ | Native hooks for systems Lua cannot reach (for example AI targeting). Address tables per game build. Isolated from networking |
 | 4 | Lua layer | Lua | Mission, player, marker and session logic in the game's own scripting |
 | 5 | Session layer | C++ / Lua | Player slots 1 to 16, join and leave, host authority, late-join snapshots |
-| 6 | Transport | C++ | Steam path through the game's Steam API; direct path through open-source GNS ([ADR 0003](decisions/0003-transport.md)) |
+| 6 | Transport | C++ | Steam path through the game's Steam API; direct path through open-source GNS ([ADR 0003](decisions/0003-transport.md); Sockets proposed in [ADR 0018](decisions/0018-steam-networking-sockets.md)) |
 | 7 | Matchmaking | — | Steam lobbies and Steam invites. Never Konami's ([ADR 0006](decisions/0006-no-konami-services.md)). Proposed: a small session registry API so the website can list and join servers, with Steam lobby search as fallback ([ADR 0008](decisions/0008-browser-launch.md)) |
 | 8 | Config and mod API | Lua / data | Settings now; extension points in Phase 4 |
 | 9 | Apps and web | Web | Website now. Proposed: the Servers page becomes a live server browser with one-click join (ADR 0008). Outside the game process |
@@ -37,13 +37,13 @@ Decided by the Phase 1 spike R12 ([ADR 0002](decisions/0002-integration-strategy
 - Joint Operations uses its own save files, separate from the player's normal saves.
 
 ## 5. Sync priorities
-In order: player avatars; AI ownership and targeting; combat and damage; markers and HUD; world objects; mission and story flags; vehicles and buddies; support functions (helicopter, supply drops); cutscenes. The full list with costs is the R4 state inventory.
+In order: player avatars; AI ownership and targeting; combat and damage; markers and HUD; world objects; mission and story flags; vehicles and buddies; support functions (helicopter, supply drops); cutscenes. The full list with owners, priorities and costs is the [state inventory](../research/state-inventory.md) (R4, draft).
 
 Netcode principles are summarized in [the playbook summary](../research/networking-playbook-summary.md): unreliable movement and reliable events, stable IDs, quantization and delta compression, interest management at 16 players, keep-alives.
 
 ## 6. Open questions (Phase 1)
 1. Can 3 or more players share an engine session? (R12, blocking)
-2. Are current Steam networking interfaces reachable through the game's older Steam API? (R13. Desk research says likely; rig test planned, see [steam-interfaces.md](../research/steam-interfaces.md))
+2. Are current Steam networking interfaces reachable through the game's older Steam API? (R13. Desk research says likely; rig test planned, see [steam-interfaces.md](../research/steam-interfaces.md)). Proposed: Sockets rather than Messages ([ADR 0018](decisions/0018-steam-networking-sockets.md))
 3. Does IHHook's plugin interface give us what we need? (R2)
 4. Which single-player systems break with extra players, and how costly is each? (R4)
 5. Steam App ID position for a public release (R10, blocking for release)

@@ -18,7 +18,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Handbook: 36 policies, procedures and guides, with PDFs, including GitHub, Discord and website basics
 - [x] Documentation aligned with the project, with a knowledge map and a link checker in CI
 - [x] Brand: Hound Protocol and Joint Operations logos, Hound Protocol website
-- [x] Roadmap shown as a base under construction, one platform per phase, with cargo operations
+- [x] Roadmap shown as a base under construction, one platform per phase, with cargo operations (a new detail each release)
 - [x] Keycards and Hound ID proof with SSH signing keys (ADR 0017)
 - [x] Docs as a dossier cabinet: paper per document class, ranked full-text search
 - [x] Documentation in two zones, Library and Handbook
@@ -33,6 +33,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Summarize networking playbook into research/ in our own words
 - [x] Desk research: Steam interfaces (R13), file formats and tools, Proton on Bazzite
 - [x] Desk research: how the enemy AI notices, reports and hunts (research/ai-system.md)
+- [x] Desk research: how MGSV starts and where a second player can come in, the state to sync (draft), Steam Networking Messages or Sockets (ADR 0018 proposed)
 - [x] Contract specs with acceptance criteria for all Phase 1 work (docs/contracts.md)
 - [ ] Engine session spike: 3 or more players in one session (R12)
 - [ ] Steam interfaces reachable from the game process (R13)
