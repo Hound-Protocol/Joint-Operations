@@ -10,6 +10,28 @@
   function siOn() { return !!siCfg().relay; }
   function siSave() { try { if (SI) sessionStorage.setItem(SI_KEY, JSON.stringify(SI)); else sessionStorage.removeItem(SI_KEY); } catch (e) { /* private mode: the session lives in this page only */ } }
   function siIn() { return !!(SI && SI.token && SI.user && (!SI.exp || SI.exp > Date.now())); }
+  /* Guest passes: the owner grants a link that opens LV3 (Staff) for 24 hours. The relay signs and checks the pass and
+     reads the Staff documents for the guest; the pass lives in this tab only and cannot be extended here. */
+  var SG_KEY = "hp.guest", SG = null;
+  try { SG = JSON.parse(sessionStorage.getItem(SG_KEY) || "null"); } catch (e) { SG = null; }
+  function sgSave() { try { if (SG) sessionStorage.setItem(SG_KEY, JSON.stringify(SG)); else sessionStorage.removeItem(SG_KEY); } catch (e) { /* this page only */ } }
+  function sgIn() { return !!(SG && SG.pass && SG.exp > Date.now()); }
+  function siRelay() { return String(siCfg().relay || "").replace(/\/$/, ""); }
+  function sgApi(path, raw, pass) {
+    if (typeof fetch !== "function") return Promise.reject(new Error("This browser cannot open guest passes"));
+    return fetch(siRelay() + path, { headers: { Authorization: "Guest " + (pass || SG.pass) }, cache: "no-store" }).then(function (r) {
+      if (r.status === 401 && !pass) { SG = null; sgSave(); siBadge(); }
+      if (!r.ok) return r.json().catch(function () { return {}; }).then(function (j) { var e = new Error(j.error || "HTTP " + r.status); e.status = r.status; throw e; });
+      return raw ? r.text() : r.json();
+    });
+  }
+  function siOwner() { return siIn() && String(SI.user.id) === String(siCfg().owner || ""); }
+  /* Reads one restricted file, with the person's own sign-in or, for a guest, through the relay */
+  function siRead(repo, path) {
+    if (siIn()) return siApi("/repos/" + repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/"), true);
+    if (sgIn() && repo === (siCfg().guestRepo || "Hound-Protocol/hp-staff")) return sgApi("/guest/file?path=" + encodeURIComponent(path), true);
+    var e = new Error("No access"); e.status = 403; return Promise.reject(e);
+  }
   function siApi(path, raw) {
     var h = { Authorization: "Bearer " + SI.token, Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json" };
     if (typeof fetch !== "function") return Promise.reject(new Error("This browser cannot sign in"));
@@ -35,7 +57,7 @@
         SI = { token: m.token, exp: m.expires_in ? Date.now() + m.expires_in * 1000 : 0 };
         siApi("/user").then(function (u) {
           SI.user = { id: u.id, login: u.login, name: u.name || "", avatar: u.avatar_url };
-          siSave(); siBadge(); ok(SI.user);
+          siSave(); siBadge(); siOrg(); ok(SI.user);
         }, function () { SI = null; siSave(); fail(new Error("Could not read your GitHub account.")); });
       }
       window.addEventListener("message", on);
@@ -43,13 +65,26 @@
     });
   }
   function signOut() { SI = null; siSave(); siBadge(); }
+  /* Organization owners hold LV7, as GitHub itself reports it (ADR 0011: keycards come from the organization). This needs
+     the sign-in app's read-only "Members" permission; without it the check fails quietly and nothing changes. */
+  function siOrg() {
+    if (!siIn() || (SI.org && SI.org.at > Date.now() - 10 * 60 * 1000)) return;
+    var org = siCfg().org || "Hound-Protocol";
+    SI.org = { at: Date.now(), role: "" };
+    siApi("/user/memberships/orgs/" + encodeURIComponent(org)).then(function (m) {
+      SI.org = { at: Date.now(), role: m && m.state === "active" ? m.role : "" }; siSave(); siBadge();
+      if (SI.org.role === "admin" && (currentView === "profile" || currentView === "docs")) route();
+    }, function () { /* no Members permission yet, or not a member */ });
+  }
   /* The person's card: their active staff card, or a member card (LV2) */
   function siCard() {
-    if (!siIn()) return null;
+    if (!siIn()) return sgIn() ? { id: "GUEST", login: "guest", name: "Guest", github_id: 0, avatar: "", card: "LV3", department: "Guest", since: "", status: "active", guest: true, exp: SG.exp } : null;
     var staff = (data.staff && data.staff.staff) || [];
     var s = staff.filter(function (x) { return x.github_id === SI.user.id && x.status === "active"; })[0];
     /* A staff card counts only once its signature checks out against the published records key, so an edited
        staff.json can never raise anyone's clearance. Until then (or if it fails) the holder is a member. */
+    if (!s && SI.org && SI.org.role === "admin")
+      return { id: "OWNER", login: SI.user.login, name: SI.user.name, github_id: SI.user.id, avatar: SI.user.avatar, card: "LV7", department: "Administration", since: "", status: "active", owner: true };
     if (s) {
       var v = siV[s.id];
       if (!v) siVerify(s);
@@ -76,7 +111,8 @@
       b = $("#siBadge");
     }
     var c = siCard();
-    b.innerHTML = c ? '<i style="--hk:' + (KC_LV[c.card] || KC_LV.LV2)[1] + '">' + esc(c.card) + "</i><span>" + esc(c.name || c.login) + "</span>" : "<i>ID</i><span>Sign in</span>";
+    b.innerHTML = c ? '<i style="--hk:' + (KC_LV[c.card] || KC_LV.LV2)[1] + '">' + esc(c.card) + "</i><span>" + esc(c.guest ? "Guest pass" : c.name || c.login) + "</span>" : "<i>ID</i><span>Sign in</span>";
+    b.classList.toggle("guest", !!(c && c.guest));
     b.classList.toggle("in", !!c);
     b.setAttribute("aria-label", c ? "Your profile, " + c.card : "Sign in with GitHub");
   }
@@ -84,6 +120,11 @@
   /* ---- Restricted document areas: one private repository per clearance ---- */
   var siTrees = {};
   function siArea(a) {
+    if (!siIn()) {
+      if (!sgIn() || a.repo !== (siCfg().guestRepo || "Hound-Protocol/hp-staff")) { var e = new Error("No access"); e.status = 403; return Promise.reject(e); }
+      var gk = "guest:" + a.repo;
+      return siTrees[gk] || (siTrees[gk] = sgApi("/guest/tree").then(function (j) { return j.paths || []; }, function (er) { delete siTrees[gk]; throw er; }));
+    }
     if (siTrees[a.repo]) return siTrees[a.repo];
     return (siTrees[a.repo] = siApi("/repos/" + a.repo).then(function (r) {
       return siApi("/repos/" + a.repo + "/git/trees/" + encodeURIComponent(r.default_branch) + "?recursive=1");
@@ -99,17 +140,23 @@
     Promise.all([loadLocal("staff"), loadLocal("records"), loadLocal("records-key"), loadLocal("contracts")]).then(function (res) {
       if (currentView !== "profile") return;
       var keys = (res[2] && res[2].keys) || [];
-      if (!siIn()) return drawSignedOut();
+      if (!siIn() && !sgIn()) return drawSignedOut();
       var c = siCard(), lvl = siLevel(), areas = siCfg().areas || [];
       $("#vb").innerHTML =
         '<div class="kc-profile">' + keycard(c, { big: true }) +
+        (c.guest ? '<dl class="kc-facts"><div><dt>Pass</dt><dd>Guest pass with <b>LV3</b> (Staff) clearance, granted by the owner.</dd></div>' +
+          "<div><dt>Expires</dt><dd>" + esc(fmtDate(new Date(c.exp).toISOString().slice(0, 10))) + " at " + esc(new Date(c.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(c.exp)) + " left. It cannot be extended.</dd></div>" +
+          "<div><dt>Session</dt><dd>This tab only. Nothing is stored on a server.</dd></div>" +
+          '<div><dt></dt><dd><button class="btn small" id="siOut">End guest pass</button></dd></div></dl></div>' :
         '<dl class="kc-facts"><div><dt>GitHub</dt><dd><a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id) + "</dd></div>" +
-          "<div><dt>Card</dt><dd>" + (c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
+          "<div><dt>Card</dt><dd>" + (c.owner ? "Owner card: GitHub confirms you own the Hound-Protocol organization." : c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
           "<div><dt>Session</dt><dd>" + (SI.exp ? "Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab" : "Signed in, in this tab") + "</dd></div>" +
-          '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>' +
+          '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>') +
+        (siOwner() ? sgPanel() : "") +
         siAccess(lvl, areas) +
         '<article class="dossier si-reader" id="siDoc" hidden></article>';
-      $("#siOut").addEventListener("click", function () { signOut(); status("Signed out"); viewProfile(); });
+      $("#siOut").addEventListener("click", function () { if (c.guest) { SG = null; sgSave(); siBadge(); status("Guest pass ended"); } else { signOut(); status("Signed out"); } viewProfile(); });
+      if (siOwner()) sgPanelWire();
       areas.forEach(function (a, i) {
         var box = $('.si-docs[data-a="' + i + '"]');
         if (!box || lvl < +String(a.card).slice(2)) return;
@@ -121,8 +168,8 @@
           box.innerHTML = '<p class="sub">' + (e.status === 404 || e.status === 403 ? "GitHub has not given your account access yet. Ask Administration to add you to the right team." : "Could not reach GitHub. Try again later.") + "</p>";
         });
       });
-      if (keys.length && !c.member) markVerified([c], keys);
-      else $$('.kc-profile [data-rid] .vs').forEach(function (el) { el.innerHTML = '<span class="status claimed">Signed in</span>'; });
+      if (keys.length && !c.member && !c.guest && !c.owner) markVerified([c], keys);
+      else $$('.kc-profile [data-rid] .vs').forEach(function (el) { el.innerHTML = c.owner ? '<span class="status done">Confirmed by GitHub</span>' : c.guest ? '<span class="status planned">Guest · until ' + esc(new Date(c.exp).toTimeString().slice(0, 5)) + "</span>" : '<span class="status claimed">Signed in</span>'; });
     });
   }
   /* Access granted and access restricted: every level's rights from ADR 0011 (config.signin.access), split at the
@@ -153,10 +200,54 @@
       "</div>" +
       '<p class="sub ax-note">GitHub decides what you can read in the restricted areas, through your teams; your card shows what your clearance should open. Items marked with a date or <em>Planned</em> arrive with the session browser and the API server (<a href="#/docs/adr-0011">ADR 0011</a>).</p>';
   }
+  function sgLeft(exp) { var m = Math.max(0, Math.round((exp - Date.now()) / 60000)); return m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; }
+  /* The owner's guest pass desk: grant a 24-hour LV3 pass and copy its link. The relay checks that the request comes
+     from the owner's own GitHub account; this panel only shows for the owner. */
+  var SG_ISSUED = "hp.guest.issued";
+  function sgIssued() { try { return (JSON.parse(sessionStorage.getItem(SG_ISSUED) || "[]") || []).filter(function (x) { return x.exp > Date.now(); }); } catch (e) { return []; } }
+  function sgLink(pass) { return (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guest/" + pass; }
+  function sgPanel() {
+    var list = sgIssued();
+    return '<section class="gp"><header><span class="gp-ico" aria-hidden="true"></span><div><b>Guest passes</b><small>Owner only · LV3 (Staff) access for 24 hours to whoever has the link. A pass cannot be extended.</small></div>' +
+      '<button class="btn primary" id="gpGrant">Grant Guest Pass</button></header><p class="sub" id="gpMsg" aria-live="polite"></p><ul class="gp-list" id="gpList">' + list.map(sgItem).join("") + "</ul></section>";
+  }
+  function sgItem(x) {
+    return '<li><code>' + esc(x.pass.slice(0, 10)) + '…</code><span>Expires ' + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + ' left</span><button class="btn small" data-gp="' + esc(x.pass) + '">Copy link</button></li>';
+  }
+  function sgPanelWire() {
+    function wire() { $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; }); }
+    wire();
+    var g = $("#gpGrant"); if (!g) return;
+    g.addEventListener("click", function () {
+      g.disabled = true; $("#gpMsg").textContent = "Asking the relay…";
+      fetch(siRelay() + "/guest/grant", { method: "POST", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "HTTP " + r.status); return j; }); }).then(function (j) {
+        var list = sgIssued(); list.unshift({ pass: j.pass, exp: j.exp });
+        try { sessionStorage.setItem(SG_ISSUED, JSON.stringify(list.slice(0, 10))); } catch (e) { /* this page only */ }
+        $("#gpList").innerHTML = list.map(sgItem).join(""); wire();
+        $("#gpMsg").textContent = "Pass granted. Copy its link and send it privately; anyone with the link has LV3 until it expires.";
+        var b = $("#gpList [data-gp]"); if (b) b.click();
+        blip("go");
+      }, function (e) { $("#gpMsg").textContent = e.message; }).then(function () { g.disabled = false; });
+    });
+  }
+  /* #/guest/PASS: check the pass with the relay, keep it in this tab, then open the profile */
+  function viewGuest(pass) {
+    var v = $("#view");
+    v.innerHTML = shell("Hound ID", "Guest pass", loading("Checking your guest pass"));
+    if (!pass || !siOn()) { $("#vb").innerHTML = '<div class="empty">No guest pass in this link</div>'; return; }
+    sgApi("/guest/check", false, pass).then(function (j) {
+      SG = { pass: pass, exp: j.exp }; sgSave(); siBadge(); status("Guest pass accepted"); blip("go");
+      location.replace("#/profile");
+    }, function (e) {
+      if (currentView !== "guest") return;
+      $("#vb").innerHTML = '<div class="ad gp-bad"><div class="ad-box"><small>Security</small><strong>Access denied</strong><em>' + esc(e.status === 401 ? "This guest pass is not valid or has expired." : e.message) + "</em><p>Ask the person who sent it for a new one, or contact Administration.</p>" +
+        '<div class="ad-act"><a class="btn small" href="#/briefing">About Joint Operations</a><a class="btn small" href="#/guides/hp-gde-015">Using the website</a></div></div></div>';
+    });
+  }
   function siOpen(a, path) {
     var d = $("#siDoc"); if (!d) return;
     d.hidden = false; d.className = "dossier si-reader k-project"; d.innerHTML = loading("Opening " + path);
-    siApi("/repos/" + a.repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/"), true).then(function (md) {
+    siRead(a.repo, path).then(function (md) {
       d.style.setProperty("--g", (KC_LV[a.card] || KC_LV.LV3)[1]); d.style.setProperty("--gd", "#4d5a60");
       d.innerHTML = '<div class="ds-tab"><b>' + esc(a.card) + "</b>" + esc(a.title) + '</div><div class="ds-folder"><div class="ds-page">' +
         '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Restricted · ' + esc(a.card) + "</span></header>" +

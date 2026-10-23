@@ -2,6 +2,15 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.27 · Guest pass · 2026-10-23
+- **Owner card (LV7) from GitHub:** if GitHub confirms you own the Hound-Protocol organization, your Profile shows an Owner card, LV7, "Confirmed by GitHub". It needs the sign-in app's read-only Members permission ([setup](docs/signin.md#5-owner-card-lv7-from-github)). No file can fake it.
+- **Guest passes:** the owner (only the owner, checked by GitHub through the relay) can **Grant Guest Pass** on the Profile: a link that gives LV3 (Staff) access for 24 hours, no account needed. The guest gets a gold guest card with the time left; the relay signs and checks the pass and reads the Staff documents for them. A pass cannot be extended ([setup](docs/signin.md#6-guest-passes-owner-only)).
+- **Update notice:** when a new release goes live while the site is open, a small notice slides in at the top and offers to reload.
+- **Search by name or content:** a switch under the search in the Library and the Handbook. Name (the default) searches numbers and titles; Content searches what the documents say.
+- **Fix:** opening a guide from the Handbook no longer highlights words, and one- or two-letter words are never highlighted.
+- **CI:** browser tests now run inside Playwright's own image, so a slow Ubuntu package mirror can no longer stall a release.
+- **Roadmap:** this release's base detail is a windsock beside the command helipad.
+
 ## v0.0.26 · Clearance · 2026-10-23
 - **Sign-in is live** with the new GitHub App **Hound ID Sign-in**, owned by the Hound-Protocol organization ([setup](docs/signin.md)).
 - **Clearance in the Library:** a line above every document says **Access granted** and its level: LV1 (public) for the public repository, LV3 to LV6 for restricted documents. New **Staff**, **Leads** and **Administration** drawers hold the restricted documents, read from the private repositories with your own sign-in. Above your clearance, the drawer is locked and the document shows as a greyed-out draft behind an **Access denied** screen with the level required and a way to contact Administration. Handbook sheets carry the clearance line too.

@@ -16,6 +16,11 @@ Signing in is optional and uses your GitHub account ([how it works](signin.md), 
 - Your token goes from the relay straight to this page and is used only to call GitHub's API from your browser.
 - To revoke access at any time: GitHub → Settings → Applications → Authorized GitHub Apps → Hound ID Sign-in → Revoke.
 
+## Guest passes
+- A guest pass link holds a signed code with its expiry time and nothing about you. The site keeps it in the open tab (session storage) until it expires or you end it.
+- When you read a Staff document with a guest pass, the sign-in relay fetches it from GitHub for you. The relay stores nothing and keeps no logs of passes.
+- The site checks once in a while whether a new version is live, by reading its own build number. Nothing about you is sent.
+
 ## Third parties
 - **GitHub:** the site is hosted on GitHub Pages, and your browser requests releases, contract issues and commits directly from GitHub's public API. GitHub receives your IP address and browser details for these requests, as it does for any visit to GitHub. See GitHub's privacy statement for how they handle it.
 - **Fonts** are served from this site. No requests go to Google or other font services.

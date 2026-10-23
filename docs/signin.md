@@ -36,14 +36,37 @@ Cloudflare dashboard → Workers → **Create** → name it `hp-signin` → past
 ## 4. Switch it on
 The relay URL goes in `site/data/config.json` → `signin.relay`, with the restricted areas in `signin.areas`. Neither the URL nor the client ID is secret. Live since v0.0.22: `https://hp-signin.trueman-truetown.workers.dev`.
 
+## 5. Owner card (LV7) from GitHub
+Organization owners hold LV7 (ADR 0011). The website asks GitHub whether the signed-in account owns the organization, so nothing can be edited to fake it.
+- GitHub App → **Permissions & events** → **Organization permissions** → **Members: Read-only** → **Save changes**.
+- GitHub asks the organization to accept the new permission: **Hound-Protocol → Settings → GitHub Apps → Hound ID Sign-in → Review request → Accept**.
+- Sign out and in again on the website. The Profile shows an **Owner card**, LV7, "Confirmed by GitHub".
+A signed staff card (`records.py staff-add`) adds a permanent Hound ID later; it is not needed for LV7.
+
+## 6. Guest passes (owner only)
+A guest pass gives LV3 (Staff) access for 24 hours to whoever has its link, without a GitHub account. The owner grants it from the Profile (**Grant Guest Pass**). The relay checks with GitHub that the request comes from the owner's account, signs the pass, and later reads the Staff documents for the guest with the app's own short-lived token, limited to `hp-staff` and to reading. A pass cannot be extended; to cancel every pass at once, change `GUEST_SECRET`.
+
+Setup, once:
+1. GitHub App → **Credentials** → **Private keys** → **Generate a private key**. A `.pem` file downloads. Keep it private; delete the download after step 3.
+2. GitHub App → **General**: note the **App ID** (a number).
+3. Cloudflare → hp-signin → **Settings → Variables and Secrets**, add:
+   - `OWNER_GITHUB_ID` (Text): `249122176`
+   - `GITHUB_APP_ID` (Text): the App ID
+   - `GUEST_REPO` (Text): `Hound-Protocol/hp-staff`
+   - `GITHUB_APP_PRIVATE_KEY` (Secret): the whole content of the `.pem` file, including the BEGIN and END lines
+   - `GUEST_SECRET` (Secret): a long random string, for example 40 characters from a password manager
+4. Paste the current `tools/signin-relay/worker.js` into the worker (**Edit code** → **Deploy**) and check the variables are all still listed.
+
 ## Using it
 - **Sign in:** the **Sign in** badge in the top bar, or the Profile page (`#/profile`). A GitHub window asks you to authorize *Hound ID Sign-in* once.
 - **Profile:** your keycard (your signed staff card, or a member card), your session, and your documents.
 - **Your documents:** one area per private repository. Areas above your clearance stay locked; inside an area GitHub decides what you can read.
+- **Guest:** open the link the owner sent. The pass is kept in that tab; **End guest pass** on the Profile removes it.
 - **Sign out:** the button on the Profile page, or close the tab.
 
 ## How it stays safe
-- The relay keeps the client secret and nothing else: no database, no logs of tokens.
+- The relay keeps its secrets (client secret, app key, guest secret) and nothing else: no database, no logs of tokens or passes.
+- Guest passes are signed by the relay and checked by the relay on every request. The browser cannot forge, extend or widen one. Only the owner's GitHub account can grant them.
 - The token lives only in the reader's browser tab (session storage) and expires within 8 hours. Signing out removes it.
 - The token can only read the contents of the three private repositories, and only those the person's teams can already read.
 - Leaving a team removes access immediately ([HP-SOP-007](guides/HP-SOP-007-onboarding-offboarding.md)).

@@ -27,6 +27,10 @@ The website is static (GitHub Pages). Everything in the public repository can be
 - The website grants a staff card's level only once its signature verifies against the published records key; an edited `staff.json` cannot raise anyone's clearance.
 - Restricted documents also appear in the Library as drawers per clearance, with *Access denied* above your level.
 
+## Update 2026-10-23 (v0.0.27)
+- **Owner card:** organization owners get LV7 from GitHub itself (the app's read-only Members permission), as ADR 0011 intended. No file can fake it.
+- **Guest passes:** the owner can grant a 24-hour LV3 pass, link only. The relay signs and checks it and reads `hp-staff` for the guest with the app's own read-only token ([setup](../signin.md)).
+
 ## Consequences
 - Verify gets keycards, profiles (`#/verify/HND-NNNN`) and a "Prove a Hound ID" panel. Staff add an SSH signing key on GitHub ([HP-GDE-009](../guides/HP-GDE-009-grades-records-hound-ids.md)).
 - The private documents repository and its team access must be kept tidy, like the teams themselves ([HP-SOP-007](../guides/HP-SOP-007-onboarding-offboarding.md)).

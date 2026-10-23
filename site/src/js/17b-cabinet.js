@@ -18,10 +18,20 @@
      repositories, one per clearance (config.signin.areas); GitHub itself decides who can read them (ADR 0011, 0017).
      Each restricted area is a drawer: its files when your card and GitHub both allow it, otherwise one locked file. */
   var cabX = {}, cabDocs = [];
-  function cabLvl() { return typeof siIn === "function" && siIn() ? siLevel() : 1; }
+  /* Search by name or by content: a small switch under each search box (Library and Handbook) */
+  function smSwitch(id, mode) {
+    return '<div class="sm" role="group" aria-label="Search by" id="' + id + 'Sm"><span>Search by</span>' +
+      [["name", "Name"], ["text", "Content"]].map(function (m) { return '<button type="button" data-sm="' + m[0] + '" aria-pressed="' + (mode === m[0]) + '">' + m[1] + "</button>"; }).join("") + "</div>";
+  }
+  function smWire(id, on) {
+    $$("#" + id + "Sm [data-sm]").forEach(function (b) {
+      b.addEventListener("click", function () { $$("#" + id + "Sm [data-sm]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); blip(); on(b.getAttribute("data-sm")); });
+    });
+  }
+  function cabLvl() { return siIn() || sgIn() ? siLevel() : 1; }
   function cabSlug(p) { return p.replace(/\.md$/i, "").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase(); }
   function cabXDocs(onChange) {
-    var areas = (cfg.signin && cfg.signin.areas) || [], out = [], lvl = cabLvl(), who = typeof siIn === "function" && siIn() ? SI.user.id : 0;
+    var areas = (cfg.signin && cfg.signin.areas) || [], out = [], lvl = cabLvl(), who = typeof siIn === "function" && siIn() ? SI.user.id : (sgIn() ? "guest" : 0);
     areas.forEach(function (a, i) {
       var need = +String(a.card).slice(2), st = cabX[i];
       if (st && st.who !== who) st = cabX[i] = null;
@@ -42,7 +52,7 @@
     });
     return out;
   }
-  var cabOpen = {}, cabQ = "", cabJump = false, cabHL = null, cabIdx = null, cabIdxP = null, cabSel = 0, cabRes = [];
+  var cabMode = "name", cabOpen = {}, cabQ = "", cabJump = false, cabHL = null, cabIdx = null, cabIdxP = null, cabSel = 0, cabRes = [];
   function cabGroup(g) { return CAB_GROUPS[g] || ["DOC", "#c9d0d2", "#4d5a60"]; }
   /* File number and plain title: HP-POL-009, ADR-0012, or the group prefix and position */
   function cabCode(d, docs) {
@@ -86,13 +96,14 @@
       cabOpen = {}; cabOpen[doc.group] = true;
       if (!$("#cab")) {
         $("#vb").innerHTML = '<div class="cab" id="cab"><div class="cab-side">' +
-          '<label class="cab-q"><span aria-hidden="true">⌕</span><input id="cq" type="search" placeholder="Search the Library: numbers, titles, text" aria-label="Search the Library" aria-controls="cabDrawers" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' +
+          '<label class="cab-q"><span aria-hidden="true">⌕</span><input id="cq" type="search" placeholder="' + (cabMode === "text" ? "Search inside the Library\'s documents" : "Search the Library: numbers and titles") + '" aria-label="Search the Library" aria-controls="cabDrawers" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' + smSwitch("cab", cabMode) +
           '<div class="cab-count" id="cabCount" aria-live="polite"></div><div class="cab-drawers" id="cabDrawers"></div></div>' +
           '<article class="dossier" id="docBody" tabindex="-1"></article></div>';
         var dw = $("#cabDrawers"); dw.classList.add("first"); setTimeout(function () { dw.classList.remove("first"); }, 1400);
         var q = $("#cq");
         q.value = cabQ;
         q.addEventListener("input", function () { cabQ = q.value; cabSel = 0; cabFind(docs); });
+        smWire("cab", function (m) { cabMode = m; cabSel = 0; q.placeholder = m === "text" ? "Search inside the Library's documents" : "Search the Library: numbers and titles"; cabFind(cabDocs); q.focus(); });
         q.addEventListener("keydown", function (e) {
           if (e.key === "ArrowDown" || e.key === "ArrowUp") { if (!cabRes.length) return; e.preventDefault(); cabSel = (cabSel + (e.key === "ArrowDown" ? 1 : -1) + cabRes.length) % cabRes.length; cabMark(true); }
           else if (e.key === "Enter") { var id = cabRes[cabSel]; if (id) { e.preventDefault(); cabGo(id); } }
@@ -121,7 +132,7 @@
     var words = cabWords();
     if (!words.length || cabQ.trim().length < 2) return null;
     var by = {}, whole = cabQ.trim().toLowerCase();
-    if (cabIdx) cabIdx.forEach(function (e) { by[e.d.id] = e; });
+    if (cabIdx && cabMode === "text") cabIdx.forEach(function (e) { by[e.d.id] = e; });
     var out = {};
     docs.forEach(function (d) {
       if (d.group === "Handbook") return;
@@ -146,7 +157,7 @@
     if (!cab) return;
     cab.classList.toggle("searching", live);
     drawDrawers(docs);
-    if (live && !cabIdx) {
+    if (live && !cabIdx && cabMode === "text") {
       cab.classList.add("indexing");
       var q = cabQ;
       cabIndex(docs).then(function () { if (currentView !== "docs" || !$("#cab")) return; $("#cab").classList.remove("indexing"); if (cabQ === q) drawDrawers(docs); });
@@ -186,7 +197,7 @@
     if (follow && hits && cabRes.indexOf(active) > -1) cabSel = cabRes.indexOf(active);
     if (cabSel >= cabRes.length) cabSel = 0;
     var cnt = $("#cabCount");
-    if (cnt) cnt.innerHTML = hits ? '<span class="n">' + plural(total, "file") + '</span> match' + (cabIdx ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span>' : "";
+    if (cnt) cnt.innerHTML = hits ? '<span class="n">' + plural(total, "file") + '</span> match' + (cabIdx || cabMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span>' : "";
     cabMark(false);
     $$(".fold").forEach(function (f) { f.addEventListener("click", function () { cabJump = true; cabHL = cabWords().length ? cabWords() : null; }); });
     /* Open and close in place, so only that drawer slides */
@@ -237,7 +248,7 @@
     if (x && doc.locked) return cabDenied(body, doc, c);
     body.innerHTML = loading("Opening " + c[0]);
     var src = x ? (docCache["x:" + x.repo + ":" + doc.path] ? Promise.resolve(docCache["x:" + x.repo + ":" + doc.path]) :
-      siApi("/repos/" + x.repo + "/contents/" + doc.path.split("/").map(encodeURIComponent).join("/"), true).then(function (t) { docCache["x:" + x.repo + ":" + doc.path] = t; return t; })) : loadDoc(doc);
+      siRead(x.repo, doc.path).then(function (t) { docCache["x:" + x.repo + ":" + doc.path] = t; return t; })) : loadDoc(doc);
     src.then(function (md) {
       if (currentView !== "docs") return;
       var html = markdown(md.replace(/^# .*\n/, "").replace(/^Code: .*\n/, ""), doc.path);
@@ -278,6 +289,8 @@
   }
   /* Marks every search word in the opened page and returns the first mark */
   function cabHighlight(root, words) {
+    /* Only real words: a one- or two-letter word would light up half the page */
+    words = (words || []).filter(function (w) { return w.length >= 3; });
     if (!root || !words.length) return null;
     var re = new RegExp("(" + words.map(function (w) { return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + "[a-z]*)", "ig"), first = null, nodes = [];
     var walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false), n;
