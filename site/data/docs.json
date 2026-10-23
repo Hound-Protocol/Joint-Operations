@@ -188,6 +188,12 @@
       "path": "docs/decisions/0018-steam-networking-sockets.md"
     },
     {
+      "id": "adr-0019",
+      "title": "0019 Bans Across Accounts",
+      "group": "Decisions",
+      "path": "docs/decisions/0019-bans-across-accounts.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",
@@ -594,6 +600,12 @@
       "title": "HP-SOP-011 Issuing Infractions and Handling Appeals",
       "group": "Handbook",
       "path": "docs/guides/HP-SOP-011-infractions-and-appeals.md"
+    },
+    {
+      "id": "hp-sop-012",
+      "title": "HP-SOP-012 Banning an Account (LV0)",
+      "group": "Handbook",
+      "path": "docs/guides/HP-SOP-012-bans.md"
     }
   ]
 }

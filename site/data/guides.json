@@ -189,7 +189,7 @@
       "title": "Using the Website and Documentation",
       "type": "Guide",
       "audience": "Everyone",
-      "version": "1.3",
+      "version": "1.4",
       "effective": "2026-10-23",
       "owner": "Administration",
       "for": "everyone",
@@ -293,7 +293,7 @@
       "title": "Community and Moderation Policy",
       "type": "Policy",
       "audience": "Administration",
-      "version": "1.1",
+      "version": "1.2",
       "effective": "2026-10-23",
       "owner": "Administration",
       "for": "GitHub, Discord and every Hound Protocol space",
@@ -494,6 +494,19 @@
       "for": "Development, Administration and the owner",
       "summary": "Handling broken main, issuing infractions fairly, recording clean work and deciding appeals.",
       "path": "docs/guides/HP-SOP-011-infractions-and-appeals.md"
+    },
+    {
+      "id": "hp-sop-012",
+      "code": "HP-SOP-012",
+      "title": "Banning an Account (LV0)",
+      "type": "Procedure",
+      "audience": "Administration",
+      "version": "1.0",
+      "effective": "2026-10-23",
+      "owner": "Administration",
+      "for": "Administration (LV6) and the owner",
+      "summary": "Banning an account (LV0) across GitHub, Discord and Steam, new-account checks, and lifting a ban.",
+      "path": "docs/guides/HP-SOP-012-bans.md"
     }
   ]
 }

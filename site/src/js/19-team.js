@@ -18,6 +18,7 @@
         (t.hierarchy ? teamChain(t) : "") +
         (t.positions ? teamPositions(t.positions) : "") + "</div>";
       revealSections();
+      teamRoster();
     });
   }
 
@@ -75,3 +76,23 @@
       return '<a class="as-b" href="#/verify" title="Last delivery ' + esc(r.date) + (r.assisted && r.assisted.length ? ", with " + esc(r.assisted.join(", ")) : "") + '">' + esc(r.name || r.login) + "</a>";
     }).join("") : '<span class="as-none">No deliveries in the last 7 days</span>') + "</div>";
   }
+
+  /* The public roster: every signed card, grouped by clearance, highest first. Cards are checked in the browser
+     against the records key; banned accounts (LV0) are kept privately and never listed (docs/guides/HP-SOP-012-bans.md). */
+  function teamRoster() {
+    Promise.all([loadLocal("staff"), loadLocal("records-key")]).then(function (res) {
+      if (currentView !== "team") return;
+      var staff = ((res[0] && res[0].staff) || []).filter(function (x) { return x.status === "active"; }), keys = (res[1] && res[1].keys) || [];
+      var by = {}; staff.forEach(function (x) { (by[x.card] = by[x.card] || []).push(x); });
+      var lv = ["LV7", "LV6", "LV5", "LV4", "LV3", "LV2"].filter(function (l) { return by[l]; });
+      var html = '<section class="bf-sec in roster"><div class="label">Roster</div>' +
+        '<p class="sub">Everyone holding a signed Hound ID card, by clearance. Each card is checked against the records key in your browser. Prove that someone really holds a card on <a href="#/verify">Verify</a>.</p>' +
+        (lv.length ? lv.map(function (l) {
+          return '<div class="ro-lv" style="--hk:' + (KC_LV[l] || KC_LV.LV3)[1] + '"><h4><i>' + esc(l) + "</i>" + esc((KC_LV[l] || [""])[0]) + "<small>" + plural(by[l].length, "member") + '</small></h4><div class="hks">' + by[l].map(function (x, n) { return keycard(x, { link: true, i: n }); }).join("") + "</div></div>";
+        }).join("") : '<div class="empty">No signed cards yet<small>The roster fills as the owner issues signed cards (<a href="#/guides/hp-gde-009">how</a>).</small></div>') +
+        "</section>";
+      $(".bf", $("#vb")).insertAdjacentHTML("beforeend", html);
+      if (keys.length) markVerified(staff, keys);
+    });
+  }
+

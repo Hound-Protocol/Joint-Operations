@@ -21,10 +21,22 @@
     if (typeof fetch !== "function") return Promise.reject(new Error("This browser cannot open guest passes"));
     return fetch(siRelay() + path, { headers: { Authorization: "Guest " + (pass || SG.pass) }, cache: "no-store" }).then(function (r) {
       if (r.status === 401 && !pass) { SG = null; sgSave(); siBadge(); }
-      if (!r.ok) return r.json().catch(function () { return {}; }).then(function (j) { var e = new Error(j.error || "HTTP " + r.status); e.status = r.status; throw e; });
+      if (!r.ok) return r.json().catch(function () { return {}; }).then(function (j) { var e = new Error(j.error || "HTTP " + r.status); e.status = r.status; e.code = j.code; if (j.code === "revoked" && !pass) sgRevoked(); throw e; });
       return raw ? r.text() : r.json();
     });
   }
+  /* A revoked pass: tell the guest in a small window, then return them to the signed-out profile */
+  function sgRevoked() {
+    if ($("#hpModal.revoked")) return;
+    SG = null; sgSave(); siBadge();
+    var m = hpModal({ kicker: "Hound ID · Guest pass", title: "Your guest pass has been revoked", tone: "danger",
+      html: "<p>The owner has ended this guest pass. Restricted documents are closed to you now.</p><p class=\"hm-note\">If you think this is a mistake, ask the person who sent you the link.</p>", actions: [{ label: "OK", primary: true, value: true }] });
+    m.el.classList.add("revoked");
+    m.result.then(function () { if (currentView === "profile" || currentView === "docs") route(); });
+  }
+  /* While a guest pass is open, check it now and then, so a revoked pass closes within a minute */
+  setInterval(function () { if (sgIn() && !document.hidden) sgApi("/guest/check").catch(function () { /* handled in sgApi */ }); }, 60 * 1000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && sgIn()) sgApi("/guest/check").catch(function () { /* handled in sgApi */ }); });
   function siOwner() { return siIn() && String(SI.user.id) === String(siCfg().owner || ""); }
   /* Reads one restricted file, with the person's own sign-in or, for a guest, through the relay */
   function siRead(repo, path) {
@@ -45,7 +57,9 @@
     if (!siOn()) return Promise.reject(new Error("Sign-in is not switched on yet."));
     var relay = siCfg().relay.replace(/\/$/, ""), origin;
     try { origin = new URL(relay).origin; } catch (e) { return Promise.reject(new Error("The sign-in relay address is not valid.")); }
-    var w = window.open(relay + "/login", "hpsignin", "width=520,height=720");
+    /* GitHub cannot be shown inside another page, so it opens in a small window centered over this one */
+    var W = 520, H = 720, L = Math.round((window.screenX || window.screenLeft || 0) + ((window.outerWidth || screen.width) - W) / 2), T = Math.round((window.screenY || window.screenTop || 0) + ((window.outerHeight || screen.height) - H) / 2);
+    var w = window.open(relay + "/login", "hpsignin", "width=" + W + ",height=" + H + ",left=" + L + ",top=" + T);
     if (!w) return Promise.reject(new Error("Allow pop-ups for this site to sign in."));
     return new Promise(function (ok, fail) {
       var done = false, t;
@@ -53,7 +67,7 @@
         if (e.origin !== origin || !e.data || !e.data.houndSignin) return;
         done = true; clearInterval(t); window.removeEventListener("message", on);
         var m = e.data.houndSignin;
-        if (m.error || !m.token) { fail(new Error(m.error || "Sign-in failed.")); return; }
+        if (m.error || !m.token) { var er = new Error(m.error || "Sign-in failed."); er.code = m.code; fail(er); return; }
         SI = { token: m.token, exp: m.expires_in ? Date.now() + m.expires_in * 1000 : 0 };
         siApi("/user").then(function (u) {
           SI.user = { id: u.id, login: u.login, name: u.name || "", avatar: u.avatar_url };
@@ -65,6 +79,31 @@
     });
   }
   var siFresh = 0;
+  /* The sign-in window: explains the three steps, opens GitHub, waits, and reports back in the site's own design */
+  function siStart() {
+    var m = hpModal({ kicker: "Hound ID · Sign in", title: "Sign in with GitHub",
+      html: '<ol class="hm-steps"><li><b>GitHub opens</b> in a small window in the middle of your screen.</li><li><b>Authorize Hound ID Sign-in</b> the first time. It can only read what your GitHub teams already allow.</li><li><b>Your keycard</b> appears here, at your clearance.</li></ol><p class="hm-note">We never see your password, and nothing about you is stored on a server.</p>',
+      actions: [{ label: "Cancel", value: null }, { label: "Continue with GitHub", primary: true, run: go }] });
+    function go() {
+      m.body('<div class="hm-wait"><span class="spin"></span><b>Waiting for GitHub…</b><small>Finish signing in in the GitHub window. If nothing opened, allow pop-ups for this site.</small></div>');
+      m.actions([{ label: "Cancel", value: null }]);
+      signIn().then(function () {
+        status("Signed in"); blip("go");
+        m.body('<div class="hm-ok"><b>Access granted</b><small>Opening your keycard…</small></div>'); m.actions([]);
+        setTimeout(function () { m.close(true); if (currentView === "profile") viewProfile(); else location.hash = "#/profile"; }, opts.motion ? 700 : 0);
+      }, function (e) {
+        if (e.code === "banned") {
+          m.el.querySelector(".hm-win").classList.add("hm-danger");
+          m.body('<div class="hm-lv0"><span>LV0</span><b>Access revoked</b><small>This GitHub account is banned from Hound Protocol. It cannot sign in, take contracts or join sessions, on any linked account.</small><small>Appeals: <a href="#/guides/hp-sop-011">HP-SOP-011</a>.</small></div>');
+          m.actions([{ label: "Close", value: null }]);
+          return;
+        }
+        m.body('<div class="hm-err"><b>Not signed in</b><small>' + esc(e.message) + "</small></div>");
+        m.actions([{ label: "Close", value: null }, { label: "Try again", primary: true, run: go }]);
+      });
+    }
+    return m.result;
+  }
   function signOut() { SI = null; siSave(); siBadge(); }
   /* Organization owners hold LV7, as GitHub itself reports it (ADR 0011: keycards come from the organization). This needs
      the sign-in app's read-only "Members" permission; without it the check fails quietly and nothing changes. */
@@ -145,18 +184,25 @@
       var c = siCard(), lvl = siLevel(), areas = siCfg().areas || [];
       $("#vb").innerHTML =
         '<div class="kc-profile">' + keycard(c, { big: true }) +
-        (c.guest ? '<dl class="kc-facts"><div><dt>Pass</dt><dd>Guest pass with <b>LV3</b> (Staff) clearance, granted by the owner.</dd></div>' +
+        '<div class="kc-side">' + (c.guest ? '<dl class="kc-facts"><div><dt>Pass</dt><dd>Guest pass with <b>LV3</b> (Staff) clearance, granted by the owner.</dd></div>' +
           "<div><dt>Expires</dt><dd>" + esc(fmtDate(new Date(c.exp).toISOString().slice(0, 10))) + " at " + esc(new Date(c.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(c.exp)) + " left. It cannot be extended.</dd></div>" +
           "<div><dt>Session</dt><dd>This tab only. Nothing is stored on a server.</dd></div>" +
-          '<div><dt></dt><dd><button class="btn small" id="siOut">End guest pass</button></dd></div></dl></div>' :
+          '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>End guest pass<small>You will need the link again to come back</small></span></button></div></div>' :
         '<dl class="kc-facts"><div><dt>GitHub</dt><dd><a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id) + "</dd></div>" +
           "<div><dt>Card</dt><dd>" + (c.owner ? "Owner card: GitHub confirms you own the Hound-Protocol organization." : c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
           "<div><dt>Session</dt><dd>" + (SI.exp ? "Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab" : "Signed in, in this tab") + "</dd></div>" +
-          '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>') +
+          '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>Sign out<small>Ends your Hound ID session in this tab</small></span></button></div></div>') +
         (siOwner() ? sgPanel() : "") +
         siAccess(lvl, areas) +
         '<article class="dossier si-reader" id="siDoc" hidden></article>';
-      $("#siOut").addEventListener("click", function () { if (c.guest) { SG = null; sgSave(); siBadge(); status("Guest pass ended"); } else { signOut(); status("Signed out"); } viewProfile(); });
+      $("#siOut").addEventListener("click", function () {
+        (c.guest ? hpConfirm("End your guest pass?", "You will need the link again to come back, while it is still valid.", "End guest pass", "Stay", "danger")
+          : hpConfirm("Are you sure you want to log out?", "Your Hound ID session in this tab ends. You can sign in again at any time.", "Log out", "Stay signed in", "danger")).then(function (yes) {
+          if (!yes) return;
+          if (c.guest) { SG = null; sgSave(); siBadge(); status("Guest pass ended"); } else { signOut(); status("Signed out"); }
+          viewProfile();
+        });
+      });
       if (siOwner()) sgPanelWire();
       /* Right after signing in (the owner check may redraw the card once, so allow a few seconds) */
       if (siFresh && Date.now() - siFresh < 5000) kcReveal($(".kc-profile .hk")); else siFresh = 0;
@@ -217,18 +263,51 @@
   function sgItem(x) {
     return '<li><code>' + esc(x.pass.slice(0, 10)) + '…</code><span>Expires ' + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + ' left</span><button class="btn small" data-gp="' + esc(x.pass) + '">Copy link</button></li>';
   }
+  function sgOwnerApi(path, method) {
+    return fetch(siRelay() + path, { method: method || "GET", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || "HTTP " + r.status); e.code = j.code; throw e; } return j; });
+    });
+  }
+  /* The live passes, from the relay: number, expiry, status, and Revoke */
+  function sgLoad() {
+    var ul = $("#gpList"); if (!ul) return;
+    sgOwnerApi("/guest/list").then(function (j) {
+      var local = {}; sgIssued().forEach(function (x) { try { local[JSON.parse(atob(x.pass.split(".")[0].replace(/-/g, "+").replace(/_/g, "/"))).n] = x.pass; } catch (e) { /* older pass */ } });
+      ul.innerHTML = (j.passes || []).map(function (x) {
+        return '<li class="' + (x.revoked ? "rv" : "") + '"><code>Pass ' + esc(x.n) + '</code><span>' + (x.revoked ? "Revoked" : "Expires " + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + " left") + "</span>" +
+          (local[x.n] && !x.revoked ? '<button class="btn small" data-gp="' + esc(local[x.n]) + '">Copy link</button>' : "") +
+          (x.revoked ? "" : '<button class="btn small danger" data-rv="' + esc(x.n) + '">Revoke pass</button>') + "</li>";
+      }).join("") || '<li class="none"><span>No live guest passes.</span></li>';
+      sgWireList();
+    }, function (e) {
+      if (e.code === "no_kv") { $("#gpMsg").textContent = "Passes can be granted. To revoke them instantly, add the GUEST_KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
+      else $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay." : e.message;
+    });
+  }
+  function sgWireList() {
+    $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; });
+    $$("[data-rv]").forEach(function (b) {
+      b.onclick = function () {
+        var n = b.getAttribute("data-rv");
+        hpConfirm("Revoke guest pass " + n + "?", "Whoever holds this link loses access at once. This cannot be undone.", "Revoke pass", "Keep it", "danger").then(function (yes) {
+          if (!yes) return;
+          b.disabled = true;
+          sgOwnerApi("/guest/revoke?n=" + encodeURIComponent(n), "POST").then(function () { status("Guest pass revoked"); blip("go"); sgLoad(); }, function (e) { b.disabled = false; $("#gpMsg").textContent = e.message; });
+        });
+      };
+    });
+  }
   function sgPanelWire() {
-    function wire() { $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; }); }
-    wire();
+    sgLoad();
     var g = $("#gpGrant"); if (!g) return;
     g.addEventListener("click", function () {
       g.disabled = true; $("#gpMsg").textContent = "Asking the relay…";
       fetch(siRelay() + "/guest/grant", { method: "POST", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "HTTP " + r.status); return j; }); }).then(function (j) {
         var list = sgIssued(); list.unshift({ pass: j.pass, exp: j.exp });
         try { sessionStorage.setItem(SG_ISSUED, JSON.stringify(list.slice(0, 10))); } catch (e) { /* this page only */ }
-        $("#gpList").innerHTML = list.map(sgItem).join(""); wire();
-        $("#gpMsg").textContent = "Pass granted. Copy its link and send it privately; anyone with the link has LV3 until it expires.";
-        var b = $("#gpList [data-gp]"); if (b) b.click();
+        $("#gpMsg").textContent = "Pass granted and its link copied. Send it privately; anyone with the link has LV3 until it expires or you revoke it.";
+        var u = sgLink(j.pass); if (navigator.clipboard) navigator.clipboard.writeText(u).catch(function () { window.prompt("Copy the guest link", u); }); else window.prompt("Copy the guest link", u);
+        sgLoad();
         blip("go");
       }, function (e) { $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay. If guest passes were just set up, check that the relay runs the current code (sign-in setup, section 6)." : e.message; }).then(function () { g.disabled = false; });
     });
@@ -271,7 +350,6 @@
         '<p class="sub">How it works and what is kept: <a href="#/docs/signin">sign-in</a> · <a href="#/docs/privacy">privacy</a></p></div></div>';
     var go = $("#siGo");
     if (go) go.addEventListener("click", function () {
-      go.disabled = true; $("#siMsg").textContent = "Waiting for GitHub…";
-      signIn().then(function () { status("Signed in"); blip("go"); viewProfile(); }, function (e) { go.disabled = false; $("#siMsg").textContent = e.message; });
+      siStart();
     });
   }
