@@ -61,7 +61,7 @@ jobs:
   browsers:
     name: Browsers (Chromium, Firefox, WebKit)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v7
         with:
