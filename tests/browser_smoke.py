@@ -32,8 +32,8 @@ async def check(browser, name, size):
     page.on("pageerror", lambda e: errors.append(str(e)))
     await page.goto(BASE)
     await page.wait_for_timeout(1200)
-    if await page.locator("#menu a").count() != 8:
-        failures.append("menu does not have 8 items")
+    if await page.locator("#menu a").count() != 7:
+        failures.append("menu does not have 7 items")
     widths = {}
     for v in VIEWS:
         await page.goto(BASE + "#/" + v)

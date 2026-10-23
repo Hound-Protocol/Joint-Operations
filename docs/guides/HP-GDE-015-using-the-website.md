@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.4 · Effective 2026-10-23 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.5 · Effective 2026-10-23 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -20,12 +20,11 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 | **Contribute** | The contract board, difficulty, and contractor grades |
 | **Team** | Hound Protocol, the chain of command, departments and open positions |
 | **Mods** | Mods tested to work with Joint Operations, and how to submit one |
-| **Dev Log** | Releases, notes and changes, newest first, with search |
-| **Docs** | All documentation, in two zones (below) |
+| **Docs** | All documentation and the Dev Log, in three zones (below) |
 | **Verify** | Signed contributor records, staff keycards, and proving a Hound ID |
 | **Profile** | Your keycard and your restricted documents, after signing in |
 
-## 3. Documentation: two zones
+## 3. Documentation: three zones
 **Library:** plans, decision records, research, technical, community, project and legal documents, kept in drawers like a filing cabinet.
 - Open a drawer to see its folders; each folder shows a file number such as ADR-0012 or RES-03. One drawer is open at a time: opening another closes the rest.
 - The open document lies on the right. Its paper shows its class: ruled paper for decisions, triangle grid for research, millimetre paper for technical, green bars for community, pinstripes for project, a yellow pad for legal.
@@ -37,6 +36,8 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 - Filter by audience: Players, Contributors, Quality, Administration. Both filters work together.
 - The coloured stripe on the right edge names the type: Guide (ochre), Policy (red), Procedure (blue).
 - **Print** prints the sheet on A4; **Download PDF** saves it.
+
+**Dev Log:** releases, team notes and changes on `main`, newest first. Search it, or show only Notes, Releases or Commits. The top row shows the current build, the latest release, the roadmap and the last update.
 
 ## 4. Searching
 Choose **Search by Name** (file numbers and titles, the default) or **Content** (what the documents say). The search box in the Library searches **the Library only**, and shows its results **as the folders themselves**: drawers without a match disappear, and the matching folders stay in their drawers, best match first. Press **Ctrl+K** or **/** anywhere on the page to jump to it.

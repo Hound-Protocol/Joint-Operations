@@ -17,7 +17,7 @@
   }
   function viewDevlog() {
     var v = $("#view");
-    v.innerHTML = shell("News", "Dev Log", loading("Loading the dev log"));
+    v.innerHTML = shell("Documentation", "Dev Log", loading("Loading the dev log")); addZones("log");
     Promise.all([loadLocal("devlog"), loadCommits(), loadReleases(), loadRoadmap()]).then(function () { if (currentView === "devlog") drawDevlog(); refreshInfo(); });
   }
   function markQ(text) {

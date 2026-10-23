@@ -53,6 +53,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F13 | Handbook open animation, owner on the roster | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F14 | Deploy without the package mirror; incidents close themselves | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F15 | Tester's Field Manual | docs | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F16 | Dev Log inside Documentation; Access Credential cards | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -684,3 +685,15 @@ Module: docs · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - Covers the website and the game from 0.1
 - Benchmark methods with a baseline and recorded numbers
+
+## F16
+**Dev Log inside Documentation; Access Credential cards**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** One place for all documentation, and cleaner cards.
+
+**Deliverable.** Dev Log as a Documentation zone; cards without chip, renamed, stronger logo.
+
+**Acceptance criteria**
+- No Dev Log tab; the Docs tab shows three zones
+- Cards read Access Credential

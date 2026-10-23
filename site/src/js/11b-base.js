@@ -114,7 +114,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -266,6 +266,9 @@
     /* Searchlight (v0.0.34): a slow beam sweeping the sea from the command platform */
     var srchEl = $("#mbSearch");
     /* Supply drop (v0.0.35): every half minute a crate floats down on a parachute onto a built platform */
+    /* Flag (v0.0.36): a pennant waving on the command platform */
+    var flagEl = $("#mbFlag"), flagP = $("#mbFlag path"), flagAt = mbWorld(core, [core.g.R * 0.42, -core.g.R * 0.32]);
+    flagEl.setAttribute("transform", "translate(" + mbF(flagAt[0]) + " " + mbF(flagAt[1]) + ")");
     var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
     /* Windsock (v0.0.27): beside the command helipad, swinging with the wind and stiffening in gusts */
     var sockP = padOf(mods[0]), sockEl = $("#mbSock"), sock = [sockP[0] + 30, sockP[1] - 18];
@@ -416,6 +419,8 @@
       sockEl.setAttribute("transform", "translate(" + mbF(sock[0]) + " " + mbF(sock[1]) + ") rotate(" + mbF(wind) + ") scale(" + (0.75 + gust * 0.4).toFixed(2) + " " + (1 - gust * 0.25).toFixed(2) + ")");
       brL.forEach(function (l, i) { var k = Math.floor(T * 5) % 9; brEls[i].style.opacity = k === l.q ? "1" : "0.25"; });
       srchEl.setAttribute("transform", "translate(" + mbF(core.x) + " " + mbF(core.y) + ") rotate(" + mbF((T * 14) % 360) + ")");
+      var fw = Math.sin(T * 4.2), fw2 = Math.sin(T * 4.2 + 1.3);
+      flagP.setAttribute("d", "M0 -26 Q7 " + mbF(-27 + fw * 2) + " 15 " + mbF(-23 + fw2 * 1.6) + " Q7 " + mbF(-20 + fw * 1.6) + " 0 -19 Z");
       drop.t += dt;
       if (drop.t > 30 || !drop.m) { var built = mods.filter(function (m) { return m.st !== "next"; }); drop.m = built[Math.floor(r() * built.length)] || core; drop.t = 0; drop.ox = (r() - 0.5) * drop.m.g.R * 0.6; drop.oy = (r() - 0.5) * drop.m.g.R * 0.6; }
       var dk = Math.min(drop.t / 7, 1), de = 1 - Math.pow(1 - dk, 2), dsw = Math.sin(drop.t * 1.6) * 6 * (1 - dk);

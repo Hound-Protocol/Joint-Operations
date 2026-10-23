@@ -962,6 +962,30 @@
     "Forge77"
    ],
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F16",
+   "title": "Dev Log inside Documentation; Access Credential cards",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "One place for all documentation, and cleaner cards.",
+   "deliverable": "Dev Log as a Documentation zone; cards without chip, renamed, stronger logo.",
+   "acceptance": [
+    "No Dev Log tab; the Docs tab shows three zones",
+    "Cards read Access Credential"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

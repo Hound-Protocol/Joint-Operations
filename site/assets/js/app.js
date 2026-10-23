@@ -324,8 +324,7 @@
     { id: "contribute", title: "Contribute", desc: "Take a contract and help build Joint Operations", tab: "Contribute" },
     { id: "team", title: "Team", desc: "Chain of command and the people behind Hound Protocol", tab: "Team", tabOnly: true },
     { id: "mods", title: "Mods", desc: "Mods tested to work with Joint Operations", tab: "Mods" },
-    { id: "devlog", title: "Dev Log", desc: "News, decisions and releases", tab: "Dev Log" },
-    { id: "docs", title: "Documentation", desc: "The handbook, plans, decisions and research", tab: "Docs" },
+    { id: "docs", title: "Documentation", desc: "The handbook, plans, decisions, research and the dev log", tab: "Docs" },
     { id: "options", title: "Options", desc: "Sound, motion and display settings", tab: "Options" }
   ];
   /* Menu icons: simple line glyphs drawn for this site, on a 24 x 24 grid */
@@ -511,8 +510,8 @@
 
   /* ---------------- Views ---------------- */
   var currentView = "";
-  /* The handbook (guides) is a zone of Documentation, so it lights the Docs tab */
-  function tabOf(v) { return v === "guides" ? "docs" : v; }
+  /* The Handbook (guides) and the Dev Log are zones of Documentation, so they light the Docs tab */
+  function tabOf(v) { return v === "guides" || v === "devlog" ? "docs" : v; }
   function shell(kicker, title, body) {
     var cv = tabOf(currentView), now = ITEMS.filter(function (it) { return it.id === cv; })[0];
     var tabs = '<div class="secwrap"><nav class="secbar" aria-label="Sections">' + ITEMS.map(function (it) {
@@ -833,7 +832,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -985,6 +984,9 @@
     /* Searchlight (v0.0.34): a slow beam sweeping the sea from the command platform */
     var srchEl = $("#mbSearch");
     /* Supply drop (v0.0.35): every half minute a crate floats down on a parachute onto a built platform */
+    /* Flag (v0.0.36): a pennant waving on the command platform */
+    var flagEl = $("#mbFlag"), flagP = $("#mbFlag path"), flagAt = mbWorld(core, [core.g.R * 0.42, -core.g.R * 0.32]);
+    flagEl.setAttribute("transform", "translate(" + mbF(flagAt[0]) + " " + mbF(flagAt[1]) + ")");
     var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
     /* Windsock (v0.0.27): beside the command helipad, swinging with the wind and stiffening in gusts */
     var sockP = padOf(mods[0]), sockEl = $("#mbSock"), sock = [sockP[0] + 30, sockP[1] - 18];
@@ -1135,6 +1137,8 @@
       sockEl.setAttribute("transform", "translate(" + mbF(sock[0]) + " " + mbF(sock[1]) + ") rotate(" + mbF(wind) + ") scale(" + (0.75 + gust * 0.4).toFixed(2) + " " + (1 - gust * 0.25).toFixed(2) + ")");
       brL.forEach(function (l, i) { var k = Math.floor(T * 5) % 9; brEls[i].style.opacity = k === l.q ? "1" : "0.25"; });
       srchEl.setAttribute("transform", "translate(" + mbF(core.x) + " " + mbF(core.y) + ") rotate(" + mbF((T * 14) % 360) + ")");
+      var fw = Math.sin(T * 4.2), fw2 = Math.sin(T * 4.2 + 1.3);
+      flagP.setAttribute("d", "M0 -26 Q7 " + mbF(-27 + fw * 2) + " 15 " + mbF(-23 + fw2 * 1.6) + " Q7 " + mbF(-20 + fw * 1.6) + " 0 -19 Z");
       drop.t += dt;
       if (drop.t > 30 || !drop.m) { var built = mods.filter(function (m) { return m.st !== "next"; }); drop.m = built[Math.floor(r() * built.length)] || core; drop.t = 0; drop.ox = (r() - 0.5) * drop.m.g.R * 0.6; drop.oy = (r() - 0.5) * drop.m.g.R * 0.6; }
       var dk = Math.min(drop.t / 7, 1), de = 1 - Math.pow(1 - dk, 2), dsw = Math.sin(drop.t * 1.6) * 6 * (1 - dk);
@@ -1216,7 +1220,7 @@
   }
   function viewDevlog() {
     var v = $("#view");
-    v.innerHTML = shell("News", "Dev Log", loading("Loading the dev log"));
+    v.innerHTML = shell("Documentation", "Dev Log", loading("Loading the dev log")); addZones("log");
     Promise.all([loadLocal("devlog"), loadCommits(), loadReleases(), loadRoadmap()]).then(function () { if (currentView === "devlog") drawDevlog(); refreshInfo(); });
   }
   function markQ(text) {
@@ -1665,7 +1669,8 @@
      The Docs section is the dossier cabinet (17b-cabinet.js). loadDoc reads a document from the bundled copy,
      the deployed site or GitHub. */
   function viewDocs(id) { return viewCabinet(id); }
-  /* Documentation has two zones: the Library (plans, decisions, research…) and the Handbook (guides, policies, procedures) */
+  /* Documentation has three zones: the Library (plans, decisions, research…), the Handbook (guides, policies, procedures)
+     and the Dev Log (releases, notes and changes) */
   function docZones(active) {
     var all = (data.docs && data.docs.docs) || [], hb = ((data.guides && data.guides.guides) || []).length || all.filter(function (d) { return d.group === "Handbook"; }).length;
     var lib = all.filter(function (d) { return d.group !== "Handbook"; }).length;
@@ -1674,7 +1679,8 @@
     }
     return '<nav class="zones" aria-label="Documentation zones">' +
       z("lib", "#/docs", "Library", (lib ? lib + " documents · " : "") + "plans, decisions, research, technical and legal") +
-      z("hb", "#/guides", "Handbook", (hb ? hb + " documents · " : "") + "guides, policies and procedures, printable on A4") + "</nav>";
+      z("hb", "#/guides", "Handbook", (hb ? hb + " documents · " : "") + "guides, policies and procedures, printable on A4") +
+      z("log", "#/devlog", "Dev Log", "releases, notes and changes, newest first") + "</nav>";
   }
   function addZones(active) { var vh = $(".vh"); if (vh && !$(".zones")) vh.insertAdjacentHTML("afterend", docZones(active)); }
   function loadDoc(doc) {
@@ -2631,7 +2637,7 @@
     return t && t.best ? t.best[0] : "–";
   }
   /* s: a staff card (or a member card from sign-in). o.specimen marks a sample card, o.big the profile size, o.link wraps it
-     in a link to the profile. The holder's GitHub picture is shown when the card knows their account; the chip stays if it fails. */
+     in a link to the profile. The holder's GitHub picture is shown when the card knows their account; without a picture the card is plain. */
   function kcPhoto(s) { return s.avatar || (s.github_id ? "https://avatars.githubusercontent.com/u/" + encodeURIComponent(s.github_id) + "?s=176&v=4" : ""); }
   function keycard(s, o) {
     o = o || {};
@@ -2640,9 +2646,9 @@
     return "<" + tag + ' class="hk' + (o.big ? " big" : "") + " hk-l" + esc(n) + (s.guest ? " guest" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + (photo ? " has-photo" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
       '<span class="hk-pat" aria-hidden="true"></span>' + (n === "4" ? '<span class="hk-seal" aria-hidden="true">QA</span>' : "") +
       (photo ? '<span class="hk-photo"><img src="' + esc(photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.parentNode.parentNode;c.classList.remove(\'has-photo\');this.parentNode.remove()"></span>' : "") +
-      '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Security card · ' + esc(lv[0]) + '</small></span></span>' +
+      '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Access Credential · ' + esc(lv[0]) + '</small></span></span>' +
       '<span class="hk-lv" aria-label="Keycard level ' + n + '"><small>LV</small><b class="hk-n">' + esc(n) + "</b></span>" +
-      '<span class="hk-chip" aria-hidden="true"></span><img class="hk-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
+      '<img class="hk-wm" src="assets/brand/hound-protocol-mark-light.svg" alt="" aria-hidden="true">' +
       '<span class="hk-who"><b class="hk-v">' + esc(s.name || s.login) + '</b><small class="hk-v">' + esc(s.name ? "@" + s.login : "GitHub #" + s.github_id) + "</small></span>" +
       '<span class="hk-meta"><span><i>Hound ID</i><em class="hk-v">' + esc(s.member ? "Member" : s.id) + '</em></span><span><i>Clearance</i><em class="hk-v">Level ' + esc(n) + '</em></span><span><i>Dept</i><em class="hk-v">' + esc(s.department) + '</em></span><span><i>Grade</i><em class="hk-v">' + esc(o.specimen ? "B" : kcGrade(s.login)) + "</em></span>" + (s.since ? '<span class="k-since"><i>Since</i><em class="hk-v">' + esc(fmtDate(s.since)) + "</em></span>" : "") + "</span>" +
       '<span class="hk-foot">' + kcBars(s.id) + '<span class="vs">' + (o.specimen ? '<span class="status planned">Specimen</span>' : revoked ? '<span class="status bad">Revoked</span>' : s.member ? '<span class="status claimed">Signed in</span>' : vBadge("wait")) + "</span>" + (s.ssh_key ? '<span class="hk-key" title="SSH signing key pinned to this card">KEY</span>' : "") + "</span>" +
@@ -3277,7 +3283,7 @@
     menu.hidden = true; view.hidden = false; document.body.classList.add("in-view");
     view.dataset.v = name;
     if (!same || name !== "docs") { view.innerHTML = ""; var ce = $("#center"); ce.style.scrollBehavior = "auto"; ce.scrollTop = 0; ce.style.scrollBehavior = ""; }
-    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" }, guides: { title: "Handbook" }, profile: { title: "Profile" } })[name];
+    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" }, guides: { title: "Handbook" }, devlog: { title: "Dev Log" }, profile: { title: "Profile" } })[name];
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
