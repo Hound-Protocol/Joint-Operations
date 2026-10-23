@@ -59,6 +59,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F19 | LV1 for visitors, guest pass requests, messages | web | 🟡 Medium | — | done | Forge77 (with Claude) |
 | F20 | About: Start here triangle; FAQ as a document | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F21 | Messages clear themselves; one clearance message | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F22 | Site 1.0.0: two version lines, security policy, accessibility, relay health | web | 🟡 Medium | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -763,3 +764,16 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - A message clears 20 s after the menu shows it
 - Signing in as owner announces only LV7
+
+## F22
+**Site 1.0.0: two version lines, security policy, accessibility, relay health**  
+Module: web · Difficulty: 🟡 Medium · Skills: 
+
+**Goal.** Version numbers say what they mean; the site is safer, more accessible and checks its relay.
+
+**Deliverable.** Site X.Y.Z line and tags, CSP, a11y fixes, /health, relay and screenshot tests, phone top bar, View Profile.
+
+**Acceptance criteria**
+- Release site-v1.0.0 published, not Latest
+- No CSP violations on any section
+- Relay tests run in Checks

@@ -37,6 +37,9 @@ for m in data["team"].get("members", []):
         if m.get(key):
             m[key] = data_uri(site / m[key], mime)
 html = re.sub(r'<link rel="preload"[^>]*>\n', "", html)  # fonts are inlined below
+# The single-file copy inlines its scripts, which the site's Content Security Policy forbids: drop the policy here
+html = re.sub(r'<!-- Content Security Policy[^>]*-->\n<meta http-equiv="Content-Security-Policy"[^>]*>\n', "", html)
+html = html.replace('<script src="assets/js/legacy.js"></script>', "<script>\n" + (site / "assets/js/legacy.js").read_text() + "</script>")
 for name in ["favicon.svg"]:
     html = html.replace(f"assets/img/{name}", data_uri(site / "assets/img" / name, "image/svg+xml"))
 html = html.replace("assets/brand/joint-operations-mark.svg", data_uri(site / "assets/brand/joint-operations-salute.svg", "image/svg+xml"))

@@ -1,5 +1,5 @@
 # Website Maintainer Guide
-Code: HP-GDE-012 · Version 1.3 · Effective 2026-10-23 · Owner: Development · For: contributors who change the website
+Code: HP-GDE-012 · Version 1.4 · Effective 2026-10-24 · Owner: Development · For: contributors who change the website
 
 How the website is built, where its content lives, and how to change it safely.
 
@@ -39,8 +39,9 @@ python3 tools/css_compat.py --check
 python3 tools/guides_index.py --check
 python3 tools/contracts_md.py --check
 python3 tools/check_links.py
+node tests/relay_test.mjs          # when you change tools/signin-relay/worker.js
 ```
-4. Open a pull request ([HP-SOP-002](HP-SOP-002-pull-request-review.md)). The browser smoke test runs the site in Chromium, Firefox and WebKit, on desktop and phone sizes.
+4. Open a pull request ([HP-SOP-002](HP-SOP-002-pull-request-review.md)). The browser smoke test runs the site in Chromium, Firefox and WebKit, on desktop and phone sizes, and `tests/screens.py` saves screenshots of key screens: open the run's **screens** artifact to see what changed.
 
 ## Common edits
 - **Dev log entry:** add it at the top of [`docs/devlog.md`](../devlog.md), under today's date: a `###` title, a tag line in italics, then the text.
@@ -57,4 +58,7 @@ python3 tools/check_links.py
 - Pages fade in when they are ready (`20b-ready.js`): render a `loading()` placeholder first, then the content; the reveal waits for the placeholder to go, fonts and images. Never show half-built content.
 - Check `python3 tools/check_links.py` after moving or renaming any document; links to `#/docs/<id>` and `#/guides/<id>` must exist.
 - Escape every piece of data you put into HTML with `esc()`.
+- **Content Security Policy** (`index.html`): only the site's own script files run. No inline `<script>`, no `onclick=` or `onerror=` attributes (use listeners; broken pictures use `data-err`, handled in `10c-modal.js`). A new outside address the site calls (an API, the relay's new domain) must be added to `connect-src`, and a new picture host to `img-src`.
+- **Relay version:** when you change `worker.js`, raise `RELAY_VERSION` there and `signin.relayVersion` in `config.json` together. LV7 is told when the live relay is behind, and Options shows its state.
+- **Accessibility:** one live line (`#srNav`) announces the new section; focus moves to its heading; windows (`hpModal`) keep focus inside and make the page behind inert.
 - Keep text short, plain and in our terms: host and clients, never "friends" or character names.

@@ -48,6 +48,11 @@
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
     gateApply(name);
+    /* Screen readers hear the new section's name (one short line, not the whole page), and focus moves to its heading */
+    if (!same) {
+      var sr = $("#srNav"); if (sr) sr.textContent = item ? item.title : "";
+      var h2 = $("#view .vh h2"); if (h2 && booted && document.activeElement !== h2 && !$("#hpModal")) { h2.setAttribute("tabindex", "-1"); try { h2.focus({ preventScroll: true }); } catch (e) { h2.focus(); } }
+    }
     if (!same) readyView();
     var tab = $('.secbar a[aria-current="page"]');
     if (tab) { var bar = tab.parentNode; bar.scrollLeft = Math.max(0, tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2); }

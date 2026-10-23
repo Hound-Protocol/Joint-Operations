@@ -1,6 +1,24 @@
 # Changelog
 
-All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
+All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
+
+## Site 1.0.0 · Two version lines · 2026-10-24
+- **The website has its own version line.** This release is **Site 1.0.0**, tagged `site-v1.0.0`. It follows 0.0.41, and those older tags stay as they are. From now on, **0.1** means only the mod's first playable build. Website releases are never marked *Latest* on GitHub, so Latest always points at a mod build. The top bar reads *Site 1.0.0 · build · commit · Mod 0.1 in development* ([HP-SOP-003](docs/guides/HP-SOP-003-release.md)).
+- **View Profile:** the profile button now carries its words.
+- **Phones:** the top bar fits a phone. It keeps the messages, the profile button and a compact credential (picture and level); the version moves to Options.
+- **Relay health:** the relay reports its version at `/health`. **Options → Sign-in relay** shows whether it is up to date, and LV7 gets a message when it is behind the site.
+- **One GitHub call fewer per visit:** the site no longer fetches recent commits (nothing has shown them since the Dev Log became a document). Visitors on shared networks reach GitHub's limit of 60 calls an hour later.
+- **Content Security Policy:** only the site's own script files run, and data comes only from GitHub, the sign-in relay and Discord. The old-browser check moved into its own file, and broken pictures are handled without inline code.
+- **Accessibility:**
+  - Screen readers hear the new section's name instead of the whole page.
+  - Focus moves to the new heading when you switch sections.
+  - Windows keep keyboard focus inside them, and the page behind is out of reach.
+  - Small text in the LV7 red and LV0 grey is lighter, so it reaches 4.5:1 contrast.
+- **Tests:**
+  - The relay's 23 checks (passes, requests, clearing, health) run on every pull request.
+  - Each run saves screenshots of key screens, desktop and phone, as a **screens** artifact.
+  - A version change now also fails the checks when its changelog section is missing.
+- **Roadmap:** this release's base detail is a radar sweeping on the comms mast. It is drawn with a CSS animation, so it costs no script per frame.
 
 ## v0.0.41 · Messages that clear · 2026-10-23
 - **Message timer:** when you open Messages, a thin bar under each message starts running out. When it empties (20 seconds), the message clears itself.

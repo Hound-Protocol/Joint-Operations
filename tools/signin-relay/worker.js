@@ -17,11 +17,18 @@
      and are removed 2 days after they were made. No IP addresses or other details are kept.
      Bans (LV0): BANNED_GITHUB_IDS (secret), the banned GitHub account numbers separated by commas. A banned account is
      refused at sign-in and never receives a token. The list is private; see docs/guides/HP-SOP-012-bans.md. */
+/* The relay's version: the website compares it with site/data/config.json signin.relayVersion and tells LV7 when the
+   relay is behind (3 = guest pass requests, short passes, clearing live passes, /health) */
+const RELAY_VERSION = 3;
 const PASS_HOURS = 24, KEEP_DAYS = 30, ASK_MAX_OPEN = 25, ASK_KEEP_MS = 2 * 86400 * 1000;
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
     const site = env.SITE_ORIGIN;
+    /* Health: the relay's version and which storage and settings are present (yes or no only, never their values) */
+    if (url.pathname === "/health") {
+      return json(site, { ok: true, relay: RELAY_VERSION, kv: !!(env.HP_KV || env.GUEST_KV), guest: !!(env.GUEST_SECRET && env.OWNER_GITHUB_ID), app: !!(env.GITHUB_APP_ID && env.GITHUB_APP_PRIVATE_KEY) });
+    }
     if (url.pathname === "/claims" || url.pathname === "/claim" || url.pathname === "/unclaim") {
       if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(site) });
       try { return await claims(req, env, url); }

@@ -62,16 +62,6 @@
     }, function () { data.issues = null; return null; });
   }
 
-  function loadCommits() {
-    if (data.commits !== undefined) return Promise.resolve(data.commits);
-    return gh("/repos/" + cfg.repo + "/commits?sha=" + encodeURIComponent(cfg.branch) + "&per_page=30").then(function (list) {
-      data.commits = (list || []).map(function (c) {
-        var msg = (c.commit && c.commit.message) || "";
-        return { date: (c.commit && c.commit.author && c.commit.author.date) || "", title: msg.split("\n")[0], tag: "Commit", url: c.html_url, by: (c.author && c.author.login) || (c.commit && c.commit.author && c.commit.author.name) || "" };
-      });
-      return data.commits;
-    }, function () { data.commits = null; return null; });
-  }
   function parseRoadmap(md) {
     var phases = [], cur = null;
     String(md).split("\n").forEach(function (l) {

@@ -1,7 +1,8 @@
   /* ---------------- Boot ---------------- */
   function buildLabel() {
     var b = data.build;
-    return "Build " + cfg.version + (b && b.build ? "." + b.build : "") + (b && b.sha ? " · " + String(b.sha).slice(0, 7) : "");
+    /* The website has its own version line (Site X.Y.Z); the mod's versions start at 0.1 (HP-SOP-003) */
+    return "Site " + cfg.version + (b && b.build ? " · build " + b.build : "") + (b && b.sha ? " · " + String(b.sha).slice(0, 7) : "");
   }
   function applyConfig() {
     $("#teamName").textContent = cfg.team;
@@ -18,7 +19,7 @@
   }
   function preload() {
     loadLocal("staff").then(function () { siBadge(); });
-    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("team"), loadRoadmap(), loadReleases(), loadContracts(), loadCommits()]).then(function () {
+    Promise.all([loadLocal("servers"), loadLocal("mods"), loadLocal("docs"), loadLocal("contracts"), loadLocal("briefing"), loadLocal("team"), loadRoadmap(), loadReleases(), loadContracts()]).then(function () {
       refreshInfo();
       if (data.releases === null || data.issues === null) status("GitHub unreachable · showing bundled data");
     });

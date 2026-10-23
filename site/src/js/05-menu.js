@@ -38,7 +38,7 @@
       case "download":
         if (data.releases === undefined) return "Checking releases";
         if (playableReleases().length) return "Latest " + (playableReleases()[0].tag_name || "") + " · " + fmtDate(playableReleases()[0].published_at);
-        return buildLabel() + " · " + cfg.stage + " · No playable release yet";
+        return cfg.stage + " · No playable release yet";
       case "sessions":
         var n = data.servers ? (data.servers.servers || []).length : 0;
         return n ? plural(n, "session") + " listed" : "No sessions online";

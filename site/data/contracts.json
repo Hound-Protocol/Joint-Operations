@@ -1107,7 +1107,32 @@
     "Forge77"
    ],
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F22",
+   "title": "Site 1.0.0: two version lines, security policy, accessibility, relay health",
+   "module": "web",
+   "difficulty": "medium",
+   "skills": "",
+   "depends": [],
+   "goal": "Version numbers say what they mean; the site is safer, more accessible and checks its relay.",
+   "deliverable": "Site X.Y.Z line and tags, CSP, a11y fixes, /health, relay and screenshot tests, phone top bar, View Profile.",
+   "acceptance": [
+    "Release site-v1.0.0 published, not Latest",
+    "No CSP violations on any section",
+    "Relay tests run in Checks"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
- "updated": "2026-10-23"
+ "updated": "2026-10-24"
 }

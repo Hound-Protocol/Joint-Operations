@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.9 · Effective 2026-10-23 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.10 · Effective 2026-10-24 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -7,7 +7,8 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 - **Main menu:** the first screen. Arrow keys and Enter work, as in a game menu. The panels beside it describe the project and the team.
 - **Section bar:** the row of tabs at the top of every page. The line under it describes the tab you point at.
 - **Keyboard:** ← and → switch sections, Esc returns to the menu.
-- **Top bar:** the build number, then **messages** (clearance changes, guest passes, requests), the **gear** (Profile details) and your **access credential**: your picture, name, card and level, in your level's colour. Visitors see *Visitor · LV1*.
+- **Top bar:** the website's version (*Site 1.0.0*, build and commit) and the mod's stage, then **messages** (clearance changes, guest passes, requests), **View Profile**, and your **access credential**: your picture, name, card and level, in your level's colour. Visitors see *Visitor · LV1*. On phones only the messages, the profile button and a compact credential show; the version is under **Options → Site build**.
+- **Options → Sign-in relay** shows whether the sign-in service is up to date.
 - **Options:** effects, motion, sound, text size and contrast. Choose **Performance** on older computers, or **Calm** if motion bothers you. Settings stay in your browser.
 
 ## 2. The sections

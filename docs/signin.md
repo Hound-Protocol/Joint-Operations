@@ -66,6 +66,7 @@ Setup, once:
 - **Clearing:** LV7 can clear any pass, live ones included (it is revoked at once), or every pass with **Clear all**.
 - **Sign-in length:** a sign-in lasts at most 24 hours at every level, then the person signs in again.
 - Needs the KV storage (section 6, step 5) and the current `worker.js`.
+- **Health:** `/health` answers the relay's version and whether its storage, guest settings and app key are present (yes or no, never their values). The site expects the version in `config.json` (`signin.relayVersion`); LV7 gets a message when the relay is behind, and **Options → Sign-in relay** shows its state for everyone.
 
 ## 7. Bans (LV0)
 Banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. Add the GitHub account numbers to `BANNED_GITHUB_IDS` (Secret), separated by commas. The full procedure, across GitHub, Discord and Steam, is [HP-SOP-012](guides/HP-SOP-012-bans.md).

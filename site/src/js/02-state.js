@@ -7,7 +7,7 @@
     cacheMinutes: 10
   };
   var cfg = DEFAULT_CFG;
-  var data = { servers: null, mods: null, docs: null, contracts: null, briefing: null, releases: undefined, issues: undefined, commits: undefined, roadmap: undefined };
+  var data = { servers: null, mods: null, docs: null, contracts: null, briefing: null, releases: undefined, issues: undefined, roadmap: undefined };
   var docCache = {};
 
   var OPT_KEY = "hp-jo-options";

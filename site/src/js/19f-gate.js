@@ -154,7 +154,7 @@
     var keys = $("#keys"); if (!keys) return false;
     keys.insertAdjacentHTML("beforebegin", '<div class="tb-id" id="tbId">' +
       '<div class="tb-wrap"><button type="button" class="tb-btn" id="tbMsg" aria-haspopup="true" aria-expanded="false" title="Messages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17z"/><path d="M3.5 7l8.5 6.5L20.5 7"/></svg><span class="tb-n"></span></button><div class="msg-menu" id="msgMenu" hidden></div></div>' +
-      '<a class="tb-btn" id="tbGear" href="#/profile" title="Profile details" aria-label="Profile details"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9"/><circle cx="12" cy="12" r="6.6"/></svg></a>' +
+      '<a class="tb-btn tb-prof" id="tbGear" href="#/profile" title="View Profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9"/><circle cx="12" cy="12" r="6.6"/></svg><span>View Profile</span></a>' +
       '<div class="si-badge" id="siBadge" role="status"></div></div>');
     $("#tbMsg").addEventListener("click", function (e) { e.stopPropagation(); msgToggle(); });
     document.addEventListener("click", function (e) { var m = $("#msgMenu"); if (m && !m.hidden && !m.contains(e.target)) msgToggle(false); });
@@ -176,7 +176,35 @@
     }, function () { /* relay not updated yet */ });
   }
   setInterval(asksWatch, 5 * 60 * 1000);
+  /* The relay's health: its version against the one this site expects (config signin.relayVersion). An older relay
+     answers /health with its plain greeting, so anything that is not JSON counts as older than version 3. */
+  var RH = null;
+  function relayHealth() {
+    if (RH) return RH;
+    var want = +(siCfg().relayVersion || 0);
+    RH = !siOn() || typeof fetch !== "function" ? Promise.resolve({ state: "off", want: want }) : fetch(siRelay() + "/health", { cache: "no-store" }).then(function (r) {
+      return r.text().then(function (t) { var j = null; try { j = JSON.parse(t); } catch (e) { j = null; } return j; });
+    }).then(function (j) {
+      var v = j && j.ok ? +j.relay || 0 : 0;
+      return { state: v >= want ? "ok" : "behind", v: v, want: want, kv: !!(j && j.kv) };
+    }, function () { return { state: "down", want: want }; });
+    return RH;
+  }
+  function relayLine(h) {
+    return h.state === "ok" ? "Up to date (version " + h.v + ")" + (h.kv ? "" : " · storage not connected")
+      : h.state === "behind" ? (h.v ? "Runs version " + h.v + ", this site needs " + h.want : "Runs older code, this site needs version " + h.want) + ": deploy the current worker.js"
+      : h.state === "down" ? "Not reachable right now" : "Sign-in is off";
+  }
+  /* LV7 is told once per relay version when the relay is behind the site */
+  function relayWatch() {
+    if (!siOwner()) return;
+    relayHealth().then(function (h) {
+      if (h.state === "behind") msgAdd("relay-old-" + h.want, "The sign-in relay needs its update", relayLine(h) + ". Until then, guest pass requests, Clear and claims may not work. Steps: sign-in setup, section 6b.", "bad");
+      else if (h.state === "ok" && !h.kv) msgAdd("relay-nokv", "The relay has no storage", "Bind the KV namespace as HP_KV on the relay (sign-in setup, section 6).", "bad");
+    });
+  }
   function gateBoot() {
+    setTimeout(relayWatch, 2500);
     askCheck(); setTimeout(asksWatch, 3000);
     setTimeout(gateWelcome, 1200);
   }
