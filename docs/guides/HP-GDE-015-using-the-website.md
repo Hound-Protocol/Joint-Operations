@@ -52,7 +52,7 @@ Choose **Search by Name** (file numbers and titles, the default) or **Content** 
 Signing in is optional. It uses your GitHub account ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).
 1. Click **Sign in** in the top bar, then **Sign in with GitHub**. A small GitHub window opens.
 2. The first time, GitHub asks you to authorize **Hound ID Sign-in**. It can only read our restricted document repositories that your GitHub teams already allow; it cannot change anything.
-3. The window closes and your **Profile** shows your keycard: your signed staff card if you are staff, otherwise a member card (LV2). A staff card counts only after its signature checks out in your browser.
+3. The window closes, and your keycard rises onto your **Profile** while its details decrypt. Each level has its own card design. It shows your signed staff card if you are staff, otherwise a member card (LV2). A staff card counts only after its signature checks out in your browser.
 4. **Access granted and access restricted:** your Profile lists what every level opens, split at your clearance. Restricted documents appear under the level that opens them (Staff LV3, Leads LV5, Administration LV6). If an area says GitHub has not given you access yet, ask Administration to add you to the right team.
 5. **Sign out** on the Profile page, or close the tab. Your sign-in lasts at most eight hours and lives only in that tab ([privacy](../privacy.md)).
 
