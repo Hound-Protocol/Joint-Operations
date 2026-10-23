@@ -72,7 +72,8 @@ jobs:
       - name: Install Playwright and browsers
         run: |
           pip install playwright fonttools brotli
-          python -m playwright install --with-deps chromium firefox webkit
+          # The browser download sometimes stalls; give each try 6 minutes and retry
+          for i in 1 2 3; do timeout 360 python -m playwright install --with-deps chromium firefox webkit && break; echo "Retry $i"; done
       - name: Assemble site
         run: python3 tools/assemble_site.py _site --woff2
       - name: Smoke test in all engines

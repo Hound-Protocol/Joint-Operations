@@ -23,7 +23,7 @@
       return '<div class="label">' + label + '</div><p class="sub">' + note + '</p><div class="sheets">' + l.map(function (g, n) {
         return '<a class="mini t-' + esc(g.type.toLowerCase()) + '" style="--i:' + n + '" href="#/guides/' + esc(g.id) + '"><span class="m-top"><b>' + esc(g.code) + "</b><i>v" + esc(g.version) + "</i></span>" +
           '<span class="m-title">' + esc(g.title) + '</span><span class="m-sum">' + esc(g.summary) + "</span>" +
-          '<span class="m-foot">' + esc(g.type) + " · " + esc(g.owner) + " Dept</span>" + typeStripe(g.type, 3) + "</a>";
+          '<span class="m-foot">' + esc(g.owner) + " Dept</span>" + typeStripe(g.type, 3) + "</a>";
       }).join("") + "</div>";
     };
     $("#vb").innerHTML =

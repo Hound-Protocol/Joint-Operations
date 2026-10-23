@@ -1,5 +1,5 @@
 # Release Procedure and Versioning
-Code: HP-SOP-003 · Version 1.0 · Effective 2026-10-22 · Owner: Quality · Used by: release signers, technical lead
+Code: HP-SOP-003 · Version 1.1 · Effective 2026-10-23 · Owner: Quality · Used by: release signers, technical lead
 
 ## Version numbers
 | Version | Meaning |
@@ -13,7 +13,7 @@ The website shows the version in the build bar as `version.build`, where build i
 
 ## Steps
 1. **Prepare.** Update `CHANGELOG.md` with a new section: version, date, highlights, then Added, Changed, Fixed.
-2. **Bump and roadmap.** Set `"version"` in `site/data/config.json`, and update `ROADMAP.md`: tick finished items, add new ones. The release check fails if the version changes without a roadmap update.
+2. **Bump and roadmap.** Set `"version"` in `site/data/config.json`, and update `ROADMAP.md`: tick finished items, add new ones. The release check fails if the version changes without a roadmap update. The Roadmap page draws `ROADMAP.md` as a base under construction, so ticking items fills the platforms; when a release adds something new to the project, also give the base a matching detail (for example a new platform feature or more activity), so the picture grows with the project.
 3. **Pull request.** Everything for the release goes in one pull request, titled `Release vX.Y.Z: <name>`.
 4. **Quality gate.** All checks green. For game builds: the checklist in [HP-POL-006](HP-POL-006-quality-policy.md) section 3.
 5. **Merge.** The site deploys automatically.

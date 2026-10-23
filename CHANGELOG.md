@@ -2,6 +2,12 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.18 · Base operations · 2026-10-23
+- **Roadmap:** the base fills 80% of the 16:9 screen with the progress panel floating on the right. Platforms are named after the phases. Opening the page builds the base: platforms rise, bridges are laid, then each gauge fills with a moving waterline; unfinished parts show as scaffolding. Cargo ships dock beside platforms under construction and crews carry crates to the stockpile; plus a radar sweep, cloud shadows, ripples and beacons. Crews stay on the decks.
+- **Guides:** the type stripe runs along the right edge; mini sheets keep their A4 shape (no wrapped codes or overflowing text).
+- **Release procedure:** each release also adds a matching detail to the base ([HP-SOP-003](docs/guides/HP-SOP-003-release.md) 1.1).
+- **CI:** the browser download retries when it stalls.
+
 ## v0.0.17 · Keycards · 2026-10-23
 - **Keycards:** staff cards on Verify are drawn as security cards (original design): level, clearance color, department, Hound ID, grade and a live signature check. Each has its own profile page (`#/verify/HND-0001`). Until the first card is issued, a specimen shows the design.
 - **Prove a Hound ID** ([ADR 0017](docs/decisions/0017-hound-id-sign-in.md)): a card can be copied, so the holder proves it by signing a one-time challenge with the SSH signing key on their GitHub account. Checked in the browser (ed25519, RSA, ECDSA), no passwords or tokens. Cards can pin one key (`records.py staff-pin`). How to: [HP-GDE-009](docs/guides/HP-GDE-009-grades-records-hound-ids.md).
