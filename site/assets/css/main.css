@@ -578,6 +578,17 @@ mark.key { background: none; color: var(--amb); }
 .mini .m-sum { font: 300 14px/1.45 var(--ui); color: #43494b; }
 .mini .m-foot { margin-top: auto; font: 400 12px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #6b6f70; border-top: 1px solid #cfccc3; padding-top: 6px; }
 .sheet-bar { margin-bottom: 16px; }
+/* Sheet bar: each action has its own colour code; Return to Handbook Library sits on the right, on a textured plate */
+.sheet-bar .sb-pdf, .sheet-bar .sb-print, .sheet-bar .sb-gh { border-left: 3px solid var(--sb); color: var(--sb); }
+.sheet-bar .sb-pdf { --sb: #f28c28; } .sheet-bar .sb-print { --sb: #6fb7c9; } .sheet-bar .sb-gh { --sb: #b8c2c5; }
+.sheet-bar .sb-pdf:hover, .sheet-bar .sb-print:hover, .sheet-bar .sb-gh:hover, .sheet-bar .sb-pdf:focus-visible, .sheet-bar .sb-print:focus-visible, .sheet-bar .sb-gh:focus-visible { color: var(--fg); border-color: var(--sb); background: color-mix(in srgb, var(--sb) 16%, transparent); }
+.sheet-bar .sb-back { margin-left: auto; color: #f3e3b8; border: 1px solid #c9a24a; border-left-width: 3px;
+  background: repeating-linear-gradient(135deg, rgba(201,162,74,.10) 0 2px, transparent 2px 7px), linear-gradient(90deg, rgba(201,162,74,.22), rgba(201,162,74,.06)); }
+.sheet-bar .sb-back span { font-size: 15px; line-height: 1; color: #e2b955; transition: transform .26s cubic-bezier(.2,.8,.2,1); }
+.sheet-bar .sb-back:hover, .sheet-bar .sb-back:focus-visible { color: #fff; border-color: #e2b955;
+  background: repeating-linear-gradient(135deg, rgba(226,185,85,.16) 0 2px, transparent 2px 7px), linear-gradient(90deg, rgba(226,185,85,.34), rgba(226,185,85,.10)); }
+.sheet-bar .sb-back:hover span, .sheet-bar .sb-back:focus-visible span { transform: translateX(-3px); }
+@media (max-width: 700px) { .sheet-bar .sb-back { margin-left: 0; flex: 1 1 100%; } }
 .sheet { max-width: 794px; min-height: 1123px; margin: 0 auto 24px; padding: 56px 64px 40px; background: #f4f2ec; color: #1c2022; box-shadow: 0 20px 50px rgba(0,0,0,.5); display: flex; flex-direction: column; font: 400 15px/1.6 var(--ui); animation: fade .2s both; }
 .sh-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1c2022; padding-bottom: 12px; }
 .sh-org { display: flex; gap: 10px; align-items: center; }
@@ -1584,7 +1595,8 @@ html.booting .center, html.booting .bar { opacity: 0; }
 /* New version announcement: a slim strip that slides into the top bar, centered (v0.0.29) */
 .up-note { position: fixed; z-index: 60; top: 11px; left: 50%; display: flex; align-items: center; gap: 12px; height: 32px; max-width: calc(100vw - 24px); padding: 0 4px 0 12px; transform: translateX(-50%); border: 1px solid rgba(242,140,40,.6); background: rgba(10,13,15,.96); box-shadow: 0 6px 18px rgba(0,0,0,.45); font: 400 11.5px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; animation: upIn .45s cubic-bezier(.22,.9,.3,1) both; }
 .up-note.out { animation: upOut .3s ease both; }
-.up-note i { flex: none; width: 7px; height: 7px; background: var(--jo); box-shadow: 0 0 8px var(--jo); animation: blink 1.4s ease-in-out infinite; }
+.up-note .up-spin { flex: none; width: 14px; height: 14px; fill: none; stroke: var(--jo); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(242,140,40,.7)); animation: upSpin 2s linear infinite; }
+@keyframes upSpin { to { transform: rotate(-360deg); } }
 .up-note b { font-weight: 400; color: var(--hot); }
 .up-note span { color: var(--fg-2); letter-spacing: .1em; }
 .up-go { height: 24px; padding: 0 12px; border: 0; background: var(--jo); color: #120c04; font: inherit; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; }
@@ -1592,7 +1604,8 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .up-x { width: 24px; height: 24px; border: 0; background: none; color: var(--dim); cursor: pointer; font-size: 12px; } .up-x:hover { color: var(--fg); }
 @keyframes upIn { from { opacity: 0; transform: translate(-50%, -40px); } }
 @keyframes upOut { to { opacity: 0; transform: translate(-50%, -40px); } }
-.no-motion .up-note, .no-motion .up-note i { animation: none; }
+.no-motion .up-note, .no-motion .up-note .up-spin { animation: none; }
+@media (prefers-reduced-motion: reduce) { .up-note .up-spin { animation: none; } }
 @media (max-width: 700px) { .up-note { top: auto; bottom: 12px; } .up-note span { display: none; } }
 /* Guest passes (v0.0.27) */
 .gp { margin: 22px 0 0; border: 1px solid rgba(212,174,82,.45); background: linear-gradient(110deg, rgba(212,174,82,.08), rgba(10,13,15,.6) 55%); }
@@ -1893,4 +1906,8 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .kcol-h p { min-height: 2.8em; }
 .mb-brl { fill: #ffe2a8; filter: drop-shadow(0 0 2px rgba(255,200,120,.9)); transition: opacity .15s; }
 .mb-search path { fill: rgba(255,236,190,.10); stroke: none; }
+.mb-drop .cn { fill: #d9dfe1; stroke: none; }
+.mb-drop .ln { stroke: rgba(217,223,225,.7); stroke-width: .8; fill: none; }
+.mb-drop .cr { fill: #c9a24a; stroke: #6b5524; stroke-width: .8; }
+.no-motion .mb-drop { display: none; }
 .no-motion .mb-search { display: none; }

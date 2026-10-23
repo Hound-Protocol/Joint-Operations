@@ -23,7 +23,7 @@ AUDIENCE = {  # who the website lists each document for
     "HP-GDE-001": "Players", "HP-GDE-002": "Players", "HP-GDE-007": "Players", "HP-GDE-008": "Everyone", "HP-GDE-009": "Contributors", "HP-GDE-010": "Contributors", "HP-GDE-011": "Everyone", "HP-GDE-012": "Contributors", "HP-GDE-013": "Contributors", "HP-POL-008": "Everyone", "HP-POL-009": "Everyone", "HP-SOP-011": "Administration", "HP-SOP-012": "Administration", "HP-SOP-010": "Administration",
     "HP-GDE-003": "Contributors", "HP-GDE-005": "Contributors", "HP-POL-001": "Contributors", "HP-POL-002": "Contributors",
     "HP-POL-003": "Contributors", "HP-SOP-001": "Contributors", "HP-SOP-002": "Contributors",
-    "HP-GDE-004": "Quality", "HP-POL-006": "Quality", "HP-SOP-003": "Quality", "HP-SOP-005": "Quality",
+    "HP-GDE-004": "Quality", "HP-GDE-020": "Quality", "HP-POL-006": "Quality", "HP-SOP-003": "Quality", "HP-SOP-005": "Quality",
     "HP-GDE-014": "Everyone", "HP-GDE-015": "Everyone", "HP-GDE-016": "Players", "HP-GDE-017": "Contributors", "HP-GDE-019": "Contributors", "HP-GDE-018": "Contributors",
     "HP-GDE-006": "Administration", "HP-POL-007": "Everyone", "HP-POL-004": "Administration", "HP-POL-005": "Administration", "HP-SOP-004": "Administration",
     "HP-SOP-006": "Administration", "HP-SOP-007": "Administration", "HP-SOP-008": "Administration", "HP-SOP-009": "Administration",

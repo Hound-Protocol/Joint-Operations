@@ -46,8 +46,8 @@
       "title": "Quality Guide: Testing and Bug Reports",
       "type": "Guide",
       "audience": "Quality",
-      "version": "1.0",
-      "effective": "2026-10-22",
+      "version": "1.1",
+      "effective": "2026-10-23",
       "owner": "Quality",
       "for": "Quality Department and testers",
       "summary": "Test rigs, kinds of tests, bug reports and reviewing contracts.",
@@ -247,6 +247,19 @@
       "for": "everyone who wants to help",
       "summary": "The contribution guidelines: getting ready, taking a contract, the rules, and what you get.",
       "path": "docs/guides/HP-GDE-019-how-to-contribute.md"
+    },
+    {
+      "id": "hp-gde-020",
+      "code": "HP-GDE-020",
+      "title": "Tester's Field Manual",
+      "type": "Guide",
+      "audience": "Quality",
+      "version": "1.0",
+      "effective": "2026-10-23",
+      "owner": "Quality",
+      "for": "testers and anyone asked to test a feature",
+      "summary": "",
+      "path": "docs/guides/HP-GDE-020-testers-field-manual.md"
     },
     {
       "id": "hp-pol-001",

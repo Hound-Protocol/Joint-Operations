@@ -938,6 +938,30 @@
     "Forge77"
    ],
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F15",
+   "title": "Tester's Field Manual",
+   "module": "docs",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Anyone asked to test knows what to click, what to try to break and how to measure.",
+   "deliverable": "HP-GDE-020, linked from the Quality Guide and Reporting a Problem.",
+   "acceptance": [
+    "Covers the website and the game from 0.1",
+    "Benchmark methods with a baseline and recorded numbers"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

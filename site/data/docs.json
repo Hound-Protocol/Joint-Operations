@@ -494,6 +494,12 @@
       "path": "docs/guides/HP-GDE-019-how-to-contribute.md"
     },
     {
+      "id": "hp-gde-020",
+      "title": "HP-GDE-020 Tester's Field Manual",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-020-testers-field-manual.md"
+    },
+    {
       "id": "hp-pol-001",
       "title": "HP-POL-001 Contributor Policy",
       "group": "Handbook",

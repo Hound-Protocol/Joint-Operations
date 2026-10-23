@@ -23,7 +23,7 @@
     rule: ["policy", "conduct"], behaviour: ["conduct", "moderation"], behavior: ["conduct", "moderation"], toxic: ["conduct", "moderation"],
     linux: ["proton", "bazzite"], deck: ["proton"], bazzite: ["proton"], install: ["installing", "player guide"], play: ["player"],
     bug: ["report", "triage", "testing"], crash: ["report", "triage"], problem: ["report"], issue: ["report", "issue"],
-    test: ["quality", "testing"], qa: ["quality"], pr: ["pull request", "review"], pull: ["pull request"], merge: ["review", "pull request"],
+    test: ["quality", "testing", "tester", "benchmark"], benchmark: ["tester", "lighthouse", "frame"], performance: ["benchmark", "lighthouse"], qa: ["quality"], pr: ["pull request", "review"], pull: ["pull request"], merge: ["review", "pull request"],
     code: ["contributor", "pull request"], contract: ["contract", "claim"], job: ["contract"], task: ["contract"],
     money: ["funding", "donation"], donate: ["funding", "donation"], pay: ["funding"],
     rank: ["grade"], level: ["grade", "keycard"], clearance: ["keycard"], boss: ["chain of command"], leader: ["chain of command", "lead"],
@@ -119,20 +119,24 @@
   function hbZoom(a) {
     if (!opts.motion || !a.animate || hbBusy) return false;
     hbBusy = true; if (typeof hbpHide === "function") hbpHide(true);
-    var href = a.getAttribute("href"), fade = { duration: 320, fill: "forwards", easing: "ease-out" };
+    var href = a.getAttribute("href"), fade = { duration: 160, fill: "forwards", easing: "ease-out" };
     $$("#hbList .mini").forEach(function (m) { if (m !== a) m.animate([{ opacity: 1 }, { opacity: 0, transform: "scale(.96)" }], fade); });
     [".zones", ".hb-tools", "#hbCount", "#hbFolders", "#vb > p.sub", ".vh"].forEach(function (sel) { $$(sel).forEach(function (el) { el.animate([{ opacity: 1 }, { opacity: 0 }], fade); }); });
     var r = a.getBoundingClientRect(), dx = window.innerWidth / 2 - (r.left + r.width / 2), dy = window.innerHeight / 2 - (r.top + r.height / 2);
     a.style.position = "relative"; a.style.zIndex = 5;
-    var center = a.animate([{ transform: "none" }, { transform: "translate(" + dx + "px," + dy + "px) scale(1.3)" }], { duration: 560, delay: 120, fill: "forwards", easing: "cubic-bezier(.2,.8,.2,1)" });
+    var center = a.animate([{ transform: "none" }, { transform: "translate(" + dx + "px," + dy + "px) scale(1.3)" }], { duration: 280, delay: 60, fill: "forwards", easing: "cubic-bezier(.2,.8,.2,1)" });
     center.onfinish = function () {
       setTimeout(function () {
-        var z = a.animate([{ transform: "translate(" + dx + "px," + dy + "px) scale(1.3)", opacity: 1 }, { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }], { duration: 420, fill: "forwards", easing: "cubic-bezier(.5,0,.75,0)" });
+        var z = a.animate([{ transform: "translate(" + dx + "px," + dy + "px) scale(1.3)", opacity: 1 }, { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }], { duration: 210, fill: "forwards", easing: "cubic-bezier(.5,0,.75,0)" });
         z.onfinish = function () { hbZoomIn = true; hbBusy = false; location.hash = href; };
-      }, 500);
+      }, 250);
     };
     blip();
     return true;
+  }
+  function hbAim() {
+    var run = function () { var ce = $("#center"), vh = $(".vh"); if (!ce || !vh) return; ce.style.scrollBehavior = "auto"; ce.scrollTop += vh.getBoundingClientRect().top - ce.getBoundingClientRect().top; ce.style.scrollBehavior = ""; };
+    run(); if (window.requestAnimationFrame) requestAnimationFrame(run);
   }
   function hbSwitch(list, t) {
     if (hbBusy) return; hbBusy = true; blip();
@@ -148,6 +152,7 @@
   function drawGuide(list, id) {
     var g = list.filter(function (x) { return x.id === id; })[0];
     if (!g) { $("#vb").innerHTML = '<div class="empty">No document ' + esc(id) + '<small><a href="#/guides">Back to the handbook</a></small></div>'; return; }
+    guideOpen = g.type; /* Return to Handbook Library opens the folder this sheet lives in */
     $("#vb").innerHTML = loading("Opening " + g.code);
     loadDoc({ path: g.path }).then(function (src) {
       if (currentView !== "guides") return;
@@ -157,8 +162,9 @@
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guides/" + g.id;
       $("#vb").innerHTML =
         cabClr(true, null).replace('class="clr ok"', 'class="clr ok hb-clr"') +
-        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">Handbook</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
-        '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
+        '<div class="toolbar sheet-bar"><a class="btn small sb-pdf" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small sb-print" id="gprint">Print</button>' +
+        '<a class="btn small sb-gh" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a>' +
+        '<a class="btn small sb-back" href="#/guides"><span aria-hidden="true">◂</span> Return to Handbook Library</a></div>' +
         '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +
           typeStripe(g.type, 6) +
           '<header class="sh-head"><div class="sh-org"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="34" height="34"><span><b>Hound Protocol</b><i>MGSV: Joint Operations</i></span></div>' +
@@ -170,11 +176,13 @@
           '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
         "</article>";
       $("#gprint").addEventListener("click", function () { printSheet(); });
+      /* Opening a sheet puts the "Documentation · Handbook" heading on the top line of the page (the camera moves; the layout does not) */
+      hbAim();
       if (hbZoomIn) {
         hbZoomIn = false;
         var sh = $("#vb .sheet"), bar = $("#vb .sheet-bar");
-        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" });
-        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 300, fill: "backwards" });
+        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
+        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 150, fill: "backwards" });
       }
       /* Opened from a Documentation search: mark the words and scroll to the first */
       if (cabHL) { var hit = cabHighlight($(".sh-body"), cabHL); cabHL = null; if (hit && hit.scrollIntoView) setTimeout(function () { hit.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "center" }); }, opts.motion ? 260 : 0); }

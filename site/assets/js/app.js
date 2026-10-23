@@ -833,7 +833,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -984,6 +984,8 @@
     var brEls = $$("#mbBridgeL .mb-brl");
     /* Searchlight (v0.0.34): a slow beam sweeping the sea from the command platform */
     var srchEl = $("#mbSearch");
+    /* Supply drop (v0.0.35): every half minute a crate floats down on a parachute onto a built platform */
+    var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
     /* Windsock (v0.0.27): beside the command helipad, swinging with the wind and stiffening in gusts */
     var sockP = padOf(mods[0]), sockEl = $("#mbSock"), sock = [sockP[0] + 30, sockP[1] - 18];
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
@@ -1133,6 +1135,12 @@
       sockEl.setAttribute("transform", "translate(" + mbF(sock[0]) + " " + mbF(sock[1]) + ") rotate(" + mbF(wind) + ") scale(" + (0.75 + gust * 0.4).toFixed(2) + " " + (1 - gust * 0.25).toFixed(2) + ")");
       brL.forEach(function (l, i) { var k = Math.floor(T * 5) % 9; brEls[i].style.opacity = k === l.q ? "1" : "0.25"; });
       srchEl.setAttribute("transform", "translate(" + mbF(core.x) + " " + mbF(core.y) + ") rotate(" + mbF((T * 14) % 360) + ")");
+      drop.t += dt;
+      if (drop.t > 30 || !drop.m) { var built = mods.filter(function (m) { return m.st !== "next"; }); drop.m = built[Math.floor(r() * built.length)] || core; drop.t = 0; drop.ox = (r() - 0.5) * drop.m.g.R * 0.6; drop.oy = (r() - 0.5) * drop.m.g.R * 0.6; }
+      var dk = Math.min(drop.t / 7, 1), de = 1 - Math.pow(1 - dk, 2), dsw = Math.sin(drop.t * 1.6) * 6 * (1 - dk);
+      dropEl.setAttribute("transform", "translate(" + mbF(drop.m.x + drop.ox + dsw) + " " + mbF(drop.m.y + drop.oy - 90 * (1 - de)) + ") scale(" + mbF(1.6 - 0.6 * de) + ")");
+      dropEl.setAttribute("opacity", drop.t < 1 ? mbF(drop.t) : drop.t > 11 ? mbF(Math.max(0, 12 - drop.t)) : "1");
+      var cnA = drop.t < 7 ? 1 : Math.max(0, 1 - (drop.t - 7) / 1.2); dropCn.style.opacity = cnA; dropLn.style.opacity = cnA;
       padL.forEach(function (l, i) {
         var fast = H.to === l.m && H.st === "fly", k = Math.floor(T * (fast ? 8 : 2.5)) % 4;
         padEls[i].style.opacity = k === l.q ? "1" : (fast ? "0.25" : "0.12");
@@ -2413,7 +2421,7 @@
     rule: ["policy", "conduct"], behaviour: ["conduct", "moderation"], behavior: ["conduct", "moderation"], toxic: ["conduct", "moderation"],
     linux: ["proton", "bazzite"], deck: ["proton"], bazzite: ["proton"], install: ["installing", "player guide"], play: ["player"],
     bug: ["report", "triage", "testing"], crash: ["report", "triage"], problem: ["report"], issue: ["report", "issue"],
-    test: ["quality", "testing"], qa: ["quality"], pr: ["pull request", "review"], pull: ["pull request"], merge: ["review", "pull request"],
+    test: ["quality", "testing", "tester", "benchmark"], benchmark: ["tester", "lighthouse", "frame"], performance: ["benchmark", "lighthouse"], qa: ["quality"], pr: ["pull request", "review"], pull: ["pull request"], merge: ["review", "pull request"],
     code: ["contributor", "pull request"], contract: ["contract", "claim"], job: ["contract"], task: ["contract"],
     money: ["funding", "donation"], donate: ["funding", "donation"], pay: ["funding"],
     rank: ["grade"], level: ["grade", "keycard"], clearance: ["keycard"], boss: ["chain of command"], leader: ["chain of command", "lead"],
@@ -2509,20 +2517,24 @@
   function hbZoom(a) {
     if (!opts.motion || !a.animate || hbBusy) return false;
     hbBusy = true; if (typeof hbpHide === "function") hbpHide(true);
-    var href = a.getAttribute("href"), fade = { duration: 320, fill: "forwards", easing: "ease-out" };
+    var href = a.getAttribute("href"), fade = { duration: 160, fill: "forwards", easing: "ease-out" };
     $$("#hbList .mini").forEach(function (m) { if (m !== a) m.animate([{ opacity: 1 }, { opacity: 0, transform: "scale(.96)" }], fade); });
     [".zones", ".hb-tools", "#hbCount", "#hbFolders", "#vb > p.sub", ".vh"].forEach(function (sel) { $$(sel).forEach(function (el) { el.animate([{ opacity: 1 }, { opacity: 0 }], fade); }); });
     var r = a.getBoundingClientRect(), dx = window.innerWidth / 2 - (r.left + r.width / 2), dy = window.innerHeight / 2 - (r.top + r.height / 2);
     a.style.position = "relative"; a.style.zIndex = 5;
-    var center = a.animate([{ transform: "none" }, { transform: "translate(" + dx + "px," + dy + "px) scale(1.3)" }], { duration: 560, delay: 120, fill: "forwards", easing: "cubic-bezier(.2,.8,.2,1)" });
+    var center = a.animate([{ transform: "none" }, { transform: "translate(" + dx + "px," + dy + "px) scale(1.3)" }], { duration: 280, delay: 60, fill: "forwards", easing: "cubic-bezier(.2,.8,.2,1)" });
     center.onfinish = function () {
       setTimeout(function () {
-        var z = a.animate([{ transform: "translate(" + dx + "px," + dy + "px) scale(1.3)", opacity: 1 }, { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }], { duration: 420, fill: "forwards", easing: "cubic-bezier(.5,0,.75,0)" });
+        var z = a.animate([{ transform: "translate(" + dx + "px," + dy + "px) scale(1.3)", opacity: 1 }, { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }], { duration: 210, fill: "forwards", easing: "cubic-bezier(.5,0,.75,0)" });
         z.onfinish = function () { hbZoomIn = true; hbBusy = false; location.hash = href; };
-      }, 500);
+      }, 250);
     };
     blip();
     return true;
+  }
+  function hbAim() {
+    var run = function () { var ce = $("#center"), vh = $(".vh"); if (!ce || !vh) return; ce.style.scrollBehavior = "auto"; ce.scrollTop += vh.getBoundingClientRect().top - ce.getBoundingClientRect().top; ce.style.scrollBehavior = ""; };
+    run(); if (window.requestAnimationFrame) requestAnimationFrame(run);
   }
   function hbSwitch(list, t) {
     if (hbBusy) return; hbBusy = true; blip();
@@ -2538,6 +2550,7 @@
   function drawGuide(list, id) {
     var g = list.filter(function (x) { return x.id === id; })[0];
     if (!g) { $("#vb").innerHTML = '<div class="empty">No document ' + esc(id) + '<small><a href="#/guides">Back to the handbook</a></small></div>'; return; }
+    guideOpen = g.type; /* Return to Handbook Library opens the folder this sheet lives in */
     $("#vb").innerHTML = loading("Opening " + g.code);
     loadDoc({ path: g.path }).then(function (src) {
       if (currentView !== "guides") return;
@@ -2547,8 +2560,9 @@
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guides/" + g.id;
       $("#vb").innerHTML =
         cabClr(true, null).replace('class="clr ok"', 'class="clr ok hb-clr"') +
-        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">Handbook</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
-        '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
+        '<div class="toolbar sheet-bar"><a class="btn small sb-pdf" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small sb-print" id="gprint">Print</button>' +
+        '<a class="btn small sb-gh" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a>' +
+        '<a class="btn small sb-back" href="#/guides"><span aria-hidden="true">◂</span> Return to Handbook Library</a></div>' +
         '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +
           typeStripe(g.type, 6) +
           '<header class="sh-head"><div class="sh-org"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="34" height="34"><span><b>Hound Protocol</b><i>MGSV: Joint Operations</i></span></div>' +
@@ -2560,11 +2574,13 @@
           '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
         "</article>";
       $("#gprint").addEventListener("click", function () { printSheet(); });
+      /* Opening a sheet puts the "Documentation · Handbook" heading on the top line of the page (the camera moves; the layout does not) */
+      hbAim();
       if (hbZoomIn) {
         hbZoomIn = false;
         var sh = $("#vb .sheet"), bar = $("#vb .sheet-bar");
-        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" });
-        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 300, fill: "backwards" });
+        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
+        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 150, fill: "backwards" });
       }
       /* Opened from a Documentation search: mark the words and scroll to the first */
       if (cabHL) { var hit = cabHighlight($(".sh-body"), cabHL); cabHL = null; if (hit && hit.scrollIntoView) setTimeout(function () { hit.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "center" }); }, opts.motion ? 260 : 0); }
@@ -3331,7 +3347,7 @@
   }
   function upShow(b, version) {
     if ($("#upNote")) return;
-    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><i aria-hidden="true"></i><b>Update available</b><span>' +
+    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><svg class="up-spin" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 6.2A5.5 5.5 0 0 0 3.1 5"/><path d="M2.8 9.8A5.5 5.5 0 0 0 12.9 11"/><path class="hd" d="M3.1 1.9V5h3.1"/><path class="hd" d="M12.9 14.1V11H9.8"/></svg><b>Update available</b><span>' +
       esc("Build " + (version || "") + (b.build ? "." + b.build : "")) + ' is live</span>' +
       '<button class="up-go" id="upGo">Reload</button><button class="up-x" id="upLater" aria-label="Later">✕</button></div>');
     blip();

@@ -33,6 +33,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Contract board fits the shared frame, with aligned field headers
 - [x] Handbook sheets open with a zoom; every card holder on the roster
 - [x] Deploys no longer wait on the package mirror; broken-main incidents close themselves
+- [x] Tester's Field Manual: what to click, what to pinch, how to benchmark
 - [x] Signed certificates of service, checked in the browser and printable (ADR 0020)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)

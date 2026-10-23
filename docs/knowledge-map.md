@@ -54,7 +54,7 @@ Everything the project knows, and the one document that holds it. If a topic is 
 | A contract from draft to record | [HP-SOP-001](guides/HP-SOP-001-contract-lifecycle.md), [all contracts](contracts.md) |
 | Pull requests and review | [HP-SOP-002](guides/HP-SOP-002-pull-request-review.md) |
 | Definition of done, release gates, bug severity | [HP-POL-006](guides/HP-POL-006-quality-policy.md) |
-| Testing and test reports | [HP-GDE-004](guides/HP-GDE-004-quality-testing.md), [HP-SOP-005](guides/HP-SOP-005-bug-triage.md) |
+| Testing and test reports | [HP-GDE-004](guides/HP-GDE-004-quality-testing.md), [HP-GDE-020](guides/HP-GDE-020-testers-field-manual.md), [HP-SOP-005](guides/HP-SOP-005-bug-triage.md) |
 | Versions and releases | [HP-SOP-003](guides/HP-SOP-003-release.md) |
 | Opening contracts on GitHub (at 0.1) | [HP-SOP-010](guides/HP-SOP-010-publishing-contracts.md) |
 | How work flows, from issue to release | [Development process](development-process.md) |

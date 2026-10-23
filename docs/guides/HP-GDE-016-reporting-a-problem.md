@@ -1,7 +1,7 @@
 # Reporting a Problem
 Code: HP-GDE-016 · Version 1.0 · Effective 2026-10-23 · Owner: Quality · For: players and testers
 
-A good report gets a problem fixed fast. This guide shows where to report, what to include and what happens next. Testers who write reports for the Quality Department follow the fuller [Quality Guide](HP-GDE-004-quality-testing.md).
+A good report gets a problem fixed fast. This guide shows where to report, what to include and what happens next. Testers who write reports for the Quality Department follow the fuller [Quality Guide](HP-GDE-004-quality-testing.md) and the [Tester's Field Manual](HP-GDE-020-testers-field-manual.md).
 
 ## 1. First, check
 - **Is it already known?** Read **Known issues** in the release notes on the website's Download page, and search the [GitHub issues](https://github.com/Hound-Protocol/Joint-Operations/issues).
