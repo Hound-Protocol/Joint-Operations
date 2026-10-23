@@ -1,9 +1,9 @@
 # Contractor Grades, Records and Hound IDs
-Code: HP-GDE-009 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · For: contractors and staff
+Code: HP-GDE-009 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · For: contractors and staff
 
 How your work is counted, how anyone can check it, and how staff prove who they are.
 
-## Grades, like Mother Base staff
+## Grades, like the game's staff grades
 You hold a grade from **E** to **S++** in each field, the way staff in the game hold a grade in each unit. The fields are the contract board's columns: Code, Architecture Research, Testing, Design and web, Docs and legal.
 
 Each completed contract earns points in its field: 🟢 Easy **2**, 🟡 Medium **5**, 🔴 Hard **10**.
@@ -21,7 +21,7 @@ Each completed contract earns points in its field: 🟢 Easy **2**, 🟡 Medium 
 | S+ | 125 | Can be invited into a department |
 | S++ | 200 | Candidate for a lead position |
 
-- Your **rank** is your best grade. It is your Rank role on Discord.
+- Your **overall grade** is your best grade. It is your grade role on Discord (named Rank E to Rank S++ there).
 - **Commendations** work like medals: Administration can award one for exceptional work. It adds 5 points to every field and is listed publicly.
 - Grades never go down. They give no authority over anyone ([HP-POL-007](HP-POL-007-chain-of-command.md)).
 - Full rules: [departments.md](../departments.md).
@@ -38,7 +38,9 @@ Department members get a **Hound ID** (for example HND-0001): a signed staff car
 - Nobody from Hound Protocol will ever ask for your password or a token, Hound ID or not ([HP-POL-004](HP-POL-004-security-policy.md)).
 
 ### Your keycard
-Your staff card is shown as a keycard on Verify, with your level, department, Hound ID and grade. Its own page is `#/verify/HND-NNNN`.
+Your staff card is shown as a keycard on Verify, with your level, department, Hound ID, grade and your GitHub picture. Its own page is `#/verify/HND-NNNN`.
+
+**Sign in to see it as yours:** click **Sign in** in the website's top bar and sign in with GitHub. Your **Profile** then shows your keycard and the restricted documents your clearance opens. Without a staff card you get a member card (LV2). Details: [Using the Website](HP-GDE-015-using-the-website.md#5-signing-in).
 
 ### Prove your Hound ID
 A card can be copied, so when someone needs to know it is really you, you sign a challenge with your **SSH signing key** ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).

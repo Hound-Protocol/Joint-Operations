@@ -1,6 +1,6 @@
 # Governance
 
-Status: Accepted · Date: 2026-10-22
+Status: Accepted · Date: 2026-10-22 · Updated: 2026-10-23 (seats after the playable prototype)
 
 Hound Protocol works as a contract network: contributors come and go, and the project must not depend on any one person. It runs on **a solid hierarchy, open communication and transparency**.
 
@@ -34,12 +34,13 @@ Some duties cannot be fluid. They are held as **seats**: a role with a written c
 | Technical lead | Technical direction, architecture and merge approval (Development) | 1 or more |
 | Moderator | Community safety | 2 or more |
 
+- **When:** seats other than the project lead are filled once there is a playable prototype (project lead, 2026-10-23). Until then the project lead holds them, and the Team page shows them as "After prototype".
 - Terms run 3 to 6 months, then renew or rotate.
 - Handoffs are done the same day: access removed and granted together.
 - Shared credentials live in a password manager, never in chat.
 
 ## AI agents
-AI agents such as Claude work as **contractors' tools**: work is credited to the person who did it, with the agent named ("TrueMan, with Claude"), and detected automatically from commit trailers ([ADR 0015](decisions/0015-ai-agents-and-attribution.md)). Agents hold no seats, accounts or authority. The **technical lead** is a person, and the seat is open.
+AI agents such as Claude work as **contractors' tools**: work is credited to the person who did it, with the agent named ("TrueMan, with Claude"), and detected automatically from commit trailers ([ADR 0015](decisions/0015-ai-agents-and-attribution.md)). Agents hold no seats, accounts or authority. The **technical lead** is a person; the seat opens with the playable prototype.
 
 ## Departments
 The project has four departments: Administration, Development, Quality and Contractor ([departments.md](departments.md), [ADR 0009](decisions/0009-departments-and-ranks.md)). Seats belong to Administration, except the technical lead (Development) and release signers (Quality).

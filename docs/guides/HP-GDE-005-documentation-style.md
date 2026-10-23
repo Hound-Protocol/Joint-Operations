@@ -1,5 +1,5 @@
 # Documentation Style Guide
-Code: HP-GDE-005 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · For: everyone who writes docs
+Code: HP-GDE-005 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · For: everyone who writes docs
 
 ## Principles
 1. **Write for a newcomer.** Assume they are smart, but new to the project.
@@ -22,7 +22,7 @@ Code: HP-GDE-005 · Version 1.0 · Effective 2026-10-22 · Owner: Administration
 | SOP | HP-SOP-NNN | Step-by-step procedures |
 | Guide | HP-GDE-NNN | How-to help for an audience |
 
-Each starts with a title, then one metadata line: `Code · Version · Effective date · Owner department · Audience`. Register it in `site/data/guides.json` so it appears on the website's Guides page. Raise the version when the meaning changes (1.0 → 1.1 for small changes, 2.0 for rewrites).
+Each starts with a title, then one metadata line: `Code · Version · Effective date · Owner department · Audience`. Add its audience and one-line summary to `tools/guides_index.py`, then run `python3 tools/guides_index.py`: it writes `site/data/guides.json`, and the document appears in the website's Handbook with a PDF. Raise the version when the meaning changes (1.0 → 1.1 for small changes, 2.0 for rewrites).
 
 ## Words we use
 | Use | Not |
@@ -32,6 +32,9 @@ Each starts with a title, then one metadata line: `Code · Version · Effective 
 | Mother Base staff (in-game characters) | soldiers |
 | contract, contractor | ticket, freelancer |
 | department | team (for the four departments) |
+| grade, overall grade | rank (except the Discord role names) |
+| detection status | alert, shared alert |
+| Documentation, Library, Handbook | Docs page, Guides page |
 | unofficial fan project | official, licensed |
 
 ## Never

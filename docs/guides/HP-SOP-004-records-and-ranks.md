@@ -1,5 +1,5 @@
-# Contributor Records and Rank Updates
-Code: HP-SOP-004 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · Used by: the records signer (project lead)
+# Contributor Records and Grade Updates
+Code: HP-SOP-004 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · Used by: the records signer (project lead)
 
 ## One-time setup
 ```
@@ -15,11 +15,11 @@ Commit `site/data/records-key.json` in a pull request. Back up the private key (
    python3 tools/records.py add --login <github-user> --contract <Cxx> --pr <number> --commit <sha>
    ```
 3. Open a pull request with the updated `site/data/records.json`. CI verifies the signature.
-4. When it merges, the contributor appears on the Verify page with their rank.
+4. When it merges, the contributor appears on the Verify page with their grades.
 
-## Rank roles on Discord
-1. Check the contractor's rank on the Verify page.
-2. Give them **LV3 · Contractor** and the **Rank** role for their best grade (Rank E to Rank S++). Remove the old rank role.
+## Grade roles on Discord
+1. Check the contractor's overall grade (their best grade in any field) on the Verify page.
+2. Give them **LV3 · Contractor** and the grade role for it (the Discord roles are named **Rank E** to **Rank S++**). Remove the old grade role.
 3. Post a short note in #contract-board for promotions to S and above.
 
 ## Mistakes

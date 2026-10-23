@@ -1,5 +1,5 @@
 # 0017: Hound ID proof and sign-in
-Status: Accepted · Date: 2026-10-23 · Deciders: project lead
+Status: Accepted, live since v0.0.22 · Date: 2026-10-23 · Deciders: project lead
 
 ## Context
 Staff cards ([ADR 0011](0011-keycard-access.md), [contributor records](../contributor-records.md)) are public and signed. Anyone can check that a card is real, but anyone can also copy one, so a card alone does not show **who is holding it**. The project lead wants:

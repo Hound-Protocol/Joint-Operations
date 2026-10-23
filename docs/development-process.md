@@ -1,6 +1,6 @@
 # Development process
 
-Status: DRAFT · Date: 2026-10-21
+Status: Current · Date: 2026-10-21 · Updated: 2026-10-23
 
 How work moves from an idea to a release. Contribution rules for individuals are in [CONTRIBUTING.md](../CONTRIBUTING.md).
 
@@ -29,12 +29,14 @@ tests/           automated tests that run outside the game
 - The site's script is written as modules in `site/src/js/` and joined into `site/assets/js/app.js` by `python3 tools/build_js.py`. Commit both; CI checks they match.
 - `python3 tools/assemble_site.py _site` builds the deployable site (build number, documents, static doc pages). Add `--woff2` to convert fonts.
 - `python3 tests/browser_smoke.py _site` tests it in Chromium, Firefox and WebKit at desktop and phone sizes.
+- `python3 tools/check_links.py` checks every internal link in the docs and the site data; `python3 tools/css_compat.py` adds style fallbacks for older browsers. CI runs both.
+- Full guide for website work: [HP-GDE-012](guides/HP-GDE-012-website-maintainers.md).
 - `python3 tools/bundle_site.py` makes the single-file version that opens from disk.
 
 ## 3. Quality checks
 | Level | What | Where |
 |---|---|---|
-| Static | Formatting, linting, JSON validity, broken doc links | CI on every pull request |
+| Static | JSON validity, generated files up to date, broken internal links, style fallbacks, contributor standing | CI on every pull request |
 | Unit | Netcode, serialization, session logic, outside the game | CI on every pull request |
 | Harness | Two or more clients on one machine with a mock Steam layer and bad-network profiles | CI where possible, else manual |
 | In-game | Written checklist on Windows and on Linux with Proton, on the pinned game build | Manual, before every release |
@@ -43,9 +45,9 @@ tests/           automated tests that run outside the game
 Test reports always include: game build, OS, Proton version (if any), number of players, and the mod's version.
 
 ## 4. Versions and releases
-- Versions follow `0.MINOR.PATCH` until 1.0. Phase 2 ends with **0.1**.
+- Versions follow `0.MINOR.PATCH` until 1.0. Foundation releases are **0.0.x** (website, docs, tools); Phase 2 ends with **0.1**, the first playable build. Details: [HP-SOP-003](guides/HP-SOP-003-release.md).
 - Every release has: a changelog entry, a dev log entry on the website, SHA-256 checksums, and binaries built by GitHub Actions only.
-- Code signing through an open-source signing program once the license is final.
+- Code signing through an open-source signing program (the license is final: [ADR 0005](decisions/0005-license.md)).
 - Release checklist: all contract issues for the milestone closed, in-game checklist passed on both platforms, release notes reviewed by the project lead.
 
 ## 5. Bugs

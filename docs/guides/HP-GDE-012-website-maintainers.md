@@ -1,10 +1,10 @@
 # Website Maintainer Guide
-Code: HP-GDE-012 · Version 1.0 · Effective 2026-10-22 · Owner: Development · For: contributors who change the website
+Code: HP-GDE-012 · Version 1.1 · Effective 2026-10-23 · Owner: Development · For: contributors who change the website
 
 How the website is built, where its content lives, and how to change it safely.
 
 ## How it works
-- The site is static: HTML, CSS and plain JavaScript in `site/`, served by GitHub Pages. No server, no cookies, no trackers ([privacy](../privacy.md)).
+- The site is static: HTML, CSS and plain JavaScript in `site/`, served by GitHub Pages. No server of ours, no cookies, no trackers ([privacy](../privacy.md)). The one exception is the sign-in relay, a small Cloudflare Worker in `tools/signin-relay/` that only completes GitHub sign-in ([signin.md](../signin.md)).
 - Live data (releases, contracts, commits) comes from the public GitHub API in the visitor's browser and is cached for a few minutes. If GitHub cannot be reached, the site shows the bundled data.
 - Every push to `main` that touches the site deploys it automatically. Releases are published by the Release workflow when the version in `site/data/config.json` changes ([HP-SOP-003](HP-SOP-003-release.md)).
 
@@ -17,7 +17,8 @@ How the website is built, where its content lives, and how to change it safely.
 | Built script (never edit) | `site/assets/js/app.js`, made by `tools/build_js.py` |
 | Content data | `site/data/*.json`: config, team, contracts, devlog, briefing, mods, servers, docs library, handbook index, records |
 | Brand files | `site/assets/brand/`, made by `tools/brand/build_brand.py` |
-| Documents | `docs/`, `research/` and the README files; the site reads them as Markdown |
+| Documents | `docs/`, `research/` and the README files; the site reads them as Markdown. The Library is `docs.json`, the Handbook is generated from `docs/guides/` |
+| Sign-in | `site/src/js/19e-signin.js` (sign-in, Profile), `config.json` → `signin` (relay address and restricted areas) |
 
 ## Making a change
 1. Edit the source files, then rebuild:
@@ -52,5 +53,7 @@ python3 tools/check_links.py
 - Plain JavaScript in the existing style (`var`, functions), so older browsers keep working. No build step beyond the tools above, no frameworks.
 - Every new layout value that uses `min()`, `max()` or `clamp()` gets a fallback: `tools/css_compat.py` adds it for you.
 - Respect **Options**: animations stop when Animations is off (`.no-motion`), and nothing flashes.
+- Pages fade in when they are ready (`20b-ready.js`): render a `loading()` placeholder first, then the content; the reveal waits for the placeholder to go, fonts and images. Never show half-built content.
+- Check `python3 tools/check_links.py` after moving or renaming any document; links to `#/docs/<id>` and `#/guides/<id>` must exist.
 - Escape every piece of data you put into HTML with `esc()`.
 - Keep text short, plain and in our terms: host and clients, never "friends" or character names.

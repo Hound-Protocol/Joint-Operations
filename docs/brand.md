@@ -1,6 +1,6 @@
 # Brand: Hound Protocol and Joint Operations
 
-Status: v1 · Updated: 2026-10-22 · Owner: Administration
+Status: v1 · Updated: 2026-10-23 · Owner: Administration
 
 Two marks, one family. **Hound Protocol** is the team. **Joint Operations** is the mod. Every piece is original vector artwork drawn in code (`tools/brand/build_brand.py`). There is no generative AI imagery ([AI Use Policy](guides/HP-POL-002-ai-use-policy.md)).
 
@@ -10,7 +10,7 @@ Two marks, one family. **Hound Protocol** is the team. **Joint Operations** is t
 | **Hound Protocol**: a geometric hound face over a red slash, with HOUND / PROTOCOL beneath (lockup) | The organization: watchful, sharp, organized like a unit | `hound-protocol-mark.svg` (no name), `hound-protocol-lockup.svg` (with name), each with `-mono` and `-light`; `hound-protocol-avatar.png` |
 | **Joint Operations badge**: a unit shield with an orange JOINT OPS band and a sixteen-point star around the orange host diamond | Sixteen players around one host | `joint-operations-mark.svg`, `-mono`, `-light`, `-white`; `joint-operations-avatar.png` |
 | **Joint Operations wordmark**: J, the star inside the O, speed bars, the full name and "up to 16 operatives" | The project's name in full | `joint-operations-lockup.svg`, `-mono`, `-light` |
-| **Background scene**: saluting operatives and their commander | Website background only | `joint-operations-salute.svg` |
+| **Background scene**: saluting operatives and their commander | Kept in the brand files; not used on the website now (the main menu shows the faint Joint Operations badge) | `joint-operations-salute.svg` |
 
 All marks are drawn in code (`tools/brand/logos.py`, `salute.py`) in the style of unit insignia, with our own shapes. They are not modeled on any Konami logo.
 
@@ -25,6 +25,8 @@ Also: `site/assets/img/favicon.svg` (simplified mark for small sizes) and `site/
 | Night | `#0b0e10` | Backgrounds, and the Hound Protocol insignia field |
 | Paper | `#f3efe6` | Light backgrounds (use the `-light` files) |
 | Site gold | `#c9a24a` | The website's interface accent only, not the logos |
+| Keycard colours | LV1 `#8b9599` · LV2 `#c9d0d2` · LV3 `#7fbf8a` · LV4 `#5aa7d6` · LV5 `#f28c28` · LV6 `#e0453f` · LV7 `#d4ae52` | Keycards and clearance labels on the website |
+| Document classes | Policy `#b02a22` · Procedure `#1d6a8a` · Guide `#a86f00` | Handbook sheets and their type stripes |
 
 Type: **Barlow Semi Condensed** (light, wide letter-spacing, uppercase) for names. **Share Tech Mono** for labels. Both are licensed under the SIL Open Font License.
 

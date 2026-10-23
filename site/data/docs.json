@@ -2,6 +2,12 @@
   "note": "Documentation library. Paths are relative to the repository root.",
   "docs": [
     {
+      "id": "knowledge-map",
+      "title": "Knowledge Map",
+      "group": "Project",
+      "path": "docs/knowledge-map.md"
+    },
+    {
       "id": "overview",
       "title": "Overview",
       "group": "Project",
@@ -404,6 +410,24 @@
       "path": "docs/guides/HP-GDE-013-research-notes.md"
     },
     {
+      "id": "hp-gde-014",
+      "title": "HP-GDE-014 GitHub Basics",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-014-github-basics.md"
+    },
+    {
+      "id": "hp-gde-015",
+      "title": "HP-GDE-015 Using the Website and Documentation",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-015-using-the-website.md"
+    },
+    {
+      "id": "hp-gde-016",
+      "title": "HP-GDE-016 Reporting a Problem",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-016-reporting-a-problem.md"
+    },
+    {
       "id": "hp-pol-001",
       "title": "HP-POL-001 Contributor Policy",
       "group": "Handbook",
@@ -477,7 +501,7 @@
     },
     {
       "id": "hp-sop-004",
-      "title": "HP-SOP-004 Contributor Records and Rank Updates",
+      "title": "HP-SOP-004 Contributor Records and Grade Updates",
       "group": "Handbook",
       "path": "docs/guides/HP-SOP-004-records-and-ranks.md"
     },

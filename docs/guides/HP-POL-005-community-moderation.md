@@ -1,5 +1,5 @@
 # Community and Moderation Policy
-Code: HP-POL-005 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · Applies to: GitHub, Discord and every Hound Protocol space
+Code: HP-POL-005 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · Applies to: GitHub, Discord and every Hound Protocol space
 
 ## 1. Standards
 The [Code of Conduct](../../CODE_OF_CONDUCT.md) and the Discord rules apply everywhere. In short: be respectful, stay on topic, no piracy, no cheating in others' games, no Konami online services, no harassment, hate or spam.
@@ -14,6 +14,7 @@ The [Code of Conduct](../../CODE_OF_CONDUCT.md) and the Discord rules apply ever
 | Immediate removal | Piracy, game files, leaked secrets, harassment, threats, doxxing | Content removed and person banned at once |
 
 ## 3. How moderators act
+Moderators are appointed once there is a playable prototype. Until then the project lead moderates alone; where this policy needs two moderators, the project lead decides and writes down why in #mod-log.
 - Act on behavior, not opinions. Explain the action briefly.
 - Log every warning, timeout and ban in #mod-log: who, what, why, link.
 - Never moderate a dispute you are part of. Hand it to another moderator.

@@ -1,6 +1,6 @@
 # Legal and Ethics
 
-Status: DRAFT, pending project lead review. Not legal advice.
+Status: Draft, pending project lead review · Updated: 2026-10-23. Not legal advice.
 
 ## 1. Project license
 - Forks are allowed. Attribution is required. Nobody may present this work as their own.
@@ -41,7 +41,11 @@ Status: DRAFT, pending project lead review. Not legal advice.
 - Publish where money goes, and how much, in docs/funding.md.
 - Donations do not change decision-making authority in the project.
 
-## 9. Open items for the project lead
+## 9. Personal data
+- The website collects no personal data. Optional GitHub sign-in keeps the person's token and basic account details in their own browser tab only; nothing is stored on our side ([privacy notice](privacy.md), [ADR 0017](decisions/0017-hound-id-sign-in.md)).
+- Signed contributor records and staff cards are public by design and contain only what the person agreed to show (GitHub name, optional display name and Discord ID).
+
+## 10. Open items for the project lead
 - ~~Choose the license (ADR 0005).~~ Done: see LICENSING.md.
 - Approve the Steam App ID position.
 - Confirm the donation platform and reporting plan.
