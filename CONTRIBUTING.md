@@ -1,10 +1,12 @@
 # Contributing to MGSV: Joint Operations
 
-Status: DRAFT
+Status: Current · Updated: 2026-10-23
 
 Hound Protocol works like a contract network. Anyone can pick up a contract, deliver it, and leave. Contractors form the **Contractor Department**, one of four departments alongside Administration, Development and Quality ([departments.md](docs/departments.md)). This file explains how.
 
-> **Before 0.1:** version 0.1 is being built by the project lead. The contract board shows the plan, and contracts open to contractors after 0.1. Testers are welcome now.
+> **Before 0.1:** version 0.1 is being built by the project lead. The contract board shows the plan, and contracts open to contractors after 0.1. Testers and reviewers are welcome now.
+>
+> **New to GitHub?** Start with [GitHub Basics](docs/guides/HP-GDE-014-github-basics.md) and [joining the Discord](docs/guides/HP-GDE-008-discord-members.md).
 
 ## Ground rules
 - Fork the repo and open a pull request. Nobody pushes to `main`.
@@ -39,7 +41,7 @@ Status on the board:
 2. Comment `/claim` on the issue. You are assigned automatically, and your name shows on the website's board. Several people can claim the same contract. `/unclaim` leaves it.
 3. Do the work on a branch in your fork.
 4. Open a pull request that says `Closes #<issue>`.
-5. The Quality Department reviews it against the acceptance criteria and merges. The contract closes and counts toward your rank.
+5. The Quality Department reviews it against the acceptance criteria and merges. The contract closes, you get a signed [contributor record](docs/contributor-records.md), and it counts toward your grade.
 
 ## Leaving a contract
 Leaving is fine. Before you go, post a short handoff note on the issue: what is done, what is not, and where the work is. A maintainer then unassigns the contract.
@@ -47,9 +49,9 @@ Leaving is fine. Before you go, post a short handoff note on the issue: what is 
 ## Grades
 Contractors are graded like Mother Base staff, from E to S++, in each field. Each completed contract also earns a signed [contributor record](docs/contributor-records.md), and grades are counted from those records.
 
-Every completed contract (delivered, reviewed by Quality and merged) earns **points in its field**: 🟢 Easy 2, 🟡 Medium 5, 🔴 Hard 10. The fields are the board's columns: Programming, Reverse engineering, Testing, Design and web, Docs and legal.
+Every completed contract (delivered, reviewed by Quality and merged) earns **points in its field**: 🟢 Easy 2, 🟡 Medium 5, 🔴 Hard 10. The fields are the board's columns: Code, Architecture research, Testing, Design and web, Docs and legal.
 
-- Like Mother Base staff, who hold a grade in each unit, you hold a **grade in each field**. Your **rank** is your best grade, and that is the role you get on Discord.
+- Like Mother Base staff, who hold a grade in each unit, you hold a **grade in each field**. Your **overall grade** is your best one, and that is the role you get on Discord.
 - Each grade needs more points than the last, as in the game, so the S grades take sustained, serious work.
 - **Commendations** work like medals: Administration can award one for exceptional work. It adds 5 points to every field and is listed publicly with the reason.
 - A contract shared by several people gives full points to each of them. Hand-written and AI-assisted work count the same.

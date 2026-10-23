@@ -14,7 +14,7 @@
   [
    "client",
    "Clients share the session",
-   "Clients run the same mission in their own game and receive the host's state: enemies, alert status, events and the other players. Their game is kept in line with the host, so the scene matches on every screen. Each client controls their own character and camera, which respond instantly, and the host confirms the result."
+   "Clients run the same mission in their own game and receive the host's state: enemies, the detection status, events and the other players. Their game is kept in line with the host, so the scene matches on every screen. Each client controls their own character and camera, which respond instantly, and the host confirms the result."
   ],
   [
    "link",
@@ -54,6 +54,10 @@
   [
    "How does detection work?",
    "The session has one detection status: Hidden, Searching or Detected. A player who is spotted joins it; everyone else stays Hidden unless they are spotted too."
+  ],
+  [
+   "Do I need GitHub or Discord?",
+   "Not to play. Discord is where the community talks and helps; GitHub is where you report problems, take contracts and sign in to this site. The Handbook has a step-by-step guide for each: Joining the Discord and GitHub Basics."
   ],
   [
    "How can I help?",

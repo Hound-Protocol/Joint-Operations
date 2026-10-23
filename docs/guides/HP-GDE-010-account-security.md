@@ -1,5 +1,5 @@
 # Account Security Setup
-Code: HP-GDE-010 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · For: department members, contractors and anyone with access
+Code: HP-GDE-010 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · For: department members, contractors and anyone with access
 
 Step by step setup for the rules in the [Security Policy](HP-POL-004-security-policy.md). About 20 minutes.
 
@@ -32,7 +32,10 @@ git config --global commit.gpgsign true
 Use one (Bitwarden, KeePassXC, 1Password). Shared team credentials live only there, never in chat or in the repository.
 
 ## 6. Your Hound ID
-Once you join a department, Administration issues your Hound ID ([HP-GDE-009](HP-GDE-009-grades-records-hound-ids.md)). Anyone can check it on the Verify page, so nobody can pretend to be you.
+Once you join a department, Administration issues your Hound ID ([HP-GDE-009](HP-GDE-009-grades-records-hound-ids.md)). Anyone can check it on the Verify page, so nobody can pretend to be you. The **signing key** from step 3 is also how you prove the card is yours: Verify → Prove a Hound ID → Prove it's me.
+
+## 7. Signing in to the website
+The website's **Sign in** uses your GitHub account and its two-factor login; there is no separate password. To remove the website's access at any time: GitHub → **Settings → Applications → Authorized GitHub Apps → Hound Protocol Sign-in → Revoke** ([Using the Website](HP-GDE-015-using-the-website.md#5-signing-in)).
 
 ## If something goes wrong
 Lost device, leaked token or a strange login: tell Administration right away and follow [HP-SOP-006](HP-SOP-006-security-incident.md). Reporting fast is never held against you.

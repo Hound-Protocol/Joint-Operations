@@ -1,8 +1,8 @@
 # Departments and contractor grades
 
-Status: Accepted ([ADR 0009](decisions/0009-departments-and-ranks.md)) · Date: 2026-10-22
+Status: Accepted ([ADR 0009](decisions/0009-departments-and-ranks.md)) · Date: 2026-10-22 · Updated: 2026-10-23
 
-Hound Protocol is organized like Mother Base: four departments, each with a clear job. The same structure is used on GitHub, on Discord and on the website.
+Hound Protocol is organized in four departments, each with a clear job. The same structure is used on GitHub, on Discord and on the website.
 
 ## The four departments
 | Department | Job | Units | Who |
@@ -25,9 +25,9 @@ Who may decide what over whom is set by the chain of command ([HP-POL-007](guide
 ## Contractor grades
 Grades follow Mother Base staff grades, from **E** to **S++** ([ADR 0009](decisions/0009-departments-and-ranks.md)).
 
-Every completed contract (delivered, reviewed by Quality and merged) earns **points in its field**: 🟢 Easy 2, 🟡 Medium 5, 🔴 Hard 10. The fields are the board's columns: Programming, Reverse engineering, Testing, Design and web, Docs and legal.
+Every completed contract (delivered, reviewed by Quality and merged) earns **points in its field**: 🟢 Easy 2, 🟡 Medium 5, 🔴 Hard 10. The fields are the board's columns: Code, Architecture research, Testing, Design and web, Docs and legal.
 
-- Like Mother Base staff, who hold a grade in each unit, you hold a **grade in each field**. Your **rank** is your best grade, and that is the role you get on Discord.
+- Like Mother Base staff, who hold a grade in each unit, you hold a **grade in each field**. Your **overall grade** is your best one, and that is the role you get on Discord.
 - Each grade needs more points than the last, as in the game, so the S grades take sustained, serious work.
 - **Commendations** work like medals: Administration can award one for exceptional work. It adds 5 points to every field and is listed publicly with the reason.
 - A contract shared by several people gives full points to each of them. Hand-written and AI-assisted work count the same.
@@ -63,11 +63,12 @@ Every contract has a difficulty, shown in color everywhere. Difficulty is **info
 ## Where it shows
 | Place | What |
 |---|---|
-| Website, Team page | The departments and their units, with members |
+| Website, Team page | The departments and their units, with members, and open positions |
 | Website, Team page | The chain of command as a tree |
-| Website, Contribute and Verify pages | Contractor grades per field, the contributor wall |
+| Website, Contribute and Verify pages | Contractor grades per field, the contributor wall, keycards |
+| Website, Profile page | Your own keycard after signing in with GitHub ([ADR 0017](decisions/0017-hound-id-sign-in.md)) |
 | Discord | Keycard roles LV2 to LV7 per department ([ADR 0011](decisions/0011-keycard-access.md)), a role per grade (E to S++), unit roles, and channels per department |
 | GitHub | Department owners in CODEOWNERS as departments fill; contract labels by module |
 
 ## Version 0.1
-Version 0.1 is built by the project lead, with Claude as an AI agent ([ADR 0009](decisions/0009-departments-and-ranks.md)). The contract board shows the plan in the meantime, and contracts open to contractors after 0.1.
+Version 0.1 is built by the project lead, with Claude as an AI agent used as a tool ([ADR 0009](decisions/0009-departments-and-ranks.md), [ADR 0015](decisions/0015-ai-agents-and-attribution.md)). Staff seats are filled once there is a playable prototype. The contract board shows the plan in the meantime, and contracts open to contractors after 0.1.

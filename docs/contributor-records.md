@@ -1,10 +1,10 @@
 # Contributor records
 
-Status: DRAFT, waiting for the project lead's approval and signing key.
+Status: Accepted design, waiting for the signing key (the project lead runs `keygen` once) · Updated: 2026-10-23
 
 Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, difficulty and a link to the merged pull request. Contractor grades (E to S++, see [departments.md](departments.md)) are counted from these records. Records are public on the website's [Verify page](https://hound-protocol.github.io/Joint-Operations/#/verify), and anyone can check them.
 
-Hand-written and AI-assisted work earn the same record. What counts is that the contract's acceptance criteria are met and the work passed review.
+Hand-written and AI-assisted work earn the same record; AI agents used are listed in `assisted`, detected from the pull request's commits ([ADR 0015](decisions/0015-ai-agents-and-attribution.md)). What counts is that the contract's acceptance criteria are met and the work passed review.
 
 ## What a record looks like
 ```json
@@ -15,9 +15,10 @@ Hand-written and AI-assisted work earn the same record. What counts is that the 
   "name": "Display name (optional)",
   "contract": "C13",
   "title": "Summarize networking playbook in our own words",
-  "difficulty": "basic",
+  "difficulty": "easy",
   "pr": 12,
   "commit": "full 40-character SHA (optional)",
+  "assisted": ["Claude"],
   "date": "2026-10-22",
   "key": "hp-2026",
   "sig": "base64 Ed25519 signature"
@@ -66,3 +67,7 @@ Issue a card (owner or Administration, with the signing key):
 ```
 python3 tools/records.py staff-add --login <github-user> --card LV5 --department Development --name "Display name" --discord-id <id>
 ```
+
+- **Keycards:** the website draws every card as a keycard (level colour, department, Hound ID, grade, the holder's GitHub picture) with its own profile page, `#/verify/HND-0001`.
+- **Your own card:** signing in with GitHub shows your card on the Profile page ([ADR 0017](decisions/0017-hound-id-sign-in.md), [sign-in](signin.md)).
+- **Proving a card:** a card can be copied, so the holder proves it by signing a one-time challenge with the SSH signing key on their GitHub account (Verify → Prove a Hound ID). Pin one key to a card with `python3 tools/records.py staff-pin --id HND-0001 --ssh-key SHA256:…`; then only that key proves it. Step by step: [HP-GDE-009](guides/HP-GDE-009-grades-records-hound-ids.md).

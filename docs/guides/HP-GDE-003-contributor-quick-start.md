@@ -1,10 +1,11 @@
 # Contributor Quick Start
-Code: HP-GDE-003 · Version 1.0 · Effective 2026-10-22 · Owner: Development · For: new contributors and contractors
+Code: HP-GDE-003 · Version 1.1 · Effective 2026-10-23 · Owner: Development · For: new contributors and contractors
 
 ## 1. Read first (20 minutes)
 - [Contributor Policy](HP-POL-001-contributor-policy.md) and [AI Use Policy](HP-POL-002-ai-use-policy.md)
 - [Clean-Room and IP Policy](HP-POL-003-clean-room-and-ip.md): no game files, no copied mod code
-- [Departments and ranks](../departments.md): how the project is organized
+- [Departments and grades](../departments.md): how the project is organized
+- New to GitHub or Discord? [GitHub Basics](HP-GDE-014-github-basics.md) and the [Discord Member Guide](HP-GDE-008-discord-members.md)
 
 ## 2. Set up (30 minutes)
 1. GitHub account with **two-factor authentication**.
@@ -16,6 +17,8 @@ Code: HP-GDE-003 · Version 1.0 · Effective 2026-10-22 · Owner: Development ·
    python3 tools/check_links.py
    python3 tools/contracts_md.py --check
    python3 tools/records.py verify
+   python3 tools/guides_index.py --check
+   python3 tools/css_compat.py --check
    ```
 5. Preview the website: `python3 tools/assemble_site.py _site` then open `_site/index.html` through a local server (`python3 -m http.server -d _site`).
 

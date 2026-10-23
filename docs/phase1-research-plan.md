@@ -1,6 +1,6 @@
 # Phase 1 Research Plan
 
-Status: DRAFT. Phase 1 starts when Phase 0 is complete or deferred by the project lead.
+Status: Current · Updated: 2026-10-23. Desk research (public sources only) runs alongside Phase 0; work on a rig starts when the test environment (R1) exists and Phase 0 is complete or deferred by the project lead.
 
 ## Purpose
 Learn what is needed to run a 16-player session in MGSV, and prove the networking approach, before any player-facing build.
@@ -25,10 +25,11 @@ Learn what is needed to run a 16-player session in MGSV, and prove the networkin
 | R7 | Networking spike | Prototype outside the game: GameNetworkingSockets, Steam Networking Messages vs Sockets, direct IP. Simulate 16 clients. | Networking | research/networking-spike.md |
 | R8 | Test harness | Mock Steam DLL, clumsy and tc netem profiles, state hash logging | Networking, Proton Tester | tools/ scripts and research/test-harness.md |
 | R9 | Performance budget | CPU, memory, bandwidth targets on a modest PC at 2, 4, 8, 16 players | Networking | research/performance.md |
-| R10 | Legal gate | Steam App ID and rights position, license text, donation policy | Lead | docs/legal.md updated |
+| R10 | Legal gate | Steam App ID and rights position, license text, donation policy | Lead | docs/legal.md updated (license and donations **decided**; App ID open) |
 | R11 | Networking reference summary | Summarize the Co-op Anything networking playbook in our own words | Docs | research/networking-playbook-summary.md (**done**) |
 | R12 | Engine session spike | Start a mission or free roam as an engine multiplayer session. Can 3 or more players join? What blocks it? Time-boxed | RE / Hooks, Networking | research/engine-session-spike.md, decides ADR 0002 |
-| R13 | Steam interfaces | From inside the game process, can we reach current Steam networking and matchmaking interfaces through the game's older Steam API? | Networking | research/steam-interfaces.md, decides ADR 0003 |
+| R13 | Steam interfaces | From inside the game process, can we reach current Steam networking and matchmaking interfaces through the game's older Steam API? | Networking | research/steam-interfaces.md (**desk research done**, rig test open), decides ADR 0003 |
+| R15 | Enemy AI | How do guards notice, report and hunt, and what changes with several players and one detection status? | RE / Hooks | research/ai-system.md (**desk research done**), informs ADR 0012 and C28 |
 | R14 | Joining from outside the game | Do Steam lobby links and launch arguments reach the game through Konami's launcher? Do `steam://` and `jointops://` links work from Flatpak browsers on Bazzite? | Networking, Proton Tester | research/browser-launch.md, informs ADR 0008 |
 
 ## Background reading

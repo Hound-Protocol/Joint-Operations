@@ -1,5 +1,5 @@
 # Discord Administration
-Code: HP-SOP-008 · Version 1.1 · Effective 2026-10-22 · Owner: Administration · Used by: Discord admins
+Code: HP-SOP-008 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · Used by: Discord admins
 
 ## The server is defined in code
 `tools/discord/blueprint.json` defines roles, categories, channels, permissions and starter messages. `tools/discord/setup.py` makes the server match it. Change the blueprint in a pull request, then apply.
@@ -22,7 +22,7 @@ Never paste the token into chat, an issue or an AI tool ([HP-POL-004](HP-POL-004
 | Task | How |
 |---|---|
 | New department member | Department role + unit role ([HP-SOP-007](HP-SOP-007-onboarding-offboarding.md)) |
-| Rank promotion | Rank role from the Verify page ([HP-SOP-004](HP-SOP-004-records-and-ranks.md)) |
+| Grade promotion | Grade role (Rank E to S++) from the Verify page ([HP-SOP-004](HP-SOP-004-records-and-ranks.md)) |
 | Moderation | Enforcement ladder in [HP-POL-005](HP-POL-005-community-moderation.md), log in #mod-log |
 | Announcement | #announcements, short, with a link |
 

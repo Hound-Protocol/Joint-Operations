@@ -1,12 +1,13 @@
 # GitHub setup checklist
 
-Status: to do by an organization owner · Date: 2026-10-21
+Status: Partly done · Updated: 2026-10-23 · For organization owners
 
 These settings cannot be changed from automated sessions, so an owner applies them once. Each takes under a minute.
 
-## 1. Merge pull request #1
-- Open pull request #1, choose **Squash and merge**. This keeps `main` free of the earlier drafts.
-- If branch protection is already on (step 4) and nobody else can approve, use the admin option to merge.
+## 1. Done
+- [x] First pull request merged, repository public, GitHub Pages live (deploys on every push to `main`).
+- [x] Sign-in app and private document repositories set up ([signin.md](signin.md)).
+- [ ] Branch protection (step 4): still to do.
 
 ## 2. Repository details
 Repository page → gear icon next to **About**:
@@ -22,14 +23,13 @@ Repository page → gear icon next to **About**:
 - **Social preview:** upload `site/assets/img/og.png`.
 
 ## 4. Settings → Branches → Add branch ruleset for `main`
-- Require a pull request before merging, with **1 approval**.
-- Dismiss stale approvals when new commits are pushed.
-- Require status checks to pass: **checks** (from `.github/workflows/checks.yml`; it appears after its first run).
+- Require a pull request before merging. **Approvals: 0** while the project lead is the only reviewer; raise it to 1 when the seats are filled after the playable prototype.
+- Require status checks to pass: **checks**, **Browsers (Chromium, Firefox, WebKit)** and **Contributor standing** (they appear after their first runs).
 - Block force pushes and deletions.
-- Allow organization admins to bypass, so a one-person team is never locked out.
+- No bypass, admins included: every change goes through the checks.
 
 ## 5. Settings → Pages
-- **Source:** GitHub Actions. The site deploys after the next push to `main`.
+- **Source:** GitHub Actions (done).
 
 ## 6. Settings → Code security
 - Turn on **Private vulnerability reporting** (used by `SECURITY.md`).
@@ -38,9 +38,9 @@ Repository page → gear icon next to **About**:
 ## 7. Organization (github.com/Hound-Protocol → Settings)
 - **Authentication security:** require two-factor authentication for all members.
 - **Member privileges:** base permission **Read**; members cannot create public repositories.
-- **Profile:** display name `Hound Protocol`, description `Community development team behind MGSV: Joint Operations, an unofficial multiplayer mod.`, website as above. No Konami artwork.
+- **Profile:** display name `Hound Protocol`, description `A community-focused organization. We build ambitious projects, one of them being Joint Operations.`, website as above. No Konami artwork.
 - Optional: create a repository named `.github` with `profile/README.md` to show an organization page.
 
 ## 8. Add people
-- Add seat holders as organization owners or maintainers (two per seat, see [governance](governance.md)).
+- Seats are filled once there is a playable prototype ([governance](governance.md)). Then add seat holders as organization owners or maintainers (two per seat) and to the matching teams, which also opens their restricted documents ([signin.md](signin.md)).
 - Add them to `.github/CODEOWNERS`.

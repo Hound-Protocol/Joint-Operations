@@ -1,5 +1,5 @@
 # Chain of Command and Open Communication
-Code: HP-POL-007 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · Applies to: everyone in Hound Protocol, on GitHub, Discord and the website
+Code: HP-POL-007 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · Applies to: everyone in Hound Protocol, on GitHub, Discord and the website
 
 Hound Protocol runs on three principles: **a solid hierarchy**, **open communication** and **transparency**. Everyone knows who decides what, anyone can talk to anyone, and decisions are made where people can see them. The decision is recorded in [ADR 0013](../decisions/0013-chain-of-command.md).
 
@@ -41,7 +41,7 @@ Rules:
 - **Decisions are written down where people can read them.** Technical and organizational decisions with lasting effect go into an ADR in `docs/decisions/`. Day-to-day decisions are made in issues and pull requests.
 - **Every decision says who made it and why.** "Because I said so" is not a reason.
 - **Moderation is logged.** Every warning, timeout and ban is logged with who, what and why ([HP-POL-005](HP-POL-005-community-moderation.md)). LV6 and LV7 see the full log; a monthly summary without names is posted publicly.
-- **Roles are public.** The Team page shows the hierarchy, who holds which role and which seats are open.
+- **Roles are public.** The Team page shows the hierarchy, who holds which role, which seats are open and which wait for the playable prototype.
 - **Money is public** once donations open ([ADR 0010](../decisions/0010-funding.md)).
 
 ## 5. Appeals

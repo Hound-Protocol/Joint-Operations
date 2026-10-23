@@ -49,8 +49,8 @@
   "Windows testers (Quality)",
   "Proton testers (Quality)",
   "Reviewers (Quality)",
-  "Moderators (Administration)",
-  "Technical lead (Development)"
+  "Moderators (Administration, after the playable prototype)",
+  "Technical lead (Development, after the playable prototype)"
  ],
  "departments": [
   {
@@ -177,7 +177,7 @@
       "TrueMan"
      ],
      "job": "Runs the project: direction, accounts, recruiting, funding. Grants keycards up to LV5.",
-     "open": "Discord admins"
+     "open": "Discord admins, after the playable prototype"
     },
     {
      "title": "Moderators",
@@ -188,7 +188,7 @@
      ],
      "holders": [],
      "job": "Keep the community safe. Decide on conduct and disputes, and log every action.",
-     "open": "2 seats"
+     "open": "2 seats, after the playable prototype"
     }
    ]
   },
@@ -206,7 +206,7 @@
       "TrueMan"
      ],
      "job": "Builds Joint Operations. Decides architecture, code, merges and contract scope.",
-     "open": "Technical lead"
+     "open": "Technical lead, after the playable prototype"
     }
    ]
   },

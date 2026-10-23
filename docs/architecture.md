@@ -1,6 +1,6 @@
 # Architecture
 
-Status: DRAFT · Updated: 2026-10-22 after Phase 1 desk research
+Status: Draft until the Phase 1 spike settles ADR 0002 · Updated: 2026-10-23
 
 ## 1. Overview
 Joint Operations is a multiplayer mod ([ADR 0001](decisions/0001-multiplayer-scope.md)). It brings the game's online multiplayer functionality into the single-player world for up to 16 players. The host runs the session and is authoritative; other players join as clients ([ADR 0007](decisions/0007-host-authority.md)).

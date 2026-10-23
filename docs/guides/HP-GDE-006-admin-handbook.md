@@ -1,5 +1,5 @@
 # Administration Handbook
-Code: HP-GDE-006 · Version 1.1 · Effective 2026-10-22 · Owner: Administration · For: Administration Department and seat holders
+Code: HP-GDE-006 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · For: Administration Department and seat holders
 
 ## What Administration owns
 Direction and decisions, seats and access, legal stance and funding, the community and moderation, and recruiting. See [governance.md](../governance.md) and [departments.md](../departments.md).
@@ -12,17 +12,20 @@ Direction and decisions, seats and access, legal stance and funding, the communi
 | GitHub Pages | Source: GitHub Actions |
 | Discord | See [HP-SOP-008](HP-SOP-008-discord-administration.md); server widget on; release webhook stored as the `DISCORD_RELEASE_WEBHOOK` repository secret |
 | Backups | Weekly on the owner's computer plus encrypted Google Drive ([HP-SOP-009](HP-SOP-009-backup-and-restore.md)) |
+| Sign-in | GitHub App **Hound Protocol Sign-in** (Contents: read-only, installed only on `hp-staff`, `hp-leads`, `hp-admin`); relay on Cloudflare Workers with the client secret as an encrypted variable ([signin.md](../signin.md)) |
+| Restricted documents | Private repositories `hp-staff` (teams LV3 and up), `hp-leads` (LV5 and up), `hp-admin` (LV6 and up). Team membership is what opens them |
 
 The full checklist is in [github-setup.md](../github-setup.md).
 
 ## Regular duties
 | When | Task |
 |---|---|
-| Each merged contract | Issue the signed record and rank role ([HP-SOP-004](HP-SOP-004-records-and-ranks.md)) |
-| Each new staff member | Issue their Hound ID and keycard role ([HP-SOP-007](HP-SOP-007-onboarding-offboarding.md)) |
-| Weekly | Read #admin-board and #mod-log; check open seats; post a short dev-log update |
+| Each merged contract | Issue the signed record and grade role ([HP-SOP-004](HP-SOP-004-records-and-ranks.md)) |
+| Each new staff member | Issue their Hound ID and keycard role, and add them to the GitHub team for their level ([HP-SOP-007](HP-SOP-007-onboarding-offboarding.md)) |
+| Weekly | Read #admin-board and #mod-log; post a short dev-log update. Seats stay with the project lead until there is a playable prototype |
 | Each release | Second signer; announcement ([HP-SOP-003](HP-SOP-003-release.md)) |
-| Monthly | Review access: who has what, remove what is unused. Check the backup log and Drive copy |
+| Monthly | Review access: who has what (GitHub teams, the three private repositories, Discord roles), remove what is unused. Check the backup log and Drive copy |
+| Every 6 months | Rotate the sign-in app's client secret ([signin.md](../signin.md)) |
 | Every phase gate | Review the [risk register](../risk-register.md) and the roadmap |
 
 ## Decisions

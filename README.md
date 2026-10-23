@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://hound-protocol.github.io/Joint-Operations/">Website</a> ·
-  <a href="https://hound-protocol.github.io/Joint-Operations/#/guides">Guides</a> ·
+  <a href="https://hound-protocol.github.io/Joint-Operations/#/docs">Documentation</a> ·
   <a href="ROADMAP.md">Roadmap</a> ·
   <a href="https://discord.gg/QTpJ89kMCM">Discord</a> ·
   <a href="CHANGELOG.md">Changelog</a>
@@ -45,7 +45,7 @@ It is a **multiplayer mod**, not a co-op add-on, and it never touches Konami's o
 | Phase | Goal | Status |
 |---|---|---|
 | 0 · Foundation | Organization, docs, website, research | Nearly complete |
-| 1 · Research | Engine sessions, Steam networking, loading, state to sync | In progress |
+| 1 · Research | Engine sessions, Steam networking, loading, state to sync | Desk research under way |
 | 2 · Version 0.1 | Two players on Windows and Proton | Planned |
 | 3 · Scale | 4, 8, then 16 players | Planned |
 | 4 · Experience | Seamless join and leave, mod API, server browser | Planned |
@@ -53,7 +53,7 @@ It is a **multiplayer mod**, not a co-op add-on, and it never touches Konami's o
 Full details: [ROADMAP.md](ROADMAP.md).
 
 ## Hound Protocol
-Hound Protocol is a non-commercial, community-focused organization. We build ambitious projects, one of them being Joint Operations. It is organized like Mother Base:
+Hound Protocol is a non-commercial, community-focused organization. We build ambitious projects, one of them being Joint Operations. It is organized in four departments:
 
 | Department | Role |
 |---|---|
@@ -62,11 +62,12 @@ Hound Protocol is a non-commercial, community-focused organization. We build amb
 | **Quality** | Testing, reviews, release sign-off |
 | **Contractor** | Contributors who take contracts and are graded E to S++ in each field |
 
-Access works like keycards, from **LV1** (visitor) to **LV7** (owner), and every staff member has a verifiable **Hound ID**. Every completed contract earns a signed record that anyone can check on the website. See [departments and ranks](docs/departments.md) and [keycard access](docs/decisions/0011-keycard-access.md).
+Access works like keycards, from **LV1** (visitor) to **LV7** (owner), and every staff member has a verifiable **Hound ID**. Sign in on the website with GitHub to see your keycard and the restricted documents your clearance opens. Every completed contract earns a signed record that anyone can check on the website. See [departments and grades](docs/departments.md), [keycard access](docs/decisions/0011-keycard-access.md) and [sign-in](docs/decisions/0017-hound-id-sign-in.md).
 
 ## Get involved
 - **Play:** follow the [Player Guide](docs/guides/HP-GDE-001-player-guide.md) when 0.1 is released.
-- **Test:** testers on Windows and Linux are welcome now. Join the [Discord](https://discord.gg/QTpJ89kMCM) and read the [Quality Guide](docs/guides/HP-GDE-004-quality-testing.md).
+- **Test:** testers on Windows and Linux are welcome now. Join the [Discord](https://discord.gg/QTpJ89kMCM) ([how](docs/guides/HP-GDE-008-discord-members.md)) and read the [Quality Guide](docs/guides/HP-GDE-004-quality-testing.md).
+- **New to GitHub?** [GitHub Basics](docs/guides/HP-GDE-014-github-basics.md) takes you from no account to your first pull request.
 - **Build:** contracts open after 0.1. Start with the [Contributor Quick Start](docs/guides/HP-GDE-003-contributor-quick-start.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Hand-written and AI-assisted work are welcome and credited equally, under the [AI Use Policy](docs/guides/HP-POL-002-ai-use-policy.md). Generative AI art, music and voices are not accepted.
@@ -74,7 +75,9 @@ Hand-written and AI-assisted work are welcome and credited equally, under the [A
 ## Documentation
 | Area | Start here |
 |---|---|
-| Handbook: guides, policies, procedures | [docs/guides/](docs/guides/) or the website's **Guides** page |
+| Everything, by topic | [Knowledge map](docs/knowledge-map.md) |
+| Handbook: guides, policies, procedures | [docs/guides/](docs/guides/) or the website's **Docs → Handbook** |
+| Using the website | [HP-GDE-015](docs/guides/HP-GDE-015-using-the-website.md) |
 | Plan and gates | [docs/pre-development.md](docs/pre-development.md) |
 | Architecture | [docs/architecture.md](docs/architecture.md) |
 | Decisions | [docs/decisions/](docs/decisions/README.md) |
@@ -89,7 +92,7 @@ Hand-written and AI-assisted work are welcome and credited equally, under the [A
 docs/         plans, decisions, governance, and the handbook (docs/guides/)
 research/     sourced research notes
 site/         the website (deployed to GitHub Pages)
-tools/        build, checks, Discord setup, contract and record tools
+tools/        build, checks, Discord setup, contract and record tools, sign-in relay
 .github/      CI workflows, templates, code owners
 ```
 

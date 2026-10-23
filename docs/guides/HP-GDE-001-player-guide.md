@@ -1,5 +1,5 @@
 # Player Guide: Installing and Playing
-Code: HP-GDE-001 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · For: players
+Code: HP-GDE-001 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · For: players
 
 > **Status:** Joint Operations is in development. The first playable version is **0.1**. This guide describes how it will work and is updated with every release.
 
@@ -30,7 +30,10 @@ Code: HP-GDE-001 · Version 1.0 · Effective 2026-10-22 · Owner: Administration
 
 ## Problems
 - Check the **Known issues** list in the release notes first.
-- Report bugs on GitHub (bug report template) or in #bug-reports on Discord, with your game version, platform and steps to reproduce.
+- Report bugs on GitHub (bug report template) or in #bug-reports on Discord, with your game version, platform and steps to reproduce: [Reporting a Problem](HP-GDE-016-reporting-a-problem.md).
+
+## New here?
+- [Joining the Discord](HP-GDE-008-discord-members.md), [GitHub Basics](HP-GDE-014-github-basics.md) and [Using the Website](HP-GDE-015-using-the-website.md).
 
 ## Uninstall
 Use the uninstaller from the release, or remove the files listed in the release notes. Your normal saves are never changed.

@@ -18,6 +18,6 @@ Hound Protocol is an open community. Everyone who takes part, in GitHub, Discord
 ## Enforcement
 1. A moderator may remove content and give a warning.
 2. Repeated or serious cases lead to a temporary or permanent ban from all project spaces.
-3. Reports go to the moderators privately (Discord moderator role, or a private message to a seat holder). Reports are kept confidential.
+3. Reports go to the moderators privately (Discord moderator role, or a private message to a seat holder; until moderators are appointed after the playable prototype, the project lead). Reports are kept confidential.
 
 Moderators who are involved in a report step back from handling it.

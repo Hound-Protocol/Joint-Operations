@@ -1,6 +1,6 @@
 # Discord Blueprint
 
-Status: DRAFT. Server name: MGSV: Joint Operations | Hound Protocol
+Status: Current · Updated: 2026-10-23 · Server name: MGSV: Joint Operations | Hound Protocol · Member guide: [HP-GDE-008](guides/HP-GDE-008-discord-members.md)
 
 ## Automated setup
 The server can be built automatically from `tools/discord/blueprint.json` (roles, categories, channels, permissions and starter messages).
@@ -37,17 +37,17 @@ The server mirrors the project's four departments ([departments.md](departments.
 | **LV6 · Administration** | Seat holders, admins | ADMINISTRATION and all department channels; manage messages, timeout, kick, ban (social authority) |
 | **LV6 · Moderator** | Trusted community members | Manage messages, timeout, kick; ADMINISTRATION (social authority) |
 | **LV5 · Development** | Core developers | DEVELOPMENT, QUALITY, CONTRACTORS |
-| **LV5 · Technical Lead** | The technical lead (a person; open seat) | All department channels. No moderation: technical authority only |
+| **LV5 · Technical Lead** | The technical lead (a person; the seat opens with the playable prototype) | All department channels. No moderation: technical authority only |
 | **LV4 · Quality** | Testers, reviewers, release QA | QUALITY, CONTRACTORS |
 | **LV3 · Contractor** | Anyone who has completed a contract | DEVELOPMENT, QUALITY, CONTRACTORS |
-| Rank S++ · S+ · S · A++ · A+ · A · B · C · D · E | Contractor rank: best grade in any field | Cosmetic: shows rank in the member list. No permissions, no authority |
+| Rank S++ · S+ · S · A++ · A+ · A · B · C · D · E | Overall contractor grade: the best grade in any field | Cosmetic: shows rank in the member list. No permissions, no authority |
 | RE / Hooks · Networking · Web / App · Docs | Development units | DEVELOPMENT |
 | Windows Tester · Proton Tester · Reviewer | Quality units | QUALITY |
 | **LV2 · Member** | Everyone who joins | COMMUNITY, MODDING, VOICE Lobby |
 
 Only LV6 and LV7 roles can moderate, matching the chain of command ([HP-POL-007](guides/HP-POL-007-chain-of-command.md)). Quality, Contractor and Rank roles have no moderation or management permissions.
 
-Keycard roles are shown separately in the member list, so the server reads like Mother Base. A contractor gets **LV3 · Contractor** plus their **Rank** role. Ranks are updated by hand from the Verify page until a bot does it.
+Keycard roles are shown separately in the member list, so the server reads like a unit roster. A contractor gets **LV3 · Contractor** plus their grade role (named **Rank** on the server). Grade roles are updated by hand from the Verify page until a bot does it.
 
 ## Categories and channels
 **INFO** (read only for Member)
@@ -98,7 +98,7 @@ Welcome to MGSV: Joint Operations, by Hound Protocol. We are building a multipla
 
 ## Onboarding
 - Role picker (Onboarding): Windows Tester, Proton Tester. These give QUALITY access.
-- Keycard roles LV4 to LV6 are granted by the owner or Administration. LV3 and Rank roles follow completed contracts.
+- Keycard roles LV4 to LV6 are granted by the owner or Administration. LV3 and grade roles follow completed contracts. Staff seats (Discord admins, moderators) are filled once there is a playable prototype.
 - New contributors read docs/legal.md before getting DEVELOPMENT access.
 
 ## Moderation and safety

@@ -2,6 +2,14 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.23 · Field manual · 2026-10-23
+- **Everything aligned:** every document and the site data were checked against the current state of the project and corrected: seats after the playable prototype, the detection status, sign-in, the Documentation zones, grades (not ranks), the license and Pages being done, and the old Mother Base comparisons for the organization. Status lines and dates are current; drafts that are settled now say so.
+- **New guides:** [GitHub Basics](docs/guides/HP-GDE-014-github-basics.md) (from no account to your first pull request), [Using the Website and Documentation](docs/guides/HP-GDE-015-using-the-website.md) (every section, search tips, signing in) and [Reporting a Problem](docs/guides/HP-GDE-016-reporting-a-problem.md). The [Discord Member Guide](docs/guides/HP-GDE-008-discord-members.md) now walks through joining step by step.
+- **Knowledge map:** [one page](docs/knowledge-map.md) that points every topic to the document that holds it, with a list of what is not written yet. It is the first file in the Library.
+- **Updated:** README, CONTRIBUTING, team, governance, departments, Discord blueprint, recruiting kit, GitHub setup, development process, risk register (three new risks), legal (personal data), contributor records, brand, glossary, Phase 1 plan, research index, ADR 0009 and 0011 notes, and 15 handbook documents (new versions).
+- **Link checker:** `tools/check_links.py` checks every internal link and anchor in the documents and every `#/docs` and `#/guides` link in the site; CI runs it on every pull request.
+- **About:** a new FAQ on GitHub and Discord. **Issue forms:** questions now point to the Discord and the Documentation.
+
 ## v0.0.22 · Sign-in · 2026-10-23
 - **Sign-in with GitHub** ([ADR 0017](docs/decisions/0017-hound-id-sign-in.md), [setup](docs/signin.md)): a **Sign in** badge in the top bar and a new **Profile** page. Signed in, you see your keycard (your signed staff card, or a member card) with your GitHub picture, your session, and **your documents**: one restricted area per clearance (Staff LV3, Leads LV5, Administration LV6), read straight from private repositories with your own sign-in, so GitHub enforces access. Areas above your clearance stay locked. The token stays in the tab and expires within eight hours; sign out any time. The relay code is in `tools/signin-relay/`.
 - **Keycards:** the holder's GitHub picture replaces the chip; the notch on the edge is gone; profile pages no longer repeat what the card already shows.
