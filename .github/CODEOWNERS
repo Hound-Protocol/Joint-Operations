@@ -5,3 +5,15 @@
 *                 @Forge77
 /docs/decisions/  @Forge77
 /docs/legal.md    @Forge77
+# Clearance and identity: who holds which card, the records key, sign-in and the restricted areas.
+# Changes here need the owner's review. Staff cards and records are also signed, and CI rejects any that do not verify.
+/site/data/staff.json          @Forge77
+/site/data/records.json        @Forge77
+/site/data/records-key.json    @Forge77
+/site/data/config.json         @Forge77
+/tools/records.py              @Forge77
+/tools/signin-relay/           @Forge77
+/site/src/js/19b-verify.js     @Forge77
+/site/src/js/19d-keycard.js    @Forge77
+/site/src/js/19e-signin.js     @Forge77
+/.github/                      @Forge77

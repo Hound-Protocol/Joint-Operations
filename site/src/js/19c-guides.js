@@ -112,6 +112,7 @@
       var html = markdown(body, g.path).replace(/href="#\/docs\/(hp-(?:pol|sop|gde)-\d{3})"/g, 'href="#/guides/$1"');
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guides/" + g.id;
       $("#vb").innerHTML =
+        cabClr(true, null).replace('class="clr ok"', 'class="clr ok hb-clr"') +
         '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">Handbook</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
         '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
         '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +

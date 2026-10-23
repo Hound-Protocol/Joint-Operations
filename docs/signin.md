@@ -19,7 +19,7 @@ Put Markdown documents in them (any folders). The website lists every `.md` file
 
 ## 2. GitHub App
 Organization → Settings → Developer settings → GitHub Apps → **New GitHub App**:
-- Name: `Hound Protocol Sign-in`. Homepage: the website URL.
+- Name: `Hound ID Sign-in`, owned by the Hound-Protocol organization. Homepage: the website URL. Client secrets are under **Credentials** in the app settings.
 - Callback URL: `https://<your-relay>.workers.dev/callback` (from step 3; you can edit it later).
 - **Expire user authorization tokens:** on. **Webhook:** off.
 - Permissions → Repository → **Contents: Read-only**. Nothing else.
@@ -37,7 +37,7 @@ Cloudflare dashboard → Workers → **Create** → name it `hp-signin` → past
 The relay URL goes in `site/data/config.json` → `signin.relay`, with the restricted areas in `signin.areas`. Neither the URL nor the client ID is secret. Live since v0.0.22: `https://hp-signin.trueman-truetown.workers.dev`.
 
 ## Using it
-- **Sign in:** the **Sign in** badge in the top bar, or the Profile page (`#/profile`). A GitHub window asks you to authorize *Hound Protocol Sign-in* once.
+- **Sign in:** the **Sign in** badge in the top bar, or the Profile page (`#/profile`). A GitHub window asks you to authorize *Hound ID Sign-in* once.
 - **Profile:** your keycard (your signed staff card, or a member card), your session, and your documents.
 - **Your documents:** one area per private repository. Areas above your clearance stay locked; inside an area GitHub decides what you can read.
 - **Sign out:** the button on the Profile page, or close the tab.

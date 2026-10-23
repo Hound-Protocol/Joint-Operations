@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -29,6 +29,7 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 **Library:** plans, decision records, research, technical, community, project and legal documents, kept in drawers like a filing cabinet.
 - Open a drawer to see its folders; each folder shows a file number such as ADR-0012 or RES-03. One drawer is open at a time: opening another closes the rest.
 - The open document lies on the right. Its paper shows its class: ruled paper for decisions, triangle grid for research, millimetre paper for technical, green bars for community, pinstripes for project, a yellow pad for legal.
+- **Clearance:** a line above every document shows **Access granted** and its level: LV1 (public) for everything in the public repository, LV3 to LV6 for restricted documents. The **Staff**, **Leads** and **Administration** drawers hold restricted documents: you see their files when your card and GitHub both allow it. Otherwise the drawer is locked, and opening it shows **Access denied** with the level required. Contact Administration if you think you should have access.
 - **GitHub** opens the source file; **Suggest an edit** lets you propose a change ([GitHub Basics](HP-GDE-014-github-basics.md)); **Copy link** copies a direct link to that document.
 
 **Handbook:** the guides, policies and procedures, as A4 sheets you can print or download as PDF.
@@ -50,9 +51,9 @@ The search box in the Library searches **the Library only**, and shows its resul
 ## 5. Signing in
 Signing in is optional. It uses your GitHub account ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).
 1. Click **Sign in** in the top bar, then **Sign in with GitHub**. A small GitHub window opens.
-2. The first time, GitHub asks you to authorize **Hound Protocol Sign-in**. It can only read our restricted document repositories that your GitHub teams already allow; it cannot change anything.
-3. The window closes and your **Profile** shows your keycard: your signed staff card if you are staff, otherwise a member card (LV2).
-4. **Your documents:** each restricted area opens at its clearance (Staff LV3, Leads LV5, Administration LV6). Areas above your level stay locked. If an area says GitHub has not given you access yet, ask Administration to add you to the right team.
+2. The first time, GitHub asks you to authorize **Hound ID Sign-in**. It can only read our restricted document repositories that your GitHub teams already allow; it cannot change anything.
+3. The window closes and your **Profile** shows your keycard: your signed staff card if you are staff, otherwise a member card (LV2). A staff card counts only after its signature checks out in your browser.
+4. **Access granted and access restricted:** your Profile lists what every level opens, split at your clearance. Restricted documents appear under the level that opens them (Staff LV3, Leads LV5, Administration LV6). If an area says GitHub has not given you access yet, ask Administration to add you to the right team.
 5. **Sign out** on the Profile page, or close the tab. Your sign-in lasts at most eight hours and lives only in that tab ([privacy](../privacy.md)).
 
 Allow pop-ups for the site if nothing happens when you click **Sign in with GitHub**.

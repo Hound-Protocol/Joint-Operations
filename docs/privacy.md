@@ -11,10 +11,10 @@ This site does not use cookies, analytics, trackers or advertising. It collects 
 
 ## Sign-in
 Signing in is optional and uses your GitHub account ([how it works](signin.md), [ADR 0017](decisions/0017-hound-id-sign-in.md)).
-- GitHub shows you what the Hound Protocol Sign-in app may do: read the contents of our restricted document repositories that your GitHub teams already allow. It cannot write anything, and it cannot read your other repositories.
+- GitHub shows you what the Hound ID Sign-in app may do: read the contents of our restricted document repositories that your GitHub teams already allow. It cannot write anything, and it cannot read your other repositories.
 - A small relay on Cloudflare Workers swaps GitHub's one-time sign-in code for your token. It keeps no database and does not log tokens. Cloudflare receives your IP address and browser details for that request, as it does for any site it serves.
 - Your token goes from the relay straight to this page and is used only to call GitHub's API from your browser.
-- To revoke access at any time: GitHub → Settings → Applications → Authorized GitHub Apps → Hound Protocol Sign-in → Revoke.
+- To revoke access at any time: GitHub → Settings → Applications → Authorized GitHub Apps → Hound ID Sign-in → Revoke.
 
 ## Third parties
 - **GitHub:** the site is hosted on GitHub Pages, and your browser requests releases, contract issues and commits directly from GitHub's public API. GitHub receives your IP address and browser details for these requests, as it does for any visit to GitHub. See GitHub's privacy statement for how they handle it.

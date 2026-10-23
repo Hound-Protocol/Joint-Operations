@@ -2,7 +2,7 @@
   "project": "Joint Operations",
   "team": "Hound Protocol",
   "tagline": "Metal Gear Solid V, now with up to 16 players",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
@@ -93,6 +93,103 @@
         "repo": "Hound-Protocol/hp-admin",
         "card": "LV6",
         "title": "Administration"
+      }
+    ],
+    "access": [
+      {
+        "card": "LV1",
+        "items": [
+          {
+            "t": "Read the public website, the Library and the Handbook"
+          }
+        ]
+      },
+      {
+        "card": "LV2",
+        "items": [
+          {
+            "t": "Your profile and keycard"
+          },
+          {
+            "t": "Report content",
+            "s": "Planned"
+          },
+          {
+            "t": "Follow sessions",
+            "s": "With the session browser"
+          }
+        ]
+      },
+      {
+        "card": "LV3",
+        "items": [
+          {
+            "area": 0
+          },
+          {
+            "t": "Claim contracts",
+            "s": "After 0.1"
+          },
+          {
+            "t": "Upload mods for review",
+            "s": "Planned"
+          }
+        ]
+      },
+      {
+        "card": "LV4",
+        "items": [
+          {
+            "t": "Review queue: approve or reject mods",
+            "s": "Planned"
+          },
+          {
+            "t": "Triage bug reports"
+          }
+        ]
+      },
+      {
+        "card": "LV5",
+        "items": [
+          {
+            "area": 1
+          },
+          {
+            "t": "Edit contract and site data"
+          },
+          {
+            "t": "Manage sessions and the registry",
+            "s": "With the session browser"
+          }
+        ]
+      },
+      {
+        "card": "LV6",
+        "items": [
+          {
+            "area": 2
+          },
+          {
+            "t": "Moderate people and content"
+          },
+          {
+            "t": "Grant cards up to LV5"
+          }
+        ]
+      },
+      {
+        "card": "LV7",
+        "items": [
+          {
+            "t": "Everything, including LV6 and LV7 cards"
+          },
+          {
+            "t": "Publish releases"
+          },
+          {
+            "t": "Hold the records signing key"
+          }
+        ]
       }
     ]
   }
