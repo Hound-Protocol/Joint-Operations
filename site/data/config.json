@@ -2,7 +2,7 @@
   "project": "Joint Operations",
   "team": "Hound Protocol",
   "tagline": "Metal Gear Solid V, now with up to 16 players",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
@@ -100,7 +100,11 @@
         "card": "LV1",
         "items": [
           {
-            "t": "Read the public website, the Library and the Handbook"
+            "t": "About, Roadmap, Team, Documentation and Options"
+          },
+          {
+            "t": "Request a guest pass",
+            "s": "Approved by LV7"
           }
         ]
       },
@@ -109,6 +113,9 @@
         "items": [
           {
             "t": "Your profile and keycard"
+          },
+          {
+            "t": "Download, Sessions, Contribute and Mods"
           },
           {
             "t": "Report content",

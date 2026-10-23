@@ -676,12 +676,10 @@
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || {};
-      var stats = [[16, "players in one session"], [1, "host, the authority"], [100, "% free and open source"]];
       $("#vb").innerHTML = '<div class="bf ab">' +
         '<section class="bf-sec ab-hero"><div class="ab-copy"><span class="ab-kick">MGSV: Joint Operations · by Hound Protocol</span><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
           (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
           '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides/hp-gde-001">Player Guide</a></div></div></section>' +
-        '<section class="bf-sec ab-stats">' + stats.map(function (st, k) { return '<div style="--k:' + k + '"><b data-to="' + st[0] + '">0</b><span>' + esc(st[1]) + "</span></div>"; }).join("") + "</section>" +
         '<section class="bf-sec"><div class="label">How a session works</div><ol class="ab-steps">' + (b.how || []).map(function (h, k) {
           return '<li style="--k:' + k + '"><span class="ab-n">0' + (k + 1) + '</span><span class="st-n">' + (ICONS[h[0]] || k + 1) + "</span><h4>" + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></li>";
         }).join("") + "</ol></section>" +
@@ -988,6 +986,8 @@
     var winEls = $$("#mbWin .mb-win");
     /* Shooting star (v0.0.37): now and then a streak crosses the night sky */
     var star = { t: 20, x: 0, y: 0 }, starEl = $("#mbStar");
+    /* Sonar (v0.0.39): every 20 seconds a slow ring pulses out from the command platform */
+    var sonarT = 4;
     var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
     /* Windsock (v0.0.27): beside the command helipad, swinging with the wind and stiffening in gusts */
     var sockP = padOf(mods[0]), sockEl = $("#mbSock"), sock = [sockP[0] + 30, sockP[1] - 18];
@@ -1141,6 +1141,7 @@
       var fw = Math.sin(T * 4.2), fw2 = Math.sin(T * 4.2 + 1.3);
       flagP.setAttribute("d", "M0 -26 Q7 " + mbF(-27 + fw * 2) + " 15 " + mbF(-23 + fw2 * 1.6) + " Q7 " + mbF(-20 + fw * 1.6) + " 0 -19 Z");
       wins.forEach(function (w, i) { w.t -= dt; if (w.t <= 0) { w.on = !w.on; w.t = 3 + r() * 9; } winEls[i].style.opacity = w.on ? "1" : "0.12"; });
+      sonarT -= dt; if (sonarT <= 0) { sonarT = 20; ring(core.x, core.y, core.g.R * 1.1, core.g.R * 4.2, 5.5, false); }
       star.t += dt;
       if (star.t > 38) { star.t = 0; star.x = 80 + r() * (MB_W - 480); star.y = 30 + r() * 160; }
       var sk = star.t / 0.9;
@@ -2783,7 +2784,7 @@
   function siCfg() { return cfg.signin || {}; }
   function siOn() { return !!siCfg().relay; }
   function siSave() { try { if (SI) sessionStorage.setItem(SI_KEY, JSON.stringify(SI)); else sessionStorage.removeItem(SI_KEY); } catch (e) { /* private mode: the session lives in this page only */ } }
-  function siIn() { return !!(SI && SI.token && SI.user && (!SI.exp || SI.exp > Date.now())); }
+  function siIn() { return !!(SI && SI.token && SI.user && SI.exp && SI.exp > Date.now()); }
   /* Guest passes: the owner grants a link that opens LV3 (Staff) for 24 hours. The relay signs and checks the pass and
      reads the Staff documents for the guest; the pass lives in this tab only and cannot be extended here. */
   var SG_KEY = "hp.guest", SG = null;
@@ -2844,10 +2845,12 @@
         done = true; clearInterval(t); window.removeEventListener("message", on);
         var m = e.data.houndSignin;
         if (m.error || !m.token) { var er = new Error(m.error || "Sign-in failed."); er.code = m.code; fail(er); return; }
-        SI = { token: m.token, exp: m.expires_in ? Date.now() + m.expires_in * 1000 : 0 };
+        /* A sign-in lasts at most 24 hours at every level (less if GitHub's token expires sooner); then sign in again */
+        var cap = Date.now() + 24 * 3600 * 1000;
+        SI = { token: m.token, exp: m.expires_in ? Math.min(cap, Date.now() + m.expires_in * 1000) : cap };
         siApi("/user").then(function (u) {
           SI.user = { id: u.id, login: u.login, name: u.name || "", avatar: u.avatar_url };
-          siSave(); siBadge(); siOrg(); siFresh = Date.now(); ok(SI.user);
+          siSave(); lsv("hp.verified", "1"); siBadge(); siOrg(); siFresh = Date.now(); ok(SI.user);
         }, function () { SI = null; siSave(); fail(new Error("Could not read your GitHub account.")); });
       }
       window.addEventListener("message", on);
@@ -2856,7 +2859,8 @@
   }
   var siFresh = 0;
   /* The sign-in window: explains the three steps, opens GitHub, waits, and reports back in the site's own design */
-  function siStart() {
+  function siStart(o) {
+    o = o || {};
     var m = hpModal({ kicker: "Hound ID · Sign in", title: "Sign in with GitHub",
       html: '<ol class="hm-steps"><li><b>GitHub opens</b> in a small window in the middle of your screen.</li><li><b>Authorize Hound ID Sign-in</b> the first time. It can only read what your GitHub teams already allow.</li><li><b>Your keycard</b> appears here, at your clearance.</li></ol><p class="hm-note">We never see your password, and nothing about you is stored on a server.</p>',
       actions: [{ label: "Cancel", value: null }, { label: "Continue with GitHub", primary: true, run: go }] });
@@ -2866,7 +2870,7 @@
       signIn().then(function () {
         status("Signed in"); blip("go");
         m.body('<div class="hm-ok"><b>Access granted</b><small>Opening your keycard…</small></div>'); m.actions([]);
-        setTimeout(function () { m.close(true); if (currentView === "profile") viewProfile(); else location.hash = "#/profile"; }, opts.motion ? 700 : 0);
+        setTimeout(function () { m.close(true); if (o.stay || currentView === "profile") route(); else location.hash = "#/profile"; }, opts.motion ? 700 : 0);
       }, function (e) {
         if (e.code === "banned") {
           m.el.querySelector(".hm-win").classList.add("hm-danger");
@@ -2919,14 +2923,10 @@
   function siLevel() { var c = siCard(); return c ? +String(c.card).slice(2) : 1; }
   /* The badge in the top bar: "Sign in", or the person's level and name */
   function siBadge() {
-    var b = $("#siBadge");
-    if (!siOn()) { if (b) b.remove(); return; }
-    if (!b) {
-      var keys = $("#keys"); if (!keys) return;
-      keys.insertAdjacentHTML("beforebegin", '<a class="si-badge" id="siBadge" href="#/profile"></a>');
-      b = $("#siBadge");
-    }
-    var c = siCard();
+    if (!siOn()) { var t = $("#tbId"); if (t) t.remove(); return; }
+    if (!tbMount()) return;
+    var b = $("#siBadge"), c = siCard();
+    if (c) msgLevel();
     /* A small access credential: level colour edge, picture, name over "Access Credential · level", the level number */
     var lv = c ? KC_LV[c.card] || KC_LV.LV2 : null, ph = c && !c.guest ? kcPhoto(c) : "";
     b.style.setProperty("--hk", lv ? lv[1] : "var(--jo)");
@@ -2934,10 +2934,12 @@
       ? '<span class="sb-pic">' + (ph ? '<img src="' + esc(ph) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : "") + "</span>" +
         '<span class="sb-txt"><b>' + esc(c.guest ? "Guest pass" : c.name || c.login) + "</b><small>Access Credential · " + esc(lv[0]) + "</small></span>" +
         '<span class="sb-lv"><small>LV</small>' + esc(String(c.card).slice(2)) + "</span>"
-      : '<span class="sb-pic id">ID</span><span class="sb-txt"><b>Sign in</b><small>Hound ID · GitHub</small></span>';
+      : '<span class="sb-pic id">ID</span><span class="sb-txt"><b>Visitor</b><small>Temporary pass · Restricted</small></span><span class="sb-lv"><small>LV</small>1</span>';
+    if (!c) b.style.setProperty("--hk", KC_LV.LV1[1]);
+    $("#tbId").style.setProperty("--hk", c ? (KC_LV[c.card] || KC_LV.LV2)[1] : KC_LV.LV1[1]);
     b.classList.toggle("guest", !!(c && c.guest));
     b.classList.toggle("in", !!c);
-    b.setAttribute("aria-label", c ? "Your profile, " + c.card : "Sign in with GitHub");
+    b.setAttribute("aria-label", c ? "Access credential " + c.card + ", " + (c.guest ? "guest pass" : c.name || c.login) : "Access credential LV1, visitor");
   }
 
   /* ---- Restricted document areas: one private repository per clearance ---- */
@@ -2970,11 +2972,11 @@
         '<div class="kc-side">' + (c.guest ? '<dl class="kc-facts"><div><dt>Pass</dt><dd>Guest pass with <b>LV3</b> (Staff) clearance, granted by the owner.</dd></div>' +
           "<div><dt>Expires</dt><dd>" + esc(fmtDate(new Date(c.exp).toISOString().slice(0, 10))) + " at " + esc(new Date(c.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(c.exp)) + " left. It cannot be extended.</dd></div>" +
           "<div><dt>Session</dt><dd>This tab only. Nothing is stored on a server.</dd></div>" +
-          '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>End guest pass<small>You will need the link again to come back</small></span></button></div></div>' :
+          '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>End pass<small>End guest clearance</small></span></button></div></div>' :
         '<dl class="kc-facts"><div><dt>GitHub</dt><dd><a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id) + "</dd></div>" +
           "<div><dt>Card</dt><dd>" + (c.owner ? "Owner card: GitHub confirms you own the Hound-Protocol organization." : c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
-          "<div><dt>Session</dt><dd>" + (SI.exp ? "Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab" : "Signed in, in this tab") + "</dd></div>" +
-          '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>Sign out<small>Ends your Hound ID session in this tab</small></span></button></div></div>') +
+          "<div><dt>Session</dt><dd>Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab (at most 24 hours)</dd></div>" +
+          '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>Sign out<small>Sign out of clearance</small></span></button></div></div>') +
         siCerts(c) +
         (siOwner() ? sgPanel() : "") +
         siAccess(lvl, areas) +
@@ -3035,11 +3037,29 @@
      from the owner's own GitHub account; this panel only shows for the owner. */
   var SG_ISSUED = "hp.guest.issued";
   function sgIssued() { try { return (JSON.parse(sessionStorage.getItem(SG_ISSUED) || "[]") || []).filter(function (x) { return x.exp > Date.now(); }); } catch (e) { return []; } }
-  function sgLink(pass) { return (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guest/" + pass; }
+  function sgLink(pass) { return (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/g/" + pass; }
+  function sgNum(pass) { var p = String(pass).split("."); if (p.length === 3) return p[1]; try { return JSON.parse(atob(p[0].replace(/-/g, "+").replace(/_/g, "/"))).n; } catch (e) { return ""; } }
+  /* The pass window: opens at once when a pass is granted (or its link asked for), with the whole link to copy */
+  function sgShow(m, pass, exp) {
+    var u = sgLink(pass);
+    m.body('<p class="gp-lead">This guest pass has <b>LV3</b> clearance and a <b>24-hour</b> duration. You may revoke it at your discretion.</p>' +
+      '<div class="gp-link"><textarea id="gpUrl" readonly rows="2" spellcheck="false" aria-label="Guest pass link">' + esc(u) + '</textarea><button type="button" class="btn small primary" id="gpCopy">Copy</button></div>' +
+      '<p class="hm-note">Pass ' + esc(sgNum(pass)) + " · expires " + esc(fmtDate(new Date(exp).toISOString().slice(0, 10))) + " at " + esc(new Date(exp).toTimeString().slice(0, 5)) + ". Send it privately: anyone with this link has LV3 until it expires or you revoke it.</p>");
+    m.actions([{ label: "Done", primary: true, value: true }]);
+    var inp = $("#gpUrl"), cb = $("#gpCopy");
+    inp.addEventListener("focus", function () { inp.select(); });
+    cb.addEventListener("click", function () {
+      function done() { cb.textContent = "Copied"; status("Guest link copied"); blip("go"); }
+      function fallback() { inp.focus(); inp.select(); var okc = false; try { okc = document.execCommand("copy"); } catch (e) { okc = false; } if (okc) done(); else cb.textContent = "Press Ctrl+C"; }
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(u).then(done, fallback); else fallback();
+    });
+    setTimeout(function () { inp.focus(); inp.select(); }, 60);
+  }
   function sgPanel() {
-    var list = sgIssued();
     return '<section class="gp"><header><span class="gp-ico" aria-hidden="true"></span><div><b>Guest passes</b><small>LV7 only · LV3 (Staff) access for 24 hours to whoever has the link. A pass cannot be extended.</small></div>' +
-      '<button class="btn primary" id="gpGrant">Grant Guest Pass</button></header><p class="sub" id="gpMsg" aria-live="polite"></p><ul class="gp-list" id="gpList">' + list.map(sgItem).join("") + "</ul></section>";
+      '<button class="btn primary" id="gpGrant">Grant Guest Pass</button></header><p class="sub" id="gpMsg" aria-live="polite"></p>' +
+      '<div class="gp-cols"><div class="gp-col"><div class="gp-ch"><b>Passes</b><button class="btn small danger" id="gpAll" type="button">Clear all</button></div><ul class="gp-list" id="gpList">' + sgIssued().map(sgItem).join("") + '</ul></div>' +
+      '<div class="gp-col"><div class="gp-ch"><b>Requests</b><small>Visitors ask with their name</small></div><ul class="gp-list gp-asks" id="gpAsks"><li class="none"><span>Loading…</span></li></ul></div></div></section>';
   }
   function sgItem(x) {
     return '<li><code>' + esc(x.pass.slice(0, 10)) + '…</code><span>Expires ' + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + ' left</span><button class="btn small" data-gp="' + esc(x.pass) + '">Copy link</button></li>';
@@ -3053,18 +3073,18 @@
   function sgLoad() {
     var ul = $("#gpList"); if (!ul) return;
     sgOwnerApi("/guest/list").then(function (j) {
-      var local = {}; sgIssued().forEach(function (x) { try { local[JSON.parse(atob(x.pass.split(".")[0].replace(/-/g, "+").replace(/_/g, "/"))).n] = x.pass; } catch (e) { /* older pass */ } });
+      var local = {}; sgIssued().forEach(function (x) { var n = sgNum(x.pass); if (n) local[n] = x.pass; });
       var ps = j.passes || [], live = ps.filter(function (x) { return !x.expired && !x.revoked; }), old = ps.filter(function (x) { return x.expired || x.revoked; });
       function row(x) {
         var stc = x.revoked ? "rv" : x.expired ? "ex" : "ok", stl = x.revoked ? "Revoked" : x.expired ? "Expired" : "Active";
         return '<li class="' + stc + '"><span class="gp-st">' + stl + '</span><code>Pass ' + esc(x.n) + "</code><span>" +
           (x.expired ? "Ended " + esc(fmtDate(new Date(x.exp).toISOString().slice(0, 10))) + " " + esc(new Date(x.exp).toTimeString().slice(0, 5)) : x.revoked ? "Closed early · would have run until " + esc(new Date(x.exp).toTimeString().slice(0, 5)) : "Expires " + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + " left") +
-          (x.by ? " · by " + esc(x.by) : "") + "</span>" +
-          (local[x.n] && stc === "ok" ? '<button class="btn small" data-gp="' + esc(local[x.n]) + '">Copy link</button>' : "") +
-          (stc === "ok" ? '<button class="btn small danger" data-rv="' + esc(x.n) + '">Revoke pass</button>' : '<button class="btn small" data-del="' + esc(x.n) + '">Delete</button>') + "</li>";
+          (x.for ? " · for <b>" + esc(x.for) + "</b>" : "") + (x.by ? " · by " + esc(x.by) : "") + "</span>" +
+          (local[x.n] && stc === "ok" ? '<button class="btn small" data-gp="' + esc(local[x.n]) + '" data-exp="' + esc(x.exp) + '">Copy link</button>' : "") +
+          (stc === "ok" ? '<button class="btn small danger" data-rv="' + esc(x.n) + '">Revoke</button>' : "") + '<button class="btn small" data-del="' + esc(x.n) + '" data-live="' + (stc === "ok" ? 1 : 0) + '">Clear</button></li>';
       }
       ul.innerHTML = '<li class="gp-h"><b>Active</b><span>' + live.length + "</span></li>" + (live.map(row).join("") || '<li class="none"><span>No live guest passes.</span></li>') +
-        (old.length ? '<li class="gp-h"><b>Expired and revoked</b><span>' + old.length + ' · records are kept ' + (j.keepDays || 30) + ' days</span><button class="btn small" id="gpPurge">Delete expired</button></li>' + old.map(row).join("") : "");
+        (old.length ? '<li class="gp-h"><b>Expired and revoked</b><span>' + old.length + ' · records are kept ' + (j.keepDays || 30) + ' days</span><button class="btn small" id="gpPurge">Clear expired</button></li>' + old.map(row).join("") : "");
       sgWireList();
     }, function (e) {
       if (e.code === "no_kv") { $("#gpMsg").textContent = "Passes can be granted. To revoke them instantly, add the GUEST_KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
@@ -3074,18 +3094,21 @@
   function sgWireList() {
     $$("[data-del]").forEach(function (b) {
       b.onclick = function () {
-        var n = b.getAttribute("data-del"); b.disabled = true;
-        sgOwnerApi("/guest/delete?n=" + encodeURIComponent(n), "POST").then(function () { status("Pass record deleted"); sgLoad(); }, function (e) { b.disabled = false; $("#gpMsg").textContent = e.message; });
+        var n = b.getAttribute("data-del"), live = b.getAttribute("data-live") === "1";
+        (live ? hpConfirm("Clear guest pass " + n + "?", "It is revoked at once and removed from the list. Whoever holds the link loses access.", "Clear pass", "Keep it", "danger") : Promise.resolve(true)).then(function (y) {
+          if (!y) return; b.disabled = true;
+          sgOwnerApi("/guest/delete?n=" + encodeURIComponent(n), "POST").then(function () { status("Guest pass cleared"); sgLoad(); }, function (e) { b.disabled = false; $("#gpMsg").textContent = e.message; });
+        });
       };
     });
     var pg = $("#gpPurge");
     if (pg) pg.onclick = function () {
-      hpConfirm("Delete every expired pass?", "Their records disappear from this list. Live passes are not touched.", "Delete expired", "Cancel", "danger").then(function (y) {
+      hpConfirm("Clear every expired pass?", "Their records disappear from this list. Live passes are not touched.", "Clear expired", "Cancel", "danger").then(function (y) {
         if (!y) return; pg.disabled = true;
         sgOwnerApi("/guest/purge", "POST").then(function (j) { status(plural(j.deleted || 0, "expired pass") + " deleted"); sgLoad(); }, function (e) { pg.disabled = false; $("#gpMsg").textContent = e.message; });
       });
     };
-    $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; });
+    $$("[data-gp]").forEach(function (b) { b.onclick = function () { var m = hpModal({ kicker: "Hound ID · Guest pass", title: "You have been issued a temporary guest pass", html: "", actions: [] }); sgShow(m, b.getAttribute("data-gp"), +b.getAttribute("data-exp") || Date.now()); }; });
     $$("[data-rv]").forEach(function (b) {
       b.onclick = function () {
         var n = b.getAttribute("data-rv");
@@ -3101,16 +3124,46 @@
     sgLoad();
     var g = $("#gpGrant"); if (!g) return;
     g.addEventListener("click", function () {
-      g.disabled = true; $("#gpMsg").textContent = "Asking the relay…";
+      g.disabled = true;
+      var m = hpModal({ kicker: "Hound ID · Guest pass", title: "You have been issued a temporary guest pass", html: '<div class="hm-wait"><span class="spin"></span><b>Issuing a guest pass…</b></div>', actions: [] });
       fetch(siRelay() + "/guest/grant", { method: "POST", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "HTTP " + r.status); return j; }); }).then(function (j) {
         var list = sgIssued(); list.unshift({ pass: j.pass, exp: j.exp });
         try { sessionStorage.setItem(SG_ISSUED, JSON.stringify(list.slice(0, 10))); } catch (e) { /* this page only */ }
-        $("#gpMsg").textContent = "Pass granted and its link copied. Send it privately; anyone with the link has LV3 until it expires or you revoke it.";
-        var u = sgLink(j.pass); if (navigator.clipboard) navigator.clipboard.writeText(u).catch(function () { window.prompt("Copy the guest link", u); }); else window.prompt("Copy the guest link", u);
-        sgLoad();
-        blip("go");
-      }, function (e) { $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay. If guest passes were just set up, check that the relay runs the current code (sign-in setup, section 6)." : e.message; }).then(function () { g.disabled = false; });
+        sgShow(m, j.pass, j.exp); sgLoad(); blip("go");
+      }, function (e) {
+        m.body('<div class="hm-err"><b>No pass issued</b><small>' + esc(e instanceof TypeError ? "Could not reach the sign-in relay. Check that it runs the current code (sign-in setup, section 6)." : e.message) + "</small></div>");
+        m.actions([{ label: "Close", value: null }]);
+      }).then(function () { setTimeout(function () { g.disabled = false; }, 1500); });
     });
+    var all = $("#gpAll");
+    if (all) all.addEventListener("click", function () {
+      hpConfirm("Clear every guest pass?", "Every live pass is revoked at once, and every pass is removed from the list. Requests are not touched.", "Clear all", "Cancel", "danger").then(function (y) {
+        if (!y) return; all.disabled = true;
+        sgOwnerApi("/guest/purge?all=1", "POST").then(function (j) { try { sessionStorage.removeItem(SG_ISSUED); } catch (e) { /* this page only */ } status(plural(j.deleted || 0, "guest pass") + " cleared"); sgLoad(); }, function (e) { $("#gpMsg").textContent = e.message; }).then(function () { all.disabled = false; });
+      });
+    });
+    sgAsks();
+  }
+  /* Requests from visitors: approve (a pass is made for that name and opens in their browser by itself) or decline */
+  function sgAsks() {
+    var ul = $("#gpAsks"); if (!ul) return;
+    sgOwnerApi("/guest/asks").then(function (j) {
+      var a = j.asks || [], open = a.filter(function (x) { return x.state === "pending"; }), done = a.filter(function (x) { return x.state !== "pending"; });
+      function t(x) { return esc(new Date(x.at).toTimeString().slice(0, 5)) + " · " + esc(msgAgo(x.at)); }
+      ul.innerHTML = '<li class="gp-h"><b>Waiting</b><span>' + open.length + "</span></li>" +
+        (open.map(function (x) { return '<li class="ok"><span class="gp-st">New</span><span class="gp-who"><b>' + esc(x.name) + "</b><small>Asked " + t(x) + '</small></span><button class="btn small primary" data-ok="' + esc(x.id) + '">Approve</button><button class="btn small" data-no="' + esc(x.id) + '">Decline</button></li>'; }).join("") || '<li class="none"><span>No requests waiting.</span></li>') +
+        (done.length ? '<li class="gp-h"><b>Answered</b><span>' + done.length + " · kept 2 days</span></li>" + done.map(function (x) { return '<li class="' + (x.state === "approved" ? "ex" : "rv") + '"><span class="gp-st">' + (x.state === "approved" ? "Approved" : "Declined") + '</span><span class="gp-who"><b>' + esc(x.name) + "</b><small>" + t(x) + (x.by ? " · by " + esc(x.by) : "") + (x.n ? " · pass " + esc(x.n) : "") + "</small></span></li>"; }).join("") : "");
+      $$("[data-ok],[data-no]", ul).forEach(function (b) {
+        b.onclick = function () {
+          var ok = b.hasAttribute("data-ok"), id = b.getAttribute(ok ? "data-ok" : "data-no");
+          $$("button", b.parentNode).forEach(function (x) { x.disabled = true; });
+          sgOwnerApi("/guest/" + (ok ? "approve" : "decline") + "?id=" + encodeURIComponent(id), "POST").then(function () {
+            $("#gpMsg").textContent = ok ? "Approved. The pass opens in their browser by itself (it checks every 20 seconds)." : "Declined. They are told on their side.";
+            status(ok ? "Guest pass approved" : "Request declined"); blip("go"); sgLoad(); sgAsks();
+          }, function (e) { $("#gpMsg").textContent = e.message; $$("button", b.parentNode).forEach(function (x) { x.disabled = false; }); });
+        };
+      });
+    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Requests need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? "Could not reach the sign-in relay." : /Unknown request|not valid/.test(e.message) ? "The relay needs its update for requests (sign-in setup, section 6)." : e.message) + "</span></li>"; });
   }
   /* #/guest/PASS: check the pass with the relay, keep it in this tab, then open the profile */
   function viewGuest(pass) {
@@ -3141,7 +3194,7 @@
   }
   /* For visitors: every card lined up, with one line on how clearance works */
   var SI_LV_INFO = {
-    LV0: "Banned: refused at sign-in, on every linked account.", LV1: "Anyone reading the public website.", LV2: "Signed in with GitHub: your profile and keycard.", LV3: "Contractors: Staff documents, claiming contracts.",
+    LV0: "Banned: refused at sign-in, on every linked account.", LV1: "Everyone at first: About, Roadmap, Team, Docs and Options.", LV2: "Signed in with GitHub: your profile and keycard.", LV3: "Contractors: Staff documents, claiming contracts.",
     LV4: "Quality: reviews and testing.", LV5: "Development: Leads documents, site and contract data.", LV6: "Administration: moderation, Administration documents.", LV7: "The owner: everything."
   };
   function siLevelsIntro() {
@@ -3161,13 +3214,189 @@
       '<div class="kc-profile">' + keycard(KC_SPECIMEN, { big: true, specimen: true }) +
       '<div class="si-intro"><h3>Sign in with your Hound ID</h3>' +
         "<p>Sign in with GitHub to see your keycard and the documents your clearance opens. Staff get their signed staff card; everyone else gets a member card.</p>" +
-        (on ? '<button class="btn primary" id="siGo">Sign in with GitHub</button><p class="sub" id="siMsg">A small GitHub window opens. We never see your password, and nothing is stored on a server.</p>'
+        (on ? '<p class="si-lv1"><b>LV1</b> You are on a temporary visitor pass with restricted clearance.</p><div class="toolbar"><button class="btn primary" id="siGo">Sign in with GitHub</button><button class="btn" id="siAsk">Request a guest pass</button></div><p class="sub" id="siMsg">A small GitHub window opens. We never see your password, and nothing is stored on a server. A sign-in lasts at most 24 hours.</p>'
             : '<p class="note">Sign-in is not switched on yet.</p>') +
         '<p class="sub">How it works and what is kept: <a href="#/docs/signin">sign-in</a> · <a href="#/docs/privacy">privacy</a></p></div></div>' + siLevelsIntro();
     var go = $("#siGo");
     if (go) go.addEventListener("click", function () {
+      if (go.disabled) return; go.disabled = true; setTimeout(function () { go.disabled = false; }, 4000);
       siStart();
     });
+    var ask = $("#siAsk");
+    if (ask) ask.addEventListener("click", function () { if (ask.disabled) return; ask.disabled = true; setTimeout(function () { ask.disabled = false; }, 4000); askStart(); });
+  }
+
+  /* ---------------- Clearance gate, guest pass requests and messages ----------------
+     Everyone who is not signed in holds a temporary LV1 pass. LV1 opens About, Roadmap, Team, Documentation and Options
+     (and Profile, to sign in, and Verify, so anyone can check a certificate). Every other section shows a No access window
+     over a blurred page, with two ways up: sign in with GitHub (LV2 at once) or ask the owner for a guest pass (LV3, 24 h).
+     A visitor sees the welcome window on each visit until this browser has once signed in with GitHub. This is a gate in the
+     interface: the public documents themselves stay public on GitHub. */
+  var LV1_OPEN = { briefing: 1, roadmap: 1, team: 1, docs: 1, guides: 1, options: 1, profile: 1, verify: 1, guest: 1, g: 1 };
+  function lsv(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, String(v)); } catch (e) { /* storage blocked: this visit only */ } return null; }
+  function ssv(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, String(v)); } catch (e) { /* this page only */ } return null; }
+  function gateNeeded(view) { return siOn() && !EMBED && siLevel() < 2 && !LV1_OPEN[view]; }
+  function gateApply(view) {
+    var v = $("#view"), vb = $("#vb"), old = $("#gate");
+    if (old) old.remove();
+    var need = !!(v && vb && gateNeeded(view));
+    if (v) v.classList.toggle("gated", need);
+    if (vb) { if (need) { vb.setAttribute("inert", ""); vb.setAttribute("aria-hidden", "true"); } else { vb.removeAttribute("inert"); vb.removeAttribute("aria-hidden"); } }
+    if (!need) return;
+    var a = askGet();
+    v.insertAdjacentHTML("beforeend", '<div class="gate" id="gate" role="alertdialog" aria-labelledby="gateT"><div class="gate-win">' +
+      '<div class="gate-top"><span class="gate-lv">LV1</span><small>Restricted clearance</small></div>' +
+      '<strong id="gateT">No access</strong><p>This section opens at <b>LV2</b>. You are on a temporary LV1 pass.</p>' +
+      (a ? '<p class="gate-wait"><span class="spin"></span>Your guest pass request as <b>' + esc(a.name) + "</b> is waiting for the owner. It opens here by itself once approved.</p>" : "") +
+      '<div class="gate-act"><button type="button" class="btn primary" data-gate="in">Sign in with GitHub</button><button type="button" class="btn" data-gate="ask">Request a guest pass</button></div>' +
+      '<p class="gate-note">Open to LV1: <a href="#/briefing">About</a> · <a href="#/roadmap">Roadmap</a> · <a href="#/team">Team</a> · <a href="#/docs">Documentation</a> · <a href="#/options">Options</a></p></div></div>');
+    var g = $("#gate"); g.style.top = vb.offsetTop + "px";
+    gateWire(g);
+  }
+  /* Both buttons rest for a moment after a click, so they cannot be hammered */
+  function gateWire(root) {
+    $$("[data-gate]", root).forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (b.disabled) return;
+        b.disabled = true; setTimeout(function () { b.disabled = false; }, 4000);
+        if (b.getAttribute("data-gate") === "in") siStart({ stay: true }); else askStart();
+      });
+    });
+  }
+  /* The welcome window: on each visit, until this browser has signed in with GitHub once */
+  function gateWelcome() {
+    if (!siOn() || EMBED || siLevel() >= 2 || lsv("hp.verified") || ssv("hp.welcomed") || $("#hpModal")) return;
+    ssv("hp.welcomed", "1");
+    msgAdd("lv1", "Temporary LV1 pass", "You are on restricted clearance. Sign in with GitHub for LV2, or ask the owner for a guest pass.", "lv1");
+    var a = askGet();
+    var m = hpModal({ kicker: "Hound ID · Clearance", title: "You are on restricted clearance",
+      html: '<div class="gw"><div class="gw-lv"><b>LV1</b><span>Visitor<small>Temporary pass</small></span></div>' +
+        "<p>Your access is limited. <b>About, Roadmap, Team, Documentation and Options</b> are open to you; Download, Sessions, Contribute and Mods need a higher clearance.</p>" +
+        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once: your profile, your keycard and the whole site.</span></li>' +
+        "<li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once the owner approves it.</span></li></ul>" +
+        (a ? '<p class="hm-note">Your guest pass request as <b>' + esc(a.name) + "</b> is still waiting for the owner.</p>" : "") + "</div>",
+      actions: [{ label: "Continue with LV1", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });
+    m.el.classList.add("hm-blur", "hm-gate");
+  }
+
+  /* ---- Guest pass requests (LV1): a name, at most one request a minute; the pass opens here by itself when approved ---- */
+  var ASK_KEY = "hp.ask", ASK_LAST = "hp.ask.last";
+  function askGet() { try { return JSON.parse(lsv(ASK_KEY) || "null"); } catch (e) { return null; } }
+  function askWait() { return Math.max(0, 60 - Math.floor((Date.now() - (+(lsv(ASK_LAST) || 0))) / 1000)); }
+  function askStart() {
+    if (!siOn()) return;
+    if (sgIn()) { status("You already hold a guest pass"); return; }
+    var cur = askGet(), timer = 0;
+    var m = hpModal({ kicker: "Hound ID · Guest pass", title: "Request a guest pass",
+      html: "<p>Guest passes are for people the owner knows. The owner sees your name and approves or declines; an approved pass opens LV3 here for 24 hours, by itself.</p>" +
+        (cur ? '<p class="hm-note">You already asked as <b>' + esc(cur.name) + "</b>. A new request replaces it.</p>" : "") +
+        '<label class="ga-f"><span>Your name</span><input id="gaName" type="text" maxlength="40" autocomplete="name" spellcheck="false" placeholder="How the owner knows you"></label>' +
+        '<p class="ga-msg" id="gaMsg" aria-live="polite"></p>',
+      cancel: function () { clearInterval(timer); },
+      actions: [{ label: "Cancel", value: null }, { label: "Send request", primary: true, run: send }] });
+    var inp = $("#gaName"); if (inp) { inp.focus(); inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); send(); } }); }
+    function btn() { return $("#hpModal .hm-act .primary"); }
+    function tick() {
+      var b = btn(), w = askWait(); if (!b) { clearInterval(timer); return; }
+      b.disabled = w > 0; b.textContent = w > 0 ? "Send request (" + w + " s)" : "Send request";
+      if (!w) clearInterval(timer);
+    }
+    if (askWait()) { tick(); timer = setInterval(tick, 1000); }
+    function say(t) { var el = $("#gaMsg"); if (el) el.textContent = t; }
+    function send() {
+      var name = String((inp && inp.value) || "").replace(/\s+/g, " ").trim();
+      if (name.length < 2) { say("Write your name, so the owner knows who is asking."); if (inp) inp.focus(); return; }
+      if (askWait()) { say("You can ask again in " + askWait() + " s."); return; }
+      lsv(ASK_LAST, Date.now()); var b = btn(); if (b) b.disabled = true; say("Sending…");
+      fetch(siRelay() + "/guest/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name }), cache: "no-store" }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.id) { var e = new Error(j.code === "invalid" ? "Guest pass requests are not switched on yet. Try again later." : j.error || "HTTP " + r.status); throw e; } return j; });
+      }).then(function (j) {
+        lsv(ASK_KEY, JSON.stringify({ id: j.id, key: j.key, name: name, at: Date.now() }));
+        msgAdd("ask-" + j.id, "Guest pass requested", "Your request as " + name + " is waiting for the owner. Your pass opens here by itself once approved.", "info");
+        m.body('<div class="hm-ok"><b>Request sent</b><small>The owner sees your name, <b>' + esc(name) + "</b>. Keep this page open or come back later: once approved, your guest pass opens here by itself.</small></div>");
+        m.actions([{ label: "OK", primary: true, value: true }]);
+        gateApply(currentView); blip("go");
+      }, function (e) {
+        say(e instanceof TypeError ? "Could not reach the sign-in relay. Try again in a minute." : e.message);
+        timer = setInterval(tick, 1000); tick();
+      });
+    }
+    return m.result;
+  }
+  function askCheck() {
+    var a = askGet(); if (!a || !siOn() || typeof fetch !== "function") return;
+    fetch(siRelay() + "/guest/ask/status?id=" + encodeURIComponent(a.id) + "&key=" + encodeURIComponent(a.key), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j.state === "approved" && j.pass) {
+        lsv(ASK_KEY, null); SG = { pass: j.pass, exp: j.exp }; sgSave(); siFresh = Date.now();
+        msgAdd("ask-" + a.id + "-ok", "Guest pass approved", "The owner approved your request. You hold LV3 (Staff) clearance in this tab until " + new Date(j.exp).toTimeString().slice(0, 5) + ".", "ok");
+        siBadge(); status("Guest pass approved"); blip("go");
+        var m = hpModal({ kicker: "Hound ID · Guest pass", title: "You have been issued a temporary guest pass", html: "<p>The owner approved your request. This guest pass has <b>LV3</b> clearance for 24 hours, in this tab. It cannot be extended, and the owner can revoke it at any time.</p>", actions: [{ label: "Stay here", value: null }, { label: "Open my profile", primary: true, value: true }] });
+        m.result.then(function (go) { if (go) location.hash = "#/profile"; else route(); });
+      } else if (j.state === "declined") {
+        lsv(ASK_KEY, null); msgAdd("ask-" + a.id + "-no", "Guest pass declined", "The owner declined your request as " + a.name + ". You can still sign in with GitHub for LV2.", "bad");
+        gateApply(currentView);
+      } else if (j.state === "gone") { lsv(ASK_KEY, null); gateApply(currentView); }
+    }, function () { /* offline, or the relay is not updated yet: try again later */ });
+  }
+  setInterval(function () { if (!document.hidden && askGet()) askCheck(); }, 20 * 1000);
+
+  /* ---- Messages: a small list in the top bar, kept in this browser (clearance changes, guest passes, requests) ---- */
+  var MSG_KEY = "hp.msgs";
+  function msgAll() { try { return JSON.parse(lsv(MSG_KEY) || "[]") || []; } catch (e) { return []; } }
+  function msgAdd(id, title, body, tone) {
+    var all = msgAll(); if (all.some(function (x) { return x.id === id; })) return;
+    all.unshift({ id: id, t: title, b: body, k: tone || "info", at: Date.now(), r: 0 });
+    lsv(MSG_KEY, JSON.stringify(all.slice(0, 30))); msgDraw();
+  }
+  function msgAgo(t) { var s = Math.round((Date.now() - t) / 1000); return s < 60 ? "just now" : s < 3600 ? Math.floor(s / 60) + " min ago" : s < 86400 ? Math.floor(s / 3600) + " h ago" : fmtDate(new Date(t).toISOString().slice(0, 10)); }
+  function msgDraw() {
+    var b = $("#tbMsg"); if (!b) return;
+    var all = msgAll(), n = all.filter(function (x) { return !x.r; }).length;
+    b.querySelector(".tb-n").textContent = n > 9 ? "9+" : n || "";
+    b.classList.toggle("unread", n > 0);
+    b.setAttribute("aria-label", "Messages" + (n ? ", " + n + " unread" : ""));
+    var menu = $("#msgMenu");
+    if (menu && !menu.hidden) menu.innerHTML = '<div class="mm-head"><b>Messages</b>' + (all.length ? '<button type="button" id="mmClear">Clear all</button>' : "") + "</div>" +
+      (all.length ? "<ul>" + all.map(function (x) { return '<li class="mm-' + esc(x.k) + (x.r ? "" : " new") + '"><i aria-hidden="true"></i><div><b>' + esc(x.t) + "</b><p>" + esc(x.b) + "</p><small>" + esc(msgAgo(x.at)) + "</small></div></li>"; }).join("") + "</ul>" : '<p class="mm-none">No messages yet.</p>');
+    var c = $("#mmClear"); if (c) c.onclick = function (e) { e.stopPropagation(); lsv(MSG_KEY, "[]"); msgDraw(); };
+  }
+  function msgToggle(open) {
+    var menu = $("#msgMenu"), b = $("#tbMsg"); if (!menu || !b) return;
+    if (open == null) open = menu.hidden;
+    menu.hidden = !open; b.setAttribute("aria-expanded", String(open));
+    if (open) { msgDraw(); var all = msgAll(); all.forEach(function (x) { x.r = 1; }); lsv(MSG_KEY, JSON.stringify(all)); setTimeout(function () { var bb = $("#tbMsg"); if (bb) { bb.querySelector(".tb-n").textContent = ""; bb.classList.remove("unread"); } }, 600); blip(); }
+  }
+  /* The top bar: messages, then the gear (Profile details), then the access credential */
+  function tbMount() {
+    if ($("#tbId")) return true;
+    var keys = $("#keys"); if (!keys) return false;
+    keys.insertAdjacentHTML("beforebegin", '<div class="tb-id" id="tbId">' +
+      '<div class="tb-wrap"><button type="button" class="tb-btn" id="tbMsg" aria-haspopup="true" aria-expanded="false" title="Messages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17z"/><path d="M3.5 7l8.5 6.5L20.5 7"/></svg><span class="tb-n"></span></button><div class="msg-menu" id="msgMenu" hidden></div></div>' +
+      '<a class="tb-btn" id="tbGear" href="#/profile" title="Profile details" aria-label="Profile details"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9"/><circle cx="12" cy="12" r="6.6"/></svg></a>' +
+      '<div class="si-badge" id="siBadge" role="status"></div></div>');
+    $("#tbMsg").addEventListener("click", function (e) { e.stopPropagation(); msgToggle(); });
+    document.addEventListener("click", function (e) { var m = $("#msgMenu"); if (m && !m.hidden && !m.contains(e.target)) msgToggle(false); });
+    document.addEventListener("keydown", function (e) { var m = $("#msgMenu"); if (e.key === "Escape" && m && !m.hidden) { e.stopPropagation(); msgToggle(false); $("#tbMsg").focus(); } }, true);
+    msgDraw();
+    return true;
+  }
+  /* A message when a clearance is reached for the first time in this browser */
+  function msgLevel() {
+    var c = siCard(); if (!c) return;
+    var who = c.guest ? "guest" : c.github_id, lvl = +String(c.card).slice(2), lv = KC_LV[c.card] || KC_LV.LV2;
+    msgAdd("lv-" + who + "-" + lvl, "Clearance granted · " + c.card + " " + lv[0], c.guest ? "Guest pass: LV3 (Staff) clearance in this tab, for 24 hours." : "Your Hound ID now holds " + c.card + " (" + lv[0] + ") clearance. See what it opens on your Profile.", "ok");
+  }
+  /* LV7: a message for each new guest pass request (checked when the site opens, then every five minutes) */
+  function asksWatch() {
+    if (!siOwner() || document.hidden) return;
+    sgOwnerApi("/guest/asks").then(function (j) {
+      (j.asks || []).filter(function (x) { return x.state === "pending"; }).forEach(function (x) { msgAdd("req-" + x.id, "Guest pass request", x.name + " asks for a guest pass. Approve or decline it on your Profile.", "req"); });
+    }, function () { /* relay not updated yet */ });
+  }
+  setInterval(asksWatch, 5 * 60 * 1000);
+  function gateBoot() {
+    askCheck(); setTimeout(asksWatch, 3000);
+    setTimeout(gateWelcome, 1200);
   }
 
   /* ---------------- Handbook previews ----------------
@@ -3198,7 +3427,7 @@
   document.addEventListener("scroll", function () { hbpHide(true); }, true);
 
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: function () { location.replace("#/docs/devlog"); }, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guest: viewGuest, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: function () { location.replace("#/docs/devlog"); }, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guest: viewGuest, g: viewGuest, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");
@@ -3246,6 +3475,7 @@
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
+    gateApply(name);
     if (!same) readyView();
     var tab = $('.secbar a[aria-current="page"]');
     if (tab) { var bar = tab.parentNode; bar.scrollLeft = Math.max(0, tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2); }
@@ -3381,7 +3611,7 @@
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });
   }, function () { /* keep defaults */ }).then(function () {
-    loadLocal("build").then(function () { applyConfig(); siBadge(); siOrg(); renderMenu(); select(cur, false); route(); preload(); });
+    loadLocal("build").then(function () { applyConfig(); siBadge(); siOrg(); renderMenu(); select(cur, false); route(); preload(); gateBoot(); });
   });
   window.addEventListener("hashchange", route);
 })();

@@ -275,6 +275,8 @@
     var winEls = $$("#mbWin .mb-win");
     /* Shooting star (v0.0.37): now and then a streak crosses the night sky */
     var star = { t: 20, x: 0, y: 0 }, starEl = $("#mbStar");
+    /* Sonar (v0.0.39): every 20 seconds a slow ring pulses out from the command platform */
+    var sonarT = 4;
     var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
     /* Windsock (v0.0.27): beside the command helipad, swinging with the wind and stiffening in gusts */
     var sockP = padOf(mods[0]), sockEl = $("#mbSock"), sock = [sockP[0] + 30, sockP[1] - 18];
@@ -428,6 +430,7 @@
       var fw = Math.sin(T * 4.2), fw2 = Math.sin(T * 4.2 + 1.3);
       flagP.setAttribute("d", "M0 -26 Q7 " + mbF(-27 + fw * 2) + " 15 " + mbF(-23 + fw2 * 1.6) + " Q7 " + mbF(-20 + fw * 1.6) + " 0 -19 Z");
       wins.forEach(function (w, i) { w.t -= dt; if (w.t <= 0) { w.on = !w.on; w.t = 3 + r() * 9; } winEls[i].style.opacity = w.on ? "1" : "0.12"; });
+      sonarT -= dt; if (sonarT <= 0) { sonarT = 20; ring(core.x, core.y, core.g.R * 1.1, core.g.R * 4.2, 5.5, false); }
       star.t += dt;
       if (star.t > 38) { star.t = 0; star.x = 80 + r() * (MB_W - 480); star.y = 30 + r() * 160; }
       var sk = star.t / 0.9;

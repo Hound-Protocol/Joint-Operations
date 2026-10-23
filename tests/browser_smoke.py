@@ -23,9 +23,31 @@ threading.Thread(target=server.serve_forever, daemon=True).start()
 BASE = f"http://127.0.0.1:{server.server_address[1]}/"
 
 
+RELAY = "https://hp-signin.trueman-truetown.workers.dev/**"
+NO_KV = lambda r: r.fulfill(status=503, body='{"error":"test","code":"no_kv"}', content_type="application/json", headers={"Access-Control-Allow-Origin": "*"})
+
+
 async def check(browser, name, size):
     failures = []
+    # LV1 (not signed in): the welcome window, No access on gated sections, the open ones stay open
+    gate = await browser.new_page(viewport=size)
+    await gate.route(RELAY, NO_KV)
+    await gate.goto(BASE + "#/contribute"); await gate.wait_for_timeout(2200)
+    if not await gate.locator("#gate").count():
+        failures.append("gate: no No access window on Contribute at LV1")
+    if not await gate.locator("#hpModal.hm-gate").count():
+        failures.append("gate: welcome window missing at LV1")
+    await gate.goto(BASE + "#/roadmap"); await gate.wait_for_timeout(700)
+    if await gate.locator("#gate").count():
+        failures.append("gate: Roadmap should be open at LV1")
+    await gate.goto(BASE + "#/profile"); await gate.wait_for_timeout(900)
+    if not await gate.locator("#vb .hk").count() or not await gate.locator("#siGo, .si-intro .note").count():
+        failures.append("profile: signed-out view missing")
+    await gate.close()
+    # Everything else as a signed-in member (LV2), with the GitHub API answered locally
     page = await browser.new_page(viewport=size)
+    await page.add_init_script("try{localStorage.setItem('hp.verified','1');sessionStorage.setItem('hp.signin',JSON.stringify({token:'test',exp:Date.now()+3600e3,user:{id:1,login:'tester',name:'Tester',avatar:''},org:{at:Date.now(),role:''}}))}catch(e){}")
+    await page.route("https://api.github.com/user**", lambda r: r.fulfill(status=404, body="{}", content_type="application/json", headers={"Access-Control-Allow-Origin": "*"}))
     # Never call the live sign-in relay from tests: answer as a relay without storage would, with CORS headers
     await page.route("https://hp-signin.trueman-truetown.workers.dev/**", lambda r: r.fulfill(status=503, body='{"error":"test","code":"no_kv"}', content_type="application/json", headers={"Access-Control-Allow-Origin": "*"}))
     errors = []
@@ -59,8 +81,8 @@ async def check(browser, name, size):
     if "#/docs/devlog" not in page.url or await page.locator("#docBody[data-id=devlog]").count() != 1:
         failures.append("devlog: old link does not open the Dev Log document")
     await page.goto(BASE + "#/profile"); await page.wait_for_timeout(900)
-    if not await page.locator("#vb .hk").count() or not await page.locator("#siGo, .si-intro .note").count():
-        failures.append("profile: signed-out view missing")
+    if not await page.locator("#vb .hk").count() or not await page.locator("#siOut").count():
+        failures.append("profile: signed-in view missing")
     await page.goto(BASE + "#/verify"); await page.wait_for_timeout(900)
     if not await page.locator(".hks .hk").count() or not await page.locator("#kcCh").inner_text():
         failures.append("verify: keycards or Hound ID challenge missing")

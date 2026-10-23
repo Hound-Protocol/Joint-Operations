@@ -1,7 +1,7 @@
 /* Hound Protocol sign-in relay (Cloudflare Worker). See docs/signin.md.
    1. Sign-in: swaps GitHub's one-time sign-in code for a user token, using the app secret that only it holds, and hands
       the token to the website window that asked for it.
-   2. Guest passes: the owner (and only the owner, checked against GitHub on every request) mints a pass that lasts
+   2. Guest passes: LV7 (checked against GitHub on every request) mints a pass that lasts
       24 hours. Whoever holds the pass can read the Staff documents (LV3) through this relay, which reads them with the
       GitHub App's own short-lived token, limited to that one repository and to reading. The pass is signed here and
       checked here; the browser cannot forge or extend it.
@@ -12,9 +12,12 @@
      GITHUB_APP_PRIVATE_KEY (secret, the app's .pem file), GUEST_REPO (text, Hound-Protocol/hp-staff)
      For revoking passes: a KV namespace bound as GUEST_KV (Worker → Settings → Bindings → KV namespace). It holds the
      list of live passes (number and expiry only) and the revoked ones, each deleted automatically when the pass expires.
+     Guest pass requests: a visitor (LV1) asks for a pass with their name; LV7 approves or declines it on the Profile, and
+     the visitor's browser collects the pass by itself. Requests live in one KV record ("asks"), at most 25 open at once,
+     and are removed 2 days after they were made. No IP addresses or other details are kept.
      Bans (LV0): BANNED_GITHUB_IDS (secret), the banned GitHub account numbers separated by commas. A banned account is
      refused at sign-in and never receives a token. The list is private; see docs/guides/HP-SOP-012-bans.md. */
-const PASS_HOURS = 24, KEEP_DAYS = 30;
+const PASS_HOURS = 24, KEEP_DAYS = 30, ASK_MAX_OPEN = 25, ASK_KEEP_MS = 2 * 86400 * 1000;
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -98,11 +101,46 @@ async function claims(req, env, url) {
 }
 
 /* ---------------- Guest passes ---------------- */
+/* Signs a new 24-hour LV3 pass and records it (number, expiry, who granted it, and for whom when it answers a request) */
+async function mint(env, kv, by, forName) {
+  const exp = Date.now() + PASS_HOURS * 3600 * 1000, n = crypto.randomUUID().slice(0, 8);
+  /* Short pass (v2): expiry in base 36, pass number, and 16 characters of the relay's signature over both, about 32 characters */
+  const e36 = Math.floor(exp / 1000).toString(36);
+  /* The record stays 30 days after the pass expires, so LV7 can see expired passes and delete them */
+  if (kv) await kv.put("pass:" + n, JSON.stringify(Object.assign({ n, exp, at: Date.now(), by }, forName ? { for: forName } : {})), { expiration: Math.ceil(exp / 1000) + KEEP_DAYS * 86400 });
+  return { pass: e36 + "." + n + "." + (await hmac(env.GUEST_SECRET, "v2|" + e36 + "|" + n)).slice(0, 16), exp: Math.floor(exp / 1000) * 1000, n };
+}
+async function sha(s) { return b64u(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))); }
+async function asksGet(kv) { const a = (await kv.get("asks", "json")) || []; const now = Date.now(); return a.filter(x => now - x.at < ASK_KEEP_MS); }
+async function asksPut(kv, a) { await kv.put("asks", JSON.stringify(a)); }
 async function guest(req, env, url) {
   const site = env.SITE_ORIGIN, auth = req.headers.get("Authorization") || "";
   if (!env.GUEST_SECRET || !env.OWNER_GITHUB_ID) return json(site, { error: "Guest passes are not set up on the relay yet (code: guest_off)." }, 503);
+  /* Visitors (LV1) ask for a pass with their name, then check on it with the key only they received */
+  if (url.pathname === "/guest/ask" || url.pathname === "/guest/ask/status") {
+    const kv = env.HP_KV || env.GUEST_KV;
+    if (!kv) return json(site, { error: "Guest pass requests need the KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
+    const asks = await asksGet(kv);
+    if (url.pathname === "/guest/ask") {
+      if (req.method !== "POST") return json(site, { error: "Use POST." }, 405);
+      const b = await req.json().catch(() => ({}));
+      const name = String(b.name || "").replace(/[\u0000-\u001f\u007f<>]/g, "").replace(/\s+/g, " ").trim();
+      if (name.length < 2 || name.length > 40) return json(site, { error: "Write your name (2 to 40 characters), so the owner knows who is asking.", code: "name" }, 400);
+      if (asks.filter(x => x.state === "pending").length >= ASK_MAX_OPEN) return json(site, { error: "Too many requests are waiting right now. Try again later.", code: "busy" }, 429);
+      const last = asks.reduce((m, x) => Math.max(m, x.at), 0);
+      if (Date.now() - last < 3000) return json(site, { error: "Someone just asked. Try again in a few seconds.", code: "busy" }, 429);
+      const id = crypto.randomUUID().slice(0, 8), key = crypto.randomUUID();
+      asks.push({ id, name, at: Date.now(), kh: await sha(key), state: "pending" });
+      await asksPut(kv, asks);
+      return json(site, { ok: true, id, key });
+    }
+    const id = String(url.searchParams.get("id") || ""), key = String(url.searchParams.get("key") || "");
+    const a = asks.find(x => x.id === id);
+    if (!a || a.kh !== await sha(key)) return json(site, { state: "gone" });
+    return json(site, a.state === "approved" ? { state: a.state, pass: a.pass, exp: a.exp } : { state: a.state });
+  }
   /* LV7 actions. GitHub tells us who holds the token: the owner's account, or any owner of the organization. */
-  if (/^\/guest\/(grant|list|revoke|delete|purge)$/.test(url.pathname)) {
+  if (/^\/guest\/(grant|list|revoke|delete|purge|asks|approve|decline)$/.test(url.pathname)) {
     const m = /^Bearer\s+(\S+)$/.exec(auth);
     if (!m) return json(site, { error: "Sign in first." }, 401);
     const u = await fetch("https://api.github.com/user", { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
@@ -118,13 +156,25 @@ async function guest(req, env, url) {
     if (!lv7) return json(site, { error: "Only LV7 can manage guest passes." }, 403);
     const kv = env.HP_KV || env.GUEST_KV;
     if (url.pathname === "/guest/grant" && req.method === "POST") {
-      const exp = Date.now() + PASS_HOURS * 3600 * 1000, n = crypto.randomUUID().slice(0, 8);
-      const body = b64u(new TextEncoder().encode(JSON.stringify({ v: 1, lvl: 3, exp, n })));
-      /* The record stays 30 days after the pass expires, so LV7 can see expired passes and delete them */
-      if (kv) await kv.put("pass:" + n, JSON.stringify({ n, exp, at: Date.now(), by: who.login }), { expiration: Math.ceil(exp / 1000) + KEEP_DAYS * 86400 });
-      return json(site, { pass: body + "." + await hmac(env.GUEST_SECRET, body), exp, n, hours: PASS_HOURS, revocable: !!kv });
+      const p = await mint(env, kv, who.login);
+      return json(site, Object.assign(p, { hours: PASS_HOURS, revocable: !!kv }));
     }
     if (!kv) return json(site, { error: "Revoking needs the GUEST_KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
+    /* Requests from visitors: list them, approve one (a pass is made for that name) or decline it */
+    if (url.pathname === "/guest/asks") {
+      const asks = await asksGet(kv);
+      return json(site, { asks: asks.map(x => ({ id: x.id, name: x.name, at: x.at, state: x.state, by: x.by || "", n: x.n || "" })).sort((a, b) => b.at - a.at), maxOpen: ASK_MAX_OPEN });
+    }
+    if ((url.pathname === "/guest/approve" || url.pathname === "/guest/decline") && req.method === "POST") {
+      const asks = await asksGet(kv), a = asks.find(x => x.id === String(url.searchParams.get("id") || ""));
+      if (!a) return json(site, { error: "That request is gone." }, 404);
+      if (a.state !== "pending") return json(site, { error: "That request was already answered." }, 409);
+      if (url.pathname === "/guest/approve") { const p = await mint(env, kv, who.login, a.name); Object.assign(a, { state: "approved", pass: p.pass, exp: p.exp, n: p.n }); }
+      else a.state = "declined";
+      a.by = who.login; a.done = Date.now();
+      await asksPut(kv, asks);
+      return json(site, { ok: true, id: a.id, state: a.state, n: a.n || "" });
+    }
     if (url.pathname === "/guest/list") {
       const keys = (await kv.list({ prefix: "pass:" })).keys;
       const out = [];
@@ -138,19 +188,22 @@ async function guest(req, env, url) {
       await kv.put("revoked:" + n, "1", { expiration: Math.ceil(((v && v.exp) || Date.now() + PASS_HOURS * 3600 * 1000) / 1000) + KEEP_DAYS * 86400 });
       return json(site, { ok: true, n });
     }
-    /* Delete the record of one expired or revoked pass, or of every expired one. A live pass must be revoked first. */
+    /* Clear one pass: a live pass is revoked first (the revocation stays until it would have expired), then its record goes.
+       Purge clears every expired one; with ?all=1 it clears every pass, live ones included. */
+    const clear = async (n, v) => {
+      if (v && v.exp > Date.now()) await kv.put("revoked:" + n, "1", { expiration: Math.ceil(v.exp / 1000) + 60 });
+      else await kv.delete("revoked:" + n);
+      await kv.delete("pass:" + n);
+    };
     if (url.pathname === "/guest/delete" && req.method === "POST") {
       const n = String(url.searchParams.get("n") || "");
       if (!/^[0-9a-f-]{8}$/.test(n)) return json(site, { error: "Bad pass number." }, 400);
-      const v = await kv.get("pass:" + n, "json"), rv = await kv.get("revoked:" + n);
-      if (v && v.exp > Date.now() && !rv) return json(site, { error: "This pass is still live. Revoke it first." }, 409);
-      await kv.delete("pass:" + n);
-      if (!v || v.exp <= Date.now()) await kv.delete("revoked:" + n);
+      await clear(n, await kv.get("pass:" + n, "json"));
       return json(site, { ok: true, n });
     }
     if (url.pathname === "/guest/purge" && req.method === "POST") {
-      let gone = 0;
-      for (const k of (await kv.list({ prefix: "pass:" })).keys) { const v = await kv.get(k.name, "json"); if (!v || v.exp <= Date.now()) { await kv.delete(k.name); if (v) await kv.delete("revoked:" + v.n); gone++; } }
+      const all = url.searchParams.get("all") === "1"; let gone = 0;
+      for (const k of (await kv.list({ prefix: "pass:" })).keys) { const v = await kv.get(k.name, "json"); if (!v || all || v.exp <= Date.now()) { await clear(k.name.slice(5), v); gone++; } }
       return json(site, { ok: true, deleted: gone });
     }
     return json(site, { error: "Unknown request." }, 404);
@@ -178,7 +231,14 @@ async function guest(req, env, url) {
   return json(site, { error: "Unknown request." }, 404);
 }
 async function checkPass(secret, pass) {
-  const [body, sig] = String(pass).split(".");
+  const parts = String(pass).split(".");
+  if (parts.length === 3) {
+    const [e36, n, sig] = parts;
+    if (!/^[0-9a-z]{4,9}$/.test(e36) || !/^[0-9a-f-]{8}$/.test(n) || sig !== (await hmac(secret, "v2|" + e36 + "|" + n)).slice(0, 16)) return null;
+    const exp = parseInt(e36, 36) * 1000;
+    return exp > Date.now() && exp - Date.now() <= PASS_HOURS * 3600 * 1000 + 60000 ? { v: 2, lvl: 3, exp, n } : null;
+  }
+  const [body, sig] = parts;
   if (!body || !sig || sig !== await hmac(secret, body)) return null;
   let p; try { p = JSON.parse(new TextDecoder().decode(unb64u(body))); } catch (e) { return null; }
   return p && p.v === 1 && p.exp > Date.now() && p.exp - Date.now() <= PASS_HOURS * 3600 * 1000 + 60000 ? p : null;

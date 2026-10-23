@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.7 · Effective 2026-10-23 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.8 · Effective 2026-10-23 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -7,7 +7,7 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 - **Main menu:** the first screen. Arrow keys and Enter work, as in a game menu. The panels beside it describe the project and the team.
 - **Section bar:** the row of tabs at the top of every page. The line under it describes the tab you point at.
 - **Keyboard:** ← and → switch sections, Esc returns to the menu.
-- **Top bar:** the build number, and **Sign in**. Once you are signed in, it shows your access credential: your picture, name, card and level, in your level's colour. Click it for your Profile.
+- **Top bar:** the build number, then **messages** (clearance changes, guest passes, requests), the **gear** (Profile details) and your **access credential**: your picture, name, card and level, in your level's colour. Visitors see *Visitor · LV1*.
 - **Options:** effects, motion, sound, text size and contrast. Choose **Performance** on older computers, or **Calm** if motion bothers you. Settings stay in your browser.
 
 ## 2. The sections
@@ -48,16 +48,16 @@ Choose **Search by Name** (file numbers and titles, the default) or **Content** 
 - Guides, policies and procedures live in the **Handbook**, which has its own filter (section 3).
 
 ## 5. Signing in
-Signing in is optional. It uses your GitHub account ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).
-1. Click **Sign in** in the top bar, then **Sign in with GitHub**. A window explains the steps; **Continue with GitHub** opens GitHub in a small window in the middle of your screen (GitHub cannot be shown inside our page).
+Everyone starts on a temporary **LV1** pass. LV1 opens About, Roadmap, Team, Documentation and Options; Download, Sessions, Contribute and Mods show **No access** until you sign in or hold a guest pass. On each visit a welcome window explains this, until your browser has signed in with GitHub once. Signing in uses your GitHub account ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).
+1. Click **Sign in with GitHub** in the welcome window, in a No access window, or on your Profile (the gear in the top bar). A window explains the steps; **Continue with GitHub** opens GitHub in a small window in the middle of your screen (GitHub cannot be shown inside our page).
 2. The first time, GitHub asks you to authorize **Hound ID Sign-in**. It can only read our restricted document repositories that your GitHub teams already allow; it cannot change anything.
 3. The window closes, and your keycard rises onto your **Profile** while its details decrypt. Each level has its own card design. It shows your signed staff card if you are staff, otherwise a member card (LV2). A staff card counts only after its signature checks out in your browser.
 4. **Access granted and access restricted:** your Profile lists what every level opens, split at your clearance. Restricted documents appear under the level that opens them (Staff LV3, Leads LV5, Administration LV6). If an area says GitHub has not given you access yet, ask Administration to add you to the right team.
-5. **Sign out** with the button at the foot of your Profile (it asks first), or close the tab. Your sign-in lasts at most eight hours and lives only in that tab ([privacy](../privacy.md)).
+5. **Sign out** with the button at the foot of your Profile (it asks first), or close the tab. Your sign-in lasts at most 24 hours and lives only in that tab ([privacy](../privacy.md)).
 
 Allow pop-ups for the site if nothing happens when you click **Sign in with GitHub**.
 
-**Guest passes:** the owner can give a friend or associate a link with LV3 (Staff) access for 24 hours, no account needed. Open the link, and your Profile shows a guest card with the time left. It cannot be extended, and it lasts only in that tab. The owner can revoke a pass at any time; the guest is told in a small window.
+**Guest passes:** a link with LV3 (Staff) access for 24 hours, no account needed. LV7 can send you one, or you can ask: **Request a guest pass**, write your name (it cannot be blank; at most one request a minute) and wait. Once the owner approves, the pass opens in your browser by itself. Open the link, and your Profile shows a guest card with the time left. It cannot be extended, and it lasts only in that tab. The owner can revoke a pass at any time; the guest is told in a small window.
 
 **Roster:** the Team page lists everyone holding a signed card, grouped by clearance.
 

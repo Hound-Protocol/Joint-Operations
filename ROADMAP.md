@@ -37,6 +37,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Dev Log inside Documentation; Access Credential cards
 - [x] Steady Library drawers; Docs and Handbook open on their overview; credential badge in the top bar
 - [x] Classification stamps on Library documents; the Dev Log as a document
+- [x] LV1 for visitors, guest pass requests, messages in the top bar
 - [x] Signed certificates of service, checked in the browser and printable (ADR 0020)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)

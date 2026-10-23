@@ -58,19 +58,28 @@ Setup, once:
 4. Paste the current `tools/signin-relay/worker.js` into the worker (**Edit code** → **Deploy**) and check the variables are all still listed.
 5. **Storage for claims and revoking passes:** Cloudflare → **Storage & Databases → KV** → **Create** a namespace named `hp-relay`. Then hp-signin → **Settings → Bindings → Add → KV namespace**: variable name `HP_KV`, namespace `hp-relay` → **Deploy**. It enables **Claim** on the contract board, and your Profile lists live guest passes with **Revoke pass** (a revoked guest is told within a minute). It holds only contract claims (GitHub name and number) and pass numbers.
 
+## 6b. Clearance for visitors (LV1) and guest pass requests
+- Everyone who is not signed in holds a temporary **LV1** pass. LV1 opens About, Roadmap, Team, Documentation and Options, plus Profile (to sign in) and Verify (so anyone can check a certificate). Download, Sessions, Contribute and Mods show **No access** over a blurred page, with **Sign in with GitHub** (LV2 at once) and **Request a guest pass**. This is a gate in the interface; public documents stay public on GitHub.
+- On each visit, a visitor sees a welcome window explaining restricted clearance, until that browser has once signed in with GitHub.
+- **Requests:** a visitor asks with their name (2 to 40 characters, required), at most once a minute. The relay keeps open requests in one KV record (`asks`): at most 25 waiting, removed 2 days after they were made. LV7 sees them on the right half of the guest pass panel and approves or declines. An approved request gets a new pass, which the visitor's browser collects by itself (it checks every 20 seconds while open, and on each visit).
+- **Short links:** passes look like `tnfk0k.4ea23979.8F5wafMVtMwbZUrV` (expiry, pass number, signature) and open at `#/g/…`. Older long links still work.
+- **Clearing:** LV7 can clear any pass, live ones included (it is revoked at once), or every pass with **Clear all**.
+- **Sign-in length:** a sign-in lasts at most 24 hours at every level, then the person signs in again.
+- Needs the KV storage (section 6, step 5) and the current `worker.js`.
+
 ## 7. Bans (LV0)
 Banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. Add the GitHub account numbers to `BANNED_GITHUB_IDS` (Secret), separated by commas. The full procedure, across GitHub, Discord and Steam, is [HP-SOP-012](guides/HP-SOP-012-bans.md).
 
 ## Using it
-- **Sign in:** the **Sign in** badge in the top bar, or the Profile page (`#/profile`). A GitHub window asks you to authorize *Hound ID Sign-in* once.
+- **Sign in:** the welcome window, a No access window, or the Profile page (the gear in the top bar, `#/profile`). A GitHub window asks you to authorize *Hound ID Sign-in* once.
 - **Profile:** your keycard (your signed staff card, or a member card), your session, and your documents.
 - **Your documents:** one area per private repository. Areas above your clearance stay locked; inside an area GitHub decides what you can read.
-- **Guest:** open the link the owner sent. The pass is kept in that tab; **End guest pass** on the Profile removes it.
+- **Guest:** open the link the owner sent, or ask for a pass with your name and wait for the owner's answer. The pass is kept in that tab; **End guest pass** on the Profile removes it.
 - **Sign out:** the button on the Profile page, or close the tab.
 
 ## How it stays safe
 - The relay keeps its secrets (client secret, app key, guest secret) and nothing else: no database, no logs of tokens or passes.
-- Guest passes are signed by the relay and checked by the relay on every request. The browser cannot forge, extend or widen one. Only the owner's GitHub account can grant them.
-- The token lives only in the reader's browser tab (session storage) and expires within 8 hours. Signing out removes it.
+- Guest passes are signed by the relay and checked by the relay on every request. The browser cannot forge, extend or widen one. Only LV7 (the owner, or an organization owner GitHub confirms) can grant or approve them.
+- The token lives only in the reader's browser tab (session storage) and the sign-in ends after at most 24 hours. Signing out removes it.
 - The token can only read the contents of the three private repositories, and only those the person's teams can already read.
 - Leaving a team removes access immediately ([HP-SOP-007](guides/HP-SOP-007-onboarding-offboarding.md)).
