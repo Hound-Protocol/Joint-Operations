@@ -57,6 +57,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F17 | Steady drawers; Docs and Handbook open on their overview | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F18 | Classification stamps; the Dev Log as a document | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F19 | LV1 for visitors, guest pass requests, messages | web | 🟡 Medium | — | done | Forge77 (with Claude) |
+| F20 | About: Start here triangle; FAQ as a document | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -737,3 +738,15 @@ Module: web · Difficulty: 🟡 Medium · Skills:
 - LV1 sees No access on gated sections
 - A named request can be approved and opens by itself
 - Sign-in ends after 24 hours
+
+## F20
+**About: Start here triangle; FAQ as a document**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** About gets people to the right place fast.
+
+**Deliverable.** Pyramid of four buttons; docs/faq.md.
+
+**Acceptance criteria**
+- Overview on top, three guides beneath
+- FAQ in the Library

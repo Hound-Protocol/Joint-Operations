@@ -25,6 +25,7 @@ Everything the project knows, and the one document that holds it. If a topic is 
 | What must be in place before 0.1, and the gates | [Pre-development plan](pre-development.md) |
 | Every release and what changed | [CHANGELOG](../CHANGELOG.md) |
 | News, decisions and milestones | [Dev Log](devlog.md) |
+| Short answers to common questions | [Frequently Asked Questions](faq.md) |
 | Risks and how we handle them | [Risk register](risk-register.md) |
 | Staying quiet until 0.1 | [ADR 0014](decisions/0014-quiet-until-0-1.md) |
 | Money: no donations before 0.1, then a fiscal host | [ADR 0010](decisions/0010-funding.md), [funding research](../research/funding-and-distribution.md) |

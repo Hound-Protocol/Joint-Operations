@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.40 · Start here · 2026-10-23
+- **About is shorter:** the session steps and the FAQ are gone from the page. Under the introduction there is one set of **Start here** buttons: a big **Overview** on top, joined like a triangle to **Can I Contribute?**, **Linux and Proton** and **Using the Website** beneath it. Each has its own colour, icon and hover light.
+- **FAQ is a document:** [Frequently Asked Questions](docs/faq.md) in the Library's Project drawer, with every answer from the About page plus how a session works. "Does it touch Konami's servers?" became "Is it connected to Konami?" (no, it is an independent fan project).
+- **Roadmap:** this release's base detail is a red warning light blinking on the tip of every crane.
+
 ## v0.0.39 · Clearance at the door · 2026-10-23
 - **Everyone starts at LV1:** visitors hold a temporary LV1 pass. About, Roadmap, Team, Documentation and Options are open. Download, Sessions, Contribute and Mods show **No access** over a blurred page, with **Sign in with GitHub** (LV2 at once) and **Request a guest pass**. Profile (to sign in) and Verify (to check a certificate) stay open.
 - **Welcome window:** on each visit, a visitor is told, over a blurred page, that they are on restricted clearance and what that means. It stops once the browser has signed in with GitHub.

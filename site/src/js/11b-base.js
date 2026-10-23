@@ -202,7 +202,7 @@
 
     $("#mbCrew").innerHTML = crew.map(function (c) { return '<circle class="mb-man st-' + c.m.st + '" r="2.3"/>'; }).join("") + sparks.map(function () { return '<circle class="mb-spark" r="3"/>'; }).join("");
     $("#mbWalk").innerHTML = walk.map(function () { return '<circle class="mb-man st-done" r="2"/>'; }).join("");
-    $("#mbCranes").innerHTML = cranes.map(function () { return '<g class="mb-crane"><rect x="-5" y="-5" width="10" height="10"/><line x1="-11" y1="0" x2="42" y2="0"/><circle cx="42" cy="0" r="2.4"/></g>'; }).join("");
+    $("#mbCranes").innerHTML = cranes.map(function () { return '<g class="mb-crane"><rect x="-5" y="-5" width="10" height="10"/><line x1="-11" y1="0" x2="42" y2="0"/><circle cx="42" cy="0" r="2.4"/><circle class="mb-tip" cx="44.5" cy="0" r="1.6"/></g>'; }).join("");
     $("#mbBoats").innerHTML = boats.map(function () { return '<polyline class="mb-wake"/><polygon class="mb-hull" points="14,0 6,-5 -12,-5 -12,5 6,5"/>'; }).join("");
     var CONT = [[-22, -5], [-12, -5], [-2, -5], [-22, 4], [-12, 4], [-2, 4]], COLS = ["#f28c28", "#4f8fa6", "#b8c2c5", "#c9a24a", "#4f8fa6", "#f28c28"];
     $("#mbShips").innerHTML = ships.map(function () {

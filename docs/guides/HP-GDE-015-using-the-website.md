@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.8 · Effective 2026-10-23 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.9 · Effective 2026-10-23 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -13,7 +13,7 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 ## 2. The sections
 | Section | What you find there |
 |---|---|
-| **About** | What Joint Operations is, how a session works, and the FAQ |
+| **About** | What Joint Operations is, and where to start: the Overview, Can I Contribute?, Linux and Proton, and this guide |
 | **Roadmap** | Joint Operations Motherbase: one platform per phase, filled as tasks are done. Click a platform to see its tasks |
 | **Download** | The game release when there is one, install steps for Windows and Linux, and requirements |
 | **Sessions** | The Session Browser, live once 0.1 is out: find a session, see players and ping, and join |

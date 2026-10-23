@@ -14,6 +14,12 @@
       "path": "README.md"
     },
     {
+      "id": "faq",
+      "title": "Frequently Asked Questions",
+      "group": "Project",
+      "path": "docs/faq.md"
+    },
+    {
       "id": "plan",
       "title": "Pre-development Plan",
       "group": "Project",
