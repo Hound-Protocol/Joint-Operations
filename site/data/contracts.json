@@ -81,7 +81,8 @@
    ],
    "refs": [
     "phase1:R2",
-    "adr-0004"
+    "adr-0004",
+    "r-launch"
    ]
   },
   {
@@ -103,7 +104,8 @@
    ],
    "refs": [
     "phase1:R2",
-    "r-proton"
+    "r-proton",
+    "r-launch"
    ]
   },
   {
@@ -126,7 +128,9 @@
    ],
    "refs": [
     "phase1:R3",
-    "adr-0007"
+    "adr-0007",
+    "r-launch",
+    "r-state"
    ]
   },
   {
@@ -169,7 +173,8 @@
    ],
    "refs": [
     "phase1:R4",
-    "r-netcode"
+    "r-netcode",
+    "r-state"
    ]
   },
   {
@@ -185,12 +190,14 @@
     "Builds on Windows and Linux from a clean checkout with written steps",
     "Reliable and unreliable messages between two machines on both paths",
     "Messages vs Sockets compared: API fit, NAT behavior, latency",
-    "Recommendation for ADR 0003"
+    "Confirms or overturns the proposed ADR 0018 (Sockets) for ADR 0003"
    ],
    "refs": [
     "phase1:R7",
     "adr-0003",
-    "r-steam"
+    "r-steam",
+    "r-steam-api",
+    "adr-0018"
    ]
   },
   {
@@ -386,7 +393,8 @@
    "refs": [
     "phase1:R12",
     "adr-0002",
-    "r-engine"
+    "r-engine",
+    "r-launch"
    ]
   },
   {
@@ -410,7 +418,8 @@
    "refs": [
     "phase1:R13",
     "r-steam-interfaces",
-    "adr-0003"
+    "adr-0003",
+    "adr-0018"
    ]
   },
   {

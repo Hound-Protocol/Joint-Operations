@@ -170,6 +170,24 @@
       "path": "docs/decisions/0015-ai-agents-and-attribution.md"
     },
     {
+      "id": "adr-0016",
+      "title": "0016 Accountability",
+      "group": "Decisions",
+      "path": "docs/decisions/0016-accountability.md"
+    },
+    {
+      "id": "adr-0017",
+      "title": "0017 Hound ID and Sign-in",
+      "group": "Decisions",
+      "path": "docs/decisions/0017-hound-id-sign-in.md"
+    },
+    {
+      "id": "adr-0018",
+      "title": "0018 Steam Networking Sockets",
+      "group": "Decisions",
+      "path": "docs/decisions/0018-steam-networking-sockets.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",
@@ -182,10 +200,22 @@
       "path": "research/game-and-engine.md"
     },
     {
+      "id": "r-launch",
+      "title": "Launch and Second Player (R2, R3)",
+      "group": "Research",
+      "path": "research/launch-and-second-player.md"
+    },
+    {
       "id": "r-ai",
       "title": "Enemy AI",
       "group": "Research",
       "path": "research/ai-system.md"
+    },
+    {
+      "id": "r-state",
+      "title": "State Inventory (R4)",
+      "group": "Research",
+      "path": "research/state-inventory.md"
     },
     {
       "id": "r-modding",
@@ -204,6 +234,12 @@
       "title": "Steam Interfaces (R13)",
       "group": "Research",
       "path": "research/steam-interfaces.md"
+    },
+    {
+      "id": "r-steam-api",
+      "title": "Steam Messages or Sockets (R7)",
+      "group": "Research",
+      "path": "research/steam-networking-api.md"
     },
     {
       "id": "r-proton",

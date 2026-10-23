@@ -88,6 +88,7 @@ Everything the project knows, and the one document that holds it. If a topic is 
 | The host is authoritative | [ADR 0007](decisions/0007-host-authority.md) |
 | Engine multiplayer first, own netcode as fallback | [ADR 0002](decisions/0002-integration-strategy.md) (proposed) |
 | Transport: Steam networking and GNS | [ADR 0003](decisions/0003-transport.md) (proposed) |
+| Steam Networking Sockets rather than Messages | [ADR 0018](decisions/0018-steam-networking-sockets.md) (proposed), [comparison](../research/steam-networking-api.md) |
 | Loading our code: IHHook plugin or proxy DLL | [ADR 0004](decisions/0004-loader.md) (proposed) |
 | One shared detection status | [ADR 0012](decisions/0012-shared-alert.md) |
 | Server browser and one-click join | [ADR 0008](decisions/0008-browser-launch.md) (proposed) |
@@ -97,6 +98,8 @@ Everything the project knows, and the one document that holds it. If a topic is 
 | Topic | Document |
 |---|---|
 | The game, its build and the Fox Engine | [Game and engine](../research/game-and-engine.md) |
+| How the game starts, where our code runs, how a second player comes in | [Launch and second player](../research/launch-and-second-player.md) |
+| What a session must keep in sync, and in which order we build it | [State inventory](../research/state-inventory.md) (draft) |
 | The enemy AI: perception, alert phases, reinforcements | [Enemy AI](../research/ai-system.md) |
 | Existing mods and loaders | [Modding ecosystem](../research/modding-ecosystem.md), [Dynamite study](../research/prior-art/dynamite.md) |
 | File formats and tools | [File formats and tools](../research/file-formats-and-tools.md) |

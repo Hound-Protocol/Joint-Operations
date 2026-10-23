@@ -13,3 +13,6 @@ The first draft said "GameNetworkingSockets over Steam relay". The open-source G
 ## Consequences
 - Phase 1 must confirm that current interfaces are reachable through the game's older `steam_api64.dll` (R13).
 - The Steam App ID question remains a release gate.
+
+## Update 2026-10-23
+The choice between Messages and Sockets is proposed in [ADR 0018](0018-steam-networking-sockets.md): Sockets, with Messages as a fallback ([research](../../research/steam-networking-api.md)).

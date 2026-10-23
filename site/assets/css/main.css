@@ -1384,3 +1384,4 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .hk.big.has-photo .hk-who { padding-left: 110px; }
 @media (max-width: 700px) { .hk.big .hk-photo { left: 22px; top: 46px; width: 54px; height: 54px; } .hk.big.has-photo .hk-who { padding-left: 74px; } }
 .mb-comms rect { fill: #3d4a4f; stroke: #9fc4cf; stroke-width: 1; } .mb-comms line { stroke: #9fc4cf; stroke-width: 2.4; stroke-linecap: round; } .mb-comms circle { fill: #cfe6ec; }
+.mb-gull path { fill: none; stroke-linecap: round; stroke-linejoin: round; } .mb-gull .gb { stroke: #eef3f4; stroke-width: 2; } .mb-gull .gs { stroke: rgba(0,0,0,.28); stroke-width: 1.4; }

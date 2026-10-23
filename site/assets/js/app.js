@@ -679,7 +679,7 @@
      Seen from above. Phase 0 is the command platform in the centre, every later phase is a platform on its own bridge,
      named after the phase. The fill inside a platform is the share of that phase's tasks that are done; the hatched part
      above it is still scaffolding. Point at a platform to light it, click it to read its tasks.
-     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the radar sweep)
+     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls)
      is decoration and stops with Options → Animations. The data comes live from ROADMAP.md. */
   var MB_SLOTS = [[-345, -220], [345, -220], [345, 220], [-345, 220], [0, -330], [0, 330]];
   var MB_W = 1600, MB_H = 900, MB_CX = 600, MB_CY = 470;
@@ -791,7 +791,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -920,6 +920,11 @@
     var piled = 0, ringT = 0;
     /* Comms mast on the command platform (v0.0.22): a turning dish that sends a signal ring every few seconds */
     var comms = mbWorld(mods[0], [-mods[0].g.R * 0.45, mods[0].g.R * 0.05]), commsT = 1.2, commsEl = $("#mbComms");
+    /* Gulls (v0.0.24): a small flock circling on the wind over the base, flapping now and then, gliding in between */
+    var gulls = [];
+    for (var gi = 0; gi < 6; gi++) gulls.push({ cx: 260 + r() * 1000, cy: 160 + r() * 560, R: 26 + r() * 46, w: (r() < 0.5 ? -1 : 1) * (0.32 + r() * 0.22), ph: r() * 6.3, fl: r() * 6.3, vx: 6 + r() * 6, vy: (r() - 0.5) * 4 });
+    $("#mbGulls").innerHTML = gulls.map(function () { return '<g class="mb-gull"><path class="gs" d="M-10 1.5Q-5 -4.5 0 0Q5 -4.5 10 1.5"/><path class="gb" d="M-10 1.5Q-5 -4.5 0 0Q5 -4.5 10 1.5"/></g>'; }).join("");
+    var gullEls = $$("#mbGulls .mb-gull");
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
 
     function step(dt) {
@@ -1063,6 +1068,17 @@
       });
       commsEl.setAttribute("transform", "translate(" + mbF(comms[0]) + " " + mbF(comms[1]) + ") rotate(" + mbF((T * 40) % 360) + ")");
       commsT -= dt; if (commsT <= 0) { commsT = 2.6; ring(comms[0], comms[1], 6, 70, 2.4, false); }
+      gulls.forEach(function (g, i) {
+        g.cx += g.vx * dt; g.cy += g.vy * dt;
+        if (g.cx > MB_W + 120) { g.cx = -120; g.cy = 160 + r() * 560; }
+        var a = T * g.w + g.ph, x = g.cx + Math.cos(a) * g.R, y = g.cy + Math.sin(a) * g.R * 0.8;
+        var hd = Math.atan2(Math.cos(a) * g.w * 0.8, -Math.sin(a) * g.w) * 180 / Math.PI;
+        var flapping = Math.sin(T * 0.7 + g.fl) > 0.35, f = flapping ? 0.35 + 0.65 * Math.abs(Math.sin(T * 9 + g.fl)) : 0.55;
+        gullEls[i].setAttribute("transform", "translate(" + mbF(x) + " " + mbF(y) + ") rotate(" + mbF(hd + 90) + ")");
+        gullEls[i].lastChild.setAttribute("transform", "scale(1 " + f.toFixed(2) + ")");
+        var so = mbRot([9, 13], -(hd + 90) * Math.PI / 180);
+        gullEls[i].firstChild.setAttribute("transform", "translate(" + mbF(so[0]) + " " + mbF(so[1]) + ") scale(0.9 " + f.toFixed(2) + ")");
+      });
       /* Selection ring */
       var sm = mods[MB.sel];
       if (sm) {
