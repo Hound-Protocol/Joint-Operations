@@ -795,6 +795,53 @@
    ],
    "refs": [],
    "kind": "work"
+  },
+  {
+   "id": "F09",
+   "title": "Handbook wording: Policies are Rules & Standards",
+   "module": "docs",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "The Policies folder reads Rules & Standards.",
+   "deliverable": "",
+   "acceptance": [
+    "Folder description updated"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
+  },
+  {
+   "id": "F10",
+   "title": "Guest pass list for every LV7: active, expired, revoked, delete",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "All LV7 profiles list their guest passes by status and can delete expired ones.",
+   "deliverable": "",
+   "acceptance": [
+    "Org owners can manage passes",
+    "Expired passes can be deleted"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

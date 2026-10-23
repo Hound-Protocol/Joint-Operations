@@ -43,8 +43,8 @@ Organization owners hold LV7 (ADR 0011). The website asks GitHub whether the sig
 - Sign out and in again on the website. The Profile shows an **Owner card**, LV7, "Confirmed by GitHub".
 A signed staff card (`records.py staff-add`) adds a permanent Hound ID later; it is not needed for LV7.
 
-## 6. Guest passes (owner only)
-A guest pass gives LV3 (Staff) access for 24 hours to whoever has its link, without a GitHub account. The owner grants it from the Profile (**Grant Guest Pass**). The relay checks with GitHub that the request comes from the owner's account, signs the pass, and later reads the Staff documents for the guest with the app's own short-lived token, limited to `hp-staff` and to reading. A pass cannot be extended; to cancel every pass at once, change `GUEST_SECRET`.
+## 6. Guest passes (LV7 only)
+A guest pass gives LV3 (Staff) access for 24 hours to whoever has its link, without a GitHub account. LV7 holders grant it from the Profile (**Grant Guest Pass**): the owner (`OWNER_GITHUB_ID`) and any owner of the organization, which GitHub confirms on every request. The Profile lists every pass as **Active**, **Expired** or **Revoked**, with who granted it; expired and revoked records can be deleted one by one or all at once (**Delete expired**), and are removed automatically 30 days after they end. The relay checks with GitHub who is asking, signs the pass, and later reads the Staff documents for the guest with the app's own short-lived token, limited to `hp-staff` and to reading. A pass cannot be extended; to cancel every pass at once, change `GUEST_SECRET`.
 
 Setup, once:
 1. GitHub App → **Credentials** → **Private keys** → **Generate a private key**. A `.pem` file downloads. Keep it private; delete the download after step 3.

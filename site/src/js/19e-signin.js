@@ -37,7 +37,8 @@
   /* While a guest pass is open, check it now and then, so a revoked pass closes within a minute */
   setInterval(function () { if (sgIn() && !document.hidden) sgApi("/guest/check").catch(function () { /* handled in sgApi */ }); }, 60 * 1000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden && sgIn()) sgApi("/guest/check").catch(function () { /* handled in sgApi */ }); });
-  function siOwner() { return siIn() && String(SI.user.id) === String(siCfg().owner || ""); }
+  /* LV7 holders (the owner, and any organization owner GitHub confirms) manage guest passes; the relay checks again */
+  function siOwner() { if (!siIn()) return false; if (String(SI.user.id) === String(siCfg().owner || "")) return true; var c = siCard(); return !!(c && c.card === "LV7"); }
   /* Reads one restricted file, with the person's own sign-in or, for a guest, through the relay */
   function siRead(repo, path) {
     if (siIn()) return siApi("/repos/" + repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/"), true);
@@ -257,7 +258,7 @@
   function sgLink(pass) { return (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guest/" + pass; }
   function sgPanel() {
     var list = sgIssued();
-    return '<section class="gp"><header><span class="gp-ico" aria-hidden="true"></span><div><b>Guest passes</b><small>Owner only · LV3 (Staff) access for 24 hours to whoever has the link. A pass cannot be extended.</small></div>' +
+    return '<section class="gp"><header><span class="gp-ico" aria-hidden="true"></span><div><b>Guest passes</b><small>LV7 only · LV3 (Staff) access for 24 hours to whoever has the link. A pass cannot be extended.</small></div>' +
       '<button class="btn primary" id="gpGrant">Grant Guest Pass</button></header><p class="sub" id="gpMsg" aria-live="polite"></p><ul class="gp-list" id="gpList">' + list.map(sgItem).join("") + "</ul></section>";
   }
   function sgItem(x) {
@@ -273,11 +274,17 @@
     var ul = $("#gpList"); if (!ul) return;
     sgOwnerApi("/guest/list").then(function (j) {
       var local = {}; sgIssued().forEach(function (x) { try { local[JSON.parse(atob(x.pass.split(".")[0].replace(/-/g, "+").replace(/_/g, "/"))).n] = x.pass; } catch (e) { /* older pass */ } });
-      ul.innerHTML = (j.passes || []).map(function (x) {
-        return '<li class="' + (x.revoked ? "rv" : "") + '"><code>Pass ' + esc(x.n) + '</code><span>' + (x.revoked ? "Revoked" : "Expires " + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + " left") + "</span>" +
-          (local[x.n] && !x.revoked ? '<button class="btn small" data-gp="' + esc(local[x.n]) + '">Copy link</button>' : "") +
-          (x.revoked ? "" : '<button class="btn small danger" data-rv="' + esc(x.n) + '">Revoke pass</button>') + "</li>";
-      }).join("") || '<li class="none"><span>No live guest passes.</span></li>';
+      var ps = j.passes || [], live = ps.filter(function (x) { return !x.expired && !x.revoked; }), old = ps.filter(function (x) { return x.expired || x.revoked; });
+      function row(x) {
+        var stc = x.revoked ? "rv" : x.expired ? "ex" : "ok", stl = x.revoked ? "Revoked" : x.expired ? "Expired" : "Active";
+        return '<li class="' + stc + '"><span class="gp-st">' + stl + '</span><code>Pass ' + esc(x.n) + "</code><span>" +
+          (x.expired ? "Ended " + esc(fmtDate(new Date(x.exp).toISOString().slice(0, 10))) + " " + esc(new Date(x.exp).toTimeString().slice(0, 5)) : x.revoked ? "Closed early · would have run until " + esc(new Date(x.exp).toTimeString().slice(0, 5)) : "Expires " + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + " left") +
+          (x.by ? " · by " + esc(x.by) : "") + "</span>" +
+          (local[x.n] && stc === "ok" ? '<button class="btn small" data-gp="' + esc(local[x.n]) + '">Copy link</button>' : "") +
+          (stc === "ok" ? '<button class="btn small danger" data-rv="' + esc(x.n) + '">Revoke pass</button>' : '<button class="btn small" data-del="' + esc(x.n) + '">Delete</button>') + "</li>";
+      }
+      ul.innerHTML = '<li class="gp-h"><b>Active</b><span>' + live.length + "</span></li>" + (live.map(row).join("") || '<li class="none"><span>No live guest passes.</span></li>') +
+        (old.length ? '<li class="gp-h"><b>Expired and revoked</b><span>' + old.length + ' · records are kept ' + (j.keepDays || 30) + ' days</span><button class="btn small" id="gpPurge">Delete expired</button></li>' + old.map(row).join("") : "");
       sgWireList();
     }, function (e) {
       if (e.code === "no_kv") { $("#gpMsg").textContent = "Passes can be granted. To revoke them instantly, add the GUEST_KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
@@ -285,6 +292,19 @@
     });
   }
   function sgWireList() {
+    $$("[data-del]").forEach(function (b) {
+      b.onclick = function () {
+        var n = b.getAttribute("data-del"); b.disabled = true;
+        sgOwnerApi("/guest/delete?n=" + encodeURIComponent(n), "POST").then(function () { status("Pass record deleted"); sgLoad(); }, function (e) { b.disabled = false; $("#gpMsg").textContent = e.message; });
+      };
+    });
+    var pg = $("#gpPurge");
+    if (pg) pg.onclick = function () {
+      hpConfirm("Delete every expired pass?", "Their records disappear from this list. Live passes are not touched.", "Delete expired", "Cancel", "danger").then(function (y) {
+        if (!y) return; pg.disabled = true;
+        sgOwnerApi("/guest/purge", "POST").then(function (j) { status(plural(j.deleted || 0, "expired pass") + " deleted"); sgLoad(); }, function (e) { pg.disabled = false; $("#gpMsg").textContent = e.message; });
+      });
+    };
     $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; });
     $$("[data-rv]").forEach(function (b) {
       b.onclick = function () {

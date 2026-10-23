@@ -46,6 +46,8 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F06 | Records key and the owner's signed card | legal | 🟢 Easy | — | claimed | Forge77 |
 | F07 | Branch protection on main | legal | 🟢 Easy | — | claimed | Forge77 |
 | F08 | Steam sign-in for sessions, linked to the Hound ID | lobby | 🔴 Hard | — | planned | — |
+| F09 | Handbook wording: Policies are Rules & Standards | docs | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F10 | Guest pass list for every LV7: active, expired, revoked, delete | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -602,3 +604,22 @@ Module: lobby · Difficulty: 🔴 Hard · Skills:
 **Acceptance criteria**
 - Steam ID linked to the GitHub account
 - Banned Steam IDs refused
+
+## F09
+**Handbook wording: Policies are Rules & Standards**  
+Module: docs · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** The Policies folder reads Rules & Standards.
+
+**Acceptance criteria**
+- Folder description updated
+
+## F10
+**Guest pass list for every LV7: active, expired, revoked, delete**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** All LV7 profiles list their guest passes by status and can delete expired ones.
+
+**Acceptance criteria**
+- Org owners can manage passes
+- Expired passes can be deleted

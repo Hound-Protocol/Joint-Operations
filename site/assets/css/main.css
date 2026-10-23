@@ -1815,3 +1815,11 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .si-lvrow .hk.hk-l6::before { background: repeating-linear-gradient(-45deg, var(--hk) 0 6px, #1d1428 6px 12px); }
 @media (max-width: 1000px) { .si-lvrow { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .si-lvrow { grid-template-columns: 1fr; } }
+.mb-heli .nav-r { fill: #ff4d4d; stroke: none; } .mb-heli .nav-g { fill: #57e389; stroke: none; } .mb-heli .nav-w { fill: #fff; stroke: none; filter: drop-shadow(0 0 3px #fff); }
+/* Guest pass list: active, expired and revoked (v0.0.30) */
+.gp-list li.gp-h { border: 0; padding: 10px 2px 2px; animation: none; }
+.gp-list li.gp-h b { font: 400 11.5px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: #d4ae52; font-weight: 400; }
+.gp-list li.gp-h span { flex: 1; }
+.gp-st { flex: none !important; min-width: 72px; padding: 1px 6px; border: 1px solid currentColor; font: 400 10.5px var(--mono) !important; letter-spacing: .14em !important; text-transform: uppercase; text-align: center; }
+.gp-list li.ok .gp-st { color: #7fbf8a; } .gp-list li.ex .gp-st { color: var(--dim); } .gp-list li.rv .gp-st { color: #e0453f; }
+.gp-list li.ex { opacity: .7; } .gp-list li.rv { opacity: .6; }

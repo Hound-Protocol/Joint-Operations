@@ -2,6 +2,12 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.30 · Rules & Standards · 2026-10-23
+- **Completes v0.0.29:** the last part of v0.0.29 was left out of its release by a timing problem in our merge script. It is in this release: claiming from contract cards, all work on the board, the How to Contribute guide and Handbook previews, the new clearance colours, the clearance cards for visitors, and the slim update strip. The merge script now waits until GitHub has registered the latest commit before merging.
+- **Handbook:** the Policies folder now reads **Rules & Standards**.
+- **Guest passes for every LV7:** any organization owner can grant and manage passes, not only the first owner. The Profile lists passes as **Active**, **Expired** and **Revoked**, with who granted each; expired and revoked ones can be deleted one by one or with **Delete expired**. Records are kept 30 days after a pass ends. Needs the new relay code.
+- **Roadmap:** this release's base detail is navigation lights on the helicopter: red and green steady, a white tail light blinking.
+
 ## v0.0.29 · Roster and bans · 2026-10-23
 - **Handbook folders:** guides, policies and procedures sit in three colour-coded kraft folders. Click one and its sheets fly out and lay themselves down; click another and they fly back into their folder before the next one opens. Filters and search still work across all three.
 - **Sign-in window:** signing in opens a centered window in the site's own design that explains the three steps, waits for GitHub, and says **Access granted** before your keycard rises. GitHub itself opens in a small window centered over the site (GitHub cannot be shown inside another page).
@@ -27,7 +33,7 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 
 ## v0.0.27 · Guest pass · 2026-10-23
 - **Owner card (LV7) from GitHub:** if GitHub confirms you own the Hound-Protocol organization, your Profile shows an Owner card, LV7, "Confirmed by GitHub". It needs the sign-in app's read-only Members permission ([setup](docs/signin.md#5-owner-card-lv7-from-github)). No file can fake it.
-- **Guest passes:** the owner (only the owner, checked by GitHub through the relay) can **Grant Guest Pass** on the Profile: a link that gives LV3 (Staff) access for 24 hours, no account needed. The guest gets a gold guest card with the time left; the relay signs and checks the pass and reads the Staff documents for them. A pass cannot be extended ([setup](docs/signin.md#6-guest-passes-owner-only)).
+- **Guest passes:** the owner (only the owner, checked by GitHub through the relay) can **Grant Guest Pass** on the Profile: a link that gives LV3 (Staff) access for 24 hours, no account needed. The guest gets a gold guest card with the time left; the relay signs and checks the pass and reads the Staff documents for them. A pass cannot be extended ([setup](docs/signin.md#6-guest-passes-lv7-only)).
 - **Update notice:** when a new release goes live while the site is open, a small notice slides in at the top and offers to reload.
 - **Search by name or content:** a switch under the search in the Library and the Handbook. Name (the default) searches numbers and titles; Content searches what the documents say.
 - **Fix:** opening a guide from the Handbook no longer highlights words, and one- or two-letter words are never highlighted.

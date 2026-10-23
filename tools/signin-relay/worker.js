@@ -14,7 +14,7 @@
      list of live passes (number and expiry only) and the revoked ones, each deleted automatically when the pass expires.
      Bans (LV0): BANNED_GITHUB_IDS (secret), the banned GitHub account numbers separated by commas. A banned account is
      refused at sign-in and never receives a token. The list is private; see docs/guides/HP-SOP-012-bans.md. */
-const PASS_HOURS = 24;
+const PASS_HOURS = 24, KEEP_DAYS = 30;
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -101,34 +101,57 @@ async function claims(req, env, url) {
 async function guest(req, env, url) {
   const site = env.SITE_ORIGIN, auth = req.headers.get("Authorization") || "";
   if (!env.GUEST_SECRET || !env.OWNER_GITHUB_ID) return json(site, { error: "Guest passes are not set up on the relay yet (code: guest_off)." }, 503);
-  /* Owner actions. GitHub tells us who holds the token; only the owner's account ID may grant, list or revoke. */
-  if (/^\/guest\/(grant|list|revoke)$/.test(url.pathname)) {
+  /* LV7 actions. GitHub tells us who holds the token: the owner's account, or any owner of the organization. */
+  if (/^\/guest\/(grant|list|revoke|delete|purge)$/.test(url.pathname)) {
     const m = /^Bearer\s+(\S+)$/.exec(auth);
     if (!m) return json(site, { error: "Sign in first." }, 401);
     const u = await fetch("https://api.github.com/user", { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
     if (!u.ok) return json(site, { error: "GitHub did not recognise your sign-in. Sign in again." }, 401);
     const who = await u.json();
-    if (String(who.id) !== String(env.OWNER_GITHUB_ID)) return json(site, { error: "Only the owner can manage guest passes." }, 403);
+    let lv7 = String(who.id) === String(env.OWNER_GITHUB_ID);
+    if (!lv7) {
+      const org = env.GITHUB_ORG || "Hound-Protocol";
+      const mm = await fetch("https://api.github.com/user/memberships/orgs/" + org, { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
+      const ms = mm.ok ? await mm.json() : null;
+      lv7 = !!(ms && ms.state === "active" && ms.role === "admin");
+    }
+    if (!lv7) return json(site, { error: "Only LV7 can manage guest passes." }, 403);
     const kv = env.HP_KV || env.GUEST_KV;
     if (url.pathname === "/guest/grant" && req.method === "POST") {
       const exp = Date.now() + PASS_HOURS * 3600 * 1000, n = crypto.randomUUID().slice(0, 8);
       const body = b64u(new TextEncoder().encode(JSON.stringify({ v: 1, lvl: 3, exp, n })));
-      if (kv) await kv.put("pass:" + n, JSON.stringify({ n, exp, at: Date.now() }), { expiration: Math.ceil(exp / 1000) + 60 });
+      /* The record stays 30 days after the pass expires, so LV7 can see expired passes and delete them */
+      if (kv) await kv.put("pass:" + n, JSON.stringify({ n, exp, at: Date.now(), by: who.login }), { expiration: Math.ceil(exp / 1000) + KEEP_DAYS * 86400 });
       return json(site, { pass: body + "." + await hmac(env.GUEST_SECRET, body), exp, n, hours: PASS_HOURS, revocable: !!kv });
     }
     if (!kv) return json(site, { error: "Revoking needs the GUEST_KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
     if (url.pathname === "/guest/list") {
       const keys = (await kv.list({ prefix: "pass:" })).keys;
       const out = [];
-      for (const k of keys) { const v = await kv.get(k.name, "json"); if (v && v.exp > Date.now()) out.push(Object.assign(v, { revoked: !!(await kv.get("revoked:" + v.n)) })); }
-      return json(site, { passes: out.sort((a, b) => b.at - a.at) });
+      for (const k of keys) { const v = await kv.get(k.name, "json"); if (v) out.push(Object.assign(v, { revoked: !!(await kv.get("revoked:" + v.n)), expired: v.exp <= Date.now() })); }
+      return json(site, { passes: out.sort((a, b) => b.at - a.at), keepDays: KEEP_DAYS });
     }
     if (url.pathname === "/guest/revoke" && req.method === "POST") {
       const n = String(url.searchParams.get("n") || "");
       if (!/^[0-9a-f-]{8}$/.test(n)) return json(site, { error: "Bad pass number." }, 400);
       const v = await kv.get("pass:" + n, "json");
-      await kv.put("revoked:" + n, "1", { expiration: Math.ceil(((v && v.exp) || Date.now() + PASS_HOURS * 3600 * 1000) / 1000) + 60 });
+      await kv.put("revoked:" + n, "1", { expiration: Math.ceil(((v && v.exp) || Date.now() + PASS_HOURS * 3600 * 1000) / 1000) + KEEP_DAYS * 86400 });
       return json(site, { ok: true, n });
+    }
+    /* Delete the record of one expired or revoked pass, or of every expired one. A live pass must be revoked first. */
+    if (url.pathname === "/guest/delete" && req.method === "POST") {
+      const n = String(url.searchParams.get("n") || "");
+      if (!/^[0-9a-f-]{8}$/.test(n)) return json(site, { error: "Bad pass number." }, 400);
+      const v = await kv.get("pass:" + n, "json"), rv = await kv.get("revoked:" + n);
+      if (v && v.exp > Date.now() && !rv) return json(site, { error: "This pass is still live. Revoke it first." }, 409);
+      await kv.delete("pass:" + n);
+      if (!v || v.exp <= Date.now()) await kv.delete("revoked:" + n);
+      return json(site, { ok: true, n });
+    }
+    if (url.pathname === "/guest/purge" && req.method === "POST") {
+      let gone = 0;
+      for (const k of (await kv.list({ prefix: "pass:" })).keys) { const v = await kv.get(k.name, "json"); if (!v || v.exp <= Date.now()) { await kv.delete(k.name); if (v) await kv.delete("revoked:" + v.n); gone++; } }
+      return json(site, { ok: true, deleted: gone });
     }
     return json(site, { error: "Unknown request." }, 404);
   }
