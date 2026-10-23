@@ -141,7 +141,7 @@
     },
     {
       "id": "adr-0012",
-      "title": "0012 Shared Alert",
+      "title": "0012 One Shared Detection Status",
       "group": "Decisions",
       "path": "docs/decisions/0012-shared-alert.md"
     },

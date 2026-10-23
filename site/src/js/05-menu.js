@@ -73,7 +73,7 @@
         '<h2 class="s-title">' + esc(p.title) + "</h2>" +
         '<p class="s-text">' + esc(p.text) + "</p>" +
         ((p.facts || []).length ? '<dl class="s-facts">' + p.facts.map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>"; }).join("") + "</dl>" : "") +
-        (p.link ? '<a class="s-link" href="' + esc(p.link[1]) + '">' + esc(p.link[0]) + ' <span aria-hidden="true">→</span></a>' : "");
+        (p.link ? '<a class="s-link" href="' + esc(p.link[1]) + '"' + (/^https?:/.test(p.link[1]) ? ' target="_blank" rel="noopener noreferrer"' : "") + ">" + esc(p.link[0]) + ' <span aria-hidden="true">' + (/^https?:/.test(p.link[1]) ? "↗" : "→") + "</span></a>" : "");
     });
     // Hound Protocol panel: live Discord count when the widget is available
     loadDiscord().then(function (d) {

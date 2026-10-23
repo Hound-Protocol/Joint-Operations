@@ -41,7 +41,6 @@
           sw("sound", "Interface sounds", "Short, quiet tones when selecting and opening sections") +
           '<div class="label">Reading</div>' +
           '<div class="orow"><span>Text size<small>Applies to the whole site</small></span>' + seg("osz", opts.size, [["1", "Normal"], ["1.1", "Large"], ["1.2", "Larger"]], "Text size") + "</div>" +
-          '<div class="orow"><span>Docs view<small>How the Docs section opens</small></span>' + seg("odm", docsMode(), [["cabinet", "Dossier cabinet"], ["classic", "Classic list"]], "Docs view") + "</div>" +
         "</section>" +
         '<section class="ogroup"><div class="label">Data</div>' +
           '<div class="orow"><span>GitHub data<small>Releases and contracts are cached for ' + (cfg.cacheMinutes || 10) + ' minutes</small></span><button class="btn small" id="oclr">Refresh now</button></div>' +
@@ -71,7 +70,6 @@
       });
     }
     segBind("osz", function (val) { opts.size = val; changed("Text size changed"); });
-    segBind("odm", function (val) { setDocsMode(val); status("Docs open in " + (val === "classic" ? "the classic list" : "the dossier cabinet")); });
     $("#oclr").addEventListener("click", function () { JO.refresh(); status("GitHub data cleared · reloading"); });
-    $("#orst").addEventListener("click", function () { opts = Object.assign({}, DEFAULT_OPTS); store.set(OPT_KEY, opts); applyOpts(); setDocsMode("cabinet"); viewOptions(); status("Settings reset"); });
+    $("#orst").addEventListener("click", function () { opts = Object.assign({}, DEFAULT_OPTS); store.set(OPT_KEY, opts); applyOpts(); viewOptions(); status("Settings reset"); });
   }

@@ -69,14 +69,17 @@ async def check(browser, name, size):
         failures.append("docs: cabinet did not open the plan file")
     if len(await page.inner_text("#docBody")) < 200:
         failures.append("docs: case file is empty")
-    await page.fill("#cq", "keycard"); await page.wait_for_timeout(1500)
+    await page.fill("#cq", "pol 9"); await page.wait_for_timeout(1800)
+    first = await page.locator(".cab-hits a").first.inner_text() if await page.locator(".cab-hits a").count() else ""
+    if "HP-POL-009" not in first:
+        failures.append("docs: search by file number did not rank HP-POL-009 first")
+    await page.fill("#cq", "keycard signing"); await page.wait_for_timeout(800)
     if not await page.locator(".cab-hits a").count():
         failures.append("docs: full-text search found nothing")
+    await page.press("#cq", "Enter"); await page.wait_for_timeout(1500)
+    if not await page.locator("#docBody mark.hl").count():
+        failures.append("docs: opening a result did not highlight the match")
     await page.fill("#cq", "")
-    await page.evaluate("document.querySelector('#toClassic').click()"); await page.wait_for_timeout(900)
-    if len(await page.inner_text("#docBody")) < 200:
-        failures.append("docs: classic view did not render")
-    await page.evaluate("document.querySelector('#toCabinet').click()"); await page.wait_for_timeout(300)
     await page.goto(BASE + "#/options"); await page.wait_for_timeout(500)
     await page.click('[data-opt="grid"]')
     if "no-grid" not in (await page.evaluate("document.body.className")):

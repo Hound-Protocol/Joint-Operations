@@ -19,7 +19,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Brand: Hound Protocol and Joint Operations logos, Hound Protocol website
 - [x] Roadmap shown as a base under construction, one platform per phase, with cargo operations
 - [x] Keycards and Hound ID proof with SSH signing keys (ADR 0017)
-- [x] Docs as a dossier cabinet with full-text search
+- [x] Docs as a dossier cabinet: paper per document class, ranked full-text search
 - [ ] Sign-in with GitHub and clearance-based documents in a private repository (ADR 0017)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)
