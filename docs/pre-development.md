@@ -1,6 +1,6 @@
 # Pre-development plan
 
-Status: DRAFT · Date: 2026-10-21 · Owner: technical lead, approved by project lead
+Status: Current · Updated: 2026-10-23 · Owner: project lead
 
 This is the master plan for everything that must be in place **before** development of version 0.1 starts. It links to the detailed documents rather than repeating them.
 
@@ -8,18 +8,18 @@ This is the master plan for everything that must be in place **before** developm
 | Area | State |
 |---|---|
 | Goal and scope | Set: multiplayer mod bringing online functionality into the single-player world, up to 16 players ([ADR 0001](decisions/0001-multiplayer-scope.md)) |
-| Team and name | Hound Protocol, a community-focused organization; contract-based contribution ([governance](governance.md)) |
-| Repository and website | Built, in review as pull request #1; GitHub Pages ready to enable |
-| Research | Desk research done for engine, modding tools, Steam, Proton, law, funding and prior art ([research index](../research/README.md)) |
+| Team and name | Hound Protocol, a community-focused organization; contract-based contribution, departments and keycards ([governance](governance.md)). Critical seats wait for a playable prototype |
+| Repository and website | Public repository, website live on GitHub Pages, releases published automatically, CI in three browser engines |
+| Research | Desk research done for engine, modding tools, Steam, Proton, law, funding, prior art and the enemy AI ([research index](../research/README.md)) |
 | Architecture | Drafted, with two candidate strategies ([ADR 0002](decisions/0002-integration-strategy.md)) |
-| Legal | License and Steam App ID still open; both are gates |
+| Legal | License chosen (GPL-3.0 with a Steamworks and MGSV permission, [ADR 0005](decisions/0005-license.md)); Steam App ID position still open, a gate |
 | Code | None yet, by design |
 
 ## 2. Gates before development
 Development of 0.1 (Phase 2) starts only when every gate is **closed** or explicitly deferred by the project lead.
 
 ### G1 Legal and license
-- [ ] Choose the license ([ADR 0005](decisions/0005-license.md)); replace the LICENSE placeholder with the full text
+- [x] Choose the license ([ADR 0005](decisions/0005-license.md)); replace the LICENSE placeholder with the full text
 - [ ] Record the Steam App ID position in `legal.md` (using the game's own App ID from inside the process; see `research/steam-networking.md`)
 - [ ] Optional but recommended: ask Valve support how in-process mods may use a game's Steam networking
 - [x] Decide funding: **no donations before 0.1** ([ADR 0010](decisions/0010-funding.md)); later through a fiscal host ([funding research](../research/funding-and-distribution.md))
@@ -27,7 +27,7 @@ Development of 0.1 (Phase 2) starts only when every gate is **closed** or explic
 - [ ] Confirm the repository stays public (it is public now; docs no longer assume private)
 
 ### G2 People and governance
-- [ ] At least two holders for each critical seat: GitHub owner, Discord admin, release signer ([governance](governance.md))
+- [ ] At least two holders for each critical seat: GitHub owner, Discord admin, release signer ([governance](governance.md)). **Deferred:** critical seats are filled once there is a playable prototype (project lead, 2026-10-23); until then the project lead holds them
 - [ ] A **human** technical lead who can approve merges and releases (Claude is an AI agent, a tool, and cannot hold accounts or accountability)
 - [ ] Minimum crew to start Phase 1: one reverse engineer (C++, x64), one networking developer, one Windows tester, one Linux and Proton tester
 - [ ] Code of conduct and security policy adopted (`CODE_OF_CONDUCT.md`, `SECURITY.md`)
@@ -56,8 +56,8 @@ All items in the [Phase 1 research plan](phase1-research-plan.md). The ones that
 ## 3. Sequence
 Steps in order. Steps on the same line can run in parallel.
 
-1. **Now:** merge the pull request, enable Pages, apply repository settings (G5). Decide license and funding stance (G1).
-2. **Recruit:** open Discord, publish the recruiting post, fill the critical seats (G2).
+1. **Done:** repository public, Pages live, license and funding stance decided (G1, G5). Still open: branch protection (G5).
+2. **Recruit:** open Discord and publish the recruiting post (G2). Critical seats wait for a playable prototype.
 3. **Environment:** pin the build, document both rigs, set up test accounts (G3).
 4. **Phase 1 research:** R1, R10, R13 first; then R2, R7, R8, R12 in parallel; then R3, R4, R5, R6, R9.
 5. **Decide:** close ADRs 0002 to 0005 based on the results. Update architecture.

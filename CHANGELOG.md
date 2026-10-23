@@ -2,6 +2,14 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.21 · Polish pass · 2026-10-23
+- **Documentation:** Guides and Docs are merged into one Documentation section with two zones: the **Library** (plans, decisions, research, technical, community, legal) and the **Handbook** (guides, policies and procedures as printable A4 sheets). Search covers both and opens handbook results in the Handbook with the words highlighted. The Guides tab is gone; old links still work.
+- **Critical seats** (technical lead, second GitHub owner, Discord admins, moderators, release signers) are filled once there is a playable prototype. The roadmap moves them to Phase 2, the Team page shows them as "After prototype" and they no longer count as open positions.
+- **Wording:** clearer section descriptions; "Contractor grades" everywhere (not ranks); the shared alert is now called the shared detection status in the sessions guide, contracts and architecture; the pre-development plan is up to date.
+- **Roadmap:** the base fits the screen height and its labels scale with it; phones get the stacked layout back (a broken style had put the panel over the map).
+- **Fixes:** dev log no longer lists release merges twice; Verify hides the empty Records heading; the profile keycard is compact on phones; menu descriptions wrap on phones; Options buttons stay on one line; wide tables scroll inside documents on phones.
+- **Hound Protocol website:** the Joint Operations contract board link is removed from the Join section.
+
 ## v0.0.20 · Paper classes · 2026-10-23
 - **Docs:** each document shows its class (Policy, Procedure, Guide, Decision record, Research, Technical, Community, Project, Legal) instead of "case file", and each class has its own paper: linen for policies, dot grid for procedures, graph paper for guides, ruled paper for decisions, triangle grid for research, millimetre paper for technical, green bars for community, pinstripe for project and a yellow legal pad for legal. Stamps removed.
 - **Search:** every word must match; file numbers ("pol 9", "adr 12") and titles rank first, then headings, then text. Results show the section they come from. Arrow keys and Enter open a result, Esc clears, and the opened page highlights the words and scrolls to the first one. Light stemming ("appeals" finds "appeal").

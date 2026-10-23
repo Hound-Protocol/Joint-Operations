@@ -41,7 +41,7 @@ SUMMARY = {  # one line for the Guides page
     "HP-POL-005": "Community standards, the enforcement ladder, logging and appeals.",
     "HP-POL-006": "Definition of done, release gates and bug severity.",
     "HP-POL-007": "Who decides what: social, technical and organizational authority, open communication and appeals.",
-    "HP-GDE-007": "Hosting, joining from the Session Browser, and how the one shared alert works.",
+    "HP-GDE-007": "Hosting, joining from the Session Browser, and how the shared detection status works.",
     "HP-GDE-008": "Joining the Discord, the channels, how roles and ranks are given, and the rules in short.",
     "HP-GDE-009": "Grades E to S++ per field, signed contributor records, and checking a Hound ID.",
     "HP-GDE-010": "Two-factor, passkeys, signed commits and Discord security, step by step.",

@@ -31,7 +31,7 @@ Decided by the Phase 1 spike R12 ([ADR 0002](decisions/0002-integration-strategy
 ## 4. Session model
 - Slot 1 is the host, who runs the session: helicopter seat, Aerial Command Center, briefings, radio calls, cutscenes and Mother Base command all belong to the host. Slots 2 to 16 are clients, each playing a staff member from the host's Mother Base roster.
 - Each player owns their own movement and camera. The host owns AI, mission state, world objects, time and weather.
-- **One shared alert** ([ADR 0012](decisions/0012-shared-alert.md)): enemies target players individually by distance and detection, but the session has a single alert status. Players join it as hidden, searched for or detected.
+- **One shared detection status** ([ADR 0012](decisions/0012-shared-alert.md)): the session is Hidden, Searching or Detected. Players who are spotted join the status and are hunted; everyone else stays hidden until they are spotted too.
 - Late joiners receive a full snapshot, then updates.
 - If the host leaves, the session ends for 0.1. Host migration comes later.
 - Joint Operations uses its own save files, separate from the player's normal saves.

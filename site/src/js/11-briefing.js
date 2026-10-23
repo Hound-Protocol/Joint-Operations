@@ -14,7 +14,7 @@
       $("#vb").innerHTML = '<div class="bf">' +
         '<section class="bf-sec bf-hero"><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
         (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
-        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Guides</a></div></section>' +
+        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Handbook</a></div></section>' +
         '<section class="bf-sec"><div class="label">How a session works</div>' +
         '<ol class="bf-steps">' + (b.how || []).map(function (h, k) {
           return '<li style="--k:' + k + '"><span class="st-n">' + (ICONS[h[0]] || k + 1) + '</span><div><h4>' + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div></li>";

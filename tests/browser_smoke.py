@@ -30,8 +30,8 @@ async def check(browser, name, size):
     page.on("pageerror", lambda e: errors.append(str(e)))
     await page.goto(BASE)
     await page.wait_for_timeout(1200)
-    if await page.locator("#menu a").count() != 9:
-        failures.append("menu does not have 9 items")
+    if await page.locator("#menu a").count() != 8:
+        failures.append("menu does not have 8 items")
     for v in VIEWS:
         await page.goto(BASE + "#/" + v)
         await page.wait_for_timeout(900)
@@ -77,7 +77,7 @@ async def check(browser, name, size):
     if not await page.locator(".cab-hits a").count():
         failures.append("docs: full-text search found nothing")
     await page.press("#cq", "Enter"); await page.wait_for_timeout(1500)
-    if not await page.locator("#docBody mark.hl").count():
+    if not await page.locator("#vb mark.hl").count():
         failures.append("docs: opening a result did not highlight the match")
     await page.fill("#cq", "")
     await page.goto(BASE + "#/options"); await page.wait_for_timeout(500)

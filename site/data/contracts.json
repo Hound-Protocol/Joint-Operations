@@ -163,7 +163,7 @@
    "deliverable": "research/state-inventory.md",
    "acceptance": [
     "Table of state items: owner (host or client), update rate, size estimate, priority",
-    "Covers players, enemies, vehicles, world objects, mission flags, time and weather, plus the shared alert status and who has joined it (ADR 0012)",
+    "Covers players, enemies, vehicles, world objects, mission flags, time and weather, plus the shared detection status and who has joined it (ADR 0012)",
     "Bandwidth estimate per player at 16 players",
     "Reviewed by the networking module owner"
    ],
@@ -456,12 +456,12 @@
   },
   {
    "id": "C23",
-   "title": "HUD design for the shared alert",
+   "title": "HUD design for the detection status",
    "module": "lobby",
    "difficulty": "medium",
    "skills": "UI design, MGSV",
    "depends": [],
-   "goal": "Design how each player sees the one shared alert status and whether they are part of it.",
+   "goal": "Design how each player sees the one shared detection status and whether they are part of it.",
    "deliverable": "Mockups (vector or hand-built, no generative AI art) and notes in docs/design/alert-hud.md",
    "acceptance": [
     "Shows Hidden, Searched for and Detected, and which players are in the alert",
@@ -566,7 +566,7 @@
    "acceptance": [
     "Describes how alert phases change and what triggers them",
     "Finds where enemy perception picks its target",
-    "States whether per-player targeting with one shared alert (ADR 0012) looks possible, with evidence",
+    "States whether per-player targeting with one shared detection status (ADR 0012) looks possible, with evidence",
     "Clean-room: notes in our own words, no game files"
    ],
    "refs": [

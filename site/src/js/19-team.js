@@ -45,9 +45,9 @@
   function teamPositions(list) {
     var depts = [];
     list.forEach(function (p) { if (depts.indexOf(p.dept) < 0) depts.push(p.dept); });
-    var open = list.reduce(function (n, p) { return n + (p.kind === "seat" ? Math.max(0, p.need - p.holders.length) : p.kind === "open" ? 1 : 0); }, 0);
+    var open = list.reduce(function (n, p) { return n + (p.kind === "seat" && !p.after ? Math.max(0, p.need - p.holders.length) : p.kind === "open" ? 1 : 0); }, 0);
     return '<section class="bf-sec"><div class="label">Positions</div>' +
-      '<p class="sub">' + plural(open, "position") + " open now. Seats have a set number of holders; open roles take anyone who wants to help. Ask on Discord or see <a href=\"#/guides/hp-gde-008\">how roles are given</a>.</p>" +
+      '<p class="sub">' + plural(open, "position") + " open now. Seats have a set number of holders; critical seats are filled once there is a playable prototype. Open roles take anyone who wants to help. Ask on Discord or see <a href=\"#/guides/hp-gde-008\">how roles are given</a>.</p>" +
       '<div class="posgrid">' + depts.map(function (d) {
         var rows = list.filter(function (p) { return p.dept === d; });
         return '<section class="posdept"><header><h3>' + esc(d) + "</h3><small>" + plural(rows.length, "position") + "</small></header>" + rows.map(function (p) {
@@ -55,7 +55,7 @@
           if (p.kind === "seat") {
             var free = Math.max(0, p.need - p.holders.length);
             for (var i = 0; i < p.need; i++) pips += '<i class="' + (i < p.holders.length ? "on" : "") + '"></i>';
-            state = free ? '<span class="pill warn">' + free + " open</span>" : '<span class="pill ok">Filled</span>';
+            state = !free ? '<span class="pill ok">Filled</span>' : p.after === "prototype" ? '<span class="pill" title="Critical seats are filled once there is a playable prototype">After prototype</span>' : '<span class="pill warn">' + free + " open</span>";
           } else state = p.kind === "open" ? '<span class="pill warn">Open</span>' : '<span class="pill">After 0.1</span>';
           return '<div class="pos k-' + esc(p.kind) + '"><div class="pos-main"><b>' + esc(p.title) + "</b><span>" + esc(p.about) + "</span></div>" +
             '<div class="pos-who">' + (p.holders.length ? esc(p.holders.join(", ")) : p.kind === "seat" ? "Vacant" : "Anyone") + (pips ? '<span class="pips" aria-label="' + p.holders.length + " of " + p.need + ' filled">' + pips + "</span>" : "") + "</div>" + state + "</div>";

@@ -30,7 +30,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | C20 | Steam interfaces from inside the game (rig test) | net | 🟡 Medium · Core | C04 | planned |
 | C21 | Join links: Steam lobby links and launch arguments | launcher | 🟡 Medium | C20 | planned |
 | C22 | Website accessibility pass | web | 🟢 Easy | — | planned |
-| C23 | HUD design for the shared alert | lobby | 🟡 Medium | — | planned |
+| C23 | HUD design for the detection status | lobby | 🟡 Medium | — | planned |
 | C24 | Session Browser against a mock registry | web | 🟡 Medium | — | planned |
 | C25 | Player FAQ | docs | 🟢 Easy | — | planned |
 | C26 | Engine terms glossary | docs | 🟡 Medium | C03 | planned |
@@ -158,7 +158,7 @@ Module: session · Difficulty: 🟡 Medium · Skills: Netcode, research · Depen
 
 **Acceptance criteria**
 - Table of state items: owner (host or client), update rate, size estimate, priority
-- Covers players, enemies, vehicles, world objects, mission flags, time and weather, plus the shared alert status and who has joined it (ADR 0012)
+- Covers players, enemies, vehicles, world objects, mission flags, time and weather, plus the shared detection status and who has joined it (ADR 0012)
 - Bandwidth estimate per player at 16 players
 - Reviewed by the networking module owner
 
@@ -380,10 +380,10 @@ Module: web · Difficulty: 🟢 Easy · Skills: HTML, CSS, screen readers
 Background: [brand](brand.md)
 
 ## C23
-**HUD design for the shared alert**  
+**HUD design for the detection status**  
 Module: lobby · Difficulty: 🟡 Medium · Skills: UI design, MGSV
 
-**Goal.** Design how each player sees the one shared alert status and whether they are part of it.
+**Goal.** Design how each player sees the one shared detection status and whether they are part of it.
 
 **Deliverable.** Mockups (vector or hand-built, no generative AI art) and notes in docs/design/alert-hud.md
 
@@ -467,7 +467,7 @@ Module: hooks · Difficulty: 🔴 Hard · Skills: Reverse engineering, Lua · De
 **Acceptance criteria**
 - Describes how alert phases change and what triggers them
 - Finds where enemy perception picks its target
-- States whether per-player targeting with one shared alert (ADR 0012) looks possible, with evidence
+- States whether per-player targeting with one shared detection status (ADR 0012) looks possible, with evidence
 - Clean-room: notes in our own words, no game files
 
 Background: [r-ai](../research/ai-system.md), [adr-0012](decisions/0012-shared-alert.md), [R3](phase1-research-plan.md), [R4](phase1-research-plan.md)

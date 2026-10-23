@@ -315,13 +315,12 @@
     { id: "briefing", title: "About Joint Operations", desc: "What it is, how it works, and where it stands", tab: "About" },
     { id: "roadmap", title: "Roadmap", desc: "Where we are and what comes next", tab: "Roadmap", tabOnly: true },
     { id: "download", title: "Download", desc: "Get Joint Operations for Windows or Linux", tab: "Download" },
-    { id: "sessions", title: "Session Browser", desc: "Browse, Create & Join active Joint Operations", tab: "Sessions" },
-    { id: "contribute", title: "Contribute", desc: "Take part in development & Become a Hound Member", tab: "Contribute" },
+    { id: "sessions", title: "Session Browser", desc: "Find, host and join Joint Operations sessions", tab: "Sessions" },
+    { id: "contribute", title: "Contribute", desc: "Take a contract and help build Joint Operations", tab: "Contribute" },
     { id: "team", title: "Team", desc: "Chain of command and the people behind Hound Protocol", tab: "Team", tabOnly: true },
-    { id: "mods", title: "Mods", desc: "Upload, Download & Browse Re-Engineered mods curated to function with Joint Operations", tab: "Mods" },
+    { id: "mods", title: "Mods", desc: "Mods tested to work with Joint Operations", tab: "Mods" },
     { id: "devlog", title: "Dev Log", desc: "News, decisions and releases", tab: "Dev Log" },
-    { id: "guides", title: "Guides", desc: "How to play, help, test and run the project", tab: "Guides" },
-    { id: "docs", title: "Docs", desc: "Plans, decisions and research", tab: "Docs" },
+    { id: "docs", title: "Documentation", desc: "The handbook, plans, decisions and research", tab: "Docs" },
     { id: "options", title: "Options", desc: "Sound, motion and display settings", tab: "Options" }
   ];
   /* Menu icons: simple line glyphs drawn for this site, on a 24 x 24 grid */
@@ -507,10 +506,12 @@
 
   /* ---------------- Views ---------------- */
   var currentView = "";
+  /* The handbook (guides) is a zone of Documentation, so it lights the Docs tab */
+  function tabOf(v) { return v === "guides" ? "docs" : v; }
   function shell(kicker, title, body) {
-    var now = ITEMS.filter(function (it) { return it.id === currentView; })[0];
+    var cv = tabOf(currentView), now = ITEMS.filter(function (it) { return it.id === cv; })[0];
     var tabs = '<div class="secwrap"><nav class="secbar" aria-label="Sections">' + ITEMS.map(function (it) {
-      return '<a href="#/' + it.id + '" class="tab-' + it.id + '" data-desc="' + esc(it.desc) + '"' + (it.id === currentView ? ' aria-current="page"' : "") + ">" + menuIcon(it.id) + "<span>" + esc(it.tab) + "</span></a>";
+      return '<a href="#/' + it.id + '" class="tab-' + it.id + '" data-desc="' + esc(it.desc) + '"' + (it.id === cv ? ' aria-current="page"' : "") + ">" + menuIcon(it.id) + "<span>" + esc(it.tab) + "</span></a>";
     }).join("") + '</nav><div class="secdesc" id="secDesc" aria-hidden="true">' + esc(now ? now.desc : "") + "</div></div>";
     return tabs + '<div class="vh"><div><span class="kicker">' + esc(kicker) + '</span><h2>' + esc(title) + '</h2></div><a class="btn" href="#/">Menu</a></div><div id="vb">' + body + "</div>";
   }
@@ -525,7 +526,7 @@
     var t = 0;
     function show(a) {
       var d = $("#secDesc"); if (!d) return;
-      var txt = a ? a.getAttribute("data-desc") : ((ITEMS.filter(function (it) { return it.id === currentView; })[0] || {}).desc || "");
+      var txt = a ? a.getAttribute("data-desc") : ((ITEMS.filter(function (it) { return it.id === tabOf(currentView); })[0] || {}).desc || "");
       if (d.textContent === txt) { d.classList.remove("out"); return; }
       d.classList.add("out"); clearTimeout(t);
       t = setTimeout(function () { d.textContent = txt; d.classList.remove("out"); }, opts.motion ? 140 : 0);
@@ -642,7 +643,7 @@
       $("#vb").innerHTML = '<div class="bf">' +
         '<section class="bf-sec bf-hero"><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
         (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
-        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Guides</a></div></section>' +
+        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Handbook</a></div></section>' +
         '<section class="bf-sec"><div class="label">How a session works</div>' +
         '<ol class="bf-steps">' + (b.how || []).map(function (h, k) {
           return '<li style="--k:' + k + '"><span class="st-n">' + (ICONS[h[0]] || k + 1) + '</span><div><h4>' + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div></li>";
@@ -1095,7 +1096,9 @@
   function devlogEntries() {
     var out = [];
     ((data.devlog && data.devlog.entries) || []).forEach(function (e) { out.push(Object.assign({ kind: "note" }, e)); });
-    (data.commits || []).forEach(function (c) { out.push(Object.assign({ kind: "commit" }, c)); });
+    /* Release merges are already listed as releases, so their commits are left out */
+    var rel = (data.releases || []).map(function (r) { return r.tag_name; });
+    (data.commits || []).forEach(function (c) { var m = /^Release (v[\d.]+)/.exec(c.title || ""); if (m && rel.indexOf(m[1]) > -1) return; out.push(Object.assign({ kind: "commit" }, c)); });
     (data.releases || []).forEach(function (r) {
       out.push({ kind: "release", tag: isPlayable(r) ? "Release" : "Foundation", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url, body: plainExcerpt(r.body, 260), ver: r.tag_name });
     });
@@ -1395,7 +1398,7 @@
     var ops = tallyGrades(items);
     var opt = function (val, cur, txt) { return '<option value="' + val + '"' + (cur === val ? " selected" : "") + ">" + txt + "</option>"; };
     $("#vb").innerHTML =
-      '<div class="conbar"><div class="tabs" role="tablist">' + [["board", "Contract board"], ["ranks", "Contractor ranks"]].map(function (t) {
+      '<div class="conbar"><div class="tabs" role="tablist">' + [["board", "Contract board"], ["ranks", "Contractor grades"]].map(function (t) {
         return '<button role="tab" data-tab="' + t[0] + '" aria-selected="' + (conTab === t[0]) + '">' + t[1] + "</button>";
       }).join("") + "</div>" +
       '<div class="howbox"><button class="btn howbtn' + (conTab === "how" ? " on" : "") + '" data-tab="how" aria-pressed="' + (conTab === "how") + '">How it works</button><small>Discover how the contribution system works</small></div>' +
@@ -1443,7 +1446,7 @@
         '<div class="tw"><table><tr><th>Difficulty</th><th>What makes it this hard</th></tr>' + DIFF_ORDER.map(function (k) { return '<tr><td><span class="pill diff ' + k + '">' + DIFF[k][0] + "</span></td><td>" + DIFF[k][2] + "</td></tr>"; }).join("") +
         '<tr><td><span class="pill diff core">Core</span></td><td>On the 0.1 critical path, at any difficulty. Reserved for the Development Department until 0.1.</td></tr></table></div>' +
         '<div class="label">Contractors</div>' +
-        (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Rank</th>' + FIELDS.map(function (f) { return "<th>" + esc(f[1]) + "</th>"; }).join("") + "</tr>" + ops.map(function (u) {
+        (ops.length ? '<div class="tw"><table><tr><th>Contractor</th><th>Contracts</th><th>Grade</th>' + FIELDS.map(function (f) { return "<th>" + esc(f[1]) + "</th>"; }).join("") + "</tr>" + ops.map(function (u) {
           return '<tr><td><a href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer">' + esc(u.login) + '</a></td><td class="num">' + u.n + "</td><td><b>" + esc(u.best ? u.best[0] : "–") + "</b></td>" +
             FIELDS.map(function (f) { var g = gradeFor(u.f[f[0]] || 0); return '<td class="num">' + (g ? esc(g[0]) : "–") + "</td>"; }).join("") + "</tr>";
         }).join("") + "</table></div>" : '<div class="empty">No completed contracts yet<small>Contractors appear here when contracts are closed on GitHub.</small></div>')
@@ -1512,6 +1515,18 @@
      The Docs section is the dossier cabinet (17b-cabinet.js). loadDoc reads a document from the bundled copy,
      the deployed site or GitHub. */
   function viewDocs(id) { return viewCabinet(id); }
+  /* Documentation has two zones: the Library (plans, decisions, research…) and the Handbook (guides, policies, procedures) */
+  function docZones(active) {
+    var all = (data.docs && data.docs.docs) || [], hb = ((data.guides && data.guides.guides) || []).length || all.filter(function (d) { return d.group === "Handbook"; }).length;
+    var lib = all.filter(function (d) { return d.group !== "Handbook"; }).length;
+    function z(id, href, name, sub) {
+      return '<a class="zone z-' + id + (active === id ? " on" : "") + '" href="' + href + '"' + (active === id ? ' aria-current="page"' : "") + '><span class="z-ico" aria-hidden="true"></span><b>' + name + "</b><small>" + sub + "</small></a>";
+    }
+    return '<nav class="zones" aria-label="Documentation zones">' +
+      z("lib", "#/docs", "Library", (lib ? lib + " documents · " : "") + "plans, decisions, research, technical and legal") +
+      z("hb", "#/guides", "Handbook", (hb ? hb + " documents · " : "") + "guides, policies and procedures, printable on A4") + "</nav>";
+  }
+  function addZones(active) { var vh = $(".vh"); if (vh && !$(".zones")) vh.insertAdjacentHTML("afterend", docZones(active)); }
   function loadDoc(doc) {
     if (docCache[doc.path]) return Promise.resolve(docCache[doc.path]);
     if (EMBED && EMBED.content && EMBED.content[doc.path] != null) return Promise.resolve(docCache[doc.path] = EMBED.content[doc.path]);
@@ -1553,12 +1568,16 @@
 
   function viewCabinet(id) {
     var v = $("#view");
-    if (!$("#cab")) v.innerHTML = shell("Library", "Docs", loading("Opening the cabinet"));
-    loadLocal("docs").then(function (man) {
+    if (!$("#cab")) { v.innerHTML = shell("Documentation", "Library", loading("Opening the cabinet")); addZones("lib"); }
+    Promise.all([loadLocal("docs"), loadLocal("guides")]).then(function (res) {
       if (currentView !== "docs") return;
-      var docs = (man && man.docs) || [];
+      var man = res[0], all = (man && man.docs) || [], docs = all;
+      var zn = $(".zones"); if (zn) zn.outerHTML = docZones("lib");
       if (!docs.length) { $("#vb").innerHTML = '<div class="empty">No documents<small>data/docs.json could not be loaded.</small></div>'; return; }
-      var doc = docs.filter(function (d) { return d.id === id; })[0] || docs[0];
+      var doc = docs.filter(function (d) { return d.id === id; })[0];
+      /* Handbook documents live in the Handbook zone */
+      if (doc && doc.group === "Handbook") { location.replace("#/guides/" + doc.id); return; }
+      doc = doc || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
       if (!(doc.group in cabOpen)) cabOpen[doc.group] = true;
       if (!$("#cab")) {
         $("#vb").innerHTML = '<div class="cab" id="cab"><div class="cab-side">' +
@@ -1595,6 +1614,7 @@
     active = active || (on ? on.getAttribute("data-id") : "");
     var words = cabWords(), by = {};
     docs.forEach(function (d) { (by[d.group] = by[d.group] || []).push(d); });
+    delete by.Handbook;
     var groups = CAB_ORDER.filter(function (g) { return by[g]; }).concat(Object.keys(by).filter(function (g) { return CAB_ORDER.indexOf(g) < 0; }));
     $("#cabDrawers").innerHTML = groups.map(function (g) {
       var gc = cabGroup(g), list = by[g].filter(function (d) { return !words.length || cabTitleHit(words, d, cabCode(d, docs)); });
@@ -1728,7 +1748,7 @@
       function hl(s) { return esc(s).replace(re, function (m) { return "<mark>" + m + "</mark>"; }); }
       out.innerHTML = '<div class="cab-hits"><div class="label">' + plural(res.length, "result") + (res.length > cabRes.length ? " · top " + cabRes.length : "") + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span></div>' +
         (cabRes.length ? cabRes.map(function (h, i) {
-          return '<a href="#/docs/' + esc(h.d.id) + '" data-i="' + i + '" class="' + (i === cabSel ? "on" : "") + '" style="--g:' + cabGroup(h.d.group)[1] + '"><b>' + hl(h.c[0]) + "</b> " + hl(h.c[1]) +
+          return '<a href="' + (h.d.group === "Handbook" ? "#/guides/" : "#/docs/") + esc(h.d.id) + '" data-i="' + i + '" class="' + (i === cabSel ? "on" : "") + '" style="--g:' + cabGroup(h.d.group)[1] + '"><b>' + hl(h.c[0]) + "</b> " + hl(h.c[1]) +
             (h.head ? '<i>§ ' + hl(h.head) + "</i>" : "") + (h.snip ? "<small>" + hl(h.snip) + "</small>" : "") + "</a>";
         }).join("") : '<p class="sub">Nothing matches every word of "' + esc(cabQ.trim()) + '".</p>') + "</div>";
       $$("#cabHits a").forEach(function (a) { a.addEventListener("click", function (ev) { ev.preventDefault(); cabGo(cabRes[+a.getAttribute("data-i")]); }); });
@@ -1738,8 +1758,9 @@
   function cabGo(h) {
     if (!h) return;
     cabHL = cabWords(); cabJump = true;
-    if (location.hash === "#/docs/" + h.d.id) { route(); return; }
-    location.hash = "#/docs/" + h.d.id;
+    var to = (h.d.group === "Handbook" ? "#/guides/" : "#/docs/") + h.d.id;
+    if (location.hash === to) { route(); return; }
+    location.hash = to;
   }
   /* Ctrl+K or / jumps to the search on the Docs page */
   document.addEventListener("keydown", function (e) {
@@ -1872,9 +1893,9 @@
   function teamPositions(list) {
     var depts = [];
     list.forEach(function (p) { if (depts.indexOf(p.dept) < 0) depts.push(p.dept); });
-    var open = list.reduce(function (n, p) { return n + (p.kind === "seat" ? Math.max(0, p.need - p.holders.length) : p.kind === "open" ? 1 : 0); }, 0);
+    var open = list.reduce(function (n, p) { return n + (p.kind === "seat" && !p.after ? Math.max(0, p.need - p.holders.length) : p.kind === "open" ? 1 : 0); }, 0);
     return '<section class="bf-sec"><div class="label">Positions</div>' +
-      '<p class="sub">' + plural(open, "position") + " open now. Seats have a set number of holders; open roles take anyone who wants to help. Ask on Discord or see <a href=\"#/guides/hp-gde-008\">how roles are given</a>.</p>" +
+      '<p class="sub">' + plural(open, "position") + " open now. Seats have a set number of holders; critical seats are filled once there is a playable prototype. Open roles take anyone who wants to help. Ask on Discord or see <a href=\"#/guides/hp-gde-008\">how roles are given</a>.</p>" +
       '<div class="posgrid">' + depts.map(function (d) {
         var rows = list.filter(function (p) { return p.dept === d; });
         return '<section class="posdept"><header><h3>' + esc(d) + "</h3><small>" + plural(rows.length, "position") + "</small></header>" + rows.map(function (p) {
@@ -1882,7 +1903,7 @@
           if (p.kind === "seat") {
             var free = Math.max(0, p.need - p.holders.length);
             for (var i = 0; i < p.need; i++) pips += '<i class="' + (i < p.holders.length ? "on" : "") + '"></i>';
-            state = free ? '<span class="pill warn">' + free + " open</span>" : '<span class="pill ok">Filled</span>';
+            state = !free ? '<span class="pill ok">Filled</span>' : p.after === "prototype" ? '<span class="pill" title="Critical seats are filled once there is a playable prototype">After prototype</span>' : '<span class="pill warn">' + free + " open</span>";
           } else state = p.kind === "open" ? '<span class="pill warn">Open</span>' : '<span class="pill">After 0.1</span>';
           return '<div class="pos k-' + esc(p.kind) + '"><div class="pos-main"><b>' + esc(p.title) + "</b><span>" + esc(p.about) + "</span></div>" +
             '<div class="pos-who">' + (p.holders.length ? esc(p.holders.join(", ")) : p.kind === "seat" ? "Vacant" : "Anyone") + (pips ? '<span class="pips" aria-label="' + p.holders.length + " of " + p.need + ' filled">' + pips + "</span>" : "") + "</div>" + state + "</div>";
@@ -1994,10 +2015,9 @@
         '<div class="label">Contributor wall</div>' +
         (wall.length ? '<div class="wall">' + wall.map(function (u, n) {
           var grade = u.best ? u.best[0] : "–";
-          return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(grade) + "</span><b>" + esc(u.name || u.login) + "</b><small>Rank " + esc(grade) + " · " + u.n + " contract" + (u.n === 1 ? "" : "s") + (tools[u.login] ? " · with " + esc(tools[u.login].join(", ")) : "") + "</small></a>";
+          return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(grade) + "</span><b>" + esc(u.name || u.login) + "</b><small>Grade " + esc(grade) + " · " + u.n + " contract" + (u.n === 1 ? "" : "s") + (tools[u.login] ? " · with " + esc(tools[u.login].join(", ")) : "") + "</small></a>";
         }).join("") + "</div>" : '<div class="empty">No records yet<small>The wall fills as contracts are completed and signed.</small></div>') +
-        '<div class="label">Records</div>' +
-        (recs.length ? '<div class="cards">' + recs.slice().reverse().map(recordCard).join("") + "</div>" : "") +
+        (recs.length ? '<div class="label">Records</div><div class="cards">' + recs.slice().reverse().map(recordCard).join("") + "</div>" : "") +
         '<div class="label">Hound staff</div>' +
         '<p class="sub">Every staff member has a permanent <b class="tint key">Hound ID</b>, tied to their GitHub account number, which never changes even if they rename the account. Check anyone who claims to be staff here.</p>' +
         '<div class="toolbar"><input class="field grow" id="sfind" type="search" placeholder="Hound ID, GitHub name or Discord ID" aria-label="Find staff"><span id="sres"></span></div>' +
@@ -2044,7 +2064,7 @@
   var guideAud = "All";
   function viewGuides(id) {
     var v = $("#view");
-    v.innerHTML = shell("Handbook", "Guides", loading("Loading the handbook"));
+    v.innerHTML = shell("Documentation", "Handbook", loading("Loading the handbook")); addZones("hb");
     Promise.all([loadLocal("guides"), loadLocal("docs")]).then(function (res) {
       if (currentView !== "guides") return;
       var list = (res[0] && res[0].guides) || [];
@@ -2086,7 +2106,7 @@
       var html = markdown(body, g.path).replace(/href="#\/docs\/(hp-(?:pol|sop|gde)-\d{3})"/g, 'href="#/guides/$1"');
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guides/" + g.id;
       $("#vb").innerHTML =
-        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">All documents</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
+        '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">Handbook</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
         '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
         '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +
           typeStripe(g.type, 6) +
@@ -2099,6 +2119,8 @@
           '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
         "</article>";
       $("#gprint").addEventListener("click", function () { printSheet(); });
+      /* Opened from a Documentation search: mark the words and scroll to the first */
+      if (cabHL) { var hit = cabHighlight($(".sh-body"), cabHL); cabHL = null; if (hit && hit.scrollIntoView) setTimeout(function () { hit.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "center" }); }, opts.motion ? 260 : 0); }
       // The PDF exists on the deployed site (built by tools/guides_pdf.py); show the button only when it is there
       if (typeof fetch === "function") fetch("guides/pdf/" + encodeURIComponent(g.code) + ".pdf", { method: "HEAD" }).then(function (r) { var b = $("#gpdf"); if (b && r.ok) b.hidden = false; }, function () { /* offline or local copy */ });
       document.title = g.code + " " + g.title + " · " + cfg.project;
@@ -2341,7 +2363,7 @@
     menu.hidden = true; view.hidden = false; document.body.classList.add("in-view");
     view.dataset.v = name;
     if (!same || name !== "docs") { view.innerHTML = ""; var ce = $("#center"); ce.style.scrollBehavior = "auto"; ce.scrollTop = 0; ce.style.scrollBehavior = ""; }
-    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" } })[name];
+    var item = ITEMS.filter(function (i) { return i.id === name; })[0] || ({ verify: { title: "Verify" }, guides: { title: "Handbook" } })[name];
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
@@ -2360,7 +2382,7 @@
       return;
     }
     if (currentView && !/INPUT|SELECT|TEXTAREA/.test(tag) && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-      var ids = ITEMS.map(function (i) { return i.id; }), k = ids.indexOf(currentView);
+      var ids = ITEMS.map(function (i) { return i.id; }), k = ids.indexOf(tabOf(currentView));
       location.hash = "#/" + ids[(k + (e.key === "ArrowRight" ? 1 : -1) + ids.length) % ids.length]; e.preventDefault(); return;
     }
     if (currentView || /INPUT|SELECT|TEXTAREA/.test(tag)) return;

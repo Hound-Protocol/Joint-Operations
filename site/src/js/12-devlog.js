@@ -7,7 +7,9 @@
   function devlogEntries() {
     var out = [];
     ((data.devlog && data.devlog.entries) || []).forEach(function (e) { out.push(Object.assign({ kind: "note" }, e)); });
-    (data.commits || []).forEach(function (c) { out.push(Object.assign({ kind: "commit" }, c)); });
+    /* Release merges are already listed as releases, so their commits are left out */
+    var rel = (data.releases || []).map(function (r) { return r.tag_name; });
+    (data.commits || []).forEach(function (c) { var m = /^Release (v[\d.]+)/.exec(c.title || ""); if (m && rel.indexOf(m[1]) > -1) return; out.push(Object.assign({ kind: "commit" }, c)); });
     (data.releases || []).forEach(function (r) {
       out.push({ kind: "release", tag: isPlayable(r) ? "Release" : "Foundation", date: r.published_at, title: (r.name || r.tag_name), url: r.html_url, body: plainExcerpt(r.body, 260), ver: r.tag_name });
     });

@@ -82,14 +82,14 @@
     {
       "id": "hp-gde-007",
       "code": "HP-GDE-007",
-      "title": "Sessions Guide: Hosting, Joining and the Shared Alert",
+      "title": "Sessions Guide: Hosting, Joining and Detection",
       "type": "Guide",
       "audience": "Players",
-      "version": "1.0",
-      "effective": "2026-10-22",
+      "version": "1.1",
+      "effective": "2026-10-23",
       "owner": "Development",
       "for": "players",
-      "summary": "Hosting, joining from the Session Browser, and how the one shared alert works.",
+      "summary": "Hosting, joining from the Session Browser, and how the shared detection status works.",
       "path": "docs/guides/HP-GDE-007-sessions.md"
     },
     {

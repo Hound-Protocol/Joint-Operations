@@ -1,5 +1,5 @@
-# Sessions Guide: Hosting, Joining and the Shared Alert
-Code: HP-GDE-007 · Version 1.0 · Effective 2026-10-22 · Owner: Development · For: players
+# Sessions Guide: Hosting, Joining and Detection
+Code: HP-GDE-007 · Version 1.1 · Effective 2026-10-23 · Owner: Development · For: players
 
 This guide describes how sessions will work from version 0.1. Some details may still change during development; the decisions behind them are [ADR 0007](../decisions/0007-host-authority.md), [ADR 0008](../decisions/0008-browser-launch.md) and [ADR 0012](../decisions/0012-shared-alert.md).
 
@@ -23,7 +23,7 @@ This guide describes how sessions will work from version 0.1. Some details may s
 
 You can also join a friend directly through a Steam invite.
 
-## The shared alert
+## The detection status
 The session has **one detection status**, like a single alert for the whole team.
 
 | Status | What it means |
@@ -34,7 +34,7 @@ The session has **one detection status**, like a single alert for the whole team
 
 - When a player is spotted, **that player joins the status**. Enemies hunt the players who are part of it.
 - Everyone else **stays Hidden** unless they are spotted too. Then they join the same status, not a new one.
-- When the alert winds down, everyone in it returns to Hidden together.
+- When the status winds down, everyone in it returns to Hidden together.
 - Your screen shows the session's status and whether you are part of it.
 
 So one careless player does not give the whole squad away, but a second player who gets spotted joins the same fight.
