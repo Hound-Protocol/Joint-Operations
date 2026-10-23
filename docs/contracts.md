@@ -51,6 +51,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F11 | Certificates of service | web | 🟡 Medium | — | done | Forge77 (with Claude) |
 | F12 | Hotfix: contract board fits the frame, headers aligned, smaller sign-in window | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F13 | Handbook open animation, owner on the roster | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F14 | Deploy without the package mirror; incidents close themselves | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -658,3 +659,15 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - Others fade, the sheet centers, pause, zoom in
 - Owner's LV7 card on the Team roster
+
+## F14
+**Deploy without the package mirror; incidents close themselves**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** The website deploys reliably and broken-main incidents close once main is green.
+
+**Deliverable.** pages.yml builds Handbook PDFs in Playwright's image; broken-main.yml closes incidents on success.
+
+**Acceptance criteria**
+- A release deploys to the website
+- Open broken-main incidents close when Checks pass on main
