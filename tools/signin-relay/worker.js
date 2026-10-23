@@ -28,7 +28,13 @@ export default {
         body: JSON.stringify({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code, redirect_uri: url.origin + "/callback" })
       });
       const j = await r.json().catch(() => ({}));
-      if (!j.access_token) return page(site, { error: "GitHub did not accept the sign-in. Try again." });
+      if (!j.access_token) {
+        /* GitHub's error code is not secret; showing it makes setup problems easy to diagnose */
+        const why = { incorrect_client_credentials: "the relay's client ID or client secret does not match the GitHub App",
+          bad_verification_code: "the sign-in code expired or was already used", redirect_uri_mismatch: "the GitHub App's callback URL does not match this relay" }[j.error];
+        if (!env.GITHUB_CLIENT_SECRET) return page(site, { error: "The relay has no GITHUB_CLIENT_SECRET setting (code: missing_secret)." });
+        return page(site, { error: "GitHub did not accept the sign-in" + (why ? ": " + why : "") + ". (code: " + (j.error || "http_" + r.status) + ")" });
+      }
       return page(site, { token: j.access_token, expires_in: j.expires_in || 0 });
     }
     return new Response("Hound Protocol sign-in relay", { status: 200, headers: { "Content-Type": "text/plain" } });

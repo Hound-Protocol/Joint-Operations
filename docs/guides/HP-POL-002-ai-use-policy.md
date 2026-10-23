@@ -4,6 +4,8 @@ Code: HP-POL-002 · Version 1.1 · Effective 2026-10-22 · Owner: Administration
 ## 1. Position
 Hound Protocol welcomes AI-assisted work. Claude, an AI agent, works on the project as a contractor's tool. Hand-written and AI-assisted contributions are reviewed the same way and earn the same records and ranks. The one hard limit is art: **generative AI images, artwork, music and voices are not accepted** (section 5). **What counts is that the work is correct, original, licensed and checked.**
 
+How to work well with AI tools in practice, from prompts to checking and submitting: [HP-GDE-018 Working with AI Assistants](HP-GDE-018-working-with-ai-assistants.md).
+
 ## 2. You are responsible
 - You are the author of what you submit, whatever tools you used. You must understand it well enough to explain and fix it.
 - Run it, test it, and check it against the contract's acceptance criteria before you open a pull request.

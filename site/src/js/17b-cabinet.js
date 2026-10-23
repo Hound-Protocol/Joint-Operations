@@ -2,8 +2,9 @@
      Every library group is a drawer of folders. Opening a folder lays the document on the desk beside the cabinet:
      a typed page clipped into a kraft folder, with paper and colour that show its class (policy, procedure, guide,
      decision record, research, technical, community, project, legal).
-     Search (Ctrl+K or /): every word must match; titles and file numbers count most, then headings, then the text.
-     Arrow keys move through the results, Enter opens one, and the opened page highlights and scrolls to the match. */
+     Search (Ctrl+K or /) filters the folders themselves, Library only: every word must match the file number, the title
+     or the text. Matching folders stay in their drawers, best first; arrow keys move between them, Enter opens one, and
+     the opened page highlights and scrolls to the first match. */
   var CAB_GROUPS = {
     Handbook: ["HB", "#c9a24a", "#7d5f15"], Decisions: ["ADR", "#e0453f", "#a3352b"], Research: ["RES", "#5aa7d6", "#1d6a8a"],
     Technical: ["TEC", "#f28c28", "#a8560f"], Community: ["COM", "#7fbf8a", "#3b7446"], Project: ["PRJ", "#c9d0d2", "#4d5a60"], Legal: ["LEG", "#b07cd6", "#6e4a96"]
@@ -11,7 +12,7 @@
   var CAB_CLASS = { Decisions: ["decision", "Decision record"], Research: ["research", "Research"], Technical: ["technical", "Technical"],
     Community: ["community", "Community"], Project: ["project", "Project"], Legal: ["legal", "Legal"] };
   var CAB_ORDER = ["Project", "Handbook", "Decisions", "Research", "Technical", "Community", "Legal"];
-  var cabOpen = {}, cabQ = "", cabTimer, cabJump = false, cabHL = null, cabIdx = null, cabSel = 0, cabRes = [];
+  var cabOpen = {}, cabQ = "", cabJump = false, cabHL = null, cabIdx = null, cabIdxP = null, cabSel = 0, cabRes = [];
   function cabGroup(g) { return CAB_GROUPS[g] || ["DOC", "#c9d0d2", "#4d5a60"]; }
   /* File number and plain title: HP-POL-009, ADR-0012, or the group prefix and position */
   function cabCode(d, docs) {
@@ -42,24 +43,26 @@
       /* Handbook documents live in the Handbook zone */
       if (doc && doc.group === "Handbook") { location.replace("#/guides/" + doc.id); return; }
       doc = doc || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
-      if (!(doc.group in cabOpen)) cabOpen[doc.group] = true;
+      /* One drawer open at a time: the one holding the open document */
+      cabOpen = {}; cabOpen[doc.group] = true;
       if (!$("#cab")) {
         $("#vb").innerHTML = '<div class="cab" id="cab"><div class="cab-side">' +
-          '<label class="cab-q"><span aria-hidden="true">⌕</span><input id="cq" type="search" placeholder="Search titles, numbers and text" aria-label="Search all documents" aria-controls="cabHits" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd></label>' +
-          '<div id="cabHits" aria-live="polite"></div><div class="cab-drawers" id="cabDrawers"></div></div>' +
+          '<label class="cab-q"><span aria-hidden="true">⌕</span><input id="cq" type="search" placeholder="Search the Library: numbers, titles, text" aria-label="Search the Library" aria-controls="cabDrawers" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' +
+          '<div class="cab-count" id="cabCount" aria-live="polite"></div><div class="cab-drawers" id="cabDrawers"></div></div>' +
           '<article class="dossier" id="docBody" tabindex="-1"></article></div>';
+        var dw = $("#cabDrawers"); dw.classList.add("first"); setTimeout(function () { dw.classList.remove("first"); }, 1400);
         var q = $("#cq");
         q.value = cabQ;
-        q.addEventListener("input", function () { cabQ = q.value; cabSel = 0; $("#cab").classList.toggle("searching", !!cabQ.trim()); drawDrawers(docs); clearTimeout(cabTimer); cabTimer = setTimeout(function () { cabSearch(docs); }, 120); });
+        q.addEventListener("input", function () { cabQ = q.value; cabSel = 0; cabFind(docs); });
         q.addEventListener("keydown", function (e) {
-          if (e.key === "ArrowDown" || e.key === "ArrowUp") { if (!cabRes.length) return; e.preventDefault(); cabSel = (cabSel + (e.key === "ArrowDown" ? 1 : -1) + cabRes.length) % cabRes.length; cabMark(); }
-          else if (e.key === "Enter") { var h = cabRes[cabSel]; if (h) { e.preventDefault(); cabGo(h); } }
-          else if (e.key === "Escape" && q.value) { e.preventDefault(); e.stopPropagation(); q.value = ""; cabQ = ""; $("#cab").classList.remove("searching"); drawDrawers(docs); cabSearch(docs); }
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") { if (!cabRes.length) return; e.preventDefault(); cabSel = (cabSel + (e.key === "ArrowDown" ? 1 : -1) + cabRes.length) % cabRes.length; cabMark(true); }
+          else if (e.key === "Enter") { var id = cabRes[cabSel]; if (id) { e.preventDefault(); cabGo(id); } }
+          else if (e.key === "Escape" && q.value) { e.preventDefault(); e.stopPropagation(); q.value = ""; cabQ = ""; cabFind(docs); }
         });
       }
-      drawDrawers(docs, doc.id);
+      drawDrawers(docs, doc.id, true);
       openDossier(doc, docs);
-      if (cabQ) cabSearch(docs);
+      if (cabQ.trim() && !cabIdx) cabFind(docs);
     });
   }
   /* Query words, lightly stemmed so "appeals" finds "appeal" and "signing" finds "sign" */
@@ -73,31 +76,89 @@
     var t = (code[0] + " " + code[1] + " " + d.group).toLowerCase();
     return words.every(function (w) { return t.indexOf(w) > -1 || cabCodeHit(w, code[0]); });
   }
-  function drawDrawers(docs, active) {
+  /* Which Library folders match the search, with a score: file number and title count most, then headings, then the text.
+     Before the text index is ready only numbers and titles are searched; the folders update when it is. */
+  function cabMatch(docs) {
+    var words = cabWords();
+    if (!words.length || cabQ.trim().length < 2) return null;
+    var by = {}, whole = cabQ.trim().toLowerCase();
+    if (cabIdx) cabIdx.forEach(function (e) { by[e.d.id] = e; });
+    var out = {};
+    docs.forEach(function (d) {
+      if (d.group === "Handbook") return;
+      var c = cabCode(d, docs), title = (c[0] + " " + c[1] + " " + d.group).toLowerCase(), e = by[d.id], score = 0, inName = true;
+      var ok = words.every(function (w) {
+        var t = title.indexOf(w) > -1, k = cabCodeHit(w, c[0]), at = e ? e.low.indexOf(w) : -1, n = 0, j = at;
+        if (!t && !k) inName = false;
+        if (!t && !k && at < 0) return false;
+        while (j > -1 && n < 10) { n++; j = e.low.indexOf(w, j + w.length); }
+        score += (k ? 30 : 0) + (t ? 20 : 0) + (e && e.hlow.indexOf(w) > -1 ? 6 : 0) + n;
+        return true;
+      });
+      if (!ok) return;
+      if (title.indexOf(whole) > -1) score += 25;
+      out[d.id] = { score: score, text: !inName };
+    });
+    return out;
+  }
+  /* Runs the search: numbers and titles at once, the text as soon as the index is read */
+  function cabFind(docs) {
+    var cab = $("#cab"), live = !!(cabQ.trim().length >= 2);
+    if (!cab) return;
+    cab.classList.toggle("searching", live);
+    drawDrawers(docs);
+    if (live && !cabIdx) {
+      cab.classList.add("indexing");
+      var q = cabQ;
+      cabIndex(docs).then(function () { if (currentView !== "docs" || !$("#cab")) return; $("#cab").classList.remove("indexing"); if (cabQ === q) drawDrawers(docs); });
+    }
+  }
+  function drawDrawers(docs, active, follow) {
     var on = $(".fold.on");
     active = active || (on ? on.getAttribute("data-id") : "");
-    var words = cabWords(), by = {};
+    var words = cabWords(), hits = cabMatch(docs), by = {}, total = 0;
     docs.forEach(function (d) { (by[d.group] = by[d.group] || []).push(d); });
     delete by.Handbook;
+    var re = hits ? cabRe(words) : null;
+    function hl(t) { return re ? esc(t).replace(re, function (m) { return "<mark>" + m + "</mark>"; }) : esc(t); }
     var groups = CAB_ORDER.filter(function (g) { return by[g]; }).concat(Object.keys(by).filter(function (g) { return CAB_ORDER.indexOf(g) < 0; }));
-    $("#cabDrawers").innerHTML = groups.map(function (g) {
-      var gc = cabGroup(g), list = by[g].filter(function (d) { return !words.length || cabTitleHit(words, d, cabCode(d, docs)); });
-      if (words.length && !list.length) return "";
-      var open = words.length ? true : !!cabOpen[g];
-      return '<section class="drawer' + (open ? " open" : "") + '" style="--g:' + gc[1] + '">' +
+    /* While searching, the drawer with the best match comes first */
+    if (hits) {
+      var best = {};
+      groups.forEach(function (g) { best[g] = Math.max.apply(null, [0].concat(by[g].map(function (d) { return hits[d.id] ? hits[d.id].score : 0; }))); });
+      groups = groups.slice().sort(function (a, b) { return best[b] - best[a]; });
+    }
+    $("#cabDrawers").innerHTML = groups.map(function (g, gi) {
+      var gc = cabGroup(g), list = by[g];
+      if (hits) list = list.filter(function (d) { return hits[d.id]; }).sort(function (a, b) { return hits[b.id].score - hits[a.id].score; });
+      if (hits && !list.length) return "";
+      total += list.length;
+      var open = hits ? true : !!cabOpen[g];
+      return '<section class="drawer' + (open ? " open" : "") + '" style="--g:' + gc[1] + "; --d:" + gi + '">' +
         '<button class="dr-head" data-g="' + esc(g) + '" aria-expanded="' + open + '"><span class="dr-handle" aria-hidden="true"></span><b>' + esc(g) + "</b><small>" + plural(list.length, "file") + '</small><i aria-hidden="true"></i></button>' +
-        '<div class="dr-files">' + list.map(function (d, n) {
-          var c = cabCode(d, docs);
-          return '<a class="fold' + (d.id === active ? " on" : "") + '" data-id="' + esc(d.id) + '" href="#/docs/' + esc(d.id) + '" style="--k:' + n + "; --tx:" + ((n % 3) * 30) + 'px"><span class="f-tab">' + esc(c[0]) + '</span><span class="f-t">' + esc(c[1]) + "</span></a>";
-        }).join("") + "</div></section>";
-    }).join("");
-    $$(".fold").forEach(function (f) { f.addEventListener("click", function () { cabJump = true; cabHL = null; }); });
-    /* Open and close in place, so only that drawer's folders slide in */
+        '<div class="dr-body"><div class="dr-files">' + list.map(function (d, n) {
+          var c = cabCode(d, docs), h = hits && hits[d.id];
+          return '<a class="fold' + (d.id === active ? " on" : "") + (h ? " hit" : "") + '" data-id="' + esc(d.id) + '" href="#/docs/' + esc(d.id) + '" style="--k:' + n + "; --tx:" + ((n % 3) * 30) + 'px"><span class="f-tab">' + hl(c[0]) + '</span><span class="f-t">' + hl(c[1]) + "</span>" +
+            (h && h.text ? '<span class="f-in">In text</span>' : "") + "</a>";
+        }).join("") + "</div></div></section>";
+    }).join("") || (hits ? '<div class="cab-none"><b>No match</b>No file in the Library matches every word of “' + esc(cabQ.trim()) + '”.<small>Guides, policies and procedures are searched in the Handbook.</small></div>' : "");
+    cabRes = hits ? $$("#cabDrawers .fold").map(function (f) { return f.getAttribute("data-id"); }) : [];
+    if (follow && hits && cabRes.indexOf(active) > -1) cabSel = cabRes.indexOf(active);
+    if (cabSel >= cabRes.length) cabSel = 0;
+    var cnt = $("#cabCount");
+    if (cnt) cnt.innerHTML = hits ? '<span class="n">' + plural(total, "file") + '</span> match' + (cabIdx ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span>' : "";
+    cabMark(false);
+    $$(".fold").forEach(function (f) { f.addEventListener("click", function () { cabJump = true; cabHL = cabWords().length ? cabWords() : null; }); });
+    /* Open and close in place, so only that drawer slides */
     $$(".dr-head").forEach(function (b) {
       b.addEventListener("click", function () {
-        if (cabWords().length) return;
+        if (cabRes.length || cabWords().length) return;
         var s = b.parentNode, open = !s.classList.contains("open");
-        s.classList.toggle("open", open); b.setAttribute("aria-expanded", String(open)); cabOpen[b.getAttribute("data-g")] = open; blip();
+        /* Opening a drawer closes the others */
+        if (open) $$("#cabDrawers .drawer.open").forEach(function (o) { o.classList.remove("open"); $(".dr-head", o).setAttribute("aria-expanded", "false"); });
+        cabOpen = {}; if (open) cabOpen[b.getAttribute("data-g")] = true;
+        s.classList.toggle("open", open); b.setAttribute("aria-expanded", String(open)); blip();
+        if (open) { s.classList.add("opening"); setTimeout(function () { s.classList.remove("opening"); }, 1200); }
       });
     });
   }
@@ -164,7 +225,8 @@
   /* The search index: plain text, headings and their positions, built once on the first search */
   function cabIndex(docs) {
     if (cabIdx) return Promise.resolve(cabIdx);
-    return Promise.all(docs.map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
+    if (cabIdxP) return cabIdxP;
+    return (cabIdxP = Promise.all(docs.filter(function (d) { return d.group !== "Handbook"; }).map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
       cabIdx = all.map(function (p) {
         var lines = p[1].split("\n"), heads = [], text = "", pos = [];
         lines.forEach(function (l) {
@@ -176,53 +238,20 @@
         return { d: p[0], text: text, low: text.toLowerCase(), heads: heads, hlow: heads.map(function (h) { return h.t.toLowerCase(); }).join(" ") };
       });
       return cabIdx;
+    }));
+  }
+  /* The selected result: a ring around that folder */
+  function cabMark(scroll) {
+    $$("#cabDrawers .fold").forEach(function (f) {
+      var on = cabRes.length && f.getAttribute("data-id") === cabRes[cabSel];
+      f.classList.toggle("sel", !!on);
+      if (on && scroll && f.scrollIntoView) f.scrollIntoView({ block: "nearest", behavior: opts.motion ? "smooth" : "auto" });
     });
   }
-  function cabSearch(docs) {
-    var out = $("#cabHits"), words = cabWords();
-    if (!out) return;
-    if (!words.length || cabQ.trim().length < 2) { out.innerHTML = ""; cabRes = []; return; }
-    if (!cabIdx) out.innerHTML = '<p class="sub"><span class="spin"></span>Reading every document…</p>';
-    var q = cabQ;
-    cabIndex(docs).then(function (idx) {
-      if (currentView !== "docs" || cabQ !== q) return;
-      var res = [];
-      idx.forEach(function (e) {
-        var c = cabCode(e.d, docs), title = (c[0] + " " + c[1]).toLowerCase(), score = 0, ok = true, firstAt = -1;
-        words.forEach(function (w) {
-          var inTitle = title.indexOf(w) > -1, inCode = cabCodeHit(w, c[0]), inHead = e.hlow.indexOf(w) > -1, at = e.low.indexOf(w), n = 0, j = at;
-          while (j > -1 && n < 20) { n++; j = e.low.indexOf(w, j + w.length); }
-          if (!inTitle && !inCode && at < 0) { ok = false; return; }
-          score += (inCode ? 30 : 0) + (inTitle ? 20 : 0) + (inHead ? 6 : 0) + Math.min(n, 10);
-          if (at > -1 && (firstAt < 0 || at < firstAt)) firstAt = at;
-        });
-        if (!ok) return;
-        if (title.indexOf(cabQ.trim().toLowerCase()) > -1) score += 25;
-        var head = "", snip = "";
-        if (firstAt > -1) {
-          e.heads.forEach(function (h) { if (h.at <= firstAt) head = h.t; });
-          var a = Math.max(0, firstAt - 45);
-          snip = (a ? "…" : "") + e.text.slice(a, firstAt + 95).trim() + "…";
-        }
-        res.push({ d: e.d, c: c, score: score, head: head, snip: snip });
-      });
-      res.sort(function (x, y) { return y.score - x.score; });
-      cabRes = res.slice(0, 10); if (cabSel >= cabRes.length) cabSel = 0;
-      var re = cabRe(words);
-      function hl(s) { return esc(s).replace(re, function (m) { return "<mark>" + m + "</mark>"; }); }
-      out.innerHTML = '<div class="cab-hits"><div class="label">' + plural(res.length, "result") + (res.length > cabRes.length ? " · top " + cabRes.length : "") + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span></div>' +
-        (cabRes.length ? cabRes.map(function (h, i) {
-          return '<a href="' + (h.d.group === "Handbook" ? "#/guides/" : "#/docs/") + esc(h.d.id) + '" data-i="' + i + '" class="' + (i === cabSel ? "on" : "") + '" style="--g:' + cabGroup(h.d.group)[1] + '"><b>' + hl(h.c[0]) + "</b> " + hl(h.c[1]) +
-            (h.head ? '<i>§ ' + hl(h.head) + "</i>" : "") + (h.snip ? "<small>" + hl(h.snip) + "</small>" : "") + "</a>";
-        }).join("") : '<p class="sub">Nothing matches every word of "' + esc(cabQ.trim()) + '".</p>') + "</div>";
-      $$("#cabHits a").forEach(function (a) { a.addEventListener("click", function (ev) { ev.preventDefault(); cabGo(cabRes[+a.getAttribute("data-i")]); }); });
-    });
-  }
-  function cabMark() { $$("#cabHits a").forEach(function (a) { var on = +a.getAttribute("data-i") === cabSel; a.classList.toggle("on", on); if (on && a.scrollIntoView) a.scrollIntoView({ block: "nearest" }); }); }
-  function cabGo(h) {
-    if (!h) return;
+  function cabGo(id) {
+    if (!id) return;
     cabHL = cabWords(); cabJump = true;
-    var to = (h.d.group === "Handbook" ? "#/guides/" : "#/docs/") + h.d.id;
+    var to = "#/docs/" + id;
     if (location.hash === to) { route(); return; }
     location.hash = to;
   }

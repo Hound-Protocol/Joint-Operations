@@ -464,6 +464,18 @@
       "path": "docs/guides/HP-GDE-016-reporting-a-problem.md"
     },
     {
+      "id": "hp-gde-017",
+      "title": "HP-GDE-017 Can I Contribute?",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-017-can-i-contribute.md"
+    },
+    {
+      "id": "hp-gde-018",
+      "title": "HP-GDE-018 Working with AI Assistants",
+      "group": "Handbook",
+      "path": "docs/guides/HP-GDE-018-working-with-ai-assistants.md"
+    },
+    {
       "id": "hp-pol-001",
       "title": "HP-POL-001 Contributor Policy",
       "group": "Handbook",

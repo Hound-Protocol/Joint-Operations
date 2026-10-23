@@ -679,7 +679,7 @@
      Seen from above. Phase 0 is the command platform in the centre, every later phase is a platform on its own bridge,
      named after the phase. The fill inside a platform is the share of that phase's tasks that are done; the hatched part
      above it is still scaffolding. Point at a platform to light it, click it to read its tasks.
-     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls)
+     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys)
      is decoration and stops with Options → Animations. The data comes live from ROADMAP.md. */
   var MB_SLOTS = [[-345, -220], [345, -220], [345, 220], [-345, 220], [0, -330], [0, 330]];
   var MB_W = 1600, MB_H = 900, MB_CX = 600, MB_CY = 470;
@@ -788,7 +788,7 @@
     for (var w = 0; w < 46; w++) waves += '<line class="mb-wave"/>';
     var svg = '<svg class="mb-svg" viewBox="0 0 ' + MB_W + " " + MB_H + '" role="group" aria-label="Base under construction: one platform per roadmap phase">' + defs +
       '<rect class="mb-sea" x="0" y="0" width="' + MB_W + '" height="' + MB_H + '" fill="url(#mbSea)"/>' +
-      '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
+      '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
       '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
@@ -925,6 +925,11 @@
     for (var gi = 0; gi < 6; gi++) gulls.push({ cx: 260 + r() * 1000, cy: 160 + r() * 560, R: 26 + r() * 46, w: (r() < 0.5 ? -1 : 1) * (0.32 + r() * 0.22), ph: r() * 6.3, fl: r() * 6.3, vx: 6 + r() * 6, vy: (r() - 0.5) * 4 });
     $("#mbGulls").innerHTML = gulls.map(function () { return '<g class="mb-gull"><path class="gs" d="M-10 1.5Q-5 -4.5 0 0Q5 -4.5 10 1.5"/><path class="gb" d="M-10 1.5Q-5 -4.5 0 0Q5 -4.5 10 1.5"/></g>'; }).join("");
     var gullEls = $$("#mbGulls .mb-gull");
+    /* Channel buoys (v0.0.25): red and green marks along the shipping lane, bobbing and blinking out of step */
+    var buoys = [];
+    [[0.18, 0.5], [0.42, 0.28], [0.62, 0.9], [0.86, 0.3], [0.08, 0.86], [0.6, 0.62]].forEach(function (q, k) { buoys.push({ x: q[0] * 1150 + 30, y: q[1] * MB_H, red: k % 2 === 0, ph: r() * 6.3, per: 2.2 + r() * 1.6 }); });
+    $("#mbBuoys").innerHTML = buoys.map(function (b) { return '<g class="mb-buoy ' + (b.red ? "red" : "grn") + '" transform="translate(' + mbF(b.x) + " " + mbF(b.y) + ')"><circle class="bw" r="7"/><circle class="bb" r="4.6"/><circle class="bl" r="2.2"/></g>'; }).join("");
+    var buoyEls = $$("#mbBuoys .mb-buoy");
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
 
     function step(dt) {
@@ -1068,6 +1073,12 @@
       });
       commsEl.setAttribute("transform", "translate(" + mbF(comms[0]) + " " + mbF(comms[1]) + ") rotate(" + mbF((T * 40) % 360) + ")");
       commsT -= dt; if (commsT <= 0) { commsT = 2.6; ring(comms[0], comms[1], 6, 70, 2.4, false); }
+      buoys.forEach(function (b, i) {
+        var e = buoyEls[i], t = (T + b.ph) % b.per, bob = 1 + 0.08 * Math.sin(T * 1.7 + b.ph);
+        e.lastChild.style.opacity = t < 0.35 ? "1" : "0.15";
+        e.childNodes[1].setAttribute("r", mbF(4.6 * bob));
+        e.firstChild.setAttribute("r", mbF(5 + ((T * 0.6 + b.ph) % 1) * 9)); e.firstChild.style.opacity = (0.35 * (1 - ((T * 0.6 + b.ph) % 1))).toFixed(2);
+      });
       gulls.forEach(function (g, i) {
         g.cx += g.vx * dt; g.cy += g.vy * dt;
         if (g.cx > MB_W + 120) { g.cx = -120; g.cy = 160 + r() * 560; }
@@ -1431,7 +1442,7 @@
       '<div id="ctab"></div>';
     var tabHtml = {
       board:
-        (live ? "" : '<p class="note">This is the plan. Version 0.1 is being built by the project lead, and contracts open to the Contractor Department after 0.1. Testers are welcome now: join the Discord.</p>') +
+        (live ? "" : '<p class="note">This is the plan. Version 0.1 is being built by the project lead, and contracts open to the Contractor Department after 0.1. Testers are welcome now: join the Discord. Not sure you can help? <a href="#/guides/hp-gde-017">Can I Contribute?</a></p>') +
         '<div class="crow-sep"><span>Overview</span></div>' +
         '<div class="stats">' + (live
           ? '<div class="stat"><b>' + counts.open + '</b><span>Open</span></div><div class="stat"><b>' + counts.claimed + '</b><span>Claimed</span></div><div class="stat"><b>' + counts.review + '</b><span>In review</span></div><div class="stat"><b>' + counts.done + "</b><span>Done</span></div>"
@@ -1457,7 +1468,7 @@
         "<li>Pick any open contract. An <b class=\"tint easy\">Easy</b> one is a good start.</li><li>Comment on the GitHub issue to claim it. A maintainer assigns you.</li><li>Do the work on a branch in your fork. Sign off every commit.</li><li>Open a pull request that says Closes #number.</li><li><b class=\"tint key\">Quality</b> checks it against the acceptance criteria and merges it. You get a <b class=\"tint key\">signed record</b> and move up in rank.</li></ol></div>" +
         '<div class="panel"><div class="label">Rules</div><ol class="steps">' +
         "<li>Pull requests only. Nobody pushes to main.</li><li>No game files and no code copied from other mods.</li><li>AI tools are welcome for code and docs. No generative AI art, music or voices.</li><li>Nothing that touches Konami's servers or anti-cheat.</li><li>Leaving is fine. Post a short handoff note first.</li></ol></div></div>" +
-        '<div class="toolbar" style="margin-top:14px"><a class="btn primary" href="#/guides/hp-gde-003">Quick start</a><a class="btn" href="#/guides/hp-pol-002">AI Use Policy</a><a class="btn" href="' + repoUrl("/fork") + '" target="_blank" rel="noopener noreferrer">Fork on GitHub</a><a class="btn" href="' + repoUrl("/issues?q=is%3Aopen+label%3Acontract") + '" target="_blank" rel="noopener noreferrer">Contracts on GitHub</a></div>' +
+        '<div class="toolbar" style="margin-top:14px"><a class="btn primary" href="#/guides/hp-gde-003">Quick start</a><a class="btn" href="#/guides/hp-gde-017">Can I contribute?</a><a class="btn" href="#/guides/hp-gde-018">Working with AI</a><a class="btn" href="' + repoUrl("/fork") + '" target="_blank" rel="noopener noreferrer">Fork on GitHub</a><a class="btn" href="' + repoUrl("/issues?q=is%3Aopen+label%3Acontract") + '" target="_blank" rel="noopener noreferrer">Contracts on GitHub</a></div>' +
         '<div class="label">Module progress</div><div class="cols">' + mods.map(function (m) {
           return '<div class="panel"><div class="kv"><span>' + esc(MODULES[m.k]) + "</span><b>" + m.d + " / " + m.n + '</b></div><div class="meter"><i style="width:' + Math.round(m.d / m.n * 100) + '%"></i></div></div>';
         }).join("") + "</div>",
@@ -1563,8 +1574,9 @@
      Every library group is a drawer of folders. Opening a folder lays the document on the desk beside the cabinet:
      a typed page clipped into a kraft folder, with paper and colour that show its class (policy, procedure, guide,
      decision record, research, technical, community, project, legal).
-     Search (Ctrl+K or /): every word must match; titles and file numbers count most, then headings, then the text.
-     Arrow keys move through the results, Enter opens one, and the opened page highlights and scrolls to the match. */
+     Search (Ctrl+K or /) filters the folders themselves, Library only: every word must match the file number, the title
+     or the text. Matching folders stay in their drawers, best first; arrow keys move between them, Enter opens one, and
+     the opened page highlights and scrolls to the first match. */
   var CAB_GROUPS = {
     Handbook: ["HB", "#c9a24a", "#7d5f15"], Decisions: ["ADR", "#e0453f", "#a3352b"], Research: ["RES", "#5aa7d6", "#1d6a8a"],
     Technical: ["TEC", "#f28c28", "#a8560f"], Community: ["COM", "#7fbf8a", "#3b7446"], Project: ["PRJ", "#c9d0d2", "#4d5a60"], Legal: ["LEG", "#b07cd6", "#6e4a96"]
@@ -1572,7 +1584,7 @@
   var CAB_CLASS = { Decisions: ["decision", "Decision record"], Research: ["research", "Research"], Technical: ["technical", "Technical"],
     Community: ["community", "Community"], Project: ["project", "Project"], Legal: ["legal", "Legal"] };
   var CAB_ORDER = ["Project", "Handbook", "Decisions", "Research", "Technical", "Community", "Legal"];
-  var cabOpen = {}, cabQ = "", cabTimer, cabJump = false, cabHL = null, cabIdx = null, cabSel = 0, cabRes = [];
+  var cabOpen = {}, cabQ = "", cabJump = false, cabHL = null, cabIdx = null, cabIdxP = null, cabSel = 0, cabRes = [];
   function cabGroup(g) { return CAB_GROUPS[g] || ["DOC", "#c9d0d2", "#4d5a60"]; }
   /* File number and plain title: HP-POL-009, ADR-0012, or the group prefix and position */
   function cabCode(d, docs) {
@@ -1603,24 +1615,26 @@
       /* Handbook documents live in the Handbook zone */
       if (doc && doc.group === "Handbook") { location.replace("#/guides/" + doc.id); return; }
       doc = doc || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
-      if (!(doc.group in cabOpen)) cabOpen[doc.group] = true;
+      /* One drawer open at a time: the one holding the open document */
+      cabOpen = {}; cabOpen[doc.group] = true;
       if (!$("#cab")) {
         $("#vb").innerHTML = '<div class="cab" id="cab"><div class="cab-side">' +
-          '<label class="cab-q"><span aria-hidden="true">⌕</span><input id="cq" type="search" placeholder="Search titles, numbers and text" aria-label="Search all documents" aria-controls="cabHits" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd></label>' +
-          '<div id="cabHits" aria-live="polite"></div><div class="cab-drawers" id="cabDrawers"></div></div>' +
+          '<label class="cab-q"><span aria-hidden="true">⌕</span><input id="cq" type="search" placeholder="Search the Library: numbers, titles, text" aria-label="Search the Library" aria-controls="cabDrawers" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' +
+          '<div class="cab-count" id="cabCount" aria-live="polite"></div><div class="cab-drawers" id="cabDrawers"></div></div>' +
           '<article class="dossier" id="docBody" tabindex="-1"></article></div>';
+        var dw = $("#cabDrawers"); dw.classList.add("first"); setTimeout(function () { dw.classList.remove("first"); }, 1400);
         var q = $("#cq");
         q.value = cabQ;
-        q.addEventListener("input", function () { cabQ = q.value; cabSel = 0; $("#cab").classList.toggle("searching", !!cabQ.trim()); drawDrawers(docs); clearTimeout(cabTimer); cabTimer = setTimeout(function () { cabSearch(docs); }, 120); });
+        q.addEventListener("input", function () { cabQ = q.value; cabSel = 0; cabFind(docs); });
         q.addEventListener("keydown", function (e) {
-          if (e.key === "ArrowDown" || e.key === "ArrowUp") { if (!cabRes.length) return; e.preventDefault(); cabSel = (cabSel + (e.key === "ArrowDown" ? 1 : -1) + cabRes.length) % cabRes.length; cabMark(); }
-          else if (e.key === "Enter") { var h = cabRes[cabSel]; if (h) { e.preventDefault(); cabGo(h); } }
-          else if (e.key === "Escape" && q.value) { e.preventDefault(); e.stopPropagation(); q.value = ""; cabQ = ""; $("#cab").classList.remove("searching"); drawDrawers(docs); cabSearch(docs); }
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") { if (!cabRes.length) return; e.preventDefault(); cabSel = (cabSel + (e.key === "ArrowDown" ? 1 : -1) + cabRes.length) % cabRes.length; cabMark(true); }
+          else if (e.key === "Enter") { var id = cabRes[cabSel]; if (id) { e.preventDefault(); cabGo(id); } }
+          else if (e.key === "Escape" && q.value) { e.preventDefault(); e.stopPropagation(); q.value = ""; cabQ = ""; cabFind(docs); }
         });
       }
-      drawDrawers(docs, doc.id);
+      drawDrawers(docs, doc.id, true);
       openDossier(doc, docs);
-      if (cabQ) cabSearch(docs);
+      if (cabQ.trim() && !cabIdx) cabFind(docs);
     });
   }
   /* Query words, lightly stemmed so "appeals" finds "appeal" and "signing" finds "sign" */
@@ -1634,31 +1648,89 @@
     var t = (code[0] + " " + code[1] + " " + d.group).toLowerCase();
     return words.every(function (w) { return t.indexOf(w) > -1 || cabCodeHit(w, code[0]); });
   }
-  function drawDrawers(docs, active) {
+  /* Which Library folders match the search, with a score: file number and title count most, then headings, then the text.
+     Before the text index is ready only numbers and titles are searched; the folders update when it is. */
+  function cabMatch(docs) {
+    var words = cabWords();
+    if (!words.length || cabQ.trim().length < 2) return null;
+    var by = {}, whole = cabQ.trim().toLowerCase();
+    if (cabIdx) cabIdx.forEach(function (e) { by[e.d.id] = e; });
+    var out = {};
+    docs.forEach(function (d) {
+      if (d.group === "Handbook") return;
+      var c = cabCode(d, docs), title = (c[0] + " " + c[1] + " " + d.group).toLowerCase(), e = by[d.id], score = 0, inName = true;
+      var ok = words.every(function (w) {
+        var t = title.indexOf(w) > -1, k = cabCodeHit(w, c[0]), at = e ? e.low.indexOf(w) : -1, n = 0, j = at;
+        if (!t && !k) inName = false;
+        if (!t && !k && at < 0) return false;
+        while (j > -1 && n < 10) { n++; j = e.low.indexOf(w, j + w.length); }
+        score += (k ? 30 : 0) + (t ? 20 : 0) + (e && e.hlow.indexOf(w) > -1 ? 6 : 0) + n;
+        return true;
+      });
+      if (!ok) return;
+      if (title.indexOf(whole) > -1) score += 25;
+      out[d.id] = { score: score, text: !inName };
+    });
+    return out;
+  }
+  /* Runs the search: numbers and titles at once, the text as soon as the index is read */
+  function cabFind(docs) {
+    var cab = $("#cab"), live = !!(cabQ.trim().length >= 2);
+    if (!cab) return;
+    cab.classList.toggle("searching", live);
+    drawDrawers(docs);
+    if (live && !cabIdx) {
+      cab.classList.add("indexing");
+      var q = cabQ;
+      cabIndex(docs).then(function () { if (currentView !== "docs" || !$("#cab")) return; $("#cab").classList.remove("indexing"); if (cabQ === q) drawDrawers(docs); });
+    }
+  }
+  function drawDrawers(docs, active, follow) {
     var on = $(".fold.on");
     active = active || (on ? on.getAttribute("data-id") : "");
-    var words = cabWords(), by = {};
+    var words = cabWords(), hits = cabMatch(docs), by = {}, total = 0;
     docs.forEach(function (d) { (by[d.group] = by[d.group] || []).push(d); });
     delete by.Handbook;
+    var re = hits ? cabRe(words) : null;
+    function hl(t) { return re ? esc(t).replace(re, function (m) { return "<mark>" + m + "</mark>"; }) : esc(t); }
     var groups = CAB_ORDER.filter(function (g) { return by[g]; }).concat(Object.keys(by).filter(function (g) { return CAB_ORDER.indexOf(g) < 0; }));
-    $("#cabDrawers").innerHTML = groups.map(function (g) {
-      var gc = cabGroup(g), list = by[g].filter(function (d) { return !words.length || cabTitleHit(words, d, cabCode(d, docs)); });
-      if (words.length && !list.length) return "";
-      var open = words.length ? true : !!cabOpen[g];
-      return '<section class="drawer' + (open ? " open" : "") + '" style="--g:' + gc[1] + '">' +
+    /* While searching, the drawer with the best match comes first */
+    if (hits) {
+      var best = {};
+      groups.forEach(function (g) { best[g] = Math.max.apply(null, [0].concat(by[g].map(function (d) { return hits[d.id] ? hits[d.id].score : 0; }))); });
+      groups = groups.slice().sort(function (a, b) { return best[b] - best[a]; });
+    }
+    $("#cabDrawers").innerHTML = groups.map(function (g, gi) {
+      var gc = cabGroup(g), list = by[g];
+      if (hits) list = list.filter(function (d) { return hits[d.id]; }).sort(function (a, b) { return hits[b.id].score - hits[a.id].score; });
+      if (hits && !list.length) return "";
+      total += list.length;
+      var open = hits ? true : !!cabOpen[g];
+      return '<section class="drawer' + (open ? " open" : "") + '" style="--g:' + gc[1] + "; --d:" + gi + '">' +
         '<button class="dr-head" data-g="' + esc(g) + '" aria-expanded="' + open + '"><span class="dr-handle" aria-hidden="true"></span><b>' + esc(g) + "</b><small>" + plural(list.length, "file") + '</small><i aria-hidden="true"></i></button>' +
-        '<div class="dr-files">' + list.map(function (d, n) {
-          var c = cabCode(d, docs);
-          return '<a class="fold' + (d.id === active ? " on" : "") + '" data-id="' + esc(d.id) + '" href="#/docs/' + esc(d.id) + '" style="--k:' + n + "; --tx:" + ((n % 3) * 30) + 'px"><span class="f-tab">' + esc(c[0]) + '</span><span class="f-t">' + esc(c[1]) + "</span></a>";
-        }).join("") + "</div></section>";
-    }).join("");
-    $$(".fold").forEach(function (f) { f.addEventListener("click", function () { cabJump = true; cabHL = null; }); });
-    /* Open and close in place, so only that drawer's folders slide in */
+        '<div class="dr-body"><div class="dr-files">' + list.map(function (d, n) {
+          var c = cabCode(d, docs), h = hits && hits[d.id];
+          return '<a class="fold' + (d.id === active ? " on" : "") + (h ? " hit" : "") + '" data-id="' + esc(d.id) + '" href="#/docs/' + esc(d.id) + '" style="--k:' + n + "; --tx:" + ((n % 3) * 30) + 'px"><span class="f-tab">' + hl(c[0]) + '</span><span class="f-t">' + hl(c[1]) + "</span>" +
+            (h && h.text ? '<span class="f-in">In text</span>' : "") + "</a>";
+        }).join("") + "</div></div></section>";
+    }).join("") || (hits ? '<div class="cab-none"><b>No match</b>No file in the Library matches every word of “' + esc(cabQ.trim()) + '”.<small>Guides, policies and procedures are searched in the Handbook.</small></div>' : "");
+    cabRes = hits ? $$("#cabDrawers .fold").map(function (f) { return f.getAttribute("data-id"); }) : [];
+    if (follow && hits && cabRes.indexOf(active) > -1) cabSel = cabRes.indexOf(active);
+    if (cabSel >= cabRes.length) cabSel = 0;
+    var cnt = $("#cabCount");
+    if (cnt) cnt.innerHTML = hits ? '<span class="n">' + plural(total, "file") + '</span> match' + (cabIdx ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span>' : "";
+    cabMark(false);
+    $$(".fold").forEach(function (f) { f.addEventListener("click", function () { cabJump = true; cabHL = cabWords().length ? cabWords() : null; }); });
+    /* Open and close in place, so only that drawer slides */
     $$(".dr-head").forEach(function (b) {
       b.addEventListener("click", function () {
-        if (cabWords().length) return;
+        if (cabRes.length || cabWords().length) return;
         var s = b.parentNode, open = !s.classList.contains("open");
-        s.classList.toggle("open", open); b.setAttribute("aria-expanded", String(open)); cabOpen[b.getAttribute("data-g")] = open; blip();
+        /* Opening a drawer closes the others */
+        if (open) $$("#cabDrawers .drawer.open").forEach(function (o) { o.classList.remove("open"); $(".dr-head", o).setAttribute("aria-expanded", "false"); });
+        cabOpen = {}; if (open) cabOpen[b.getAttribute("data-g")] = true;
+        s.classList.toggle("open", open); b.setAttribute("aria-expanded", String(open)); blip();
+        if (open) { s.classList.add("opening"); setTimeout(function () { s.classList.remove("opening"); }, 1200); }
       });
     });
   }
@@ -1725,7 +1797,8 @@
   /* The search index: plain text, headings and their positions, built once on the first search */
   function cabIndex(docs) {
     if (cabIdx) return Promise.resolve(cabIdx);
-    return Promise.all(docs.map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
+    if (cabIdxP) return cabIdxP;
+    return (cabIdxP = Promise.all(docs.filter(function (d) { return d.group !== "Handbook"; }).map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
       cabIdx = all.map(function (p) {
         var lines = p[1].split("\n"), heads = [], text = "", pos = [];
         lines.forEach(function (l) {
@@ -1737,53 +1810,20 @@
         return { d: p[0], text: text, low: text.toLowerCase(), heads: heads, hlow: heads.map(function (h) { return h.t.toLowerCase(); }).join(" ") };
       });
       return cabIdx;
+    }));
+  }
+  /* The selected result: a ring around that folder */
+  function cabMark(scroll) {
+    $$("#cabDrawers .fold").forEach(function (f) {
+      var on = cabRes.length && f.getAttribute("data-id") === cabRes[cabSel];
+      f.classList.toggle("sel", !!on);
+      if (on && scroll && f.scrollIntoView) f.scrollIntoView({ block: "nearest", behavior: opts.motion ? "smooth" : "auto" });
     });
   }
-  function cabSearch(docs) {
-    var out = $("#cabHits"), words = cabWords();
-    if (!out) return;
-    if (!words.length || cabQ.trim().length < 2) { out.innerHTML = ""; cabRes = []; return; }
-    if (!cabIdx) out.innerHTML = '<p class="sub"><span class="spin"></span>Reading every document…</p>';
-    var q = cabQ;
-    cabIndex(docs).then(function (idx) {
-      if (currentView !== "docs" || cabQ !== q) return;
-      var res = [];
-      idx.forEach(function (e) {
-        var c = cabCode(e.d, docs), title = (c[0] + " " + c[1]).toLowerCase(), score = 0, ok = true, firstAt = -1;
-        words.forEach(function (w) {
-          var inTitle = title.indexOf(w) > -1, inCode = cabCodeHit(w, c[0]), inHead = e.hlow.indexOf(w) > -1, at = e.low.indexOf(w), n = 0, j = at;
-          while (j > -1 && n < 20) { n++; j = e.low.indexOf(w, j + w.length); }
-          if (!inTitle && !inCode && at < 0) { ok = false; return; }
-          score += (inCode ? 30 : 0) + (inTitle ? 20 : 0) + (inHead ? 6 : 0) + Math.min(n, 10);
-          if (at > -1 && (firstAt < 0 || at < firstAt)) firstAt = at;
-        });
-        if (!ok) return;
-        if (title.indexOf(cabQ.trim().toLowerCase()) > -1) score += 25;
-        var head = "", snip = "";
-        if (firstAt > -1) {
-          e.heads.forEach(function (h) { if (h.at <= firstAt) head = h.t; });
-          var a = Math.max(0, firstAt - 45);
-          snip = (a ? "…" : "") + e.text.slice(a, firstAt + 95).trim() + "…";
-        }
-        res.push({ d: e.d, c: c, score: score, head: head, snip: snip });
-      });
-      res.sort(function (x, y) { return y.score - x.score; });
-      cabRes = res.slice(0, 10); if (cabSel >= cabRes.length) cabSel = 0;
-      var re = cabRe(words);
-      function hl(s) { return esc(s).replace(re, function (m) { return "<mark>" + m + "</mark>"; }); }
-      out.innerHTML = '<div class="cab-hits"><div class="label">' + plural(res.length, "result") + (res.length > cabRes.length ? " · top " + cabRes.length : "") + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span></div>' +
-        (cabRes.length ? cabRes.map(function (h, i) {
-          return '<a href="' + (h.d.group === "Handbook" ? "#/guides/" : "#/docs/") + esc(h.d.id) + '" data-i="' + i + '" class="' + (i === cabSel ? "on" : "") + '" style="--g:' + cabGroup(h.d.group)[1] + '"><b>' + hl(h.c[0]) + "</b> " + hl(h.c[1]) +
-            (h.head ? '<i>§ ' + hl(h.head) + "</i>" : "") + (h.snip ? "<small>" + hl(h.snip) + "</small>" : "") + "</a>";
-        }).join("") : '<p class="sub">Nothing matches every word of "' + esc(cabQ.trim()) + '".</p>') + "</div>";
-      $$("#cabHits a").forEach(function (a) { a.addEventListener("click", function (ev) { ev.preventDefault(); cabGo(cabRes[+a.getAttribute("data-i")]); }); });
-    });
-  }
-  function cabMark() { $$("#cabHits a").forEach(function (a) { var on = +a.getAttribute("data-i") === cabSel; a.classList.toggle("on", on); if (on && a.scrollIntoView) a.scrollIntoView({ block: "nearest" }); }); }
-  function cabGo(h) {
-    if (!h) return;
+  function cabGo(id) {
+    if (!id) return;
     cabHL = cabWords(); cabJump = true;
-    var to = (h.d.group === "Handbook" ? "#/guides/" : "#/docs/") + h.d.id;
+    var to = "#/docs/" + id;
     if (location.hash === to) { route(); return; }
     location.hash = to;
   }
@@ -2096,29 +2136,94 @@
       drawGuideList(list);
     });
   }
+  /* Handbook filter: every word must appear (whole or in part) in the code, title, summary, type, audience, owner or text.
+     A few everyday words also find their handbook terms, so "ban" finds suspensions and "linux" finds Proton. */
+  var guideQ = "", guideIdx = null, guideIdxP = null;
+  var GUIDE_RELATED = {
+    login: ["sign-in", "sign in", "github", "keycard"], signin: ["sign-in", "github"], account: ["security", "two-factor", "github"],
+    password: ["security", "two-factor", "passkey"], "2fa": ["two-factor"], hack: ["security", "incident"], leak: ["incident", "secret"],
+    ban: ["suspension", "infraction", "moderation"], kick: ["moderation", "suspension"], punish: ["infraction", "suspension"], warn: ["infraction"],
+    rule: ["policy", "conduct"], behaviour: ["conduct", "moderation"], behavior: ["conduct", "moderation"], toxic: ["conduct", "moderation"],
+    linux: ["proton", "bazzite"], deck: ["proton"], bazzite: ["proton"], install: ["installing", "player guide"], play: ["player"],
+    bug: ["report", "triage", "testing"], crash: ["report", "triage"], problem: ["report"], issue: ["report", "issue"],
+    test: ["quality", "testing"], qa: ["quality"], pr: ["pull request", "review"], pull: ["pull request"], merge: ["review", "pull request"],
+    code: ["contributor", "pull request"], contract: ["contract", "claim"], job: ["contract"], task: ["contract"],
+    money: ["funding", "donation"], donate: ["funding", "donation"], pay: ["funding"],
+    rank: ["grade"], level: ["grade", "keycard"], clearance: ["keycard"], boss: ["chain of command"], leader: ["chain of command", "lead"],
+    join: ["onboarding", "contributor", "discord"], leave: ["offboarding"], quit: ["offboarding"], new: ["quick start", "basics"],
+    chat: ["discord"], server: ["discord"], logo: ["brand"], art: ["brand", "media"], license: ["licensing"], copyright: ["licensing", "clean-room"],
+    ai: ["ai", "agent"], bot: ["agent"], backup: ["backup", "restore"], version: ["release"], update: ["release"], website: ["website"], site: ["website"]
+  };
+  function guideWords() {
+    return guideQ.trim().toLowerCase().split(/\s+/).filter(Boolean).map(function (w) {
+      var stem = w.replace(/(ing|ed|es|s)$/, ""); if (stem.length < 3) stem = w;
+      return [w, stem].concat(GUIDE_RELATED[w] || GUIDE_RELATED[stem] || []);
+    });
+  }
+  function guideHay(g) { return [g.code, g.title, g.summary, g.type, g.audience, g.owner, guideIdx ? guideIdx[g.id] || "" : ""].join(" ").toLowerCase(); }
+  function guideMatch(g, words) {
+    var h = guideHay(g);
+    return words.every(function (alts) { return alts.some(function (a) { return h.indexOf(a) > -1 || (a.length > 3 && h.replace(/-/g, " ").indexOf(a) > -1); }); });
+  }
+  function guideIndex(list) {
+    if (guideIdx) return Promise.resolve(guideIdx);
+    return guideIdxP || (guideIdxP = Promise.all(list.map(function (g) { return loadDoc({ path: g.path }).then(function (t) { return [g.id, t]; }, function () { return [g.id, ""]; }); })).then(function (all) {
+      guideIdx = {}; all.forEach(function (p) { guideIdx[p[0]] = p[1].replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*`#|>_]+/g, " ").replace(/\s+/g, " "); }); return guideIdx;
+    }));
+  }
   function drawGuideList(list) {
-    var shown = list.filter(function (g) { return guideAud === "All" || g.audience === guideAud; });
+    $("#vb").innerHTML =
+      '<p class="sub">Everything you need to play, contribute, test and run Hound Protocol, written down. Every document is versioned, owned by a department and printable on A4.</p>' +
+      '<div class="hb-tools"><label class="cab-q hb-q"><span aria-hidden="true">⌕</span><input id="hq" type="search" placeholder="Filter the Handbook: a word, part of one, or a topic" aria-label="Filter the Handbook" aria-controls="hbList" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' +
+      '<div class="tabs" role="tablist">' + GUIDE_AUD.map(function (a) { return '<button role="tab" data-aud="' + a + '" aria-selected="' + (guideAud === a) + '">' + a + "</button>"; }).join("") + "</div></div>" +
+      '<div class="cab-count" id="hbCount" aria-live="polite"></div><div id="hbList"></div>' +
+      '<p class="source">Source: docs/guides/ · index generated by tools/guides_index.py</p>';
+    var q = $("#hq");
+    q.value = guideQ;
+    q.addEventListener("input", function () {
+      guideQ = q.value; drawGuideSheets(list);
+      if (guideQ.trim() && !guideIdx) { $(".hb-q").classList.add("busy"); var at = guideQ; guideIndex(list).then(function () { var b = $(".hb-q"); if (b) b.classList.remove("busy"); if (currentView === "guides" && guideQ === at && $("#hbList")) drawGuideSheets(list); }); }
+    });
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && q.value) { e.preventDefault(); e.stopPropagation(); q.value = ""; guideQ = ""; drawGuideSheets(list); }
+      else if (e.key === "Enter") { var a = $("#hbList .mini"); if (a) { e.preventDefault(); a.click(); } }
+    });
+    $$("[data-aud]").forEach(function (b) { b.addEventListener("click", function () { guideAud = b.dataset.aud; $$("[data-aud]").forEach(function (x) { x.setAttribute("aria-selected", String(x === b)); }); drawGuideSheets(list); }); });
+    drawGuideSheets(list);
+    if (guideQ.trim() && !guideIdx) guideIndex(list).then(function () { if (currentView === "guides" && $("#hbList")) drawGuideSheets(list); });
+  }
+  function drawGuideSheets(list) {
+    var words = guideWords(), filtering = !!words.length;
+    var shown = list.filter(function (g) { return (guideAud === "All" || g.audience === guideAud) && (!filtering || guideMatch(g, words)); });
+    var re = filtering ? new RegExp("(" + words.map(function (a) { return a[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")", "ig") : null;
+    function hl(t) { return re ? esc(t).replace(re, "<mark>$1</mark>") : esc(t); }
     var byType = { Guide: [], Policy: [], Procedure: [] };
     shown.forEach(function (g) { (byType[g.type] = byType[g.type] || []).push(g); });
     var section = function (type, label, note) {
       var l = byType[type] || [];
       if (!l.length) return "";
       return '<div class="label">' + label + '</div><p class="sub">' + note + '</p><div class="sheets">' + l.map(function (g, n) {
-        return '<a class="mini t-' + esc(g.type.toLowerCase()) + '" style="--i:' + n + '" href="#/guides/' + esc(g.id) + '"><span class="m-top"><b>' + esc(g.code) + "</b><i>v" + esc(g.version) + "</i></span>" +
-          '<span class="m-title">' + esc(g.title) + '</span><span class="m-sum">' + esc(g.summary) + "</span>" +
+        return '<a class="mini t-' + esc(g.type.toLowerCase()) + '" style="--i:' + n + '" href="#/guides/' + esc(g.id) + '"><span class="m-top"><b>' + hl(g.code) + "</b><i>v" + esc(g.version) + "</i></span>" +
+          '<span class="m-title">' + hl(g.title) + '</span><span class="m-sum">' + hl(g.summary) + "</span>" +
           '<span class="m-foot">' + esc(g.owner) + " Dept</span>" + typeStripe(g.type, 3) + "</a>";
       }).join("") + "</div>";
     };
-    $("#vb").innerHTML =
-      '<p class="sub">Everything you need to play, contribute, test and run Hound Protocol, written down. Every document is versioned, owned by a department and printable on A4.</p>' +
-      '<div class="tabs" role="tablist">' + GUIDE_AUD.map(function (a) { return '<button role="tab" data-aud="' + a + '" aria-selected="' + (guideAud === a) + '">' + a + "</button>"; }).join("") + "</div>" +
+    $("#hbList").innerHTML =
       section("Guide", "Guides", "How-to help for each audience.") +
       section("Policy", "Policies", "Rules everyone follows.") +
       section("Procedure", "Standard operating procedures", "Step by step, the same way every time.") +
-      (shown.length ? "" : '<div class="empty">No documents for this audience yet</div>') +
-      '<p class="source">Source: docs/guides/ · index generated by tools/guides_index.py</p>';
-    $$("[data-aud]").forEach(function (b) { b.addEventListener("click", function () { guideAud = b.dataset.aud; drawGuideList(list); }); });
+      (shown.length ? "" : filtering ? '<div class="cab-none"><b>No match</b>No handbook document matches “' + esc(guideQ.trim()) + '”' + (guideAud !== "All" ? " for " + esc(guideAud) : "") + '.<small>Try fewer words, part of a word, or the All tab.</small></div>' : '<div class="empty">No documents for this audience yet</div>');
+    $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
+    $("#hbList").classList.toggle("filtering", filtering);
+    $$("#hbList .mini").forEach(function (a) { a.addEventListener("click", function () { if (guideQ.trim()) cabHL = guideQ.trim().toLowerCase().split(/\s+/); }); });
   }
+  /* Ctrl+K or / jumps to the Handbook filter */
+  document.addEventListener("keydown", function (e) {
+    if (currentView !== "guides") return;
+    var tag = (e.target && e.target.tagName) || "", q = $("#hq");
+    if (!q) return;
+    if (((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) || (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(tag))) { e.preventDefault(); q.focus(); q.select(); }
+  });
   function drawGuide(list, id) {
     var g = list.filter(function (x) { return x.id === id; })[0];
     if (!g) { $("#vb").innerHTML = '<div class="empty">No document ' + esc(id) + '<small><a href="#/guides">Back to the handbook</a></small></div>'; return; }

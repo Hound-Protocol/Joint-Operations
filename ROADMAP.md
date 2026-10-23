@@ -15,12 +15,13 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Accountability: infractions, suspensions and appeals, no time limits (ADR 0016, HP-POL-009)
 - [x] AI agents credited as tools, detected automatically (ADR 0015)
 - [x] Signed contributor records and Hound IDs
-- [x] Handbook: 36 policies, procedures and guides, with PDFs, including GitHub, Discord and website basics
+- [x] Handbook: 38 policies, procedures and guides, with PDFs, including GitHub, Discord and website basics, "Can I contribute?" and working with AI assistants
 - [x] Documentation aligned with the project, with a knowledge map and a link checker in CI
 - [x] Brand: Hound Protocol and Joint Operations logos, Hound Protocol website
 - [x] Roadmap shown as a base under construction, one platform per phase, with cargo operations (a new detail each release)
 - [x] Keycards and Hound ID proof with SSH signing keys (ADR 0017)
 - [x] Docs as a dossier cabinet: paper per document class, ranked full-text search
+- [x] Library search shows matching folders only, one drawer open at a time, animated cabinet; Handbook filter
 - [x] Documentation in two zones, Library and Handbook
 - [x] Sign-in with GitHub, keycard profiles and clearance-based documents in private repositories (ADR 0017)
 - [x] Discord structure set up (see docs/discord.md)

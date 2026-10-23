@@ -2,7 +2,8 @@
 Code: HP-GDE-003 · Version 1.1 · Effective 2026-10-23 · Owner: Development · For: new contributors and contractors
 
 ## 1. Read first (20 minutes)
-- [Contributor Policy](HP-POL-001-contributor-policy.md) and [AI Use Policy](HP-POL-002-ai-use-policy.md)
+- Not sure where you fit? [Can I Contribute?](HP-GDE-017-can-i-contribute.md)
+- [Contributor Policy](HP-POL-001-contributor-policy.md) and [AI Use Policy](HP-POL-002-ai-use-policy.md), with the practical side in [Working with AI Assistants](HP-GDE-018-working-with-ai-assistants.md)
 - [Clean-Room and IP Policy](HP-POL-003-clean-room-and-ip.md): no game files, no copied mod code
 - [Departments and grades](../departments.md): how the project is organized
 - New to GitHub or Discord? [GitHub Basics](HP-GDE-014-github-basics.md) and the [Discord Member Guide](HP-GDE-008-discord-members.md)

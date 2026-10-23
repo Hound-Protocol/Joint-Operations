@@ -189,7 +189,7 @@
       "title": "Using the Website and Documentation",
       "type": "Guide",
       "audience": "Everyone",
-      "version": "1.0",
+      "version": "1.1",
       "effective": "2026-10-23",
       "owner": "Administration",
       "for": "everyone",
@@ -208,6 +208,32 @@
       "for": "players and testers",
       "summary": "Where to report a problem, what to include, and what happens next.",
       "path": "docs/guides/HP-GDE-016-reporting-a-problem.md"
+    },
+    {
+      "id": "hp-gde-017",
+      "code": "HP-GDE-017",
+      "title": "Can I Contribute?",
+      "type": "Guide",
+      "audience": "Contributors",
+      "version": "1.0",
+      "effective": "2026-10-23",
+      "owner": "Administration",
+      "for": "anyone wondering whether they can help",
+      "summary": "Not sure you can help? Five questions to find where you fit, what is open now, and your first step.",
+      "path": "docs/guides/HP-GDE-017-can-i-contribute.md"
+    },
+    {
+      "id": "hp-gde-018",
+      "code": "HP-GDE-018",
+      "title": "Working with AI Assistants",
+      "type": "Guide",
+      "audience": "Contributors",
+      "version": "1.0",
+      "effective": "2026-10-23",
+      "owner": "Development",
+      "for": "contributors using Claude, ChatGPT, Gemini or similar tools",
+      "summary": "Using Claude, ChatGPT or Gemini well: a working loop, checking the output, and submitting AI-assisted work.",
+      "path": "docs/guides/HP-GDE-018-working-with-ai-assistants.md"
     },
     {
       "id": "hp-pol-001",
