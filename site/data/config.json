@@ -2,7 +2,7 @@
   "project": "Joint Operations",
   "team": "Hound Protocol",
   "tagline": "Metal Gear Solid V, now with up to 16 players",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
@@ -191,6 +191,8 @@
           }
         ]
       }
-    ]
+    ],
+    "owner": 249122176,
+    "guestRepo": "Hound-Protocol/hp-staff"
   }
 }

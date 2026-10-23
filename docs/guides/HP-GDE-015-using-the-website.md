@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.3 · Effective 2026-10-23 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -33,13 +33,13 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 - **GitHub** opens the source file; **Suggest an edit** lets you propose a change ([GitHub Basics](HP-GDE-014-github-basics.md)); **Copy link** copies a direct link to that document.
 
 **Handbook:** the guides, policies and procedures, as A4 sheets you can print or download as PDF.
-- **Filter:** type a word, part of one, or a topic in the box (Ctrl+K or / jumps there). The sheets narrow as you type; the text of every document counts too, and everyday words find their handbook terms (`ban` finds suspensions, `linux` finds Proton, `login` finds sign-in). Enter opens the first sheet, Esc clears.
+- **Filter:** choose **Name** or **Content** beside the box, then type a word, part of one, or a topic (Ctrl+K or / jumps there). The sheets narrow as you type; the text of every document counts too, and everyday words find their handbook terms (`ban` finds suspensions, `linux` finds Proton, `login` finds sign-in). Enter opens the first sheet, Esc clears.
 - Filter by audience: Players, Contributors, Quality, Administration. Both filters work together.
 - The coloured stripe on the right edge names the type: Guide (ochre), Policy (red), Procedure (blue).
 - **Print** prints the sheet on A4; **Download PDF** saves it.
 
 ## 4. Searching
-The search box in the Library searches **the Library only**, and shows its results **as the folders themselves**: drawers without a match disappear, and the matching folders stay in their drawers, best match first. Press **Ctrl+K** or **/** anywhere on the page to jump to it.
+Choose **Search by Name** (file numbers and titles, the default) or **Content** (what the documents say). The search box in the Library searches **the Library only**, and shows its results **as the folders themselves**: drawers without a match disappear, and the matching folders stay in their drawers, best match first. Press **Ctrl+K** or **/** anywhere on the page to jump to it.
 - Every word you type must appear, in the file number, the title or the text. Add words to narrow the results: `steam sockets`.
 - **File numbers** work, even shortened: `adr 12` finds ADR-0012, `res 3` finds RES-03.
 - Word endings are forgiven: `appeals` also finds `appeal`.
@@ -57,6 +57,10 @@ Signing in is optional. It uses your GitHub account ([ADR 0017](../decisions/001
 5. **Sign out** on the Profile page, or close the tab. Your sign-in lasts at most eight hours and lives only in that tab ([privacy](../privacy.md)).
 
 Allow pop-ups for the site if nothing happens when you click **Sign in with GitHub**.
+
+**Guest passes:** the owner can give a friend or associate a link with LV3 (Staff) access for 24 hours, no account needed. Open the link, and your Profile shows a guest card with the time left. It cannot be extended, and it lasts only in that tab.
+
+**New versions:** when a new release is live while you have the site open, a small notice at the top offers to reload.
 
 ## 6. Checking people and records
 - **Verify → Hound staff:** look up a Hound ID, GitHub name or Discord ID to see whether someone is real staff.

@@ -696,7 +696,7 @@
      Seen from above. Phase 0 is the command platform in the centre, every later phase is a platform on its own bridge,
      named after the phase. The fill inside a platform is the share of that phase's tasks that are done; the hatched part
      above it is still scaffolding. Point at a platform to light it, click it to read its tasks.
-     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys, helipad lights)
+     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys, helipad lights, a windsock)
      is decoration and stops with Options → Animations. The data comes live from ROADMAP.md. */
   var MB_SLOTS = [[-345, -220], [345, -220], [345, 220], [-345, 220], [0, -330], [0, 330]];
   var MB_W = 1600, MB_H = 900, MB_CX = 600, MB_CY = 470;
@@ -808,7 +808,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbPadL"></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbPadL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -952,6 +952,8 @@
     mods.forEach(function (m) { var c = padOf(m); for (var q = 0; q < 4; q++) { var a = q * Math.PI / 2 + Math.PI / 4; padL.push({ m: m, q: q, x: c[0] + Math.cos(a) * 17, y: c[1] + Math.sin(a) * 17 }); } });
     $("#mbPadL").innerHTML = padL.map(function (l) { return '<circle class="mb-padl" r="2.1" cx="' + mbF(l.x) + '" cy="' + mbF(l.y) + '"/>'; }).join("");
     var padEls = $$("#mbPadL .mb-padl");
+    /* Windsock (v0.0.27): beside the command helipad, swinging with the wind and stiffening in gusts */
+    var sockP = padOf(mods[0]), sockEl = $("#mbSock"), sock = [sockP[0] + 30, sockP[1] - 18];
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
 
     function step(dt) {
@@ -1095,6 +1097,8 @@
       });
       commsEl.setAttribute("transform", "translate(" + mbF(comms[0]) + " " + mbF(comms[1]) + ") rotate(" + mbF((T * 40) % 360) + ")");
       commsT -= dt; if (commsT <= 0) { commsT = 2.6; ring(comms[0], comms[1], 6, 70, 2.4, false); }
+      var gust = 0.5 + 0.5 * Math.sin(T * 0.37) * Math.sin(T * 0.11 + 1), wind = 25 + 18 * Math.sin(T * 0.21) + 6 * Math.sin(T * 1.3);
+      sockEl.setAttribute("transform", "translate(" + mbF(sock[0]) + " " + mbF(sock[1]) + ") rotate(" + mbF(wind) + ") scale(" + (0.75 + gust * 0.4).toFixed(2) + " " + (1 - gust * 0.25).toFixed(2) + ")");
       padL.forEach(function (l, i) {
         var fast = H.to === l.m && H.st === "fly", k = Math.floor(T * (fast ? 8 : 2.5)) % 4;
         padEls[i].style.opacity = k === l.q ? "1" : (fast ? "0.25" : "0.12");
@@ -1616,10 +1620,20 @@
      repositories, one per clearance (config.signin.areas); GitHub itself decides who can read them (ADR 0011, 0017).
      Each restricted area is a drawer: its files when your card and GitHub both allow it, otherwise one locked file. */
   var cabX = {}, cabDocs = [];
-  function cabLvl() { return typeof siIn === "function" && siIn() ? siLevel() : 1; }
+  /* Search by name or by content: a small switch under each search box (Library and Handbook) */
+  function smSwitch(id, mode) {
+    return '<div class="sm" role="group" aria-label="Search by" id="' + id + 'Sm"><span>Search by</span>' +
+      [["name", "Name"], ["text", "Content"]].map(function (m) { return '<button type="button" data-sm="' + m[0] + '" aria-pressed="' + (mode === m[0]) + '">' + m[1] + "</button>"; }).join("") + "</div>";
+  }
+  function smWire(id, on) {
+    $$("#" + id + "Sm [data-sm]").forEach(function (b) {
+      b.addEventListener("click", function () { $$("#" + id + "Sm [data-sm]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); blip(); on(b.getAttribute("data-sm")); });
+    });
+  }
+  function cabLvl() { return siIn() || sgIn() ? siLevel() : 1; }
   function cabSlug(p) { return p.replace(/\.md$/i, "").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase(); }
   function cabXDocs(onChange) {
-    var areas = (cfg.signin && cfg.signin.areas) || [], out = [], lvl = cabLvl(), who = typeof siIn === "function" && siIn() ? SI.user.id : 0;
+    var areas = (cfg.signin && cfg.signin.areas) || [], out = [], lvl = cabLvl(), who = typeof siIn === "function" && siIn() ? SI.user.id : (sgIn() ? "guest" : 0);
     areas.forEach(function (a, i) {
       var need = +String(a.card).slice(2), st = cabX[i];
       if (st && st.who !== who) st = cabX[i] = null;
@@ -1640,7 +1654,7 @@
     });
     return out;
   }
-  var cabOpen = {}, cabQ = "", cabJump = false, cabHL = null, cabIdx = null, cabIdxP = null, cabSel = 0, cabRes = [];
+  var cabMode = "name", cabOpen = {}, cabQ = "", cabJump = false, cabHL = null, cabIdx = null, cabIdxP = null, cabSel = 0, cabRes = [];
   function cabGroup(g) { return CAB_GROUPS[g] || ["DOC", "#c9d0d2", "#4d5a60"]; }
   /* File number and plain title: HP-POL-009, ADR-0012, or the group prefix and position */
   function cabCode(d, docs) {
@@ -1684,13 +1698,14 @@
       cabOpen = {}; cabOpen[doc.group] = true;
       if (!$("#cab")) {
         $("#vb").innerHTML = '<div class="cab" id="cab"><div class="cab-side">' +
-          '<label class="cab-q"><span aria-hidden="true">⌕</span><input id="cq" type="search" placeholder="Search the Library: numbers, titles, text" aria-label="Search the Library" aria-controls="cabDrawers" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' +
+          '<label class="cab-q"><span aria-hidden="true">⌕</span><input id="cq" type="search" placeholder="' + (cabMode === "text" ? "Search inside the Library\'s documents" : "Search the Library: numbers and titles") + '" aria-label="Search the Library" aria-controls="cabDrawers" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' + smSwitch("cab", cabMode) +
           '<div class="cab-count" id="cabCount" aria-live="polite"></div><div class="cab-drawers" id="cabDrawers"></div></div>' +
           '<article class="dossier" id="docBody" tabindex="-1"></article></div>';
         var dw = $("#cabDrawers"); dw.classList.add("first"); setTimeout(function () { dw.classList.remove("first"); }, 1400);
         var q = $("#cq");
         q.value = cabQ;
         q.addEventListener("input", function () { cabQ = q.value; cabSel = 0; cabFind(docs); });
+        smWire("cab", function (m) { cabMode = m; cabSel = 0; q.placeholder = m === "text" ? "Search inside the Library's documents" : "Search the Library: numbers and titles"; cabFind(cabDocs); q.focus(); });
         q.addEventListener("keydown", function (e) {
           if (e.key === "ArrowDown" || e.key === "ArrowUp") { if (!cabRes.length) return; e.preventDefault(); cabSel = (cabSel + (e.key === "ArrowDown" ? 1 : -1) + cabRes.length) % cabRes.length; cabMark(true); }
           else if (e.key === "Enter") { var id = cabRes[cabSel]; if (id) { e.preventDefault(); cabGo(id); } }
@@ -1719,7 +1734,7 @@
     var words = cabWords();
     if (!words.length || cabQ.trim().length < 2) return null;
     var by = {}, whole = cabQ.trim().toLowerCase();
-    if (cabIdx) cabIdx.forEach(function (e) { by[e.d.id] = e; });
+    if (cabIdx && cabMode === "text") cabIdx.forEach(function (e) { by[e.d.id] = e; });
     var out = {};
     docs.forEach(function (d) {
       if (d.group === "Handbook") return;
@@ -1744,7 +1759,7 @@
     if (!cab) return;
     cab.classList.toggle("searching", live);
     drawDrawers(docs);
-    if (live && !cabIdx) {
+    if (live && !cabIdx && cabMode === "text") {
       cab.classList.add("indexing");
       var q = cabQ;
       cabIndex(docs).then(function () { if (currentView !== "docs" || !$("#cab")) return; $("#cab").classList.remove("indexing"); if (cabQ === q) drawDrawers(docs); });
@@ -1784,7 +1799,7 @@
     if (follow && hits && cabRes.indexOf(active) > -1) cabSel = cabRes.indexOf(active);
     if (cabSel >= cabRes.length) cabSel = 0;
     var cnt = $("#cabCount");
-    if (cnt) cnt.innerHTML = hits ? '<span class="n">' + plural(total, "file") + '</span> match' + (cabIdx ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span>' : "";
+    if (cnt) cnt.innerHTML = hits ? '<span class="n">' + plural(total, "file") + '</span> match' + (cabIdx || cabMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span>' : "";
     cabMark(false);
     $$(".fold").forEach(function (f) { f.addEventListener("click", function () { cabJump = true; cabHL = cabWords().length ? cabWords() : null; }); });
     /* Open and close in place, so only that drawer slides */
@@ -1835,7 +1850,7 @@
     if (x && doc.locked) return cabDenied(body, doc, c);
     body.innerHTML = loading("Opening " + c[0]);
     var src = x ? (docCache["x:" + x.repo + ":" + doc.path] ? Promise.resolve(docCache["x:" + x.repo + ":" + doc.path]) :
-      siApi("/repos/" + x.repo + "/contents/" + doc.path.split("/").map(encodeURIComponent).join("/"), true).then(function (t) { docCache["x:" + x.repo + ":" + doc.path] = t; return t; })) : loadDoc(doc);
+      siRead(x.repo, doc.path).then(function (t) { docCache["x:" + x.repo + ":" + doc.path] = t; return t; })) : loadDoc(doc);
     src.then(function (md) {
       if (currentView !== "docs") return;
       var html = markdown(md.replace(/^# .*\n/, "").replace(/^Code: .*\n/, ""), doc.path);
@@ -1876,6 +1891,8 @@
   }
   /* Marks every search word in the opened page and returns the first mark */
   function cabHighlight(root, words) {
+    /* Only real words: a one- or two-letter word would light up half the page */
+    words = (words || []).filter(function (w) { return w.length >= 3; });
     if (!root || !words.length) return null;
     var re = new RegExp("(" + words.map(function (w) { return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + "[a-z]*)", "ig"), first = null, nodes = [];
     var walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false), n;
@@ -2237,7 +2254,7 @@
   }
   /* Handbook filter: every word must appear (whole or in part) in the code, title, summary, type, audience, owner or text.
      A few everyday words also find their handbook terms, so "ban" finds suspensions and "linux" finds Proton. */
-  var guideQ = "", guideIdx = null, guideIdxP = null;
+  var guideQ = "", guideMode = "name", guideIdx = null, guideIdxP = null;
   var GUIDE_RELATED = {
     login: ["sign-in", "sign in", "github", "keycard"], signin: ["sign-in", "github"], account: ["security", "two-factor", "github"],
     password: ["security", "two-factor", "passkey"], "2fa": ["two-factor"], hack: ["security", "incident"], leak: ["incident", "secret"],
@@ -2259,7 +2276,7 @@
       return [w, stem].concat(GUIDE_RELATED[w] || GUIDE_RELATED[stem] || []);
     });
   }
-  function guideHay(g) { return [g.code, g.title, g.summary, g.type, g.audience, g.owner, guideIdx ? guideIdx[g.id] || "" : ""].join(" ").toLowerCase(); }
+  function guideHay(g) { return [g.code, g.title, g.summary, g.type, g.audience, g.owner, guideIdx && guideMode === "text" ? guideIdx[g.id] || "" : ""].join(" ").toLowerCase(); }
   function guideMatch(g, words) {
     var h = guideHay(g);
     return words.every(function (alts) { return alts.some(function (a) { return h.indexOf(a) > -1 || (a.length > 3 && h.replace(/-/g, " ").indexOf(a) > -1); }); });
@@ -2273,15 +2290,17 @@
   function drawGuideList(list) {
     $("#vb").innerHTML =
       '<p class="sub">Everything you need to play, contribute, test and run Hound Protocol, written down. Every document is versioned, owned by a department and printable on A4.</p>' +
-      '<div class="hb-tools"><label class="cab-q hb-q"><span aria-hidden="true">⌕</span><input id="hq" type="search" placeholder="Filter the Handbook: a word, part of one, or a topic" aria-label="Filter the Handbook" aria-controls="hbList" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' +
+      '<div class="hb-tools"><label class="cab-q hb-q"><span aria-hidden="true">⌕</span><input id="hq" type="search" placeholder="' + (guideMode === "text" ? "Filter by what the documents say" : "Filter by name: a word, part of one, or a topic") + '" aria-label="Filter the Handbook" aria-controls="hbList" autocomplete="off" spellcheck="false"><kbd>Ctrl K</kbd><i class="cab-scan" aria-hidden="true"></i></label>' + smSwitch("hb", guideMode) +
       '<div class="tabs" role="tablist">' + GUIDE_AUD.map(function (a) { return '<button role="tab" data-aud="' + a + '" aria-selected="' + (guideAud === a) + '">' + a + "</button>"; }).join("") + "</div></div>" +
       '<div class="cab-count" id="hbCount" aria-live="polite"></div><div id="hbList"></div>' +
       '<p class="source">Source: docs/guides/ · index generated by tools/guides_index.py</p>';
     var q = $("#hq");
     q.value = guideQ;
+    function needText() { if (guideQ.trim() && !guideIdx && guideMode === "text") { $(".hb-q").classList.add("busy"); var at = guideQ; guideIndex(list).then(function () { var b = $(".hb-q"); if (b) b.classList.remove("busy"); if (currentView === "guides" && guideQ === at && $("#hbList")) drawGuideSheets(list); }); } }
+    smWire("hb", function (m) { guideMode = m; q.placeholder = m === "text" ? "Filter by what the documents say" : "Filter by name: a word, part of one, or a topic"; drawGuideSheets(list); needText(); q.focus(); });
     q.addEventListener("input", function () {
       guideQ = q.value; drawGuideSheets(list);
-      if (guideQ.trim() && !guideIdx) { $(".hb-q").classList.add("busy"); var at = guideQ; guideIndex(list).then(function () { var b = $(".hb-q"); if (b) b.classList.remove("busy"); if (currentView === "guides" && guideQ === at && $("#hbList")) drawGuideSheets(list); }); }
+      if (guideQ.trim() && !guideIdx && guideMode === "text") { $(".hb-q").classList.add("busy"); var at = guideQ; guideIndex(list).then(function () { var b = $(".hb-q"); if (b) b.classList.remove("busy"); if (currentView === "guides" && guideQ === at && $("#hbList")) drawGuideSheets(list); }); }
     });
     q.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && q.value) { e.preventDefault(); e.stopPropagation(); q.value = ""; guideQ = ""; drawGuideSheets(list); }
@@ -2289,7 +2308,7 @@
     });
     $$("[data-aud]").forEach(function (b) { b.addEventListener("click", function () { guideAud = b.dataset.aud; $$("[data-aud]").forEach(function (x) { x.setAttribute("aria-selected", String(x === b)); }); drawGuideSheets(list); }); });
     drawGuideSheets(list);
-    if (guideQ.trim() && !guideIdx) guideIndex(list).then(function () { if (currentView === "guides" && $("#hbList")) drawGuideSheets(list); });
+    if (guideQ.trim() && !guideIdx && guideMode === "text") guideIndex(list).then(function () { if (currentView === "guides" && $("#hbList")) drawGuideSheets(list); });
   }
   function drawGuideSheets(list) {
     var words = guideWords(), filtering = !!words.length;
@@ -2312,9 +2331,8 @@
       section("Policy", "Policies", "Rules everyone follows.") +
       section("Procedure", "Standard operating procedures", "Step by step, the same way every time.") +
       (shown.length ? "" : filtering ? '<div class="cab-none"><b>No match</b>No handbook document matches “' + esc(guideQ.trim()) + '”' + (guideAud !== "All" ? " for " + esc(guideAud) : "") + '.<small>Try fewer words, part of a word, or the All tab.</small></div>' : '<div class="empty">No documents for this audience yet</div>');
-    $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
+    $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx || guideMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
     $("#hbList").classList.toggle("filtering", filtering);
-    $$("#hbList .mini").forEach(function (a) { a.addEventListener("click", function () { if (guideQ.trim()) cabHL = guideQ.trim().toLowerCase().split(/\s+/); }); });
   }
   /* Ctrl+K or / jumps to the Handbook filter */
   document.addEventListener("keydown", function (e) {
@@ -2403,7 +2421,7 @@
     o = o || {};
     var lv = KC_LV[s.card] || KC_LV.LV3, n = String(s.card || "LV3").slice(2), revoked = s.status === "revoked", photo = o.specimen ? "" : kcPhoto(s);
     var tag = o.link ? 'a href="#/verify/' + encodeURIComponent(s.id) + '"' : "div";
-    return "<" + tag + ' class="hk' + (o.big ? " big" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + (photo ? " has-photo" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
+    return "<" + tag + ' class="hk' + (o.big ? " big" : "") + (s.guest ? " guest" : "") + (revoked ? " revoked" : "") + (o.specimen ? " specimen" : "") + (photo ? " has-photo" : "") + '" style="--hk:' + lv[1] + "; --i:" + (o.i || 0) + '" data-rid="' + esc(s.id) + '">' +
       (photo ? '<span class="hk-photo"><img src="' + esc(photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.parentNode.parentNode;c.classList.remove(\'has-photo\');this.parentNode.remove()"></span>' : "") +
       '<span class="hk-band"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="22" height="22"><span>Hound Protocol<small>Security card · ' + esc(lv[0]) + '</small></span></span>' +
       '<span class="hk-lv" aria-label="Keycard level ' + n + '"><small>LV</small>' + esc(n) + "</span>" +
@@ -2412,6 +2430,7 @@
       '<span class="hk-meta"><span><i>Hound ID</i>' + esc(s.member ? "Member" : s.id) + "</span><span><i>Clearance</i>Level " + esc(n) + "</span><span><i>Dept</i>" + esc(s.department) + "</span><span><i>Grade</i>" + esc(o.specimen ? "B" : kcGrade(s.login)) + "</span>" + (s.since ? "<span class=\"k-since\"><i>Since</i>" + esc(fmtDate(s.since)) + "</span>" : "") + "</span>" +
       '<span class="hk-foot">' + kcBars(s.id) + '<span class="vs">' + (o.specimen ? '<span class="status planned">Specimen</span>' : revoked ? '<span class="status bad">Revoked</span>' : s.member ? '<span class="status claimed">Signed in</span>' : vBadge("wait")) + "</span>" + (s.ssh_key ? '<span class="hk-key" title="SSH signing key pinned to this card">KEY</span>' : "") + "</span>" +
       (revoked ? '<span class="hk-void" aria-hidden="true">VOID</span>' : "") +
+      (s.guest ? '<span class="hk-guest" aria-hidden="true">Guest pass · 24 h</span>' : "") +
       "</" + (o.link ? "a" : "div") + ">";
   }
   var KC_SPECIMEN = { id: "HND-0000", login: "your-github-name", name: "Your Name", github_id: 0, card: "LV5", department: "Development", since: "2026-10-23", status: "active" };
@@ -2563,6 +2582,28 @@
   function siOn() { return !!siCfg().relay; }
   function siSave() { try { if (SI) sessionStorage.setItem(SI_KEY, JSON.stringify(SI)); else sessionStorage.removeItem(SI_KEY); } catch (e) { /* private mode: the session lives in this page only */ } }
   function siIn() { return !!(SI && SI.token && SI.user && (!SI.exp || SI.exp > Date.now())); }
+  /* Guest passes: the owner grants a link that opens LV3 (Staff) for 24 hours. The relay signs and checks the pass and
+     reads the Staff documents for the guest; the pass lives in this tab only and cannot be extended here. */
+  var SG_KEY = "hp.guest", SG = null;
+  try { SG = JSON.parse(sessionStorage.getItem(SG_KEY) || "null"); } catch (e) { SG = null; }
+  function sgSave() { try { if (SG) sessionStorage.setItem(SG_KEY, JSON.stringify(SG)); else sessionStorage.removeItem(SG_KEY); } catch (e) { /* this page only */ } }
+  function sgIn() { return !!(SG && SG.pass && SG.exp > Date.now()); }
+  function siRelay() { return String(siCfg().relay || "").replace(/\/$/, ""); }
+  function sgApi(path, raw, pass) {
+    if (typeof fetch !== "function") return Promise.reject(new Error("This browser cannot open guest passes"));
+    return fetch(siRelay() + path, { headers: { Authorization: "Guest " + (pass || SG.pass) }, cache: "no-store" }).then(function (r) {
+      if (r.status === 401 && !pass) { SG = null; sgSave(); siBadge(); }
+      if (!r.ok) return r.json().catch(function () { return {}; }).then(function (j) { var e = new Error(j.error || "HTTP " + r.status); e.status = r.status; throw e; });
+      return raw ? r.text() : r.json();
+    });
+  }
+  function siOwner() { return siIn() && String(SI.user.id) === String(siCfg().owner || ""); }
+  /* Reads one restricted file, with the person's own sign-in or, for a guest, through the relay */
+  function siRead(repo, path) {
+    if (siIn()) return siApi("/repos/" + repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/"), true);
+    if (sgIn() && repo === (siCfg().guestRepo || "Hound-Protocol/hp-staff")) return sgApi("/guest/file?path=" + encodeURIComponent(path), true);
+    var e = new Error("No access"); e.status = 403; return Promise.reject(e);
+  }
   function siApi(path, raw) {
     var h = { Authorization: "Bearer " + SI.token, Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json" };
     if (typeof fetch !== "function") return Promise.reject(new Error("This browser cannot sign in"));
@@ -2588,7 +2629,7 @@
         SI = { token: m.token, exp: m.expires_in ? Date.now() + m.expires_in * 1000 : 0 };
         siApi("/user").then(function (u) {
           SI.user = { id: u.id, login: u.login, name: u.name || "", avatar: u.avatar_url };
-          siSave(); siBadge(); ok(SI.user);
+          siSave(); siBadge(); siOrg(); ok(SI.user);
         }, function () { SI = null; siSave(); fail(new Error("Could not read your GitHub account.")); });
       }
       window.addEventListener("message", on);
@@ -2596,13 +2637,26 @@
     });
   }
   function signOut() { SI = null; siSave(); siBadge(); }
+  /* Organization owners hold LV7, as GitHub itself reports it (ADR 0011: keycards come from the organization). This needs
+     the sign-in app's read-only "Members" permission; without it the check fails quietly and nothing changes. */
+  function siOrg() {
+    if (!siIn() || (SI.org && SI.org.at > Date.now() - 10 * 60 * 1000)) return;
+    var org = siCfg().org || "Hound-Protocol";
+    SI.org = { at: Date.now(), role: "" };
+    siApi("/user/memberships/orgs/" + encodeURIComponent(org)).then(function (m) {
+      SI.org = { at: Date.now(), role: m && m.state === "active" ? m.role : "" }; siSave(); siBadge();
+      if (SI.org.role === "admin" && (currentView === "profile" || currentView === "docs")) route();
+    }, function () { /* no Members permission yet, or not a member */ });
+  }
   /* The person's card: their active staff card, or a member card (LV2) */
   function siCard() {
-    if (!siIn()) return null;
+    if (!siIn()) return sgIn() ? { id: "GUEST", login: "guest", name: "Guest", github_id: 0, avatar: "", card: "LV3", department: "Guest", since: "", status: "active", guest: true, exp: SG.exp } : null;
     var staff = (data.staff && data.staff.staff) || [];
     var s = staff.filter(function (x) { return x.github_id === SI.user.id && x.status === "active"; })[0];
     /* A staff card counts only once its signature checks out against the published records key, so an edited
        staff.json can never raise anyone's clearance. Until then (or if it fails) the holder is a member. */
+    if (!s && SI.org && SI.org.role === "admin")
+      return { id: "OWNER", login: SI.user.login, name: SI.user.name, github_id: SI.user.id, avatar: SI.user.avatar, card: "LV7", department: "Administration", since: "", status: "active", owner: true };
     if (s) {
       var v = siV[s.id];
       if (!v) siVerify(s);
@@ -2629,7 +2683,8 @@
       b = $("#siBadge");
     }
     var c = siCard();
-    b.innerHTML = c ? '<i style="--hk:' + (KC_LV[c.card] || KC_LV.LV2)[1] + '">' + esc(c.card) + "</i><span>" + esc(c.name || c.login) + "</span>" : "<i>ID</i><span>Sign in</span>";
+    b.innerHTML = c ? '<i style="--hk:' + (KC_LV[c.card] || KC_LV.LV2)[1] + '">' + esc(c.card) + "</i><span>" + esc(c.guest ? "Guest pass" : c.name || c.login) + "</span>" : "<i>ID</i><span>Sign in</span>";
+    b.classList.toggle("guest", !!(c && c.guest));
     b.classList.toggle("in", !!c);
     b.setAttribute("aria-label", c ? "Your profile, " + c.card : "Sign in with GitHub");
   }
@@ -2637,6 +2692,11 @@
   /* ---- Restricted document areas: one private repository per clearance ---- */
   var siTrees = {};
   function siArea(a) {
+    if (!siIn()) {
+      if (!sgIn() || a.repo !== (siCfg().guestRepo || "Hound-Protocol/hp-staff")) { var e = new Error("No access"); e.status = 403; return Promise.reject(e); }
+      var gk = "guest:" + a.repo;
+      return siTrees[gk] || (siTrees[gk] = sgApi("/guest/tree").then(function (j) { return j.paths || []; }, function (er) { delete siTrees[gk]; throw er; }));
+    }
     if (siTrees[a.repo]) return siTrees[a.repo];
     return (siTrees[a.repo] = siApi("/repos/" + a.repo).then(function (r) {
       return siApi("/repos/" + a.repo + "/git/trees/" + encodeURIComponent(r.default_branch) + "?recursive=1");
@@ -2652,17 +2712,23 @@
     Promise.all([loadLocal("staff"), loadLocal("records"), loadLocal("records-key"), loadLocal("contracts")]).then(function (res) {
       if (currentView !== "profile") return;
       var keys = (res[2] && res[2].keys) || [];
-      if (!siIn()) return drawSignedOut();
+      if (!siIn() && !sgIn()) return drawSignedOut();
       var c = siCard(), lvl = siLevel(), areas = siCfg().areas || [];
       $("#vb").innerHTML =
         '<div class="kc-profile">' + keycard(c, { big: true }) +
+        (c.guest ? '<dl class="kc-facts"><div><dt>Pass</dt><dd>Guest pass with <b>LV3</b> (Staff) clearance, granted by the owner.</dd></div>' +
+          "<div><dt>Expires</dt><dd>" + esc(fmtDate(new Date(c.exp).toISOString().slice(0, 10))) + " at " + esc(new Date(c.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(c.exp)) + " left. It cannot be extended.</dd></div>" +
+          "<div><dt>Session</dt><dd>This tab only. Nothing is stored on a server.</dd></div>" +
+          '<div><dt></dt><dd><button class="btn small" id="siOut">End guest pass</button></dd></div></dl></div>' :
         '<dl class="kc-facts"><div><dt>GitHub</dt><dd><a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id) + "</dd></div>" +
-          "<div><dt>Card</dt><dd>" + (c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
+          "<div><dt>Card</dt><dd>" + (c.owner ? "Owner card: GitHub confirms you own the Hound-Protocol organization." : c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
           "<div><dt>Session</dt><dd>" + (SI.exp ? "Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab" : "Signed in, in this tab") + "</dd></div>" +
-          '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>' +
+          '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>') +
+        (siOwner() ? sgPanel() : "") +
         siAccess(lvl, areas) +
         '<article class="dossier si-reader" id="siDoc" hidden></article>';
-      $("#siOut").addEventListener("click", function () { signOut(); status("Signed out"); viewProfile(); });
+      $("#siOut").addEventListener("click", function () { if (c.guest) { SG = null; sgSave(); siBadge(); status("Guest pass ended"); } else { signOut(); status("Signed out"); } viewProfile(); });
+      if (siOwner()) sgPanelWire();
       areas.forEach(function (a, i) {
         var box = $('.si-docs[data-a="' + i + '"]');
         if (!box || lvl < +String(a.card).slice(2)) return;
@@ -2674,8 +2740,8 @@
           box.innerHTML = '<p class="sub">' + (e.status === 404 || e.status === 403 ? "GitHub has not given your account access yet. Ask Administration to add you to the right team." : "Could not reach GitHub. Try again later.") + "</p>";
         });
       });
-      if (keys.length && !c.member) markVerified([c], keys);
-      else $$('.kc-profile [data-rid] .vs').forEach(function (el) { el.innerHTML = '<span class="status claimed">Signed in</span>'; });
+      if (keys.length && !c.member && !c.guest && !c.owner) markVerified([c], keys);
+      else $$('.kc-profile [data-rid] .vs').forEach(function (el) { el.innerHTML = c.owner ? '<span class="status done">Confirmed by GitHub</span>' : c.guest ? '<span class="status planned">Guest · until ' + esc(new Date(c.exp).toTimeString().slice(0, 5)) + "</span>" : '<span class="status claimed">Signed in</span>'; });
     });
   }
   /* Access granted and access restricted: every level's rights from ADR 0011 (config.signin.access), split at the
@@ -2706,10 +2772,54 @@
       "</div>" +
       '<p class="sub ax-note">GitHub decides what you can read in the restricted areas, through your teams; your card shows what your clearance should open. Items marked with a date or <em>Planned</em> arrive with the session browser and the API server (<a href="#/docs/adr-0011">ADR 0011</a>).</p>';
   }
+  function sgLeft(exp) { var m = Math.max(0, Math.round((exp - Date.now()) / 60000)); return m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; }
+  /* The owner's guest pass desk: grant a 24-hour LV3 pass and copy its link. The relay checks that the request comes
+     from the owner's own GitHub account; this panel only shows for the owner. */
+  var SG_ISSUED = "hp.guest.issued";
+  function sgIssued() { try { return (JSON.parse(sessionStorage.getItem(SG_ISSUED) || "[]") || []).filter(function (x) { return x.exp > Date.now(); }); } catch (e) { return []; } }
+  function sgLink(pass) { return (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guest/" + pass; }
+  function sgPanel() {
+    var list = sgIssued();
+    return '<section class="gp"><header><span class="gp-ico" aria-hidden="true"></span><div><b>Guest passes</b><small>Owner only · LV3 (Staff) access for 24 hours to whoever has the link. A pass cannot be extended.</small></div>' +
+      '<button class="btn primary" id="gpGrant">Grant Guest Pass</button></header><p class="sub" id="gpMsg" aria-live="polite"></p><ul class="gp-list" id="gpList">' + list.map(sgItem).join("") + "</ul></section>";
+  }
+  function sgItem(x) {
+    return '<li><code>' + esc(x.pass.slice(0, 10)) + '…</code><span>Expires ' + esc(new Date(x.exp).toTimeString().slice(0, 5)) + " · " + esc(sgLeft(x.exp)) + ' left</span><button class="btn small" data-gp="' + esc(x.pass) + '">Copy link</button></li>';
+  }
+  function sgPanelWire() {
+    function wire() { $$("[data-gp]").forEach(function (b) { b.onclick = function () { var u = sgLink(b.getAttribute("data-gp")); (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { b.textContent = "Copied"; status("Guest link copied"); }, function () { window.prompt("Copy the guest link", u); }); }; }); }
+    wire();
+    var g = $("#gpGrant"); if (!g) return;
+    g.addEventListener("click", function () {
+      g.disabled = true; $("#gpMsg").textContent = "Asking the relay…";
+      fetch(siRelay() + "/guest/grant", { method: "POST", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "HTTP " + r.status); return j; }); }).then(function (j) {
+        var list = sgIssued(); list.unshift({ pass: j.pass, exp: j.exp });
+        try { sessionStorage.setItem(SG_ISSUED, JSON.stringify(list.slice(0, 10))); } catch (e) { /* this page only */ }
+        $("#gpList").innerHTML = list.map(sgItem).join(""); wire();
+        $("#gpMsg").textContent = "Pass granted. Copy its link and send it privately; anyone with the link has LV3 until it expires.";
+        var b = $("#gpList [data-gp]"); if (b) b.click();
+        blip("go");
+      }, function (e) { $("#gpMsg").textContent = e.message; }).then(function () { g.disabled = false; });
+    });
+  }
+  /* #/guest/PASS: check the pass with the relay, keep it in this tab, then open the profile */
+  function viewGuest(pass) {
+    var v = $("#view");
+    v.innerHTML = shell("Hound ID", "Guest pass", loading("Checking your guest pass"));
+    if (!pass || !siOn()) { $("#vb").innerHTML = '<div class="empty">No guest pass in this link</div>'; return; }
+    sgApi("/guest/check", false, pass).then(function (j) {
+      SG = { pass: pass, exp: j.exp }; sgSave(); siBadge(); status("Guest pass accepted"); blip("go");
+      location.replace("#/profile");
+    }, function (e) {
+      if (currentView !== "guest") return;
+      $("#vb").innerHTML = '<div class="ad gp-bad"><div class="ad-box"><small>Security</small><strong>Access denied</strong><em>' + esc(e.status === 401 ? "This guest pass is not valid or has expired." : e.message) + "</em><p>Ask the person who sent it for a new one, or contact Administration.</p>" +
+        '<div class="ad-act"><a class="btn small" href="#/briefing">About Joint Operations</a><a class="btn small" href="#/guides/hp-gde-015">Using the website</a></div></div></div>';
+    });
+  }
   function siOpen(a, path) {
     var d = $("#siDoc"); if (!d) return;
     d.hidden = false; d.className = "dossier si-reader k-project"; d.innerHTML = loading("Opening " + path);
-    siApi("/repos/" + a.repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/"), true).then(function (md) {
+    siRead(a.repo, path).then(function (md) {
       d.style.setProperty("--g", (KC_LV[a.card] || KC_LV.LV3)[1]); d.style.setProperty("--gd", "#4d5a60");
       d.innerHTML = '<div class="ds-tab"><b>' + esc(a.card) + "</b>" + esc(a.title) + '</div><div class="ds-folder"><div class="ds-page">' +
         '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Restricted · ' + esc(a.card) + "</span></header>" +
@@ -2736,7 +2846,7 @@
   }
 
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: viewDevlog, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guest: viewGuest, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");
@@ -2836,6 +2946,30 @@
     });
   }
 
+  /* ---------------- New version announcement ----------------
+     Every few minutes, and when the tab comes back into view, the site asks the server for its build number. When a newer
+     release is live, a small notice slides in at the top and offers to reload. "Later" hides it until the next release. */
+  var upSeen = "", upLast = 0;
+  function upCheck() {
+    if (EMBED || location.protocol === "file:" || !data.build || !data.build.sha || typeof fetch !== "function") return;
+    upLast = Date.now();
+    fetch("data/build.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (b) {
+      if (!b || !b.sha || b.sha === data.build.sha || b.sha === upSeen) return;
+      return fetch("data/config.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : {}; }, function () { return {}; }).then(function (c) { upShow(b, c.version); });
+    }, function () { /* offline: try again later */ });
+  }
+  function upShow(b, version) {
+    if ($("#upNote")) return;
+    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><i aria-hidden="true"></i><div><b>Update available</b><span>' +
+      esc("Build " + (version || "") + (b.build ? "." + b.build : "")) + ' is live. Reload to get the latest version.</span></div>' +
+      '<button class="btn small primary" id="upGo">Reload</button><button class="btn small" id="upLater">Later</button></div>');
+    blip();
+    $("#upGo").addEventListener("click", function () { location.reload(); });
+    $("#upLater").addEventListener("click", function () { upSeen = b.sha; var n = $("#upNote"); n.classList.add("out"); setTimeout(function () { n.remove(); }, 400); });
+  }
+  setInterval(upCheck, 5 * 60 * 1000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && Date.now() - upLast > 60 * 1000) upCheck(); });
+
   /* ---------------- Keyboard ---------------- */
   document.addEventListener("keydown", function (e) {
     var tag = (e.target && e.target.tagName) || "";
@@ -2896,7 +3030,7 @@
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });
   }, function () { /* keep defaults */ }).then(function () {
-    loadLocal("build").then(function () { applyConfig(); siBadge(); renderMenu(); select(cur, false); route(); preload(); });
+    loadLocal("build").then(function () { applyConfig(); siBadge(); siOrg(); renderMenu(); select(cur, false); route(); preload(); });
   });
   window.addEventListener("hashchange", route);
 })();

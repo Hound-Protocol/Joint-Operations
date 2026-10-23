@@ -76,7 +76,8 @@ async def check(browser, name, size):
     first = await page.locator("#cabDrawers .fold").first.get_attribute("data-id") if await page.locator("#cabDrawers .fold").count() else ""
     if first != "adr-0012":
         failures.append("docs: search by file number did not put ADR-0012 first")
-    await page.fill("#cq", "keycard signing"); await page.wait_for_timeout(800)
+    await page.click('#cabSm [data-sm="text"]')
+    await page.fill("#cq", "keycard signing"); await page.wait_for_timeout(1500)
     if not await page.locator("#cabDrawers .fold.hit").count():
         failures.append("docs: full-text search found no folder")
     await page.press("#cq", "Enter"); await page.wait_for_timeout(1500)

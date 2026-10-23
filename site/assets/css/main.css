@@ -1582,3 +1582,41 @@ html.booting .center, html.booting .bar { opacity: 0; }
 @media (max-width: 1000px) { .ab-steps, .ab-links { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 760px) { .ab-hero { grid-template-columns: 1fr; } .ab-vis { order: -1; max-width: 240px; margin: 0 auto; } .ab-stats { grid-template-columns: 1fr 1fr; } .ab-steps, .ab-links, .ab-faq { grid-template-columns: 1fr; } .ab-stats b { font-size: 34px; } }
 .hb-clr { margin-left: 0; }
+/* New version announcement (v0.0.27) */
+.up-note { position: fixed; z-index: 60; top: 64px; left: 50%; display: flex; align-items: center; gap: 14px; max-width: calc(100vw - 24px); padding: 12px 14px 12px 16px; transform: translateX(-50%); border: 1px solid var(--jo); border-left-width: 4px; background: rgba(10,13,15,.96); box-shadow: 0 16px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.4); animation: upIn .5s cubic-bezier(.22,.9,.3,1) both; }
+.up-note.out { animation: upOut .35s ease both; }
+.up-note i { flex: none; width: 10px; height: 10px; background: var(--jo); box-shadow: 0 0 10px var(--jo); animation: blink 1.4s ease-in-out infinite; }
+.up-note b { display: block; font: 400 12.5px/1.2 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--hot); }
+.up-note span { display: block; margin-top: 3px; font: 300 14.5px/1.35 var(--ui); color: var(--fg-2); }
+@keyframes upIn { from { opacity: 0; transform: translate(-50%, -18px); } }
+@keyframes upOut { to { opacity: 0; transform: translate(-50%, -18px); } }
+.no-motion .up-note, .no-motion .up-note i { animation: none; }
+@media (max-width: 700px) { .up-note { top: 56px; flex-wrap: wrap; } .up-note > div { flex: 1 1 200px; } }
+/* Guest passes (v0.0.27) */
+.gp { margin: 22px 0 0; border: 1px solid rgba(212,174,82,.45); background: linear-gradient(110deg, rgba(212,174,82,.08), rgba(10,13,15,.6) 55%); }
+.gp header { display: flex; align-items: center; gap: 14px; padding: 14px 16px; flex-wrap: wrap; }
+.gp header > div { flex: 1 1 260px; }
+.gp header b { display: block; font: 400 15px/1.2 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: #d4ae52; }
+.gp header small { display: block; margin-top: 4px; font: 300 14px/1.4 var(--ui); color: var(--fg-2); }
+.gp-ico { width: 34px; height: 24px; border: 2px solid #d4ae52; border-radius: 3px; position: relative; }
+.gp-ico::after { content: ""; position: absolute; left: 4px; right: 4px; top: 7px; height: 3px; background: #d4ae52; box-shadow: 0 6px 0 rgba(212,174,82,.5); }
+.gp #gpMsg { margin: 0 16px 8px; }
+.gp-list { list-style: none; margin: 0; padding: 0 16px 12px; display: grid; gap: 6px; }
+.gp-list:empty { display: none; }
+.gp-list li { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 10px; border: 1px dashed rgba(212,174,82,.35); animation: up .35s ease both; }
+.gp-list code { font: 400 13px var(--mono); color: #d4ae52; }
+.gp-list span { flex: 1; font: 400 12.5px var(--mono); color: var(--dim); letter-spacing: .06em; }
+.hk.guest { --hk: #d4ae52 !important; }
+.hk-guest { position: absolute; right: -40px; bottom: 30px; z-index: 2; width: 170px; padding: 3px 0; transform: rotate(-35deg); text-align: center; background: repeating-linear-gradient(-45deg, #d4ae52 0 10px, #b8923a 10px 20px); color: #1a1408; font: 400 10px/1.4 var(--mono); letter-spacing: .2em; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+.hk.big .hk-guest { right: -46px; bottom: 40px; width: 210px; font-size: 11px; }
+.si-badge.guest i { background: #d4ae52 !important; }
+.gp-bad { position: static; display: grid; place-items: center; padding: 40px 0; }
+.mb-sock line { stroke: #9fb1b6; stroke-width: 1.4; } .mb-sock path { fill: #f28c28; stroke: #fff2e0; stroke-width: .6; }
+/* Search by name or content (v0.0.27) */
+.sm { display: flex; align-items: center; gap: 0; margin: -4px 0 12px; font: 400 11.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.sm span { margin-right: 10px; color: var(--dim); }
+.sm button { padding: 5px 12px; border: 1px solid var(--line); background: rgba(10,13,15,.6); color: var(--fg-2); font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+.sm button + button { border-left: 0; }
+.sm button[aria-pressed="true"] { background: var(--jo); border-color: var(--jo); color: #120c04; }
+.sm button:hover:not([aria-pressed="true"]) { color: var(--fg); border-color: var(--dim); }
+.hb-tools .sm { margin: 0; }
