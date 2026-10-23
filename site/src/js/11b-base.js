@@ -114,7 +114,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -146,7 +146,7 @@
       var b = mbBuild(r, now);
       $("#vb").innerHTML = '<div class="bf"><section class="bf-sec">' +
         '<div class="mb-stage">' + b.svg +
-          '<div class="mb-hudtl"><span class="kicker">Base construction</span><b>' + (all[1] ? Math.round(all[0] / all[1] * 100) : 0) + "%</b><small>" + all[0] + " of " + all[1] + " tasks done</small>" +
+          '<div class="mb-hudtl"><span class="kicker">Joint Operations Motherbase</span><b>' + (all[1] ? Math.round(all[0] / all[1] * 100) : 0) + "%</b><small>" + all[0] + " of " + all[1] + " tasks done</small>" +
           '<ul class="mb-key"><li class="k-done">Complete</li><li class="k-now">Under construction</li><li class="k-next">Planned</li></ul></div>' +
           '<p class="mb-hint">Click a platform for details</p>' +
           '<aside class="mb-panel" id="mbPanel" aria-live="polite"></aside>' +
@@ -241,6 +241,8 @@
     boats.forEach(function (b) { var e = edgePoint(), d = dockFor(); b.x = e[0]; b.y = e[1]; b.tx = d[0]; b.ty = d[1]; });
     function ring(x, y, r0, r1, dur, hot) { for (var k = 0; k < rings.length; k++) if (rings[k].t >= 1) { var g = rings[k]; g.x = x; g.y = y; g.r0 = r0; g.r1 = r1; g.dur = dur; g.t = 0; g.hot = !!hot; return; } }
     var piled = 0, ringT = 0;
+    /* Comms mast on the command platform (v0.0.22): a turning dish that sends a signal ring every few seconds */
+    var comms = mbWorld(mods[0], [-mods[0].g.R * 0.45, mods[0].g.R * 0.05]), commsT = 1.2, commsEl = $("#mbComms");
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
 
     function step(dt) {
@@ -382,6 +384,8 @@
         if (p.age > 7 + (i % 4)) { p.on = false; ring(p.x, p.y, 2, 14, 0.8, true); }
         e.setAttribute("x", mbF(p.x - 4)); e.setAttribute("y", mbF(p.y - 3.5)); e.style.opacity = "";
       });
+      commsEl.setAttribute("transform", "translate(" + mbF(comms[0]) + " " + mbF(comms[1]) + ") rotate(" + mbF((T * 40) % 360) + ")");
+      commsT -= dt; if (commsT <= 0) { commsT = 2.6; ring(comms[0], comms[1], 6, 70, 2.4, false); }
       /* Selection ring */
       var sm = mods[MB.sel];
       if (sm) {

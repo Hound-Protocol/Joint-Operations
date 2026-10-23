@@ -2,7 +2,7 @@
   "project": "Joint Operations",
   "team": "Hound Protocol",
   "tagline": "Metal Gear Solid V, now with up to 16 players",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
@@ -75,5 +75,25 @@
         "https://hound-protocol.github.io/hound-protocol-web/"
       ]
     }
+  },
+  "signin": {
+    "relay": "https://hp-signin.trueman-truetown.workers.dev",
+    "areas": [
+      {
+        "repo": "Hound-Protocol/hp-staff",
+        "card": "LV3",
+        "title": "Staff"
+      },
+      {
+        "repo": "Hound-Protocol/hp-leads",
+        "card": "LV5",
+        "title": "Leads"
+      },
+      {
+        "repo": "Hound-Protocol/hp-admin",
+        "card": "LV6",
+        "title": "Administration"
+      }
+    ]
   }
 }

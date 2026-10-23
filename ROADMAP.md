@@ -21,7 +21,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Keycards and Hound ID proof with SSH signing keys (ADR 0017)
 - [x] Docs as a dossier cabinet: paper per document class, ranked full-text search
 - [x] Documentation in two zones, Library and Handbook
-- [ ] Sign-in with GitHub and clearance-based documents in a private repository (ADR 0017)
+- [x] Sign-in with GitHub, keycard profiles and clearance-based documents in private repositories (ADR 0017)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)
 - [ ] Steam App ID position recorded (legal.md, contract C14)

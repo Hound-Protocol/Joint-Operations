@@ -2,6 +2,13 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.22 · Sign-in · 2026-10-23
+- **Sign-in with GitHub** ([ADR 0017](docs/decisions/0017-hound-id-sign-in.md), [setup](docs/signin.md)): a **Sign in** badge in the top bar and a new **Profile** page. Signed in, you see your keycard (your signed staff card, or a member card) with your GitHub picture, your session, and **your documents**: one restricted area per clearance (Staff LV3, Leads LV5, Administration LV6), read straight from private repositories with your own sign-in, so GitHub enforces access. Areas above your clearance stay locked. The token stays in the tab and expires within eight hours; sign out any time. The relay code is in `tools/signin-relay/`.
+- **Keycards:** the holder's GitHub picture replaces the chip; the notch on the edge is gone; profile pages no longer repeat what the card already shows.
+- **Smoother loading:** each page waits until its content, fonts and images are ready, shows a thin loading line meanwhile, then fades in at once. The interface fades in once on a cold start instead of flashing, and data files are retried once if a request fails.
+- **Roadmap:** the heading reads **Joint Operations Motherbase**; the base fits the screen; a comms mast on the command platform now sends signal rings (this release's base detail).
+- **Privacy:** the notice covers sign-in: what is kept in your tab, what the relay does, and how to revoke access.
+
 ## v0.0.21 · Polish pass · 2026-10-23
 - **Documentation:** Guides and Docs are merged into one Documentation section with two zones: the **Library** (plans, decisions, research, technical, community, legal) and the **Handbook** (guides, policies and procedures as printable A4 sheets). Search covers both and opens handbook results in the Handbook with the words highlighted. The Guides tab is gone; old links still work.
 - **Critical seats** (technical lead, second GitHub owner, Discord admins, moderators, release signers) are filled once there is a playable prototype. The roadmap moves them to Phase 2, the Team page shows them as "After prototype" and they no longer count as open positions.
