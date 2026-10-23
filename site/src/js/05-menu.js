@@ -3,13 +3,12 @@
     { id: "briefing", title: "About Joint Operations", desc: "What it is, how it works, and where it stands", tab: "About" },
     { id: "roadmap", title: "Roadmap", desc: "Where we are and what comes next", tab: "Roadmap", tabOnly: true },
     { id: "download", title: "Download", desc: "Get Joint Operations for Windows or Linux", tab: "Download" },
-    { id: "sessions", title: "Session Browser", desc: "Browse, Create & Join active Joint Operations", tab: "Sessions" },
-    { id: "contribute", title: "Contribute", desc: "Take part in development & Become a Hound Member", tab: "Contribute" },
+    { id: "sessions", title: "Session Browser", desc: "Find, host and join Joint Operations sessions", tab: "Sessions" },
+    { id: "contribute", title: "Contribute", desc: "Take a contract and help build Joint Operations", tab: "Contribute" },
     { id: "team", title: "Team", desc: "Chain of command and the people behind Hound Protocol", tab: "Team", tabOnly: true },
-    { id: "mods", title: "Mods", desc: "Upload, Download & Browse Re-Engineered mods curated to function with Joint Operations", tab: "Mods" },
+    { id: "mods", title: "Mods", desc: "Mods tested to work with Joint Operations", tab: "Mods" },
     { id: "devlog", title: "Dev Log", desc: "News, decisions and releases", tab: "Dev Log" },
-    { id: "guides", title: "Guides", desc: "How to play, help, test and run the project", tab: "Guides" },
-    { id: "docs", title: "Docs", desc: "Plans, decisions and research", tab: "Docs" },
+    { id: "docs", title: "Documentation", desc: "The handbook, plans, decisions and research", tab: "Docs" },
     { id: "options", title: "Options", desc: "Sound, motion and display settings", tab: "Options" }
   ];
   /* Menu icons: simple line glyphs drawn for this site, on a 24 x 24 grid */

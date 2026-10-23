@@ -20,11 +20,11 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Roadmap shown as a base under construction, one platform per phase, with cargo operations
 - [x] Keycards and Hound ID proof with SSH signing keys (ADR 0017)
 - [x] Docs as a dossier cabinet: paper per document class, ranked full-text search
+- [x] Documentation in two zones, Library and Handbook
 - [ ] Sign-in with GitHub and clearance-based documents in a private repository (ADR 0017)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)
 - [ ] Steam App ID position recorded (legal.md, contract C14)
-- [ ] Critical seats filled: technical lead, second GitHub owner, Discord admins, moderators
 - [ ] Branch protection requires the Checks and Contributor standing checks
 - [ ] Proton test environment defined (contract C02)
 
@@ -49,6 +49,7 @@ Gates and sequence are in docs/pre-development.md.
 - [ ] Shared detection status working for 2 players (ADR 0012)
 - [ ] Direct IP path working
 - [ ] GATE: Steam App ID and rights resolved before any player-facing build
+- [ ] Critical seats filled once a playable prototype exists: technical lead, second GitHub owner, Discord admins, moderators
 - [ ] Public launch: release, announcement, contracts open (ADR 0014)
 
 ## Phase 3: Scale to 16

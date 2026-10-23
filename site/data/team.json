@@ -66,7 +66,7 @@
    "members": [
     "TrueMan"
    ],
-   "open": "Discord admins, moderators"
+   "open": "Discord admins and moderators, after the playable prototype"
   },
   {
    "id": "dev",
@@ -83,7 +83,7 @@
    "members": [
     "TrueMan"
    ],
-   "open": "Technical lead"
+   "open": "Technical lead, after the playable prototype"
   },
   {
    "id": "qa",
@@ -272,7 +272,8 @@
     "TrueMan"
    ],
    "kind": "seat",
-   "about": "Account control and repository settings"
+   "about": "Account control and repository settings",
+   "after": "prototype"
   },
   {
    "dept": "Administration",
@@ -280,7 +281,8 @@
    "need": 2,
    "holders": [],
    "kind": "seat",
-   "about": "Server control, moderation escalation"
+   "about": "Server control, moderation escalation",
+   "after": "prototype"
   },
   {
    "dept": "Administration",
@@ -288,7 +290,8 @@
    "need": 2,
    "holders": [],
    "kind": "seat",
-   "about": "Community safety, social decisions"
+   "about": "Community safety, social decisions",
+   "after": "prototype"
   },
   {
    "dept": "Development",
@@ -296,7 +299,8 @@
    "need": 1,
    "holders": [],
    "kind": "seat",
-   "about": "Technical direction, architecture, merge approval"
+   "about": "Technical direction, architecture, merge approval",
+   "after": "prototype"
   },
   {
    "dept": "Quality",
@@ -304,7 +308,8 @@
    "need": 2,
    "holders": [],
    "kind": "seat",
-   "about": "Approves and publishes releases"
+   "about": "Approves and publishes releases",
+   "after": "prototype"
   },
   {
    "dept": "Quality",

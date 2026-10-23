@@ -8,7 +8,7 @@
       return;
     }
     if (currentView && !/INPUT|SELECT|TEXTAREA/.test(tag) && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-      var ids = ITEMS.map(function (i) { return i.id; }), k = ids.indexOf(currentView);
+      var ids = ITEMS.map(function (i) { return i.id; }), k = ids.indexOf(tabOf(currentView));
       location.hash = "#/" + ids[(k + (e.key === "ArrowRight" ? 1 : -1) + ids.length) % ids.length]; e.preventDefault(); return;
     }
     if (currentView || /INPUT|SELECT|TEXTAREA/.test(tag)) return;

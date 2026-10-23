@@ -32,12 +32,16 @@
 
   function viewCabinet(id) {
     var v = $("#view");
-    if (!$("#cab")) v.innerHTML = shell("Library", "Docs", loading("Opening the cabinet"));
-    loadLocal("docs").then(function (man) {
+    if (!$("#cab")) { v.innerHTML = shell("Documentation", "Library", loading("Opening the cabinet")); addZones("lib"); }
+    Promise.all([loadLocal("docs"), loadLocal("guides")]).then(function (res) {
       if (currentView !== "docs") return;
-      var docs = (man && man.docs) || [];
+      var man = res[0], all = (man && man.docs) || [], docs = all;
+      var zn = $(".zones"); if (zn) zn.outerHTML = docZones("lib");
       if (!docs.length) { $("#vb").innerHTML = '<div class="empty">No documents<small>data/docs.json could not be loaded.</small></div>'; return; }
-      var doc = docs.filter(function (d) { return d.id === id; })[0] || docs[0];
+      var doc = docs.filter(function (d) { return d.id === id; })[0];
+      /* Handbook documents live in the Handbook zone */
+      if (doc && doc.group === "Handbook") { location.replace("#/guides/" + doc.id); return; }
+      doc = doc || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
       if (!(doc.group in cabOpen)) cabOpen[doc.group] = true;
       if (!$("#cab")) {
         $("#vb").innerHTML = '<div class="cab" id="cab"><div class="cab-side">' +
@@ -74,6 +78,7 @@
     active = active || (on ? on.getAttribute("data-id") : "");
     var words = cabWords(), by = {};
     docs.forEach(function (d) { (by[d.group] = by[d.group] || []).push(d); });
+    delete by.Handbook;
     var groups = CAB_ORDER.filter(function (g) { return by[g]; }).concat(Object.keys(by).filter(function (g) { return CAB_ORDER.indexOf(g) < 0; }));
     $("#cabDrawers").innerHTML = groups.map(function (g) {
       var gc = cabGroup(g), list = by[g].filter(function (d) { return !words.length || cabTitleHit(words, d, cabCode(d, docs)); });
@@ -207,7 +212,7 @@
       function hl(s) { return esc(s).replace(re, function (m) { return "<mark>" + m + "</mark>"; }); }
       out.innerHTML = '<div class="cab-hits"><div class="label">' + plural(res.length, "result") + (res.length > cabRes.length ? " · top " + cabRes.length : "") + '<span class="cab-keys">↑↓ select · ↵ open · Esc clear</span></div>' +
         (cabRes.length ? cabRes.map(function (h, i) {
-          return '<a href="#/docs/' + esc(h.d.id) + '" data-i="' + i + '" class="' + (i === cabSel ? "on" : "") + '" style="--g:' + cabGroup(h.d.group)[1] + '"><b>' + hl(h.c[0]) + "</b> " + hl(h.c[1]) +
+          return '<a href="' + (h.d.group === "Handbook" ? "#/guides/" : "#/docs/") + esc(h.d.id) + '" data-i="' + i + '" class="' + (i === cabSel ? "on" : "") + '" style="--g:' + cabGroup(h.d.group)[1] + '"><b>' + hl(h.c[0]) + "</b> " + hl(h.c[1]) +
             (h.head ? '<i>§ ' + hl(h.head) + "</i>" : "") + (h.snip ? "<small>" + hl(h.snip) + "</small>" : "") + "</a>";
         }).join("") : '<p class="sub">Nothing matches every word of "' + esc(cabQ.trim()) + '".</p>') + "</div>";
       $$("#cabHits a").forEach(function (a) { a.addEventListener("click", function (ev) { ev.preventDefault(); cabGo(cabRes[+a.getAttribute("data-i")]); }); });
@@ -217,8 +222,9 @@
   function cabGo(h) {
     if (!h) return;
     cabHL = cabWords(); cabJump = true;
-    if (location.hash === "#/docs/" + h.d.id) { route(); return; }
-    location.hash = "#/docs/" + h.d.id;
+    var to = (h.d.group === "Handbook" ? "#/guides/" : "#/docs/") + h.d.id;
+    if (location.hash === to) { route(); return; }
+    location.hash = to;
   }
   /* Ctrl+K or / jumps to the search on the Docs page */
   document.addEventListener("keydown", function (e) {

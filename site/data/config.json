@@ -2,7 +2,7 @@
   "project": "Joint Operations",
   "team": "Hound Protocol",
   "tagline": "Metal Gear Solid V, now with up to 16 players",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "stage": "Pre-release",
   "repo": "Hound-Protocol/Joint-Operations",
   "branch": "main",
@@ -55,14 +55,14 @@
     "team": {
       "label": "The team",
       "title": "Hound Protocol",
-      "text": "A community-focused organization. We build ambitious projects, one of them being Joint Operations. We run like Mother Base: Administration, Development, Quality and Contractors. Take a contract, deliver it, and earn your grade, from E to S++.",
+      "text": "A community-focused organization. We build ambitious projects, one of them being Joint Operations. Four departments run it: Administration, Development, Quality and Contractors. Take a contract, deliver it, and earn your grade, from E to S++.",
       "facts": [
         [
           "Departments",
           "4"
         ],
         [
-          "Contractor ranks",
+          "Contractor grades",
           "E to S++"
         ],
         [
