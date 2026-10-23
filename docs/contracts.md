@@ -50,6 +50,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F10 | Guest pass list for every LV7: active, expired, revoked, delete | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F11 | Certificates of service | web | 🟡 Medium | — | done | Forge77 (with Claude) |
 | F12 | Hotfix: contract board fits the frame, headers aligned, smaller sign-in window | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F13 | Handbook open animation, owner on the roster | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -647,3 +648,13 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - No board column cut off at 1280px and up
 - Header bottom lines aligned
+
+## F13
+**Handbook open animation, owner on the roster**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Opening a sheet animates from the Handbook into the reading view; every card holder, the owner included, is on the roster.
+
+**Acceptance criteria**
+- Others fade, the sheet centers, pause, zoom in
+- Owner's LV7 card on the Team roster

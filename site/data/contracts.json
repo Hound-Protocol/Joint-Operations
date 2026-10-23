@@ -890,6 +890,30 @@
    ],
    "status": "done",
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F13",
+   "title": "Handbook open animation, owner on the roster",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Opening a sheet animates from the Handbook into the reading view; every card holder, the owner included, is on the roster.",
+   "deliverable": "",
+   "acceptance": [
+    "Others fade, the sheet centers, pause, zoom in",
+    "Owner's LV7 card on the Team roster"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

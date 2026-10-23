@@ -1891,3 +1891,4 @@ html.booting .center, html.booting .bar { opacity: 0; }
 /* Column headers line up: the title, the description and the progress bar sit at the same height in every field */
 .kcol-t { min-height: 34px; }
 .kcol-h p { min-height: 2.8em; }
+.mb-brl { fill: #ffe2a8; filter: drop-shadow(0 0 2px rgba(255,200,120,.9)); transition: opacity .15s; }
