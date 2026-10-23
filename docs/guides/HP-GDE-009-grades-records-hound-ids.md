@@ -1,5 +1,5 @@
 # Contractor Grades, Records and Hound IDs
-Code: HP-GDE-009 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · For: contractors and staff
+Code: HP-GDE-009 · Version 1.3 · Effective 2026-10-23 · Owner: Administration · For: contractors and staff
 
 How your work is counted, how anyone can check it, and how staff prove who they are.
 
@@ -53,3 +53,11 @@ A card can be copied, so when someone needs to know it is really you, you sign a
 The owner can pin one key to your card (`python3 tools/records.py staff-pin --id HND-0001 --ssh-key SHA256:…`, fingerprint from `ssh-keygen -lf ~/.ssh/id_ed25519.pub`). Then only that key proves the card.
 
 Records signers follow [HP-SOP-004](HP-SOP-004-records-and-ranks.md).
+
+## Certificates of service
+Want proof of your work for an employer, a school or a portfolio? Ask Administration for a **certificate of service**. It lists every contract you completed, your grades per field, your clearance and the AI tools you used, and it is signed by Hound Protocol.
+- Anyone can check it at the link on the certificate: the website checks the signature and every record on it. If a single line were changed, the check fails.
+- Print it or save it as PDF from its page (**Print or save as PDF**).
+- It also appears on your Profile when you sign in.
+- It stays valid for the period it covers; ask for a new one as your work grows ([ADR 0020](../decisions/0020-certificates-of-service.md)).
+

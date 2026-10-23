@@ -21,6 +21,9 @@ Signing in is optional and uses your GitHub account ([how it works](signin.md), 
 - When you read a Staff document with a guest pass, the sign-in relay fetches it from GitHub for you. The relay stores nothing and keeps no logs of passes.
 - The site checks once in a while whether a new version is live, by reading its own build number. Nothing about you is sent.
 
+## Certificates of service
+Certificates are public, like records: your name, GitHub account, completed contracts, grades and clearance. They are only issued on request, and you can ask for yours to be revoked.
+
 ## Third parties
 - **GitHub:** the site is hosted on GitHub Pages, and your browser requests releases, contract issues and commits directly from GitHub's public API. GitHub receives your IP address and browser details for these requests, as it does for any visit to GitHub. See GitHub's privacy statement for how they handle it.
 - **Fonts** are served from this site. No requests go to Google or other font services.

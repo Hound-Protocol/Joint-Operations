@@ -22,7 +22,12 @@ Commands:
                                 pin or change the SSH signing key on a card (re-signed)
   staff-revoke --id HND-NNNN --reason TEXT
                                 mark a staff card as revoked (re-signed, never deleted)
-  verify                        check every record and staff card (used by CI)
+  certify --login LOGIN [--statement TEXT] [--github-id N]
+                                issue a signed certificate of service (HPC-NNNN): every signed record of
+                                that person, grades per field, clearance and AI tools credited
+  certificate-revoke --id HPC-NNNN --reason TEXT
+                                mark a certificate as revoked (re-signed, never deleted)
+  verify                        check every record, staff card and certificate (used by CI)
   show RECORD_ID                print one record
 
 Needs: Python 3.8+ and the `cryptography` package for keygen, add and verify
@@ -35,6 +40,11 @@ RECORDS = ROOT / "site/data/records.json"
 KEYS = ROOT / "site/data/records-key.json"
 CONTRACTS = ROOT / "site/data/contracts.json"
 STAFF = ROOT / "site/data/staff.json"
+CERTS = ROOT / "site/data/certificates.json"
+# Grades and fields: the same tables as the website (site/src/js/15-contribute.js)
+POINTS = {"easy": 2, "medium": 5, "hard": 10}
+GRADE_STEPS = [("E", 1), ("D", 4), ("C", 8), ("B", 14), ("A", 22), ("A+", 32), ("A++", 50), ("S", 80), ("S+", 125), ("S++", 200)]
+FIELD_OF = {"net": "code", "session": "code", "launcher": "code", "modapi": "code", "hooks": "re", "testing": "qa", "lobby": "design", "web": "design", "docs": "docs", "legal": "docs"}
 CARDS = ("LV2", "LV3", "LV4", "LV5", "LV6", "LV7")
 DEPARTMENTS = ("Administration", "Development", "Quality", "Contractor", "Member")
 STAFF_FIELDS = {"id", "kind", "login", "github_id", "name", "discord_id", "ssh_key", "card", "department", "since", "status", "revoked", "reason", "key", "sig"}
@@ -246,6 +256,70 @@ def cmd_staff_revoke(a):
     print(f"Revoked {a.id}.")
 
 
+def grade(points):
+    g = None
+    for name, need in GRADE_STEPS:
+        if points >= need:
+            g = name
+    return g
+
+
+def cmd_certify(a):
+    """A certificate of service: a signed summary of everything a person has done, for them to show others."""
+    if not RE_LOGIN.match(a.login):
+        sys.exit("--login must be a GitHub user name.")
+    recs = [r for r in load(RECORDS, {"records": []})["records"] if r["login"].lower() == a.login.lower()]
+    if not recs:
+        sys.exit(f"{a.login} has no signed records yet. A certificate summarises records; issue those first.")
+    certs = load(CERTS, {"version": 1, "certificates": []})
+    specs = {c["id"]: c for c in load(CONTRACTS, {"contracts": []})["contracts"]}
+    gid = a.github_id or github_id(a.login)
+    fields = {}
+    for r in recs:
+        f = FIELD_OF.get(specs.get(r["contract"], {}).get("module", ""), "code")
+        fields[f] = fields.get(f, 0) + POINTS.get(r["difficulty"], 2)
+    grades = {f: grade(p) for f, p in sorted(fields.items()) if grade(p)}
+    order = [g for g, _ in GRADE_STEPS]
+    best = max(grades.values(), key=order.index) if grades else None
+    card = next((s for s in load(STAFF, {"staff": []})["staff"] if s["github_id"] == gid and s["status"] == "active"), None)
+    agents = sorted({x for r in recs for x in r.get("assisted", [])})
+    kid, priv = signer(a.key_id)
+    n = max([int(c["id"].split("-")[1]) for c in certs["certificates"]] + [0]) + 1
+    cert = {"id": f"HPC-{n:04d}", "kind": "certificate", "login": a.login, "github_id": gid,
+            "issued": datetime.date.today().isoformat(), "from": min(r["date"] for r in recs), "to": max(r["date"] for r in recs),
+            "records": [{"id": r["id"], "contract": r["contract"], "title": r["title"], "difficulty": r["difficulty"], "date": r["date"]} for r in sorted(recs, key=lambda r: r["date"])],
+            "points": dict(sorted(fields.items())), "grades": grades, "clearance": card["card"] if card else "LV3",
+            "status": "active", "key": kid}
+    if best:
+        cert["grade"] = best
+    if card:
+        cert["hound_id"] = card["id"]
+    name = a.name or next((r.get("name") for r in recs if r.get("name")), None)
+    if name:
+        cert["name"] = name
+    if agents:
+        cert["assisted"] = agents
+    if a.statement:
+        cert["statement"] = a.statement
+    cert["sig"] = base64.b64encode(priv.sign(canonical(cert))).decode()
+    certs["certificates"].append(cert)
+    save(CERTS, certs)
+    print(f"Issued {cert['id']} for {a.login}: {len(recs)} records, grade {best or '-'}, {cert['clearance']}")
+
+
+def cmd_certificate_revoke(a):
+    certs = load(CERTS, {"version": 1, "certificates": []})
+    c = next((x for x in certs["certificates"] if x["id"] == a.id), None)
+    if not c or c["status"] != "active":
+        sys.exit("No active certificate with that ID.")
+    kid, priv = signer(a.key_id)
+    c.update({"status": "revoked", "revoked": datetime.date.today().isoformat(), "reason": a.reason, "key": kid})
+    c.pop("sig", None)
+    c["sig"] = base64.b64encode(priv.sign(canonical(c))).decode()
+    save(CERTS, certs)
+    print(f"Revoked {a.id}.")
+
+
 def cmd_verify(a):
     recs = load(RECORDS, {"version": 1, "records": []})["records"]
     keys = {k["id"]: k for k in load(KEYS, {"keys": []})["keys"]}
@@ -303,11 +377,28 @@ def cmd_verify(a):
             ed25519.Ed25519PublicKey.from_public_bytes(base64.b64decode(k["public"])).verify(base64.b64decode(s["sig"]), canonical(s))
         except Exception:
             errors.append(f"{sid}: signature does not verify")
+    certs = load(CERTS, {"version": 1, "certificates": []})["certificates"]
+    if certs and not recs:
+        ed25519, _, _ = crypto()
+    rec_ids = {r["id"] for r in recs}
+    for c in certs:
+        cid = c.get("id", "?")
+        missing = [x["id"] for x in c.get("records", []) if x.get("id") not in rec_ids]
+        if missing:
+            errors.append(f"{cid}: refers to unknown records {missing}")
+        k = keys.get(c.get("key"))
+        if not k:
+            errors.append(f"{cid}: unknown key {c.get('key')}")
+            continue
+        try:
+            ed25519.Ed25519PublicKey.from_public_bytes(base64.b64decode(k["public"])).verify(base64.b64decode(c["sig"]), canonical(c))
+        except Exception:
+            errors.append(f"{cid}: signature does not verify")
     for e in errors:
         print("FAIL", e)
     if errors:
         sys.exit(1)
-    print(f"{len(recs)} records and {len(staff)} staff cards verified against {len(keys)} key(s).")
+    print(f"{len(recs)} records, {len(staff)} staff cards and {len(certs)} certificates verified against {len(keys)} key(s).")
 
 
 def cmd_show(a):
@@ -325,6 +416,9 @@ def main():
     d.add_argument("--login", required=True); d.add_argument("--contract", required=True); d.add_argument("--pr", type=int, required=True)
     d.add_argument("--commit"); d.add_argument("--name"); d.add_argument("--title"); d.add_argument("--difficulty"); d.add_argument("--date"); d.add_argument("--key-id")
     d.add_argument("--assisted-by", help="AI agents used, comma separated. Default: detected from the pull request's commits")
+    ce = sub.add_parser("certify"); ce.add_argument("--login", required=True); ce.add_argument("--name"); ce.add_argument("--statement")
+    ce.add_argument("--github-id", type=int); ce.add_argument("--key-id")
+    cr = sub.add_parser("certificate-revoke"); cr.add_argument("--id", required=True); cr.add_argument("--reason", required=True); cr.add_argument("--key-id")
     sa = sub.add_parser("staff-add")
     sa.add_argument("--login", required=True); sa.add_argument("--card", required=True); sa.add_argument("--department", required=True)
     sa.add_argument("--name"); sa.add_argument("--discord-id"); sa.add_argument("--github-id", type=int); sa.add_argument("--since"); sa.add_argument("--key-id"); sa.add_argument("--ssh-key")
@@ -333,7 +427,7 @@ def main():
     sub.add_parser("verify")
     s = sub.add_parser("show"); s.add_argument("id")
     a = p.parse_args()
-    {"keygen": cmd_keygen, "add": cmd_add, "staff-add": cmd_staff_add, "staff-pin": cmd_staff_pin, "staff-revoke": cmd_staff_revoke, "verify": cmd_verify, "show": cmd_show}[a.cmd](a)
+    {"keygen": cmd_keygen, "add": cmd_add, "staff-add": cmd_staff_add, "staff-pin": cmd_staff_pin, "staff-revoke": cmd_staff_revoke, "verify": cmd_verify, "show": cmd_show, "certify": cmd_certify, "certificate-revoke": cmd_certificate_revoke}[a.cmd](a)
 
 
 if __name__ == "__main__":

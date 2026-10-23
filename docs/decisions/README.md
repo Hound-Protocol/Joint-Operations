@@ -25,6 +25,7 @@ Status values: **Proposed** (waiting for the project lead), **Accepted**, **Supe
 | [0017](0017-hound-id-sign-in.md) | Hound ID proof with the holder's SSH signing key; GitHub sign-in with restricted documents in private repositories (live since v0.0.22) | Accepted |
 | [0018](0018-steam-networking-sockets.md) | Steam Networking Sockets for the Steam path: listen socket on the host, poll group, lanes, status callback by config; Messages as fallback | Proposed |
 | [0019](0019-bans-across-accounts.md) | Bans (LV0) by GitHub account number, covering linked Discord and Steam accounts; enforced at the relay, GitHub, Discord and the session registry; no IP bans | Accepted |
+| [0020](0020-certificates-of-service.md) | Signed certificates of service: a summary of a person's records, grades and clearance, checked in the browser and printable on A4 | Accepted |
 
 ## Template
 ```

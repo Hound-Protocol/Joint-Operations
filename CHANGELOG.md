@@ -2,6 +2,12 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.31 · Certificates · 2026-10-23
+- **Certificates of service:** a signed summary of someone's work for the project, for an employer, a school or a portfolio. It lists every completed contract, grades per field, the overall grade, clearance and the AI tools credited, with an optional statement. Anyone can check it at `#/verify/HPC-NNNN`: the page checks the certificate's signature and every record on it, in the browser, and a single changed line breaks the check. It prints or saves as PDF on A4. Certificates are listed on Verify and on the holder's Profile ([ADR 0020](docs/decisions/0020-certificates-of-service.md)).
+- **Records tool:** `records.py certify` and `certificate-revoke`; `verify` now checks certificates too. Signed bytes are sorted at every depth, the same in Python and on the website.
+- **Handbook:** the Procedures folder now reads **How Joint Operations handles the process**.
+- **Roadmap:** this release's base detail is a red warning beacon blinking on top of the comms mast.
+
 ## v0.0.30 · Rules & Standards · 2026-10-23
 - **Completes v0.0.29:** the last part of v0.0.29 was left out of its release by a timing problem in our merge script. It is in this release: claiming from contract cards, all work on the board, the How to Contribute guide and Handbook previews, the new clearance colours, the clearance cards for visitors, and the slim update strip. The merge script now waits until GitHub has registered the latest commit before merging.
 - **Handbook:** the Policies folder now reads **Rules & Standards**.

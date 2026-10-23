@@ -194,6 +194,12 @@
       "path": "docs/decisions/0019-bans-across-accounts.md"
     },
     {
+      "id": "adr-0020",
+      "title": "0020 Certificates of Service",
+      "group": "Decisions",
+      "path": "docs/decisions/0020-certificates-of-service.md"
+    },
+    {
       "id": "research",
       "title": "Research Index",
       "group": "Research",

@@ -48,6 +48,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F08 | Steam sign-in for sessions, linked to the Hound ID | lobby | 🔴 Hard | — | planned | — |
 | F09 | Handbook wording: Policies are Rules & Standards | docs | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F10 | Guest pass list for every LV7: active, expired, revoked, delete | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F11 | Certificates of service | web | 🟡 Medium | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -623,3 +624,15 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - Org owners can manage passes
 - Expired passes can be deleted
+
+## F11
+**Certificates of service**  
+Module: web · Difficulty: 🟡 Medium · Skills: 
+
+**Goal.** A signed, printable summary of a person's work that anyone can check.
+
+**Deliverable.** records.py certify, #/verify/HPC-NNNN, ADR 0020
+
+**Acceptance criteria**
+- Signature and every record checked in the browser
+- Tampering breaks the check

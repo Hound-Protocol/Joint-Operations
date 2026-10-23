@@ -1823,3 +1823,56 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .gp-st { flex: none !important; min-width: 72px; padding: 1px 6px; border: 1px solid currentColor; font: 400 10.5px var(--mono) !important; letter-spacing: .14em !important; text-transform: uppercase; text-align: center; }
 .gp-list li.ok .gp-st { color: #7fbf8a; } .gp-list li.ex .gp-st { color: var(--dim); } .gp-list li.rv .gp-st { color: #e0453f; }
 .gp-list li.ex { opacity: .7; } .gp-list li.rv { opacity: .6; }
+/* Certificates of service (v0.0.31) */
+.cert-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.cert-card { display: block; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--hk); background: linear-gradient(110deg, rgba(232,224,204,.06), rgba(10,13,15,.6) 60%); color: var(--fg); text-decoration: none; transition: transform .3s cubic-bezier(.22,.9,.3,1), border-color .3s; animation: riseIn .4s ease backwards; animation-delay: calc(var(--i) * 60ms); }
+.cert-card:hover, .cert-card:focus-visible { transform: translateY(-3px); border-color: var(--hk); outline: none; }
+.cert-card small { display: block; font: 400 11px var(--mono); letter-spacing: .14em; color: var(--dim); }
+.cert-card b { display: block; margin: 4px 0; font: 400 18px/1.2 var(--ui); }
+.cert-card span { font: 400 12.5px var(--mono); color: var(--fg-2); }
+.cert-card.revoked { opacity: .55; }
+.cert { --hk: #7fbf8a; position: relative; max-width: 860px; margin: 0 auto 24px; padding: 46px 56px 36px; overflow: hidden; color: #1c2022; font: 400 15px/1.55 var(--ui);
+  background: radial-gradient(circle at 50% 120%, rgba(0,0,0,.05), transparent 60%), repeating-linear-gradient(45deg, rgba(0,0,0,.018) 0 2px, transparent 2px 6px), #f6f2e7;
+  border: 1px solid #cfc7b0; box-shadow: 0 24px 50px rgba(0,0,0,.55), inset 0 0 0 10px #f6f2e7, inset 0 0 0 11px #b9ad8c, inset 0 0 0 14px #f6f2e7, inset 0 0 0 15px #d8cfb6; animation: dsPage .6s cubic-bezier(.2,.8,.2,1) both; }
+.cert-head { display: flex; align-items: center; gap: 16px; padding-bottom: 14px; border-bottom: 2px solid #1c2022; }
+.cert-head img { filter: invert(1) brightness(.2); }
+.cert-head b { display: block; font: 400 15px var(--mono); letter-spacing: .3em; text-transform: uppercase; }
+.cert-head span { display: block; font: 300 30px/1.1 var(--ui); letter-spacing: .06em; }
+.cert-id { margin-left: auto; text-align: right; font: 400 18px var(--mono); letter-spacing: .1em; }
+.cert-id small { display: block; font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: #6b6f70; }
+.cert-lead { margin: 22px 0 4px; color: #4a4f50; }
+.cert-name { margin: 2px 0 2px; font: 300 44px/1.1 var(--ui); letter-spacing: .02em; color: #111; text-transform: none; }
+.cert-who { margin: 0; font: 400 13px var(--mono); color: #4a4f50; }
+.cert-sum { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin: 20px 0; background: #cfc7b0; border: 1px solid #cfc7b0; }
+.cert-sum div { padding: 10px 14px; background: #f8f5ec; }
+.cert-sum small { display: block; font: 400 10.5px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: #6b6f70; }
+.cert-sum b { font: 300 26px/1.2 var(--ui); color: #111; }
+.cert-t { width: 100%; border-collapse: collapse; font-size: 14px; }
+.cert-t th { text-align: left; font: 500 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #3d4244; border-bottom: 1px solid #1c2022; padding: 6px 8px; }
+.cert-t td { padding: 7px 8px; border-bottom: 1px solid #ddd5bf; vertical-align: top; }
+.cert-t a { color: #1c2022; }
+.cert-grades { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.cert-grades span { padding: 8px 12px; border: 1px solid #cfc7b0; background: #f8f5ec; }
+.cert-grades small { display: block; font: 400 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #6b6f70; }
+.cert-grades b { font: 400 22px var(--ui); margin-right: 8px; } .cert-grades i { font-style: normal; font: 400 11.5px var(--mono); color: #6b6f70; }
+.cert-note { font-size: 13.5px; color: #4a4f50; }
+.cert-q { margin: 14px 0; padding: 10px 16px; border-left: 3px solid var(--hk); background: #efe9d9; font-style: italic; }
+.cert-foot { display: flex; align-items: center; gap: 18px; margin-top: 26px; padding-top: 16px; border-top: 1px dashed #b9ad8c; font-size: 13.5px; }
+.cert-foot code { font: 400 12.5px var(--mono); }
+.cert-foot small { display: block; margin-top: 4px; font: 400 11.5px var(--mono); color: #6b6f70; overflow-wrap: anywhere; }
+.cert-foot .vs { display: inline-block; margin-left: 8px; }
+.cert-seal { flex: none; width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, var(--hk), color-mix(in srgb, var(--hk) 50%, #000)); box-shadow: inset 0 0 0 4px rgba(255,255,255,.25), 0 4px 10px rgba(0,0,0,.25); animation: stampIn .5s cubic-bezier(.3,1.6,.5,1) .5s both; }
+.cert-seal img { width: 44px; height: 44px; }
+.cert.revoked { filter: grayscale(.8); }
+@media (max-width: 700px) { .cert { padding: 28px 20px 24px; } .cert-name { font-size: 32px; } .cert-sum { grid-template-columns: 1fr 1fr; } .cert-head span { font-size: 22px; } }
+@media print {
+  body.print-cert * { visibility: hidden !important; }
+  body.print-cert #cert, body.print-cert #cert * { visibility: visible !important; }
+  body.print-cert #cert { position: absolute; left: 0; top: 0; width: 100%; max-width: none; margin: 0; box-shadow: none; animation: none; }
+}
+.no-motion .cert, .no-motion .cert-seal, .no-motion .cert-card { animation: none; }
+.cert-t td:first-child, .cert-t td:nth-child(4) { white-space: nowrap; }
+.cert-sum b[style] { color: color-mix(in srgb, var(--hk) 65%, #000) !important; }
+/* Comms mast beacon (v0.0.31): a red aircraft-warning light that blinks */
+.mb-beacon { fill: #ff3b30; filter: drop-shadow(0 0 4px #ff3b30); animation: mbBlink 1.8s steps(1) infinite; }
+.no-motion .mb-beacon { animation: none; }
