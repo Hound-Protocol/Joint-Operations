@@ -842,6 +842,30 @@
    ],
    "status": "done",
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F11",
+   "title": "Certificates of service",
+   "module": "web",
+   "difficulty": "medium",
+   "skills": "",
+   "depends": [],
+   "goal": "A signed, printable summary of a person's work that anyone can check.",
+   "deliverable": "records.py certify, #/verify/HPC-NNNN, ADR 0020",
+   "acceptance": [
+    "Signature and every record checked in the browser",
+    "Tampering breaks the check"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

@@ -98,7 +98,7 @@
     $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx || guideMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
     $("#hbList").classList.toggle("filtering", filtering);
   }
-  var HB_FOLDERS = [["Guide", "Guides", "How-to help for each audience"], ["Policy", "Policies", "Rules & Standards"], ["Procedure", "Procedures", "Step by step, the same way every time"]];
+  var HB_FOLDERS = [["Guide", "Guides", "How-to help for each audience"], ["Policy", "Policies", "Rules & Standards"], ["Procedure", "Procedures", "How Joint Operations handles the process"]];
   var guideOpen = "Guide", hbBusy = false;
   /* Sheets fly between the open folder and the grid (Web Animations; without it, they simply appear) */
   function hbFly(out, done) {

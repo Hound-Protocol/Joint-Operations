@@ -12,7 +12,7 @@ out = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else root / "hound-protocol.
 def safe(text):
     return text.replace("</", "<\\/")
 
-data = {n: json.loads((site / "data" / f"{n}.json").read_text()) for n in ["config", "servers", "mods", "docs", "contracts", "briefing", "devlog", "team", "records", "records-key", "guides", "staff"]}
+data = {n: json.loads((site / "data" / f"{n}.json").read_text()) for n in ["config", "servers", "mods", "docs", "contracts", "briefing", "devlog", "team", "records", "records-key", "guides", "staff", "certificates"]}
 import subprocess
 def _git(*a):
     return subprocess.run(["git", *a], cwd=root, capture_output=True, text=True).stdout.strip()

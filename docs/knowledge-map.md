@@ -37,6 +37,7 @@ Everything the project knows, and the one document that holds it. If a topic is 
 | Seats, terms, handoffs (filled after the playable prototype) | [Governance](governance.md), [HP-SOP-007](guides/HP-SOP-007-onboarding-offboarding.md) |
 | Keycards LV0 to LV7, the public roster | [ADR 0011](decisions/0011-keycard-access.md), the website's Team page |
 | Hound IDs, staff cards, proving who you are | [HP-GDE-009](guides/HP-GDE-009-grades-records-hound-ids.md), [Contributor records](contributor-records.md), [ADR 0017](decisions/0017-hound-id-sign-in.md) |
+| Certificates of service (proof of your work) | [ADR 0020](decisions/0020-certificates-of-service.md), [HP-GDE-009](guides/HP-GDE-009-grades-records-hound-ids.md) |
 | Signed contributor records | [Contributor records](contributor-records.md), [HP-SOP-004](guides/HP-SOP-004-records-and-ranks.md) |
 | Bans (LV0) across GitHub, Discord and Steam | [HP-SOP-012](guides/HP-SOP-012-bans.md), [ADR 0019](decisions/0019-bans-across-accounts.md) |
 | Infractions, suspensions and appeals | [HP-POL-009](guides/HP-POL-009-accountability.md), [HP-SOP-011](guides/HP-SOP-011-infractions-and-appeals.md), [ADR 0016](decisions/0016-accountability.md) |

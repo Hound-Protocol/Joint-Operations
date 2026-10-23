@@ -1,5 +1,5 @@
 # Contributor Records and Grade Updates
-Code: HP-SOP-004 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · Used by: the records signer (project lead)
+Code: HP-SOP-004 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · Used by: the records signer (project lead)
 
 ## One-time setup
 ```
@@ -24,3 +24,12 @@ Commit `site/data/records-key.json` in a pull request. Back up the private key (
 
 ## Mistakes
 Records are never deleted. Issue a correct record and explain in the pull request. If the key is lost or leaked, follow [HP-SOP-006](HP-SOP-006-security-incident.md), create a new key with a new ID and re-sign.
+
+## Certificates of service
+A certificate is a signed summary of everything a person has done: their records, grades per field, clearance and AI tools credited ([ADR 0020](../decisions/0020-certificates-of-service.md)).
+1. Make sure all of the person's completed contracts have signed records.
+2. On the owner's computer: `python3 tools/records.py certify --login <github-name> [--name "Display name"] [--statement "One line of thanks or context"]`.
+3. Commit `site/data/certificates.json` in a pull request; CI checks the signature.
+4. Send the person the link: `#/verify/HPC-NNNN`. They can print it or save it as PDF.
+5. Issue a new certificate when their work grows. To withdraw one: `python3 tools/records.py certificate-revoke --id HPC-NNNN --reason "..."`.
+

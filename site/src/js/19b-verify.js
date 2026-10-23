@@ -1,9 +1,15 @@
   /* Verify: signed contributor records and the contributor wall */
   function b64bytes(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
   // Same bytes as canonical() in tools/records.py: record without sig, keys sorted, no spaces, UTF-8
+  /* The signed bytes: keys sorted at every depth, no spaces, UTF-8, exactly like tools/records.py (json.dumps sort_keys) */
+  function canonJSON(v) {
+    if (Array.isArray(v)) return "[" + v.map(canonJSON).join(",") + "]";
+    if (v && typeof v === "object") return "{" + Object.keys(v).sort().map(function (k) { return JSON.stringify(k) + ":" + canonJSON(v[k]); }).join(",") + "}";
+    return JSON.stringify(v);
+  }
   function canonicalRecord(r) {
-    var keys = Object.keys(r).filter(function (k) { return k !== "sig"; }).sort();
-    return new TextEncoder().encode("{" + keys.map(function (k) { return JSON.stringify(k) + ":" + JSON.stringify(r[k]); }).join(",") + "}");
+    var body = {}; Object.keys(r).forEach(function (k) { if (k !== "sig") body[k] = r[k]; });
+    return new TextEncoder().encode(canonJSON(body));
   }
   var keyCache = {};
   // Resolves "ok", "bad", "nokey" or "unsupported" (browser without Ed25519 in Web Crypto)
@@ -42,7 +48,7 @@
   function viewVerify(rid) {
     var v = $("#view");
     v.innerHTML = shell("Contract network", "Verify", loading("Loading contributor records"));
-    Promise.all([loadLocal("records"), loadLocal("records-key"), loadLocal("staff"), loadLocal("contracts")]).then(function (res) {
+    Promise.all([loadLocal("records"), loadLocal("records-key"), loadLocal("staff"), loadLocal("contracts"), loadLocal("certificates")]).then(function (res) {
       if (currentView !== "verify") return;
       var recs = (res[0] && res[0].records) || [], keys = (res[1] && res[1].keys) || [], staff = (res[2] && res[2].staff) || [];
       var key = keys[keys.length - 1];
@@ -51,6 +57,7 @@
             return "<tr><td>" + esc(k.id) + '</td><td><code>' + esc(k.fingerprint) + "</code>" + "</td><td>" + esc(k.owner) + "</td><td>" + esc(fmtDate(k.added)) + "</td></tr>";
           }).join("") + "</table></div>"
         : '<div class="empty">No signing key published yet<small>The project lead creates it before the first record is issued.</small></div>';
+      if (rid && /^HPC-/i.test(rid)) return viewCertificate(rid.toUpperCase(), recs, keys);
       if (rid && /^HND-/i.test(rid)) {
         var sc = staff.filter(function (x) { return x.id.toUpperCase() === rid.toUpperCase(); })[0];
         var specimen = !sc && rid.toUpperCase() === "HND-0000";
@@ -91,6 +98,11 @@
           return '<a class="op" style="--i:' + n + '" href="https://github.com/' + encodeURIComponent(u.login) + '" target="_blank" rel="noopener noreferrer"><span class="mono">' + esc(grade) + "</span><b>" + esc(u.name || u.login) + "</b><small>Grade " + esc(grade) + " · " + u.n + " contract" + (u.n === 1 ? "" : "s") + (tools[u.login] ? " · with " + esc(tools[u.login].join(", ")) : "") + "</small></a>";
         }).join("") + "</div>" : '<div class="empty">No records yet<small>The wall fills as contracts are completed and signed.</small></div>') +
         (recs.length ? '<div class="label">Records</div><div class="cards">' + recs.slice().reverse().map(recordCard).join("") + "</div>" : "") +
+        '<div class="label">Certificates of service</div>' +
+        '<p class="sub">A certificate is a signed summary of someone\'s work for the project: every record, grades per field and clearance. Anyone can check it here; the signature breaks if a single line is changed.</p>' +
+        (certList().length ? '<div class="cert-list">' + certList().slice().reverse().map(function (c, n) {
+          return '<a class="cert-card' + (c.status === "revoked" ? " revoked" : "") + '" style="--i:' + n + "; --hk:" + (KC_LV[c.clearance] || KC_LV.LV3)[1] + '" href="#/verify/' + esc(c.id) + '"><small>' + esc(c.id) + " · " + esc(fmtDate(c.issued)) + "</small><b>" + esc(c.name || c.login) + "</b><span>" + plural(c.records.length, "contract") + " · grade " + esc(c.grade || "–") + " · " + esc(c.clearance) + (c.status === "revoked" ? " · revoked" : "") + "</span></a>";
+        }).join("") + "</div>" : '<div class="empty">No certificates issued yet<small>Certificates are issued by the owner from signed records (<a href="#/guides/hp-sop-004">how</a>).</small></div>') +
         '<div class="label">Hound staff</div>' +
         '<p class="sub">Every staff member has a permanent <b class="tint key">Hound ID</b>, tied to their GitHub account number, which never changes even if they rename the account. Check anyone who claims to be staff here.</p>' +
         '<div class="toolbar"><input class="field grow" id="sfind" type="search" placeholder="Hound ID, GitHub name or Discord ID" aria-label="Find staff"><span id="sres"></span></div>' +
@@ -129,3 +141,41 @@
       });
     });
   }
+
+  /* ---------------- Certificates of service (ADR 0020) ----------------
+     A signed summary of a person's work: every signed record, grades per field, clearance and AI tools credited.
+     The page checks the certificate's signature and every record it lists, in the browser, against the records key. */
+  var CERT_FIELDS = { code: "Code", re: "Architecture Research", qa: "Testing", design: "Design and web", docs: "Docs and legal" };
+  function certList() { return (data.certificates && data.certificates.certificates) || []; }
+  function viewCertificate(id, recs, keys) {
+    var c = certList().filter(function (x) { return x.id === id; })[0];
+    if (!c) { $("#vb").innerHTML = '<div class="empty">No certificate ' + esc(id) + '<small><a href="#/verify">Back to Verify</a></small></div>'; return; }
+    var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/verify/" + c.id, lv = (KC_LV[c.clearance] || KC_LV.LV3);
+    $("#vb").innerHTML = '<p class="sub"><a href="#/verify">All records and certificates</a></p>' +
+      '<div class="toolbar sheet-bar"><button class="btn small primary" id="cPrint">Print or save as PDF</button><button class="btn small" id="cLink">Copy link</button></div>' +
+      '<article class="cert' + (c.status === "revoked" ? " revoked" : "") + '" style="--hk:' + lv[1] + '" id="cert">' +
+        '<header class="cert-head"><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="54" height="54"><div><b>Hound Protocol</b><span>Certificate of Service</span></div><div class="cert-id"><small>Certificate</small>' + esc(c.id) + "</div></header>" +
+        '<p class="cert-lead">This certifies that</p><h2 class="cert-name">' + esc(c.name || c.login) + '</h2><p class="cert-who">GitHub <b>@' + esc(c.login) + "</b> · account #" + esc(c.github_id) + (c.hound_id ? " · Hound ID <b>" + esc(c.hound_id) + "</b>" : "") + "</p>" +
+        '<p class="cert-lead">completed the following work for MGSV: Joint Operations, between ' + esc(fmtDate(c.from)) + " and " + esc(fmtDate(c.to)) + ".</p>" +
+        '<div class="cert-sum"><div><small>Contracts</small><b>' + c.records.length + "</b></div><div><small>Overall grade</small><b>" + esc(c.grade || "–") + '</b></div><div><small>Clearance</small><b style="color:var(--hk)">' + esc(c.clearance) + "</b></div><div><small>Issued</small><b>" + esc(fmtDate(c.issued)) + "</b></div></div>" +
+        '<table class="cert-t"><tr><th>Record</th><th>Contract</th><th>Difficulty</th><th>Date</th><th>Check</th></tr>' + c.records.map(function (r) {
+          return '<tr data-cr="' + esc(r.id) + '"><td><a href="#/verify/' + esc(r.id) + '">' + esc(r.id) + "</a></td><td>" + esc(r.contract) + " · " + esc(r.title) + "</td><td>" + esc((DIFF[r.difficulty] || [r.difficulty])[0]) + "</td><td>" + esc(fmtDate(r.date)) + '</td><td class="vs">' + vBadge("wait") + "</td></tr>";
+        }).join("") + "</table>" +
+        (c.grades ? '<div class="cert-grades">' + Object.keys(c.grades).map(function (f) { return "<span><small>" + esc(CERT_FIELDS[f] || f) + "</small><b>" + esc(c.grades[f]) + "</b><i>" + esc((c.points || {})[f] || 0) + " points</i></span>"; }).join("") + "</div>" : "") +
+        (c.assisted && c.assisted.length ? '<p class="cert-note">AI tools credited as the contributor\'s tools: ' + esc(c.assisted.join(", ")) + ".</p>" : "") +
+        (c.statement ? '<blockquote class="cert-q">' + esc(c.statement) + "</blockquote>" : "") +
+        '<footer class="cert-foot"><div class="cert-seal" aria-hidden="true"><img src="assets/brand/hound-protocol-mark-light.svg" alt=""></div><div><b>Signed with the Hound Protocol records key</b> <code>' + esc(c.key) + '</code><span class="vs" id="cVs">' + vBadge("wait") + "</span>" +
+          "<small>Check it at " + esc(url) + ". The signature covers every line above; changing any of it breaks the check.</small></div></footer>" +
+        (c.status === "revoked" ? '<span class="hk-void" aria-hidden="true">REVOKED</span>' : "") +
+      "</article>";
+    verifyRecord(c, keys).then(function (st) { var el = $("#cVs"); if (el) el.innerHTML = c.status === "revoked" ? '<span class="status bad">Revoked ' + esc(fmtDate(c.revoked || "")) + "</span>" : vBadge(st); });
+    c.records.forEach(function (x) {
+      var r = recs.filter(function (y) { return y.id === x.id; })[0], el = $('[data-cr="' + x.id + '"] .vs');
+      if (!r) { if (el) el.innerHTML = vBadge("bad"); return; }
+      verifyRecord(r, keys).then(function (st) { if (el) el.innerHTML = vBadge(st); });
+    });
+    $("#cPrint").addEventListener("click", function () { document.body.classList.add("print-cert"); window.print(); setTimeout(function () { document.body.classList.remove("print-cert"); }, 500); });
+    var cl = $("#cLink"); cl.addEventListener("click", function () { (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { cl.textContent = "Copied"; }, function () { window.prompt("Certificate link", url); }); });
+    led($("#ledInfo"), c.id);
+  }
+

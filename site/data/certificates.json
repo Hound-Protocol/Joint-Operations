@@ -1,0 +1,5 @@
+{
+ "version": 1,
+ "note": "Signed certificates of service. Issue with tools/records.py certify; check with tools/records.py verify. See docs/decisions/0020-certificates-of-service.md.",
+ "certificates": []
+}
