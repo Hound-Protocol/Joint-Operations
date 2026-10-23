@@ -6,6 +6,8 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 - **Contract board:** the five fields fit side by side in the shared frame again, instead of running off the right edge (a side effect of the layout stability rule in v0.0.29). Narrow screens scroll the board sideways.
 - **Column headers line up:** title, description and progress bar sit at the same height in every field.
 - **Cards:** "Acceptance criteria" is now **Done when**, so it fits on narrow cards.
+- **Profile:** Access granted and Access restricted are information only now: they name each restricted area but no longer list its documents, which open from the Library.
+- **Handbook:** the Guides folder now reads **All guides relevant to the Joint Operations Platform**.
 - **Sign-in:** the GitHub window is now as small as its sign-in allows (400 × 540), centered, without toolbars. Browsers do not let a page hide or minimize a window; once you have authorized the app, GitHub answers at once and the window closes by itself.
 
 ## v0.0.31 · Certificates · 2026-10-23
