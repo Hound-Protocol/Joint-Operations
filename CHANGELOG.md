@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.34 · Deploy hotfix · 2026-10-23
+- **Website deploys again:** v0.0.32 and v0.0.33 did not reach the website. The deploy installed its PDF browser from Ubuntu's package mirror, which stalled, and each new release cancelled the stuck one. The Handbook PDFs are now made in Playwright's ready-made image, as the checks already are, with a time limit. This release brings v0.0.32 and v0.0.33 live.
+- **Broken-main incidents close themselves:** when the checks pass on `main` again, the open *incident: broken main* issues are closed with a link to the green run. #44 and #46 (mirror timeouts this morning) are closed.
+- **Roadmap:** this release's base detail is a searchlight slowly sweeping the sea from the command platform.
+
 ## v0.0.33 · Opening a sheet · 2026-10-23
 - **Handbook:** opening a sheet is one smooth move. The other sheets fade, the chosen one glides to the middle of the screen, the Handbook controls fade, a short pause, then it zooms up into the reading view, which grows in from the same spot. Calm mode and reduced motion open it at once.
 - **Roster:** every card holder is on the Team page's roster, the owner included: the owner's LV7 card comes from owning the GitHub organization until a signed card exists.

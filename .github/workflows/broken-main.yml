@@ -1,7 +1,7 @@
 name: Broken main
 
 # When the checks fail on main after a merge, open one incident issue so Development can look at it.
-# This is not an infraction by itself: a person decides that, following HP-SOP-011.
+# When they pass on main again, close the open incidents with a note. Not an infraction by itself: a person decides that, following HP-SOP-011.
 on:
   workflow_run:
     workflows: [Checks]
@@ -38,3 +38,19 @@ jobs:
           - First step: fix or revert, so main is green again.
           - Then Development looks at what happened. **This is not an infraction by itself.** An infraction is only given when the checks were skipped, bypassed or ignored ([HP-SOP-011](https://github.com/$REPO/blob/main/docs/guides/HP-SOP-011-infractions-and-appeals.md))."
           gh issue create --repo "$REPO" --title "$title" --label "incident: broken main" --body "$body"
+
+  resolved:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close incidents now that main is green
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+          for n in $(gh issue list --repo "$REPO" --state open --label "incident: broken main" --json number --jq '.[].number'); do
+            gh issue close "$n" --repo "$REPO" --reason completed --comment "Main is green again at ${SHA:0:7}: $RUN"
+          done

@@ -41,10 +41,12 @@ jobs:
           python3 tools/assemble_site.py _site --woff2
           for f in _site/data/*.json; do python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
       - name: Handbook PDFs
+        # Chromium comes ready-made in Playwright's image (as in the checks), so a deploy never waits on the Ubuntu package mirror
+        timeout-minutes: 15
         run: |
-          pip install playwright
-          python -m playwright install --with-deps chromium
-          python3 tools/guides_pdf.py _site
+          docker run --rm -v "$PWD:/w" -w /w mcr.microsoft.com/playwright/python:v1.52.0-noble \
+            bash -c 'python3 -c "import playwright" 2>/dev/null || pip install -q --break-system-packages playwright==1.52.0; python3 tools/guides_pdf.py _site'
+          sudo chown -R "$(id -u):$(id -g)" _site
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
