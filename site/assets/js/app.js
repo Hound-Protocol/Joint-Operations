@@ -1508,7 +1508,7 @@
           ? '<div class="kc-stamp">Completed' + (c.completed ? " · " + esc(fmtDate(c.completed)) : "") + "</div>" + (c.live ? '<div class="actions">' + action + "</div>" : "")
           : (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">' + (c.blocked ? "Waiting for " : "After ") + esc(c.depends.join(", ")) + "</div>" : "") +
             (c.goal ? '<p class="goal">' + esc(c.goal) + "</p>" : "") +
-            ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary><span>Acceptance criteria</span><i aria-hidden="true">' + (c.acceptance ? c.acceptance.length : 0) + "</i></summary>" +
+            ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary><span>Done when</span><i aria-hidden="true">' + (c.acceptance ? c.acceptance.length : 0) + "</i></summary>" +
               (c.deliverable ? '<div class="meta">Deliverable: ' + esc(c.deliverable) + "</div>" : "") +
               (c.acceptance && c.acceptance.length ? "<ul>" + c.acceptance.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>" : "") + "</details>" : "") +
             (c.skills ? '<div class="meta">Skills: ' + esc(c.skills) + "</div>" : "") +
@@ -2815,9 +2815,10 @@
     if (!siOn()) return Promise.reject(new Error("Sign-in is not switched on yet."));
     var relay = siCfg().relay.replace(/\/$/, ""), origin;
     try { origin = new URL(relay).origin; } catch (e) { return Promise.reject(new Error("The sign-in relay address is not valid.")); }
-    /* GitHub cannot be shown inside another page, so it opens in a small window centered over this one */
-    var W = 520, H = 720, L = Math.round((window.screenX || window.screenLeft || 0) + ((window.outerWidth || screen.width) - W) / 2), T = Math.round((window.screenY || window.screenTop || 0) + ((window.outerHeight || screen.height) - H) / 2);
-    var w = window.open(relay + "/login", "hpsignin", "width=" + W + ",height=" + H + ",left=" + L + ",top=" + T);
+    /* GitHub cannot be shown inside another page, so it opens in the smallest window its sign-in fits in, centered over this one.
+       Browsers do not allow a window to be hidden or minimized; once authorized, GitHub answers at once and the window closes by itself. */
+    var W = 400, H = 540, L = Math.round((window.screenX || window.screenLeft || 0) + ((window.outerWidth || screen.width) - W) / 2), T = Math.round((window.screenY || window.screenTop || 0) + ((window.outerHeight || screen.height) - H) / 2);
+    var w = window.open(relay + "/login", "hpsignin", "width=" + W + ",height=" + H + ",left=" + L + ",top=" + T + ",menubar=no,toolbar=no,location=no,status=no,scrollbars=yes");
     if (!w) return Promise.reject(new Error("Allow pop-ups for this site to sign in."));
     return new Promise(function (ok, fail) {
       var done = false, t;

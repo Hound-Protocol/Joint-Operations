@@ -49,6 +49,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F09 | Handbook wording: Policies are Rules & Standards | docs | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F10 | Guest pass list for every LV7: active, expired, revoked, delete | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F11 | Certificates of service | web | 🟡 Medium | — | done | Forge77 (with Claude) |
+| F12 | Hotfix: contract board fits the frame, headers aligned, smaller sign-in window | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -636,3 +637,13 @@ Module: web · Difficulty: 🟡 Medium · Skills:
 **Acceptance criteria**
 - Signature and every record checked in the browser
 - Tampering breaks the check
+
+## F12
+**Hotfix: contract board fits the frame, headers aligned, smaller sign-in window**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** The five fields fit side by side with aligned headers; the GitHub window is as small as GitHub allows.
+
+**Acceptance criteria**
+- No board column cut off at 1280px and up
+- Header bottom lines aligned
