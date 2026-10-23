@@ -1,5 +1,5 @@
 # Contractor Grades, Records and Hound IDs
-Code: HP-GDE-009 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · For: contractors and staff
+Code: HP-GDE-009 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · For: contractors and staff
 
 How your work is counted, how anyone can check it, and how staff prove who they are.
 
@@ -36,5 +36,18 @@ Every completed contract earns a **signed record**: who delivered which contract
 Department members get a **Hound ID** (for example HND-0001): a signed staff card with their GitHub account, keycard level and department.
 - To check that someone really is staff, open **Verify** and look them up by Hound ID or GitHub name. A revoked card shows as revoked.
 - Nobody from Hound Protocol will ever ask for your password or a token, Hound ID or not ([HP-POL-004](HP-POL-004-security-policy.md)).
+
+### Your keycard
+Your staff card is shown as a keycard on Verify, with your level, department, Hound ID and grade. Its own page is `#/verify/HND-NNNN`.
+
+### Prove your Hound ID
+A card can be copied, so when someone needs to know it is really you, you sign a challenge with your **SSH signing key** ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).
+1. Once: add your public key to GitHub as a **signing key**: Settings → SSH and GPG keys → New SSH key → Key type: **Signing Key**. No key yet? `ssh-keygen -t ed25519`.
+2. The person checking you opens Verify → Prove a Hound ID, enters your Hound ID and sends you the challenge.
+3. Open Verify → Prove a Hound ID → **Prove it's me**, paste the challenge and run the command shown, for example:
+   `printf '%s' 'HOUND-ID PROOF HND-0001 …' | ssh-keygen -Y sign -n hound-id -f ~/.ssh/id_ed25519`
+4. Send back everything it prints (from `-----BEGIN SSH SIGNATURE-----` to `-----END SSH SIGNATURE-----`). It is safe to share; your private key never leaves your computer.
+
+The owner can pin one key to your card (`python3 tools/records.py staff-pin --id HND-0001 --ssh-key SHA256:…`, fingerprint from `ssh-keygen -lf ~/.ssh/id_ed25519.pub`). Then only that key proves the card.
 
 Records signers follow [HP-SOP-004](HP-SOP-004-records-and-ranks.md).

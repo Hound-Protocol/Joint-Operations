@@ -22,6 +22,7 @@ Status values: **Proposed** (waiting for the project lead), **Accepted**, **Supe
 | [0014](0014-quiet-until-0-1.md) | Quiet development until 0.1: no promotion, quiet recruiting, public launch with 0.1 | Accepted |
 | [0015](0015-ai-agents-and-attribution.md) | AI agents are contractors' tools; work credited to the person with the agent named, detected from commit trailers | Accepted |
 | [0016](0016-accountability.md) | Accountability: infractions for contributors and role holders, three suspend, no time limits, appeals | Accepted |
+| [0017](0017-hound-id-sign-in.md) | Hound ID proof with the holder's SSH signing key; GitHub sign-in with restricted documents in a private repository | Accepted |
 
 ## Template
 ```

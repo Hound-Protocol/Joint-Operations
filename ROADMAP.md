@@ -18,6 +18,8 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Handbook: 33 policies, procedures and guides, with PDFs
 - [x] Brand: Hound Protocol and Joint Operations logos, Hound Protocol website
 - [x] Roadmap shown as a base under construction, one platform per phase
+- [x] Keycards and Hound ID proof with SSH signing keys (ADR 0017)
+- [ ] Sign-in with GitHub and clearance-based documents in a private repository (ADR 0017)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)
 - [ ] Steam App ID position recorded (legal.md, contract C14)
@@ -61,7 +63,6 @@ Gates and sequence are in docs/pre-development.md.
 - [ ] Dedicated server research (a host without a player)
 
 ## Open questions
-- Sign-in with Hound ID: clearance-based documents and keycard profiles. Needs a decision on how access is enforced on a static site.
 - A new, less generic name for the project, themed on 16-player MGS V and safe to use. Not urgent.
 - Infraction records: public with names, or names private with a public summary.
 
