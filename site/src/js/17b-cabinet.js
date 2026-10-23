@@ -91,7 +91,8 @@
       if (!doc && /^r\d+-/.test(id || "")) doc = docs.filter(function (d) { return d.restricted && id.indexOf("r" + d.restricted.area + "-") === 0; })[0];
       /* Handbook documents live in the Handbook zone */
       if (doc && doc.group === "Handbook") { location.replace("#/guides/" + doc.id); return; }
-      doc = doc || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
+      /* Docs always opens on the Overview, however you arrive */
+      doc = doc || docs.filter(function (d) { return d.id === "overview"; })[0] || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
       /* One drawer open at a time: the one holding the open document */
       cabOpen = {}; cabOpen[doc.group] = true;
       if (!$("#cab")) {

@@ -153,7 +153,14 @@
       b = $("#siBadge");
     }
     var c = siCard();
-    b.innerHTML = c ? '<i style="--hk:' + (KC_LV[c.card] || KC_LV.LV2)[1] + '">' + esc(c.card) + "</i><span>" + esc(c.guest ? "Guest pass" : c.name || c.login) + "</span>" : "<i>ID</i><span>Sign in</span>";
+    /* A small access credential: level colour edge, picture, name over "Access Credential · level", the level number */
+    var lv = c ? KC_LV[c.card] || KC_LV.LV2 : null, ph = c && !c.guest ? kcPhoto(c) : "";
+    b.style.setProperty("--hk", lv ? lv[1] : "var(--jo)");
+    b.innerHTML = c
+      ? '<span class="sb-pic">' + (ph ? '<img src="' + esc(ph) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : "") + "</span>" +
+        '<span class="sb-txt"><b>' + esc(c.guest ? "Guest pass" : c.name || c.login) + "</b><small>Access Credential · " + esc(lv[0]) + "</small></span>" +
+        '<span class="sb-lv"><small>LV</small>' + esc(String(c.card).slice(2)) + "</span>"
+      : '<span class="sb-pic id">ID</span><span class="sb-txt"><b>Sign in</b><small>Hound ID · GitHub</small></span>';
     b.classList.toggle("guest", !!(c && c.guest));
     b.classList.toggle("in", !!c);
     b.setAttribute("aria-label", c ? "Your profile, " + c.card : "Sign in with GitHub");

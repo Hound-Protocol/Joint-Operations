@@ -681,7 +681,7 @@
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || {};
-      var stats = [[16, "players in one session"], [1, "host, the authority"], [0, "Konami servers touched"], [100, "% free and open source"]];
+      var stats = [[16, "players in one session"], [1, "host, the authority"], [100, "% free and open source"]];
       $("#vb").innerHTML = '<div class="bf ab">' +
         '<section class="bf-sec ab-hero"><div class="ab-copy"><span class="ab-kick">MGSV: Joint Operations · by Hound Protocol</span><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
           (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
@@ -832,7 +832,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -987,6 +987,8 @@
     /* Flag (v0.0.36): a pennant waving on the command platform */
     var flagEl = $("#mbFlag"), flagP = $("#mbFlag path"), flagAt = mbWorld(core, [core.g.R * 0.42, -core.g.R * 0.32]);
     flagEl.setAttribute("transform", "translate(" + mbF(flagAt[0]) + " " + mbF(flagAt[1]) + ")");
+    /* Shooting star (v0.0.37): now and then a streak crosses the night sky */
+    var star = { t: 20, x: 0, y: 0 }, starEl = $("#mbStar");
     var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
     /* Windsock (v0.0.27): beside the command helipad, swinging with the wind and stiffening in gusts */
     var sockP = padOf(mods[0]), sockEl = $("#mbSock"), sock = [sockP[0] + 30, sockP[1] - 18];
@@ -1139,6 +1141,11 @@
       srchEl.setAttribute("transform", "translate(" + mbF(core.x) + " " + mbF(core.y) + ") rotate(" + mbF((T * 14) % 360) + ")");
       var fw = Math.sin(T * 4.2), fw2 = Math.sin(T * 4.2 + 1.3);
       flagP.setAttribute("d", "M0 -26 Q7 " + mbF(-27 + fw * 2) + " 15 " + mbF(-23 + fw2 * 1.6) + " Q7 " + mbF(-20 + fw * 1.6) + " 0 -19 Z");
+      star.t += dt;
+      if (star.t > 38) { star.t = 0; star.x = 80 + r() * (MB_W - 480); star.y = 30 + r() * 160; }
+      var sk = star.t / 0.9;
+      if (sk < 1) { var sx = star.x + 300 * sk, sy = star.y + 100 * sk; starEl.setAttribute("x1", mbF(sx - 60)); starEl.setAttribute("y1", mbF(sy - 20)); starEl.setAttribute("x2", mbF(sx)); starEl.setAttribute("y2", mbF(sy)); starEl.setAttribute("opacity", mbF(Math.sin(sk * Math.PI))); }
+      else starEl.setAttribute("opacity", "0");
       drop.t += dt;
       if (drop.t > 30 || !drop.m) { var built = mods.filter(function (m) { return m.st !== "next"; }); drop.m = built[Math.floor(r() * built.length)] || core; drop.t = 0; drop.ox = (r() - 0.5) * drop.m.g.R * 0.6; drop.oy = (r() - 0.5) * drop.m.g.R * 0.6; }
       var dk = Math.min(drop.t / 7, 1), de = 1 - Math.pow(1 - dk, 2), dsw = Math.sin(drop.t * 1.6) * 6 * (1 - dk);
@@ -1783,7 +1790,8 @@
       if (!doc && /^r\d+-/.test(id || "")) doc = docs.filter(function (d) { return d.restricted && id.indexOf("r" + d.restricted.area + "-") === 0; })[0];
       /* Handbook documents live in the Handbook zone */
       if (doc && doc.group === "Handbook") { location.replace("#/guides/" + doc.id); return; }
-      doc = doc || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
+      /* Docs always opens on the Overview, however you arrive */
+      doc = doc || docs.filter(function (d) { return d.id === "overview"; })[0] || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
       /* One drawer open at a time: the one holding the open document */
       cabOpen = {}; cabOpen[doc.group] = true;
       if (!$("#cab")) {
@@ -2414,6 +2422,8 @@
       if (currentView !== "guides") return;
       var list = (res[0] && res[0].guides) || [];
       if (id) return drawGuide(list, id);
+      /* The Handbook always opens on its folders; Return to Handbook Library reopens the folder you came from */
+      guideOpen = hbBack; hbBack = null;
       drawGuideList(list);
     });
   }
@@ -2483,7 +2493,7 @@
     var byType = { Guide: [], Policy: [], Procedure: [] };
     shown.forEach(function (g) { (byType[g.type] = byType[g.type] || []).push(g); });
     /* Folders: one per type. The open folder lays its sheets out below; switching folders sends the sheets back in first */
-    if (!(byType[guideOpen] || []).length) { var first = HB_FOLDERS.filter(function (f) { return byType[f[0]].length; })[0]; if (first) guideOpen = first[0]; }
+    if (guideOpen ? !(byType[guideOpen] || []).length : filtering) { var first = HB_FOLDERS.filter(function (f) { return byType[f[0]].length; })[0]; if (first) guideOpen = first[0]; }
     var bar = $("#hbFolders");
     bar.innerHTML = HB_FOLDERS.map(function (f, k) {
       var n = byType[f[0]].length;
@@ -2497,6 +2507,7 @@
           '<span class="m-title">' + hl(g.title) + '</span><span class="m-sum">' + hl(g.summary) + "</span>" +
           '<span class="m-foot">' + esc(g.owner) + " Dept</span>" + typeStripe(g.type, 3) + "</a>";
       }).join("") + "</div>" : "") +
+      (!guideOpen && shown.length ? '<p class="hb-pick">Select a folder to display content</p>' : "") +
       (shown.length ? "" : filtering ? '<div class="cab-none"><b>No match</b>No handbook document matches “' + esc(guideQ.trim()) + '”' + (guideAud !== "All" ? " for " + esc(guideAud) : "") + '.<small>Try fewer words, part of a word, or the All tab.</small></div>' : '<div class="empty">No documents for this audience yet</div>');
     if (fly) hbFly(true);
     $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx || guideMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
@@ -2504,7 +2515,7 @@
     $$("#hbList .mini").forEach(function (a) { a.addEventListener("click", function (e) { if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; if (hbZoom(a)) e.preventDefault(); }); });
   }
   var HB_FOLDERS = [["Guide", "Guides", "All guides relevant to the Joint Operations Platform"], ["Policy", "Policies", "Rules & Standards"], ["Procedure", "Procedures", "How Joint Operations handles the process"]];
-  var guideOpen = "Guide", hbBusy = false;
+  var guideOpen = null, hbBack = null, hbBusy = false;
   /* Sheets fly between the open folder and the grid (Web Animations; without it, they simply appear) */
   function hbFly(out, done) {
     var f = $("#hbFolders .hbf.open"), sheets = $$("#hbList .mini");
@@ -2517,24 +2528,25 @@
       a.onfinish = function () { if (out) a.cancel(); if (--left === 0 && done) done(); };
     });
   }
-  /* Opening a sheet: the others fade, the chosen sheet glides to the middle, the Handbook controls fade, a short pause,
-     then the sheet zooms up into the reading view, which grows in from the same spot. */
+  /* Opening a sheet takes 1 second in all, swift but smooth: the others and the Handbook controls fade while the chosen sheet glides to the middle
+     and, in the same motion, zooms up into the reading view, which grows in from the same spot. */
   var hbZoomIn = false;
   function hbZoom(a) {
     if (!opts.motion || !a.animate || hbBusy) return false;
     hbBusy = true; if (typeof hbpHide === "function") hbpHide(true);
-    var href = a.getAttribute("href"), fade = { duration: 160, fill: "forwards", easing: "ease-out" };
+    var href = a.getAttribute("href"), fade = { duration: 320, fill: "forwards", easing: "cubic-bezier(.4,0,.2,1)" };
     $$("#hbList .mini").forEach(function (m) { if (m !== a) m.animate([{ opacity: 1 }, { opacity: 0, transform: "scale(.96)" }], fade); });
     [".zones", ".hb-tools", "#hbCount", "#hbFolders", "#vb > p.sub", ".vh"].forEach(function (sel) { $$(sel).forEach(function (el) { el.animate([{ opacity: 1 }, { opacity: 0 }], fade); }); });
     var r = a.getBoundingClientRect(), dx = window.innerWidth / 2 - (r.left + r.width / 2), dy = window.innerHeight / 2 - (r.top + r.height / 2);
     a.style.position = "relative"; a.style.zIndex = 5;
-    var center = a.animate([{ transform: "none" }, { transform: "translate(" + dx + "px," + dy + "px) scale(1.3)" }], { duration: 280, delay: 60, fill: "forwards", easing: "cubic-bezier(.2,.8,.2,1)" });
-    center.onfinish = function () {
-      setTimeout(function () {
-        var z = a.animate([{ transform: "translate(" + dx + "px," + dy + "px) scale(1.3)", opacity: 1 }, { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }], { duration: 210, fill: "forwards", easing: "cubic-bezier(.5,0,.75,0)" });
-        z.onfinish = function () { hbZoomIn = true; hbBusy = false; location.hash = href; };
-      }, 250);
-    };
+    var mid = "translate(" + dx + "px," + dy + "px) scale(1.3)";
+    /* One continuous move: glide to the middle, then straight on into the zoom (no pause) */
+    var z = a.animate([
+      { transform: "none", opacity: 1, easing: "cubic-bezier(.33,0,.2,1)" },
+      { offset: 0.55, transform: mid, opacity: 1, easing: "cubic-bezier(.55,0,.7,.4)" },
+      { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }
+    ], { duration: 650, fill: "forwards" });
+    z.onfinish = function () { hbZoomIn = true; hbBusy = false; location.hash = href; };
     blip();
     return true;
   }
@@ -2556,7 +2568,6 @@
   function drawGuide(list, id) {
     var g = list.filter(function (x) { return x.id === id; })[0];
     if (!g) { $("#vb").innerHTML = '<div class="empty">No document ' + esc(id) + '<small><a href="#/guides">Back to the handbook</a></small></div>'; return; }
-    guideOpen = g.type; /* Return to Handbook Library opens the folder this sheet lives in */
     $("#vb").innerHTML = loading("Opening " + g.code);
     loadDoc({ path: g.path }).then(function (src) {
       if (currentView !== "guides") return;
@@ -2580,13 +2591,14 @@
           '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
         "</article>";
       $("#gprint").addEventListener("click", function () { printSheet(); });
+      $(".sb-back").addEventListener("click", function () { hbBack = g.type; });
       /* Opening a sheet puts the "Documentation · Handbook" heading on the top line of the page (the camera moves; the layout does not) */
       hbAim();
       if (hbZoomIn) {
         hbZoomIn = false;
         var sh = $("#vb .sheet"), bar = $("#vb .sheet-bar");
-        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
-        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 150, fill: "backwards" });
+        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 350, easing: "cubic-bezier(.16,1,.3,1)" });
+        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, delay: 100, fill: "backwards" });
       }
       /* Opened from a Documentation search: mark the words and scroll to the first */
       if (cabHL) { var hit = cabHighlight($(".sh-body"), cabHL); cabHL = null; if (hit && hit.scrollIntoView) setTimeout(function () { hit.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "center" }); }, opts.motion ? 260 : 0); }
@@ -2975,7 +2987,14 @@
       b = $("#siBadge");
     }
     var c = siCard();
-    b.innerHTML = c ? '<i style="--hk:' + (KC_LV[c.card] || KC_LV.LV2)[1] + '">' + esc(c.card) + "</i><span>" + esc(c.guest ? "Guest pass" : c.name || c.login) + "</span>" : "<i>ID</i><span>Sign in</span>";
+    /* A small access credential: level colour edge, picture, name over "Access Credential · level", the level number */
+    var lv = c ? KC_LV[c.card] || KC_LV.LV2 : null, ph = c && !c.guest ? kcPhoto(c) : "";
+    b.style.setProperty("--hk", lv ? lv[1] : "var(--jo)");
+    b.innerHTML = c
+      ? '<span class="sb-pic">' + (ph ? '<img src="' + esc(ph) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : "") + "</span>" +
+        '<span class="sb-txt"><b>' + esc(c.guest ? "Guest pass" : c.name || c.login) + "</b><small>Access Credential · " + esc(lv[0]) + "</small></span>" +
+        '<span class="sb-lv"><small>LV</small>' + esc(String(c.card).slice(2)) + "</span>"
+      : '<span class="sb-pic id">ID</span><span class="sb-txt"><b>Sign in</b><small>Hound ID · GitHub</small></span>';
     b.classList.toggle("guest", !!(c && c.guest));
     b.classList.toggle("in", !!c);
     b.setAttribute("aria-label", c ? "Your profile, " + c.card : "Sign in with GitHub");

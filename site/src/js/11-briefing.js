@@ -11,7 +11,7 @@
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || {};
-      var stats = [[16, "players in one session"], [1, "host, the authority"], [0, "Konami servers touched"], [100, "% free and open source"]];
+      var stats = [[16, "players in one session"], [1, "host, the authority"], [100, "% free and open source"]];
       $("#vb").innerHTML = '<div class="bf ab">' +
         '<section class="bf-sec ab-hero"><div class="ab-copy"><span class="ab-kick">MGSV: Joint Operations · by Hound Protocol</span><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
           (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +

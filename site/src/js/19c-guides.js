@@ -10,6 +10,8 @@
       if (currentView !== "guides") return;
       var list = (res[0] && res[0].guides) || [];
       if (id) return drawGuide(list, id);
+      /* The Handbook always opens on its folders; Return to Handbook Library reopens the folder you came from */
+      guideOpen = hbBack; hbBack = null;
       drawGuideList(list);
     });
   }
@@ -79,7 +81,7 @@
     var byType = { Guide: [], Policy: [], Procedure: [] };
     shown.forEach(function (g) { (byType[g.type] = byType[g.type] || []).push(g); });
     /* Folders: one per type. The open folder lays its sheets out below; switching folders sends the sheets back in first */
-    if (!(byType[guideOpen] || []).length) { var first = HB_FOLDERS.filter(function (f) { return byType[f[0]].length; })[0]; if (first) guideOpen = first[0]; }
+    if (guideOpen ? !(byType[guideOpen] || []).length : filtering) { var first = HB_FOLDERS.filter(function (f) { return byType[f[0]].length; })[0]; if (first) guideOpen = first[0]; }
     var bar = $("#hbFolders");
     bar.innerHTML = HB_FOLDERS.map(function (f, k) {
       var n = byType[f[0]].length;
@@ -93,6 +95,7 @@
           '<span class="m-title">' + hl(g.title) + '</span><span class="m-sum">' + hl(g.summary) + "</span>" +
           '<span class="m-foot">' + esc(g.owner) + " Dept</span>" + typeStripe(g.type, 3) + "</a>";
       }).join("") + "</div>" : "") +
+      (!guideOpen && shown.length ? '<p class="hb-pick">Select a folder to display content</p>' : "") +
       (shown.length ? "" : filtering ? '<div class="cab-none"><b>No match</b>No handbook document matches “' + esc(guideQ.trim()) + '”' + (guideAud !== "All" ? " for " + esc(guideAud) : "") + '.<small>Try fewer words, part of a word, or the All tab.</small></div>' : '<div class="empty">No documents for this audience yet</div>');
     if (fly) hbFly(true);
     $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx || guideMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
@@ -100,7 +103,7 @@
     $$("#hbList .mini").forEach(function (a) { a.addEventListener("click", function (e) { if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; if (hbZoom(a)) e.preventDefault(); }); });
   }
   var HB_FOLDERS = [["Guide", "Guides", "All guides relevant to the Joint Operations Platform"], ["Policy", "Policies", "Rules & Standards"], ["Procedure", "Procedures", "How Joint Operations handles the process"]];
-  var guideOpen = "Guide", hbBusy = false;
+  var guideOpen = null, hbBack = null, hbBusy = false;
   /* Sheets fly between the open folder and the grid (Web Animations; without it, they simply appear) */
   function hbFly(out, done) {
     var f = $("#hbFolders .hbf.open"), sheets = $$("#hbList .mini");
@@ -113,24 +116,25 @@
       a.onfinish = function () { if (out) a.cancel(); if (--left === 0 && done) done(); };
     });
   }
-  /* Opening a sheet: the others fade, the chosen sheet glides to the middle, the Handbook controls fade, a short pause,
-     then the sheet zooms up into the reading view, which grows in from the same spot. */
+  /* Opening a sheet takes 1 second in all, swift but smooth: the others and the Handbook controls fade while the chosen sheet glides to the middle
+     and, in the same motion, zooms up into the reading view, which grows in from the same spot. */
   var hbZoomIn = false;
   function hbZoom(a) {
     if (!opts.motion || !a.animate || hbBusy) return false;
     hbBusy = true; if (typeof hbpHide === "function") hbpHide(true);
-    var href = a.getAttribute("href"), fade = { duration: 160, fill: "forwards", easing: "ease-out" };
+    var href = a.getAttribute("href"), fade = { duration: 320, fill: "forwards", easing: "cubic-bezier(.4,0,.2,1)" };
     $$("#hbList .mini").forEach(function (m) { if (m !== a) m.animate([{ opacity: 1 }, { opacity: 0, transform: "scale(.96)" }], fade); });
     [".zones", ".hb-tools", "#hbCount", "#hbFolders", "#vb > p.sub", ".vh"].forEach(function (sel) { $$(sel).forEach(function (el) { el.animate([{ opacity: 1 }, { opacity: 0 }], fade); }); });
     var r = a.getBoundingClientRect(), dx = window.innerWidth / 2 - (r.left + r.width / 2), dy = window.innerHeight / 2 - (r.top + r.height / 2);
     a.style.position = "relative"; a.style.zIndex = 5;
-    var center = a.animate([{ transform: "none" }, { transform: "translate(" + dx + "px," + dy + "px) scale(1.3)" }], { duration: 280, delay: 60, fill: "forwards", easing: "cubic-bezier(.2,.8,.2,1)" });
-    center.onfinish = function () {
-      setTimeout(function () {
-        var z = a.animate([{ transform: "translate(" + dx + "px," + dy + "px) scale(1.3)", opacity: 1 }, { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }], { duration: 210, fill: "forwards", easing: "cubic-bezier(.5,0,.75,0)" });
-        z.onfinish = function () { hbZoomIn = true; hbBusy = false; location.hash = href; };
-      }, 250);
-    };
+    var mid = "translate(" + dx + "px," + dy + "px) scale(1.3)";
+    /* One continuous move: glide to the middle, then straight on into the zoom (no pause) */
+    var z = a.animate([
+      { transform: "none", opacity: 1, easing: "cubic-bezier(.33,0,.2,1)" },
+      { offset: 0.55, transform: mid, opacity: 1, easing: "cubic-bezier(.55,0,.7,.4)" },
+      { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }
+    ], { duration: 650, fill: "forwards" });
+    z.onfinish = function () { hbZoomIn = true; hbBusy = false; location.hash = href; };
     blip();
     return true;
   }
@@ -152,7 +156,6 @@
   function drawGuide(list, id) {
     var g = list.filter(function (x) { return x.id === id; })[0];
     if (!g) { $("#vb").innerHTML = '<div class="empty">No document ' + esc(id) + '<small><a href="#/guides">Back to the handbook</a></small></div>'; return; }
-    guideOpen = g.type; /* Return to Handbook Library opens the folder this sheet lives in */
     $("#vb").innerHTML = loading("Opening " + g.code);
     loadDoc({ path: g.path }).then(function (src) {
       if (currentView !== "guides") return;
@@ -176,13 +179,14 @@
           '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
         "</article>";
       $("#gprint").addEventListener("click", function () { printSheet(); });
+      $(".sb-back").addEventListener("click", function () { hbBack = g.type; });
       /* Opening a sheet puts the "Documentation · Handbook" heading on the top line of the page (the camera moves; the layout does not) */
       hbAim();
       if (hbZoomIn) {
         hbZoomIn = false;
         var sh = $("#vb .sheet"), bar = $("#vb .sheet-bar");
-        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
-        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 150, fill: "backwards" });
+        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 350, easing: "cubic-bezier(.16,1,.3,1)" });
+        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, delay: 100, fill: "backwards" });
       }
       /* Opened from a Documentation search: mark the words and scroll to the first */
       if (cabHL) { var hit = cabHighlight($(".sh-body"), cabHL); cabHL = null; if (hit && hit.scrollIntoView) setTimeout(function () { hit.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "center" }); }, opts.motion ? 260 : 0); }

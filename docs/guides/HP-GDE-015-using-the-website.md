@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.5 · Effective 2026-10-23 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.6 · Effective 2026-10-23 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -7,7 +7,7 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 - **Main menu:** the first screen. Arrow keys and Enter work, as in a game menu. The panels beside it describe the project and the team.
 - **Section bar:** the row of tabs at the top of every page. The line under it describes the tab you point at.
 - **Keyboard:** ← and → switch sections, Esc returns to the menu.
-- **Top bar:** the build number, and **Sign in** (or your keycard level and name once you are signed in).
+- **Top bar:** the build number, and **Sign in**. Once you are signed in, it shows your access credential: your picture, name, card and level, in your level's colour. Click it for your Profile.
 - **Options:** effects, motion, sound, text size and contrast. Choose **Performance** on older computers, or **Calm** if motion bothers you. Settings stay in your browser.
 
 ## 2. The sections
@@ -25,13 +25,13 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 | **Profile** | Your keycard and your restricted documents, after signing in |
 
 ## 3. Documentation: three zones
-**Library:** plans, decision records, research, technical, community, project and legal documents, kept in drawers like a filing cabinet.
+**Library:** plans, decision records, research, technical, community, project and legal documents, kept in drawers like a filing cabinet. The Docs tab always opens it on the **Overview**.
 - Open a drawer to see its folders; each folder shows a file number such as ADR-0012 or RES-03. One drawer is open at a time: opening another closes the rest.
 - The open document lies on the right. Its paper shows its class: ruled paper for decisions, triangle grid for research, millimetre paper for technical, green bars for community, pinstripes for project, a yellow pad for legal.
 - **Clearance:** a line above every document shows **Access granted** and its level: LV1 (public) for everything in the public repository, LV3 to LV6 for restricted documents. The **Staff**, **Leads** and **Administration** drawers hold restricted documents: you see their files when your card and GitHub both allow it. Otherwise the drawer is locked, and opening it shows **Access denied** with the level required. Contact Administration if you think you should have access.
 - **GitHub** opens the source file; **Suggest an edit** lets you propose a change ([GitHub Basics](HP-GDE-014-github-basics.md)); **Copy link** copies a direct link to that document.
 
-**Handbook:** the guides, policies and procedures, as A4 sheets you can print or download as PDF, kept in three colour-coded folders (Guides, Policies, Procedures). Click a folder to lay its sheets out; another folder sends them back first.
+**Handbook:** the guides, policies and procedures, as A4 sheets you can print or download as PDF, kept in three colour-coded folders (Guides, Policies, Procedures). The Handbook always opens on its folders: click one to lay its sheets out; another folder sends them back first. **Return to Handbook Library** on a sheet brings you back to its folder.
 - **Filter:** choose **Name** or **Content** beside the box, then type a word, part of one, or a topic (Ctrl+K or / jumps there). The sheets narrow as you type; the text of every document counts too, and everyday words find their handbook terms (`ban` finds suspensions, `linux` finds Proton, `login` finds sign-in). Enter opens the first sheet, Esc clears.
 - Filter by audience: Players, Contributors, Quality, Administration. Both filters work together.
 - The coloured stripe on the right edge names the type: Guide (ochre), Policy (red), Procedure (blue).

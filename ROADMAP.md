@@ -35,6 +35,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Deploys no longer wait on the package mirror; broken-main incidents close themselves
 - [x] Tester's Field Manual: what to click, what to pinch, how to benchmark
 - [x] Dev Log inside Documentation; Access Credential cards
+- [x] Steady Library drawers; Docs and Handbook open on their overview; credential badge in the top bar
 - [x] Signed certificates of service, checked in the browser and printable (ADR 0020)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)
