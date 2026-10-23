@@ -12,7 +12,7 @@
   }
   function upShow(b, version) {
     if ($("#upNote")) return;
-    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><i aria-hidden="true"></i><b>Update available</b><span>' +
+    document.body.insertAdjacentHTML("beforeend", '<div class="up-note" id="upNote" role="status"><svg class="up-spin" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 6.2A5.5 5.5 0 0 0 3.1 5"/><path d="M2.8 9.8A5.5 5.5 0 0 0 12.9 11"/><path class="hd" d="M3.1 1.9V5h3.1"/><path class="hd" d="M12.9 14.1V11H9.8"/></svg><b>Update available</b><span>' +
       esc("Build " + (version || "") + (b.build ? "." + b.build : "")) + ' is live</span>' +
       '<button class="up-go" id="upGo">Reload</button><button class="up-x" id="upLater" aria-label="Later">✕</button></div>');
     blip();

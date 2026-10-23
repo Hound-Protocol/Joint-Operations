@@ -2,6 +2,14 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.35 · Field manual · 2026-10-23
+- **Tester's Field Manual ([HP-GDE-020](docs/guides/HP-GDE-020-testers-field-manual.md)):** the hands-on guide for anyone asked to test. It covers the testing loop and test charters; what to click in every website section and what to try to break there; a pinch list (input, timing, navigation, screens, keyboard, slow network, browsers); and benchmarking the website with Lighthouse and Core Web Vitals. For the game from 0.1, it adds what to click, how to pinch it, frame rate and 1 % lows with MangoHud, PresentMon or CapFrameX (always against a no-mod baseline), three standard network profiles, soak tests, a results template and how to test responsibly. The [Quality Guide](docs/guides/HP-GDE-004-quality-testing.md), Reporting a Problem, the knowledge map and the README point to it. In the Handbook filter, `test`, `benchmark` and `performance` find it.
+- **Handbook:** opening a sheet is twice as fast, pause included.
+- **Handbook sheet bar:** a **Return to Handbook Library** button on the right, in gold on a gently textured plate, brings you back to the Handbook with the sheet's folder open. The other buttons keep their place and get colour codes: Download PDF orange, Print blue, View on GitHub silver.
+- **Handbook view:** opening a sheet moves the view so the **Documentation · Handbook** heading sits on the top line of the page. Only the scroll position changes, not the layout.
+- **Update notice:** the blinking square is now two arrows turning in a circle, one turn every 2 seconds (still when motion is off).
+- **Roadmap:** this release's base detail is a supply drop: every half minute a crate floats down on a parachute onto a built platform.
+
 ## v0.0.34 · Deploy hotfix · 2026-10-23
 - **Website deploys again:** v0.0.32 and v0.0.33 did not reach the website. The deploy installed its PDF browser from Ubuntu's package mirror, which stalled, and each new release cancelled the stuck one. The Handbook PDFs are now made in Playwright's ready-made image, as the checks already are, with a time limit. This release brings v0.0.32 and v0.0.33 live.
 - **Broken-main incidents close themselves:** when the checks pass on `main` again, the open *incident: broken main* issues are closed with a link to the green run. #44 and #46 (mirror timeouts this morning) are closed.

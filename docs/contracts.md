@@ -52,6 +52,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F12 | Hotfix: contract board fits the frame, headers aligned, smaller sign-in window | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F13 | Handbook open animation, owner on the roster | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F14 | Deploy without the package mirror; incidents close themselves | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F15 | Tester's Field Manual | docs | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -671,3 +672,15 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - A release deploys to the website
 - Open broken-main incidents close when Checks pass on main
+
+## F15
+**Tester's Field Manual**  
+Module: docs · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Anyone asked to test knows what to click, what to try to break and how to measure.
+
+**Deliverable.** HP-GDE-020, linked from the Quality Guide and Reporting a Problem.
+
+**Acceptance criteria**
+- Covers the website and the game from 0.1
+- Benchmark methods with a baseline and recorded numbers

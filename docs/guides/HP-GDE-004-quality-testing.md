@@ -1,8 +1,10 @@
 # Quality Guide: Testing and Bug Reports
-Code: HP-GDE-004 · Version 1.0 · Effective 2026-10-22 · Owner: Quality · For: Quality Department and testers
+Code: HP-GDE-004 · Version 1.1 · Effective 2026-10-23 · Owner: Quality · For: Quality Department and testers
 
 ## Your job
 Make sure what we ship works on real machines. Every test result you write down saves someone hours.
+
+**Hands-on:** what to click, what to try to break and how to benchmark the website and the game are in the [Tester's Field Manual](HP-GDE-020-testers-field-manual.md).
 
 ## Test rig
 | Item | Record |
@@ -19,7 +21,8 @@ Keep the rig the same between tests. If something changes, note it.
 - **Checklist test:** the release checklist, step by step, on Windows and on Proton.
 - **Session test:** 2 or more players, joins and leaves, 30 minutes of play, note desyncs.
 - **Soak test:** a long session (2+ hours) to find slow leaks and drift.
-- **Bad network:** the same with latency and packet loss profiles.
+- **Bad network:** the same with the standard latency and packet loss profiles ([HP-GDE-020](HP-GDE-020-testers-field-manual.md), section 8).
+- **Benchmark:** frame rate and frame times with and without the mod, and the website's Lighthouse scores ([HP-GDE-020](HP-GDE-020-testers-field-manual.md), sections 6 and 8).
 
 ## Writing a bug report
 ```

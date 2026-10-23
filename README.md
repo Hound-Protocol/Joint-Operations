@@ -66,7 +66,7 @@ Access works like keycards, from **LV1** (visitor) to **LV7** (owner), and every
 
 ## Get involved
 - **Play:** follow the [Player Guide](docs/guides/HP-GDE-001-player-guide.md) when 0.1 is released.
-- **Test:** testers on Windows and Linux are welcome now. Join the [Discord](https://discord.gg/QTpJ89kMCM) ([how](docs/guides/HP-GDE-008-discord-members.md)) and read the [Quality Guide](docs/guides/HP-GDE-004-quality-testing.md).
+- **Test:** testers on Windows and Linux are welcome now. Join the [Discord](https://discord.gg/QTpJ89kMCM) ([how](docs/guides/HP-GDE-008-discord-members.md)) and read the [Quality Guide](docs/guides/HP-GDE-004-quality-testing.md) and the [Tester's Field Manual](docs/guides/HP-GDE-020-testers-field-manual.md).
 - **New to GitHub?** [GitHub Basics](docs/guides/HP-GDE-014-github-basics.md) takes you from no account to your first pull request.
 - **Build:** contracts open after 0.1. Start with the [Contributor Quick Start](docs/guides/HP-GDE-003-contributor-quick-start.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
