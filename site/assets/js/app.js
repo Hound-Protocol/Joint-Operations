@@ -820,8 +820,7 @@
         '<div class="mb-stage">' + b.svg +
           '<div class="mb-hudtl"><span class="kicker">Base construction</span><b>' + (all[1] ? Math.round(all[0] / all[1] * 100) : 0) + "%</b><small>" + all[0] + " of " + all[1] + " tasks done</small>" +
           '<ul class="mb-key"><li class="k-done">Complete</li><li class="k-now">Under construction</li><li class="k-next">Planned</li></ul></div>' +
-          '<div class="mb-tick" id="mbTick" aria-hidden="true"></div>' +
-          '<p class="mb-hint">Point at a platform to light it · click it to see its progress</p>' +
+          '<p class="mb-hint">Click a platform for details</p>' +
           '<aside class="mb-panel" id="mbPanel" aria-live="polite"></aside>' +
         "</div>" +
         '<p class="source">Read live from <a href="' + repoUrl("/blob/" + cfg.branch + "/ROADMAP.md") + '" target="_blank" rel="noopener noreferrer">ROADMAP.md</a> · the base grows as tasks are ticked off in each release · each phase starts when the one before it is done</p>' +
@@ -893,7 +892,7 @@
       cont: $$("#mbShips .mb-ship").map(function (g) { return $$(".cont", g); }),
       carry: $$("#mbCarry .mb-carrier"), pile: $$("#mbPile .mb-crate"), rings: $$("#mbRings circle"), waves: $$(".mb-wave"), clouds: $$(".mb-clouds ellipse"),
       fill: $$(".mb-fill"), lvl: $$(".mb-lvl"), hatch: $$(".mb-hatch"), pct: $$(".mb-pct"), mod: $$(".mb-mod"), inner: $$(".mb-mod .mb-in"), name: $$(".mb-mod .mb-name"),
-      br: $$(".mb-bridge"), sweep: $("#mbSweep"), edge: $("#mbSweepEdge"), sel: $("#mbSel"), selR: $$("#mbSel circle"), tick: $("#mbTick"),
+      br: $$(".mb-bridge"), sweep: $("#mbSweep"), edge: $("#mbSweepEdge"), sel: $("#mbSel"), selR: $$("#mbSel circle"),
       hsh: $("#mbHeli .mb-hsh"), heli: $("#mbHeli .mb-heli"), hb: $("#mbHeli .hb"), rot: $$("#mbHeli .rotor"), pat: $("#mbHatch")
     };
     function padOf(m) { return mbWorld(m, [m.g.pad.x, m.g.pad.y]); }
@@ -1082,12 +1081,6 @@
       el.hb.setAttribute("transform", "rotate(" + mbF(H.h) + ")");
       var spin = (T * (H.st === "wait" && H.alt < 0.05 ? 160 : 1500)) % 360;
       el.rot[0].setAttribute("transform", "rotate(" + mbF(spin) + ")"); el.rot[1].setAttribute("transform", "rotate(" + mbF(spin) + ")");
-      /* Ticker */
-      if (!MB.tk || T - MB.tk > 0.5) {
-        MB.tk = T;
-        var afloat = ships.filter(function (s) { return s.st !== "wait"; }).length + boats.filter(function (b) { return b.delay <= 0; }).length;
-        el.tick.textContent = "Crew " + (crew.length + walk.length + carriers.length) + " · Vessels " + afloat + " · Cargo landed " + MB.cargo + " · " + new Date().toISOString().slice(11, 19) + " UTC";
-      }
     }
     if (!opts.motion) { MB.t = 30; step(0); return; }
     step(0);
