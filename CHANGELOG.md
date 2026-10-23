@@ -2,6 +2,20 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.39 · Clearance at the door · 2026-10-23
+- **Everyone starts at LV1:** visitors hold a temporary LV1 pass. About, Roadmap, Team, Documentation and Options are open. Download, Sessions, Contribute and Mods show **No access** over a blurred page, with **Sign in with GitHub** (LV2 at once) and **Request a guest pass**. Profile (to sign in) and Verify (to check a certificate) stay open.
+- **Welcome window:** on each visit, a visitor is told, over a blurred page, that they are on restricted clearance and what that means. It stops once the browser has signed in with GitHub.
+- **Guest pass requests:** a visitor asks with their name, which cannot be blank, at most once a minute. LV7 sees the requests on the right half of the guest pass panel, with **Approve** and **Decline**. An approved pass opens in the visitor's browser by itself, with no link to send.
+- **Guest pass window:** **Grant Guest Pass** opens a window straight away, titled "You have been issued a temporary guest pass", showing the whole link with a Copy button that always works. **Copy link** on a pass opens the same window.
+- **Shorter links:** a pass is now about 32 characters (`#/g/…`) instead of about 120. Older links still work.
+- **Clear any pass:** LV7 can clear a live pass (it is revoked at once) or every pass with **Clear all**.
+- **Top bar:** **messages** (clearance changes, guest passes, requests; LV7 is told about new requests), the **gear** for Profile details, and the access credential, which is no longer a button. Visitors see *Visitor · LV1*.
+- **Sign-in lasts at most 24 hours** at every level; then you sign in again.
+- **Profile:** **Sign out** is a square on the left, reading "Sign out of clearance".
+- **About:** the figures strip is gone.
+- **Relay update needed:** requests, short passes and clearing live passes need the new `worker.js` and the KV storage ([sign-in setup, section 6b](docs/signin.md)).
+- **Roadmap:** this release's base detail is a slow sonar ring pulsing out from the command platform.
+
 ## v0.0.38 · Classified · 2026-10-23
 - **Classification on Library documents:** a stamp in the middle of every Library document's header (not the Handbook) shows how it is classified. Public documents are **Not classified** (green). Documents for LV3 to LV5 are **Classified · Low clearance** (amber). Documents for LV6 and LV7 are **Classified · High clearance** (red, double frame). Under the header line, a classified document warns you not to share it, or anything in it, with anyone below the lowest level it is classified for.
 - **The Dev Log is a document:** it lives in the Library's Project drawer as [docs/devlog.md](docs/devlog.md), next to the Changelog, and is updated regularly. The Dev Log zone and its data file are gone; Documentation is back to two zones, Library and Handbook. Old `#/devlog` links open the document. The release procedure, the website guides and the knowledge map are updated.

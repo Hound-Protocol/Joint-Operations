@@ -6,8 +6,10 @@ This site does not use cookies, analytics, trackers or advertising. It collects 
 
 ## What the site stores on your device
 - Your display settings from the Options page are saved in your browser's local storage. They never leave your device. Use **Options → Reset** to clear them.
+- **Visitors (LV1):** after the welcome window, the site remembers in this tab that you have seen it. Once you have signed in with GitHub, it remembers that in local storage (only the word "verified", nothing about you), so the welcome window does not come back.
+- **Messages** in the top bar (clearance changes, guest passes, requests) are kept in your browser's local storage, at most 30. **Clear all** in the messages menu deletes them.
 - Data read from GitHub is cached in your browser for a few minutes to avoid repeated requests. It is cleared when you close the tab.
-- **If you sign in:** your GitHub sign-in token, account number, user name, display name and picture address are kept in this browser tab's session storage, so the Profile page can show your keycard and your documents. They are deleted when you sign out or close the tab, and the token expires on its own within eight hours.
+- **If you sign in:** your GitHub sign-in token, account number, user name, display name and picture address are kept in this browser tab's session storage, so the Profile page can show your keycard and your documents. They are deleted when you sign out or close the tab, and your sign-in ends on its own after at most 24 hours.
 
 ## Sign-in
 Signing in is optional and uses your GitHub account ([how it works](signin.md), [ADR 0017](decisions/0017-hound-id-sign-in.md)).
@@ -18,6 +20,7 @@ Signing in is optional and uses your GitHub account ([how it works](signin.md), 
 
 ## Guest passes
 - A guest pass link holds a signed code with its expiry time and nothing about you. The site keeps it in the open tab (session storage) until it expires or you end it.
+- **Asking for a guest pass:** the relay keeps the name you type, the time and the answer, for at most 2 days, so the owner can approve or decline it. It keeps no IP address. Your browser keeps the request number and a private key in local storage to collect the answer; both are removed once the request is answered.
 - When you read a Staff document with a guest pass, the sign-in relay fetches it from GitHub for you. The relay stores nothing and keeps no logs of passes.
 - The site checks once in a while whether a new version is live, by reading its own build number. Nothing about you is sent.
 

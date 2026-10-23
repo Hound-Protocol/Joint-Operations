@@ -4,6 +4,11 @@ News and notes from Hound Protocol, newest first. It is updated regularly, whene
 
 ## 2026-10-23
 
+### Clearance at the door
+*Website*
+
+Everyone now starts on a temporary LV1 pass. The public pages stay open; the rest of the site asks you to sign in with GitHub, which gives LV2 at once, or to ask the owner for a guest pass by name. Approved passes open by themselves, and a sign-in now lasts at most 24 hours.
+
 ### The Dev Log is now a document
 *Website*
 

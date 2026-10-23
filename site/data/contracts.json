@@ -1034,6 +1034,31 @@
     "Forge77"
    ],
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F19",
+   "title": "LV1 for visitors, guest pass requests, messages",
+   "module": "web",
+   "difficulty": "medium",
+   "skills": "",
+   "depends": [],
+   "goal": "Visitors know their clearance; known people can ask for a guest pass; everyone sees what changed for them.",
+   "deliverable": "Gate and welcome window, request flow with LV7 approval, messages and profile details in the top bar, 24 h sign-in, relay routes.",
+   "acceptance": [
+    "LV1 sees No access on gated sections",
+    "A named request can be approved and opens by itself",
+    "Sign-in ends after 24 hours"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

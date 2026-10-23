@@ -1,5 +1,5 @@
   /* ---------------- Router ---------------- */
-  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: function () { location.replace("#/docs/devlog"); }, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guest: viewGuest, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
+  var VIEWS = { briefing: viewBriefing, roadmap: viewRoadmap, team: viewTeam, devlog: function () { location.replace("#/docs/devlog"); }, download: viewDownload, sessions: viewSessions, contribute: viewContribute, verify: viewVerify, profile: viewProfile, guest: viewGuest, g: viewGuest, guides: viewGuides, mods: viewMods, docs: viewDocs, options: viewOptions };
   var goTimer;
   function flash() {
     var st = $("#stage");
@@ -47,6 +47,7 @@
     led($("#ledInfo"), item ? item.title : "");
     document.title = (item ? item.title + " · " : "") + cfg.project;
     VIEWS[name](parts[1]);
+    gateApply(name);
     if (!same) readyView();
     var tab = $('.secbar a[aria-current="page"]');
     if (tab) { var bar = tab.parentNode; bar.scrollLeft = Math.max(0, tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2); }

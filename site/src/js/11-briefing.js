@@ -11,12 +11,10 @@
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || {};
-      var stats = [[16, "players in one session"], [1, "host, the authority"], [100, "% free and open source"]];
       $("#vb").innerHTML = '<div class="bf ab">' +
         '<section class="bf-sec ab-hero"><div class="ab-copy"><span class="ab-kick">MGSV: Joint Operations · by Hound Protocol</span><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
           (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
           '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides/hp-gde-001">Player Guide</a></div></div></section>' +
-        '<section class="bf-sec ab-stats">' + stats.map(function (st, k) { return '<div style="--k:' + k + '"><b data-to="' + st[0] + '">0</b><span>' + esc(st[1]) + "</span></div>"; }).join("") + "</section>" +
         '<section class="bf-sec"><div class="label">How a session works</div><ol class="ab-steps">' + (b.how || []).map(function (h, k) {
           return '<li style="--k:' + k + '"><span class="ab-n">0' + (k + 1) + '</span><span class="st-n">' + (ICONS[h[0]] || k + 1) + "</span><h4>" + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></li>";
         }).join("") + "</ol></section>" +
