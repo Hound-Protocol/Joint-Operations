@@ -1,5 +1,5 @@
 # Release Procedure and Versioning
-Code: HP-SOP-003 · Version 1.2 · Effective 2026-10-23 · Owner: Quality · Used by: release signers, technical lead
+Code: HP-SOP-003 · Version 1.3 · Effective 2026-10-23 · Owner: Quality · Used by: release signers, technical lead
 
 ## Version numbers
 | Version | Meaning |
@@ -26,13 +26,13 @@ All work goes on the Contribute page's board, whoever does it: contractors, staf
 4. **Quality gate.** All checks green. For game builds: the checklist in [HP-POL-006](HP-POL-006-quality-policy.md) section 3.
 5. **Merge.** The site deploys automatically.
 6. **Tag and publish (automatic).** The Release workflow sees the new version on `main`, creates tag `vX.Y.Z` on the merge commit, and publishes a GitHub release with the changelog section as notes. Versions below 0.1 are marked **pre-release**. If it fails, run it again from the Actions tab (Release → Run workflow).
-7. **Announce.** Short post in #announcements with the release link. The site's Dev Log shows the release automatically.
+7. **Announce.** Short post in #announcements with the release link. When there is news beyond the changelog (a decision, a milestone, a change in how we work), add an entry at the top of the [Dev Log](../devlog.md).
 
 ## Game builds (from 0.1)
 - Built by CI only, never on a personal machine.
 - Attach the files and a `SHA256SUMS` file to the release.
 - Two release signers approve: one from Quality, one from Administration.
-- The Download page lists only releases from 0.1 onward. Foundation releases appear in the Dev Log.
+- The Download page lists only releases from 0.1 onward. Foundation releases are in the [Changelog](../../CHANGELOG.md).
 
 ## Fixing a bad release
 Never delete a published release. Publish a fixed version (patch number +1), mark the bad one in its notes, and post in #announcements.

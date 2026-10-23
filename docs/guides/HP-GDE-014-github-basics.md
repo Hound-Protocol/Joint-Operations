@@ -1,5 +1,5 @@
 # GitHub Basics
-Code: HP-GDE-014 · Version 1.1 · Effective 2026-10-23 · Owner: Development · For: everyone new to GitHub
+Code: HP-GDE-014 · Version 1.2 · Effective 2026-10-23 · Owner: Development · For: everyone new to GitHub
 
 GitHub is where Joint Operations lives: the code, the documents, the contract board, the releases and the website. You need a free account to report problems, take contracts or sign in to the website. This guide takes you from no account to your first pull request. No programming is needed for most of it.
 
@@ -32,7 +32,7 @@ Open **github.com/Hound-Protocol/Joint-Operations**.
 - **Releases** (right side of the Code tab): every version with its notes.
 - **Watch** (top right) → **Custom** → tick **Releases** if you want an email when a new version is out.
 
-Most of this is easier to read on our website: the **Roadmap**, **Contribute** (the contract board), **Dev Log** (releases and changes) and **Documentation**.
+Most of this is easier to read on our website: the **Roadmap**, **Contribute** (the contract board) and **Documentation**, where the Library also holds the Changelog and the Dev Log.
 
 ## 4. Report a problem or ask a question
 1. **Issues** → **New issue** → pick the template that fits: **Bug report**, **Mod submission** or **Appeal** (the **Contract** template is for staff). Questions are best asked on the Discord.

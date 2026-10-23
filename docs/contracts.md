@@ -55,6 +55,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F15 | Tester's Field Manual | docs | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F16 | Dev Log inside Documentation; Access Credential cards | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F17 | Steady drawers; Docs and Handbook open on their overview | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F18 | Classification stamps; the Dev Log as a document | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -710,3 +711,15 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - Open and closed drawers have the same frame
 - Handbook shows folders first with a hint
+
+## F18
+**Classification stamps; the Dev Log as a document**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Readers see at a glance how a Library document is classified; the Dev Log is a plain document.
+
+**Deliverable.** Stamp and warning in the dossier header; docs/devlog.md; Dev Log zone removed.
+
+**Acceptance criteria**
+- Not classified / low / high clearance stamps with colours
+- Old #/devlog links open the document

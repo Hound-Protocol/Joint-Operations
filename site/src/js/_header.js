@@ -7,7 +7,6 @@
  *   data/docs.json       documentation library manifest
  *   data/contracts.json  planned contracts, used until GitHub issues carry the "contract" label
  *   data/briefing.json   text for the About page (route #/briefing)
- *   data/devlog.json     manual dev log entries
  *   data/records.json    signed contributor records (tools/records.py), checked on the Verify page
  *   data/records-key.json public keys for those records
  *   data/staff.json      signed staff cards with Hound IDs, checked on the Verify page

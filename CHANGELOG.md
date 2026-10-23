@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.38 · Classified · 2026-10-23
+- **Classification on Library documents:** a stamp in the middle of every Library document's header (not the Handbook) shows how it is classified. Public documents are **Not classified** (green). Documents for LV3 to LV5 are **Classified · Low clearance** (amber). Documents for LV6 and LV7 are **Classified · High clearance** (red, double frame). Under the header line, a classified document warns you not to share it, or anything in it, with anyone below the lowest level it is classified for.
+- **The Dev Log is a document:** it lives in the Library's Project drawer as [docs/devlog.md](docs/devlog.md), next to the Changelog, and is updated regularly. The Dev Log zone and its data file are gone; Documentation is back to two zones, Library and Handbook. Old `#/devlog` links open the document. The release procedure, the website guides and the knowledge map are updated.
+- **Roadmap:** this release's base detail is a lit window on the command platform.
+
 ## v0.0.37 · Steady drawers · 2026-10-23
 - **Top bar:** the sign-in badge is now a small access credential. It shows your GitHub picture, your name over "Access Credential" and your card, and a large level number, with an edge and texture in your level's colour. Signed out, it reads **Sign in · Hound ID · GitHub**.
 - **Library drawers keep their size:** an open drawer no longer slides sideways. It keeps exactly the same frame as the closed ones, with its colour edge drawn inside (layout stability rule).

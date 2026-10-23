@@ -1,5 +1,5 @@
 # Website Maintainer Guide
-Code: HP-GDE-012 · Version 1.2 · Effective 2026-10-23 · Owner: Development · For: contributors who change the website
+Code: HP-GDE-012 · Version 1.3 · Effective 2026-10-23 · Owner: Development · For: contributors who change the website
 
 How the website is built, where its content lives, and how to change it safely.
 
@@ -15,7 +15,7 @@ How the website is built, where its content lives, and how to change it safely.
 | Styles | `site/assets/css/main.css` |
 | Scripts (edit these) | `site/src/js/*.js`, one file per section, joined in file-name order |
 | Built script (never edit) | `site/assets/js/app.js`, made by `tools/build_js.py` |
-| Content data | `site/data/*.json`: config, team, contracts, devlog, briefing, mods, servers, docs library, handbook index, records |
+| Content data | `site/data/*.json`: config, team, contracts, briefing, mods, servers, docs library, handbook index, records |
 | Brand files | `site/assets/brand/`, made by `tools/brand/build_brand.py` |
 | Documents | `docs/`, `research/` and the README files; the site reads them as Markdown. The Library is `docs.json`, the Handbook is generated from `docs/guides/` |
 | Sign-in | `site/src/js/19e-signin.js` (sign-in, Profile), `config.json` → `signin` (relay address and restricted areas) |
@@ -43,7 +43,7 @@ python3 tools/check_links.py
 4. Open a pull request ([HP-SOP-002](HP-SOP-002-pull-request-review.md)). The browser smoke test runs the site in Chromium, Firefox and WebKit, on desktop and phone sizes.
 
 ## Common edits
-- **Dev log entry:** add it at the top of `site/data/devlog.json`.
+- **Dev log entry:** add it at the top of [`docs/devlog.md`](../devlog.md), under today's date: a `###` title, a tag line in italics, then the text.
 - **New handbook document:** add `docs/guides/HP-XXX-NNN-name.md` with the title and metadata lines ([HP-GDE-005](HP-GDE-005-documentation-style.md)), add its audience and one-line summary in `tools/guides_index.py`, then run the index tool.
 - **New contract:** add it to `site/data/contracts.json`, then run `python3 tools/contracts_md.py`.
 - **Team and chain of command:** `site/data/team.json` (`hierarchy`, `seats`, `departments`).

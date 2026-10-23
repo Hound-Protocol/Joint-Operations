@@ -64,6 +64,15 @@
     return [cabGroup(d.group)[0] + "-" + (n < 10 ? "0" : "") + n, d.title];
   }
   /* The document's class: the handbook type from its code, otherwise its library group */
+  /* Classification stamp, in the middle of a Library document's header: public documents are not classified,
+     LV3 to LV5 are low-clearance classified, LV6 and LV7 high-clearance classified */
+  function cabStamp(x) {
+    if (!x) return '<span class="ds-cls c-open"><b>Not classified</b><small>Public</small></span>';
+    return '<span class="ds-cls ' + (x.need >= 6 ? 'c-high"><b>Classified</b><small>High clearance</small>' : 'c-low"><b>Classified</b><small>Low clearance</small>') + "</span>";
+  }
+  function cabWarn(x) {
+    return x ? '<p class="ds-warn"><b>Classified LV' + esc(x.need) + ".</b> Do not share this document, or anything in it, with anyone below LV" + esc(x.need) + ".</p>" : "";
+  }
   function cabClass(d, code) {
     if (/-POL-/.test(code)) return ["policy", "Policy"];
     if (/-SOP-/.test(code)) return ["procedure", "Procedure"];
@@ -229,7 +238,7 @@
     var msg = why === "level" ? "LV" + x.need + " clearance required." : why === "github" ? "Your card allows it, but GitHub has not given your account access yet." : "Could not reach GitHub to check your clearance.";
     body.innerHTML = cabClr(false, x, x.card) +
       '<div class="ds-tab"><b>' + esc(c[0]) + "</b>" + esc(doc.group) + '</div><div class="ds-folder denied"><div class="ds-page">' +
-      '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Restricted · ' + esc(x.card) + "</span></header>" +
+      '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span>' + cabStamp(x) + '<span class="ds-class">Restricted · ' + esc(x.card) + "</span></header>" +
       '<div class="ad-draft" aria-hidden="true"><b></b>' + lines + "</div>" +
       '<div class="ad" role="alert"><div class="ad-box"><small>Security</small><strong>Access denied</strong><em>' + esc(msg) + "</em>" +
         "<p>Please contact Administration.</p>" +
@@ -260,7 +269,7 @@
         '<div class="ds-tab"><b>' + esc(c[0]) + "</b>" + esc(doc.group) + "</div>" +
         '<div class="ds-folder"><div class="ds-page">' +
           '<span class="ds-clip" aria-hidden="true"></span><span class="ds-holes" aria-hidden="true"></span>' +
-          '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Class: ' + esc(k[1]) + "</span></header>" +
+          '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span>' + cabStamp(x) + '<span class="ds-class">Class: ' + esc(k[1]) + "</span></header>" + cabWarn(x) +
           '<h1 class="ds-title">' + esc(c[1]) + "</h1>" +
           '<div class="ds-meta"><span>' + esc(c[0]) + " · " + esc(doc.path) + "</span>" +
             '<a href="' + esc(gh) + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
