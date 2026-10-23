@@ -178,10 +178,9 @@ select.field { padding-right: 26px; }
 .sw[aria-checked="true"]::after { left: 25px; background: var(--hot); }
 
 /* ---------- Views ---------- */
-.view { margin: 0 auto; align-self: flex-start; width: 1040px; width: min(1040px, 92vw); padding: 18px 0 30px; }
-/* Wide views use the 16:9 stage; the neural docs use 80% of the frame */
-.view[data-v="contribute"], .view[data-v="sessions"], .view[data-v="mods"] { width: calc(100vw - 112px); width: min(var(--stage), calc(100vw - 64px)); }
-.view[data-v="docs"], .view[data-v="roadmap"] { width: 1040px; width: max(min(1040px, 92vw), min(calc(var(--fw) * .8), calc(100vw - 64px))); }
+/* Layout stability rule (HP-GDE-012): every section uses the same frame width, 80% of the 16:9 frame, so nothing
+   grows or shrinks when you switch sections or zones. Long text keeps its own reading width inside the frame. */
+.view { margin: 0 auto; align-self: flex-start; width: 1040px; width: max(min(1040px, 92vw), min(calc(var(--fw) * .8), calc(100vw - 64px))); padding: 18px 0 30px; }
 .view #vb { animation: viewIn .45s cubic-bezier(.2,.8,.2,1) both; }
 .vh { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--dim); position: relative; }
 .vh::after { content: ""; position: absolute; left: 0; bottom: -1px; width: 120px; height: 1px; background: var(--hot); }
@@ -1656,3 +1655,5 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .no-motion .hk-l7 .hk-pat::after, .no-motion .hk.hk-reveal { animation: none; }
 @media (prefers-reduced-motion: reduce) { .hk-l7 .hk-pat::after, .hk.hk-reveal { animation: none; } }
 .ax-col > .sub { margin: 12px 16px; }
+/* Long text keeps a comfortable reading width inside the shared frame */
+#vb > p.sub, .bf-lead, .faq p { max-width: 78ch; }
