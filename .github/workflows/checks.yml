@@ -69,11 +69,17 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - name: Install Playwright and browsers
+      - name: Install Playwright
+        run: pip install playwright fonttools brotli
+      - name: Install browser system libraries
+        timeout-minutes: 10
+        run: python -m playwright install-deps chromium firefox webkit
+      - name: Download browsers
+        timeout-minutes: 15
+        # The download sometimes stalls; each try gets 4 minutes, and only the download is retried (never apt)
         run: |
-          pip install playwright fonttools brotli
-          # The browser download sometimes stalls; give each try 6 minutes and retry
-          for i in 1 2 3; do timeout 360 python -m playwright install --with-deps chromium firefox webkit && break; echo "Retry $i"; done
+          for i in 1 2 3; do timeout 240 python -m playwright install chromium firefox webkit && exit 0; echo "Download try $i stalled, retrying"; done
+          exit 1
       - name: Assemble site
         run: python3 tools/assemble_site.py _site --woff2
       - name: Smoke test in all engines
