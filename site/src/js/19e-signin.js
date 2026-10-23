@@ -48,8 +48,22 @@
     if (!siIn()) return null;
     var staff = (data.staff && data.staff.staff) || [];
     var s = staff.filter(function (x) { return x.github_id === SI.user.id && x.status === "active"; })[0];
-    if (s) return Object.assign({}, s, { avatar: SI.user.avatar, name: s.name || SI.user.name });
+    /* A staff card counts only once its signature checks out against the published records key, so an edited
+       staff.json can never raise anyone's clearance. Until then (or if it fails) the holder is a member. */
+    if (s) {
+      var v = siV[s.id];
+      if (!v) siVerify(s);
+      else if (v === "ok" || v === "unsupported") return Object.assign({}, s, { avatar: SI.user.avatar, name: s.name || SI.user.name, unchecked: v === "unsupported" });
+    }
     return { id: "MEMBER", login: SI.user.login, name: SI.user.name, github_id: SI.user.id, avatar: SI.user.avatar, card: "LV2", department: "Member", since: "", status: "active", member: true };
+  }
+  var siV = {};
+  function siVerify(card) {
+    siV[card.id] = "wait";
+    loadLocal("records-key").then(function (k) { return verifyRecord(card, (k && k.keys) || []); }).then(function (r) {
+      siV[card.id] = r; siBadge();
+      if (r === "ok" || r === "unsupported") { if (currentView === "profile" || currentView === "docs") route(); }
+    });
   }
   function siLevel() { var c = siCard(); return c ? +String(c.card).slice(2) : 1; }
   /* The badge in the top bar: "Sign in", or the person's level and name */
@@ -93,18 +107,12 @@
           "<div><dt>Card</dt><dd>" + (c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
           "<div><dt>Session</dt><dd>" + (SI.exp ? "Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab" : "Signed in, in this tab") + "</dd></div>" +
           '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>' +
-        '<div class="label">Your documents</div>' +
-        '<p class="sub">Restricted documents live in private repositories, one per clearance. GitHub decides what you can read, through your teams; your card shows what your clearance should open.</p>' +
-        (areas.length ? '<div class="si-areas">' + areas.map(function (a, i) {
-          var need = +String(a.card).slice(2), open = lvl >= need;
-          return '<section class="si-area' + (open ? "" : " locked") + '" data-a="' + i + '" style="--hk:' + (KC_LV[a.card] || KC_LV.LV3)[1] + '"><header><b>' + esc(a.title) + "</b><span>" + esc(a.card) + " and up</span></header>" +
-            '<div class="si-list">' + (open ? loading("Checking access") : '<p class="sub">Needs ' + esc(a.card) + " clearance.</p>") + "</div></section>";
-        }).join("") + "</div>" : '<div class="empty">No restricted areas yet</div>') +
+        siAccess(lvl, areas) +
         '<article class="dossier si-reader" id="siDoc" hidden></article>';
       $("#siOut").addEventListener("click", function () { signOut(); status("Signed out"); viewProfile(); });
       areas.forEach(function (a, i) {
-        if (lvl < +String(a.card).slice(2)) return;
-        var box = $('.si-area[data-a="' + i + '"] .si-list');
+        var box = $('.si-docs[data-a="' + i + '"]');
+        if (!box || lvl < +String(a.card).slice(2)) return;
         siArea(a).then(function (paths) {
           if (currentView !== "profile") return;
           box.innerHTML = paths.length ? "<ul>" + paths.map(function (p) { return '<li><button type="button" data-p="' + esc(p) + '">' + esc(siTitle(p)) + "<small>" + esc(p) + "</small></button></li>"; }).join("") + "</ul>" : '<p class="sub">No documents here yet.</p>';
@@ -116,6 +124,34 @@
       if (keys.length && !c.member) markVerified([c], keys);
       else $$('.kc-profile [data-rid] .vs').forEach(function (el) { el.innerHTML = '<span class="status claimed">Signed in</span>'; });
     });
+  }
+  /* Access granted and access restricted: every level's rights from ADR 0011 (config.signin.access), split at the
+     holder's clearance. Restricted document areas show their files inside the level that opens them. */
+  function siAccess(lvl, areas) {
+    var levels = siCfg().access || [], got = [], not = [];
+    levels.forEach(function (L) { (+String(L.card).slice(2) <= lvl ? got : not).push(L); });
+    function item(it, open) {
+      if (it.area != null) {
+        var a = areas[it.area]; if (!a) return "";
+        return '<li class="ax-doc"><span class="ax-t">' + esc(a.title) + " documents</span>" +
+          (open ? '<div class="si-list si-docs" data-a="' + it.area + '">' + loading("Checking access") + "</div>" : "") + "</li>";
+      }
+      return '<li><span class="ax-t">' + esc(it.t) + "</span>" + (it.s ? '<em class="ax-s">' + esc(it.s) + "</em>" : "") + "</li>";
+    }
+    function group(L, open, n) {
+      var lv = KC_LV[L.card] || KC_LV.LV2;
+      return '<section class="ax-lv" style="--hk:' + lv[1] + "; --n:" + n + '"><header><i>' + esc(L.card) + "</i><b>" + esc(lv[0]) + "</b>" +
+        (open ? "" : "<small>Needs " + esc(L.card) + "</small>") + "</header><ul>" + L.items.map(function (it) { return item(it, open); }).join("") + "</ul></section>";
+    }
+    var next = not[0];
+    return '<div class="ax">' +
+      '<div class="ax-col ax-ok"><div class="ax-head"><span class="ax-ico" aria-hidden="true"></span><b>Access granted</b><small>Level ' + lvl + " clearance · " + plural(got.reduce(function (n, L) { return n + L.items.length; }, 0), "right") + "</small></div>" +
+        got.slice().reverse().map(function (L, n) { return group(L, true, n); }).join("") + "</div>" +
+      '<div class="ax-col ax-no"><div class="ax-head"><span class="ax-ico" aria-hidden="true"></span><b>Access restricted</b><small>' + (not.length ? "Opens with a higher card" : "Nothing: you hold the highest card") + "</small></div>" +
+        (not.length ? not.map(function (L, n) { return group(L, false, n); }).join("") : '<p class="sub">Every level is open to you.</p>') +
+        (next ? '<p class="ax-how">' + (lvl < 3 ? "A completed contract earns <b>LV3</b>; higher cards come with a department. " : "Higher cards come with a department role. ") + 'How cards are issued: <a href="#/guides/hp-gde-009">Grades, Records and Hound IDs</a>. Not sure where you fit? <a href="#/guides/hp-gde-017">Can I Contribute?</a></p>' : "") + "</div>" +
+      "</div>" +
+      '<p class="sub ax-note">GitHub decides what you can read in the restricted areas, through your teams; your card shows what your clearance should open. Items marked with a date or <em>Planned</em> arrive with the session browser and the API server (<a href="#/docs/adr-0011">ADR 0011</a>).</p>';
   }
   function siOpen(a, path) {
     var d = $("#siDoc"); if (!d) return;

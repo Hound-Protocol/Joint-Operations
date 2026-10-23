@@ -2,7 +2,7 @@
      Seen from above. Phase 0 is the command platform in the centre, every later phase is a platform on its own bridge,
      named after the phase. The fill inside a platform is the share of that phase's tasks that are done; the hatched part
      above it is still scaffolding. Point at a platform to light it, click it to read its tasks.
-     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys)
+     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys, helipad lights)
      is decoration and stops with Options → Animations. The data comes live from ROADMAP.md. */
   var MB_SLOTS = [[-345, -220], [345, -220], [345, 220], [-345, 220], [0, -330], [0, 330]];
   var MB_W = 1600, MB_H = 900, MB_CX = 600, MB_CY = 470;
@@ -114,7 +114,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbPadL"></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -253,6 +253,11 @@
     [[0.18, 0.5], [0.42, 0.28], [0.62, 0.9], [0.86, 0.3], [0.08, 0.86], [0.6, 0.62]].forEach(function (q, k) { buoys.push({ x: q[0] * 1150 + 30, y: q[1] * MB_H, red: k % 2 === 0, ph: r() * 6.3, per: 2.2 + r() * 1.6 }); });
     $("#mbBuoys").innerHTML = buoys.map(function (b) { return '<g class="mb-buoy ' + (b.red ? "red" : "grn") + '" transform="translate(' + mbF(b.x) + " " + mbF(b.y) + ')"><circle class="bw" r="7"/><circle class="bb" r="4.6"/><circle class="bl" r="2.2"/></g>'; }).join("");
     var buoyEls = $$("#mbBuoys .mb-buoy");
+    /* Helipad lights (v0.0.26): four lights around every pad chase in turn, faster on the pad the helicopter is heading for */
+    var padL = [];
+    mods.forEach(function (m) { var c = padOf(m); for (var q = 0; q < 4; q++) { var a = q * Math.PI / 2 + Math.PI / 4; padL.push({ m: m, q: q, x: c[0] + Math.cos(a) * 17, y: c[1] + Math.sin(a) * 17 }); } });
+    $("#mbPadL").innerHTML = padL.map(function (l) { return '<circle class="mb-padl" r="2.1" cx="' + mbF(l.x) + '" cy="' + mbF(l.y) + '"/>'; }).join("");
+    var padEls = $$("#mbPadL .mb-padl");
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
 
     function step(dt) {
@@ -396,6 +401,10 @@
       });
       commsEl.setAttribute("transform", "translate(" + mbF(comms[0]) + " " + mbF(comms[1]) + ") rotate(" + mbF((T * 40) % 360) + ")");
       commsT -= dt; if (commsT <= 0) { commsT = 2.6; ring(comms[0], comms[1], 6, 70, 2.4, false); }
+      padL.forEach(function (l, i) {
+        var fast = H.to === l.m && H.st === "fly", k = Math.floor(T * (fast ? 8 : 2.5)) % 4;
+        padEls[i].style.opacity = k === l.q ? "1" : (fast ? "0.25" : "0.12");
+      });
       buoys.forEach(function (b, i) {
         var e = buoyEls[i], t = (T + b.ph) % b.per, bob = 1 + 0.08 * Math.sin(T * 1.7 + b.ph);
         e.lastChild.style.opacity = t < 0.35 ? "1" : "0.15";

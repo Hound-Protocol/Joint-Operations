@@ -7,11 +7,41 @@
      the opened page highlights and scrolls to the first match. */
   var CAB_GROUPS = {
     Handbook: ["HB", "#c9a24a", "#7d5f15"], Decisions: ["ADR", "#e0453f", "#a3352b"], Research: ["RES", "#5aa7d6", "#1d6a8a"],
-    Technical: ["TEC", "#f28c28", "#a8560f"], Community: ["COM", "#7fbf8a", "#3b7446"], Project: ["PRJ", "#c9d0d2", "#4d5a60"], Legal: ["LEG", "#b07cd6", "#6e4a96"]
+    Technical: ["TEC", "#f28c28", "#a8560f"], Community: ["COM", "#7fbf8a", "#3b7446"], Project: ["PRJ", "#c9d0d2", "#4d5a60"], Legal: ["LEG", "#b07cd6", "#6e4a96"],
+    Staff: ["LV3", "#7fbf8a", "#3b7446"], Leads: ["LV5", "#f28c28", "#a8560f"], Administration: ["LV6", "#e0453f", "#a3352b"]
   };
   var CAB_CLASS = { Decisions: ["decision", "Decision record"], Research: ["research", "Research"], Technical: ["technical", "Technical"],
-    Community: ["community", "Community"], Project: ["project", "Project"], Legal: ["legal", "Legal"] };
-  var CAB_ORDER = ["Project", "Handbook", "Decisions", "Research", "Technical", "Community", "Legal"];
+    Community: ["community", "Community"], Project: ["project", "Project"], Legal: ["legal", "Legal"],
+    Staff: ["restricted", "Restricted"], Leads: ["restricted", "Restricted"], Administration: ["restricted", "Restricted"] };
+  var CAB_ORDER = ["Project", "Handbook", "Decisions", "Research", "Technical", "Community", "Legal", "Staff", "Leads", "Administration"];
+  /* Clearance. Everything in the public repository is LV1: anyone can read it. Restricted documents live in private
+     repositories, one per clearance (config.signin.areas); GitHub itself decides who can read them (ADR 0011, 0017).
+     Each restricted area is a drawer: its files when your card and GitHub both allow it, otherwise one locked file. */
+  var cabX = {}, cabDocs = [];
+  function cabLvl() { return typeof siIn === "function" && siIn() ? siLevel() : 1; }
+  function cabSlug(p) { return p.replace(/\.md$/i, "").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase(); }
+  function cabXDocs(onChange) {
+    var areas = (cfg.signin && cfg.signin.areas) || [], out = [], lvl = cabLvl(), who = typeof siIn === "function" && siIn() ? SI.user.id : 0;
+    areas.forEach(function (a, i) {
+      var need = +String(a.card).slice(2), st = cabX[i];
+      if (st && st.who !== who) st = cabX[i] = null;
+      var base = { group: a.title, restricted: { area: i, repo: a.repo, card: a.card, need: need } };
+      function lock(why) { return [Object.assign({ id: "r" + i + "-restricted", title: a.title + " files", locked: why }, base)]; }
+      if (lvl < need) { out = out.concat(lock("level")); return; }
+      if (!st) {
+        st = cabX[i] = { who: who, state: "loading", docs: [] };
+        siArea(a).then(function (paths) {
+          st.state = "open";
+          st.docs = paths.map(function (pth) { return Object.assign({ id: "r" + i + "-" + cabSlug(pth), title: siTitle(pth), path: pth }, base); });
+          if (onChange) onChange();
+        }, function () { st.state = "github"; if (onChange) onChange(); });
+      }
+      if (st.state === "open") out = out.concat(st.docs.length ? st.docs : lock("empty"));
+      else if (st.state === "github") out = out.concat(lock("github"));
+      else out = out.concat([Object.assign({ id: "r" + i + "-loading", title: "Checking clearance…", locked: "loading" }, base)]);
+    });
+    return out;
+  }
   var cabOpen = {}, cabQ = "", cabJump = false, cabHL = null, cabIdx = null, cabIdxP = null, cabSel = 0, cabRes = [];
   function cabGroup(g) { return CAB_GROUPS[g] || ["DOC", "#c9d0d2", "#4d5a60"]; }
   /* File number and plain title: HP-POL-009, ADR-0012, or the group prefix and position */
@@ -36,10 +66,19 @@
     if (!$("#cab")) { v.innerHTML = shell("Documentation", "Library", loading("Opening the cabinet")); addZones("lib"); }
     Promise.all([loadLocal("docs"), loadLocal("guides")]).then(function (res) {
       if (currentView !== "docs") return;
-      var man = res[0], all = (man && man.docs) || [], docs = all;
+      var man = res[0], all = (man && man.docs) || [];
+      function xChanged() {
+        if (currentView !== "docs" || !$("#cab")) return;
+        cabDocs = all.concat(cabXDocs(xChanged)); drawDrawers(cabDocs);
+        var want = (location.hash.split("/")[2] || ""), cur = $("#docBody").getAttribute("data-id");
+        if (/^r\d+-/.test(want) && cur !== want) { var d2 = cabDocs.filter(function (d) { return d.id === want; })[0]; if (d2) openDossier(d2, cabDocs); else { var ph = cabDocs.filter(function (d) { return d.restricted && d.locked && want.indexOf("r" + d.restricted.area + "-") === 0; })[0]; if (ph) openDossier(ph, cabDocs); } }
+      }
+      var docs = cabDocs = all.concat(cabXDocs(xChanged));
       var zn = $(".zones"); if (zn) zn.outerHTML = docZones("lib");
       if (!docs.length) { $("#vb").innerHTML = '<div class="empty">No documents<small>data/docs.json could not be loaded.</small></div>'; return; }
       var doc = docs.filter(function (d) { return d.id === id; })[0];
+      /* A restricted link before its drawer is read: show that drawer's placeholder until it is */
+      if (!doc && /^r\d+-/.test(id || "")) doc = docs.filter(function (d) { return d.restricted && id.indexOf("r" + d.restricted.area + "-") === 0; })[0];
       /* Handbook documents live in the Handbook zone */
       if (doc && doc.group === "Handbook") { location.replace("#/guides/" + doc.id); return; }
       doc = doc || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
@@ -134,11 +173,12 @@
       if (hits && !list.length) return "";
       total += list.length;
       var open = hits ? true : !!cabOpen[g];
-      return '<section class="drawer' + (open ? " open" : "") + '" style="--g:' + gc[1] + "; --d:" + gi + '">' +
-        '<button class="dr-head" data-g="' + esc(g) + '" aria-expanded="' + open + '"><span class="dr-handle" aria-hidden="true"></span><b>' + esc(g) + "</b><small>" + plural(list.length, "file") + '</small><i aria-hidden="true"></i></button>' +
+      var rx = list[0] && list[0].restricted, rlock = rx && list[0].locked && list[0].locked !== "loading";
+      return '<section class="drawer' + (open ? " open" : "") + (rx ? " rx" : "") + (rlock ? " rlock" : "") + '" style="--g:' + gc[1] + "; --d:" + gi + '">' +
+        '<button class="dr-head" data-g="' + esc(g) + '" aria-expanded="' + open + '"><span class="dr-handle" aria-hidden="true"></span><b>' + esc(g) + "</b>" + (rx ? '<em class="dr-lv">' + esc(rx.card) + (rlock ? " · locked" : "") + "</em>" : "<small>" + plural(list.length, "file") + "</small>") + '<i aria-hidden="true"></i></button>' +
         '<div class="dr-body"><div class="dr-files">' + list.map(function (d, n) {
           var c = cabCode(d, docs), h = hits && hits[d.id];
-          return '<a class="fold' + (d.id === active ? " on" : "") + (h ? " hit" : "") + '" data-id="' + esc(d.id) + '" href="#/docs/' + esc(d.id) + '" style="--k:' + n + "; --tx:" + ((n % 3) * 30) + 'px"><span class="f-tab">' + hl(c[0]) + '</span><span class="f-t">' + hl(c[1]) + "</span>" +
+          return '<a class="fold' + (d.id === active ? " on" : "") + (h ? " hit" : "") + (d.locked ? " locked" : "") + '" data-id="' + esc(d.id) + '" href="#/docs/' + esc(d.id) + '" style="--k:' + n + "; --tx:" + ((n % 3) * 30) + 'px"><span class="f-tab">' + hl(c[0]) + '</span><span class="f-t">' + hl(c[1]) + "</span>" +
             (h && h.text ? '<span class="f-in">In text</span>' : "") + "</a>";
         }).join("") + "</div></div></section>";
     }).join("") || (hits ? '<div class="cab-none"><b>No match</b>No file in the Library matches every word of “' + esc(cabQ.trim()) + '”.<small>Guides, policies and procedures are searched in the Handbook.</small></div>' : "");
@@ -162,29 +202,61 @@
       });
     });
   }
+  /* The clearance line above every document */
+  function cabClr(ok, x, need) {
+    var card = x ? x.card : "LV1", lv = (typeof KC_LV !== "undefined" && KC_LV[card]) || ["Public", "#8b9599"];
+    return '<div class="clr ' + (ok ? "ok" : "no") + '" style="--hk:' + lv[1] + '"><i aria-hidden="true"></i><b>Access ' + (ok ? "granted" : "denied") + "</b><span>" +
+      (ok ? esc(card) + " · " + (x ? esc(lv[0]) + " clearance" : "Public") : esc(need || card) + " required") + "</span></div>";
+  }
+  /* A document you may not open: a greyed-out draft behind an access-denied screen */
+  function cabDenied(body, doc, c) {
+    var x = doc.restricted, why = doc.locked, signed = typeof siIn === "function" && siIn();
+    if (why === "loading") { body.innerHTML = cabClr(true, x).replace("Access granted", "Checking clearance") + loading("Checking your clearance with GitHub"); return; }
+    if (why === "empty") { body.innerHTML = cabClr(true, x) + '<div class="empty">No documents here yet<small>' + esc(x.repo) + " is empty.</small></div>"; return; }
+    var lines = ""; for (var n = 0; n < 14; n++) lines += '<span style="width:' + (55 + (n * 37) % 40) + '%"></span>';
+    var msg = why === "level" ? "LV" + x.need + " clearance required." : why === "github" ? "Your card allows it, but GitHub has not given your account access yet." : "Could not reach GitHub to check your clearance.";
+    body.innerHTML = cabClr(false, x, x.card) +
+      '<div class="ds-tab"><b>' + esc(c[0]) + "</b>" + esc(doc.group) + '</div><div class="ds-folder denied"><div class="ds-page">' +
+      '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Restricted · ' + esc(x.card) + "</span></header>" +
+      '<div class="ad-draft" aria-hidden="true"><b></b>' + lines + "</div>" +
+      '<div class="ad" role="alert"><div class="ad-box"><small>Security</small><strong>Access denied</strong><em>' + esc(msg) + "</em>" +
+        "<p>Please contact Administration.</p>" +
+        '<div class="ad-act">' + (signed ? "" : '<a class="btn small primary" href="#/profile">Sign in</a>') +
+        '<a class="btn small" href="#/guides/hp-gde-009">How clearance works</a><a class="btn small" href="#/team">Contact Administration</a></div></div></div>' +
+      "</div></div>";
+    body.classList.add("is-denied"); body.classList.remove("in"); void body.offsetWidth; body.classList.add("in");
+    blip();
+  }
   function openDossier(doc, docs) {
     var body = $("#docBody"), gc = cabGroup(doc.group), c = cabCode(doc, docs), k = cabClass(doc, c[0]);
     $$(".fold").forEach(function (f) { f.classList.toggle("on", f.getAttribute("data-id") === doc.id); });
     body.style.setProperty("--g", gc[1]); body.style.setProperty("--gd", gc[2]);
     body.className = "dossier k-" + k[0];
+    body.setAttribute("data-id", doc.id);
+    var x = doc.restricted;
+    if (x && doc.locked) return cabDenied(body, doc, c);
     body.innerHTML = loading("Opening " + c[0]);
-    loadDoc(doc).then(function (md) {
+    var src = x ? (docCache["x:" + x.repo + ":" + doc.path] ? Promise.resolve(docCache["x:" + x.repo + ":" + doc.path]) :
+      siApi("/repos/" + x.repo + "/contents/" + doc.path.split("/").map(encodeURIComponent).join("/"), true).then(function (t) { docCache["x:" + x.repo + ":" + doc.path] = t; return t; })) : loadDoc(doc);
+    src.then(function (md) {
       if (currentView !== "docs") return;
       var html = markdown(md.replace(/^# .*\n/, "").replace(/^Code: .*\n/, ""), doc.path);
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/docs/" + doc.id;
-      body.innerHTML =
+      var gh = x ? "https://github.com/" + x.repo + "/blob/HEAD/" + doc.path : repoUrl("/blob/" + cfg.branch + "/" + doc.path);
+      var ed = x ? "https://github.com/" + x.repo + "/edit/HEAD/" + doc.path : repoUrl("/edit/" + cfg.branch + "/" + doc.path);
+      body.innerHTML = cabClr(true, x) +
         '<div class="ds-tab"><b>' + esc(c[0]) + "</b>" + esc(doc.group) + "</div>" +
         '<div class="ds-folder"><div class="ds-page">' +
           '<span class="ds-clip" aria-hidden="true"></span><span class="ds-holes" aria-hidden="true"></span>' +
           '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Class: ' + esc(k[1]) + "</span></header>" +
           '<h1 class="ds-title">' + esc(c[1]) + "</h1>" +
           '<div class="ds-meta"><span>' + esc(c[0]) + " · " + esc(doc.path) + "</span>" +
-            '<a href="' + repoUrl("/blob/" + cfg.branch + "/" + doc.path) + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
-            '<a href="' + repoUrl("/edit/" + cfg.branch + "/" + doc.path) + '" target="_blank" rel="noopener noreferrer">Suggest an edit</a>' +
+            '<a href="' + esc(gh) + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
+            '<a href="' + esc(ed) + '" target="_blank" rel="noopener noreferrer">Suggest an edit</a>' +
             (/^HP-/.test(c[0]) ? '<a href="#/guides/' + esc(doc.id) + '">Printable sheet</a>' : "") +
             '<button type="button" class="ds-link" data-url="' + esc(url) + '">Copy link</button></div>' +
           '<div class="sh-body ds-body">' + html + "</div>" +
-          '<footer class="ds-foot"><span>' + esc(c[0]) + " · " + esc(k[1]) + " · " + esc(doc.path) + "</span><span>Read live from the repository</span></footer>" +
+          '<footer class="ds-foot"><span>' + esc(c[0]) + " · " + esc(k[1]) + " · " + esc(doc.path) + "</span><span>" + (x ? "Restricted to " + esc(x.card) + " and up. Do not copy it to public places." : "Read live from the repository") + "</span></footer>" +
         "</div></div>";
       body.classList.remove("in"); void body.offsetWidth; body.classList.add("in");
       var cl = $(".ds-link", body);
@@ -198,8 +270,9 @@
       if (first && first.scrollIntoView) setTimeout(function () { first.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "center" }); }, opts.motion ? 260 : 0);
       else if (cabJump && window.innerWidth <= 900 && body.scrollIntoView) body.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "start" });
       cabJump = false;
-    }, function () {
+    }, function (e) {
       if (currentView !== "docs") return;
+      if (x) return cabDenied(body, Object.assign({}, doc, { locked: e && (e.status === 404 || e.status === 403) ? "github" : "offline" }), c);
       body.innerHTML = '<div class="empty">Could not open this document<small><a href="' + repoUrl("/blob/" + cfg.branch + "/" + doc.path) + '" target="_blank" rel="noopener noreferrer">Open it on GitHub</a></small></div>';
     });
   }
@@ -226,7 +299,7 @@
   function cabIndex(docs) {
     if (cabIdx) return Promise.resolve(cabIdx);
     if (cabIdxP) return cabIdxP;
-    return (cabIdxP = Promise.all(docs.filter(function (d) { return d.group !== "Handbook"; }).map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
+    return (cabIdxP = Promise.all(docs.filter(function (d) { return d.group !== "Handbook" && !d.restricted; }).map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
       cabIdx = all.map(function (p) {
         var lines = p[1].split("\n"), heads = [], text = "", pos = [];
         lines.forEach(function (l) {

@@ -40,7 +40,7 @@ async def check(browser, name, size):
         if await page.evaluate("document.documentElement.scrollWidth > innerWidth + 1"):
             failures.append(f"{v}: horizontal overflow")
     await page.goto(BASE + "#/briefing"); await page.wait_for_timeout(900)
-    if await page.locator(".bf-steps li").count() < 3:
+    if await page.locator(".ab-steps li").count() < 3:
         failures.append("briefing: session steps missing")
     await page.goto(BASE + "#/team"); await page.wait_for_timeout(900)
     if await page.locator(".chain .tier").count() < 6:
@@ -89,6 +89,11 @@ async def check(browser, name, size):
     await page.click('.dr-head[data-g="Legal"]'); await page.wait_for_timeout(200)
     if await page.locator("#cabDrawers .drawer.open").count() != 1:
         failures.append("docs: opening a drawer did not close the others")
+    if "ACCESS GRANTED" not in (await page.inner_text("#docBody")).upper():
+        failures.append("docs: clearance line missing above a public document")
+    await page.goto(BASE + "#/docs/r1-restricted"); await page.wait_for_timeout(1500)
+    if not await page.locator("#docBody .ad-box").count() or "LV5" not in await page.inner_text("#docBody .ad-box"):
+        failures.append("docs: a restricted area did not show access denied with its level")
     await page.goto(BASE + "#/guides"); await page.wait_for_timeout(1200)
     await page.fill("#hq", "linux"); await page.wait_for_timeout(1500)
     codes = await page.locator("#hbList .mini .m-top b").all_inner_texts()

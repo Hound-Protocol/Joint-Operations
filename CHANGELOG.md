@@ -2,6 +2,16 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.26 · Clearance · 2026-10-23
+- **Sign-in is live** with the new GitHub App **Hound ID Sign-in**, owned by the Hound-Protocol organization ([setup](docs/signin.md)).
+- **Clearance in the Library:** a line above every document says **Access granted** and its level: LV1 (public) for the public repository, LV3 to LV6 for restricted documents. New **Staff**, **Leads** and **Administration** drawers hold the restricted documents, read from the private repositories with your own sign-in. Above your clearance, the drawer is locked and the document shows as a greyed-out draft behind an **Access denied** screen with the level required and a way to contact Administration. Handbook sheets carry the clearance line too.
+- **Profile:** the row of document areas is replaced by **Access granted** and **Access restricted**: every level's rights from ADR 0011, split at your clearance, with your restricted documents listed under the level that opens them and planned rights marked as such.
+- **Keycard:** a larger photo with frame corners, a light sweep across the card, and a glow in the level's colour.
+- **Tamper-proof clearance:** a staff card raises your level only after its signature checks out in your browser, so an edited `staff.json` cannot grant anything. Staff cards, records, the records key, the sign-in code and site settings now need the owner's review (CODEOWNERS).
+- **About, modernized:** a live session diagram (one host, fifteen clients, state flowing out), a stat strip, step cards, links into the Handbook, and the FAQ in two columns. Same content.
+- **Roadmap:** this release's base detail is a ring of lights on every helipad, chasing faster where the helicopter is about to land.
+- Docs: Using the Website 1.2, sign-in setup, privacy, account security, admin handbook, ADR 0011 and ADR 0017 updated.
+
 ## v0.0.25 · Clean library · 2026-10-23
 - **Library search filters the folders:** the search box now searches the Library only and shows the results as the folders themselves. Drawers without a match disappear, matching folders stay in their drawers with the best drawer and the best match first, titles are highlighted, and folders that match only inside the text are marked **In text**. ↑ ↓ select a folder, Enter opens it, Esc clears. No more list of snippets, and no jump into the Handbook.
 - **Handbook filter:** type a word, part of a word or a topic, and the sheets narrow as you type. Titles, summaries, codes and the full text count, and everyday words find their handbook terms ("ban" finds suspensions, "linux" finds Proton). Works together with the audience tabs; Enter opens the first sheet.

@@ -645,15 +645,32 @@
     loadLocal("briefing").then(function () {
       if (currentView !== "briefing") return;
       var b = data.briefing || {};
-      $("#vb").innerHTML = '<div class="bf">' +
-        '<section class="bf-sec bf-hero"><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
-        (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
-        '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides">Handbook</a></div></section>' +
-        '<section class="bf-sec"><div class="label">How a session works</div>' +
-        '<ol class="bf-steps">' + (b.how || []).map(function (h, k) {
-          return '<li style="--k:' + k + '"><span class="st-n">' + (ICONS[h[0]] || k + 1) + '</span><div><h4>' + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></div></li>";
+      /* Hero with a live session diagram: one host, fifteen clients, state flowing out and inputs flowing back */
+      var nodes = "", links = "";
+      for (var n = 0; n < 15; n++) {
+        var a = -Math.PI / 2 + n * Math.PI * 2 / 15, r = n % 2 ? 128 : 150, x = 180 + Math.cos(a) * r, y = 180 + Math.sin(a) * r;
+        links += '<line class="ab-link" x1="180" y1="180" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '" style="--k:' + n + '"/>' +
+          '<circle class="ab-pkt" r="2.4" style="--k:' + n + "; --x:" + (x - 180).toFixed(1) + "px; --y:" + (y - 180).toFixed(1) + 'px" cx="180" cy="180"/>';
+        nodes += '<g class="ab-cl" style="--k:' + n + '" transform="translate(' + x.toFixed(1) + " " + y.toFixed(1) + ')"><circle r="9"/><circle class="d" r="3"/></g>';
+      }
+      var diagram = '<svg class="ab-net" viewBox="0 0 360 360" role="img" aria-label="One host and fifteen clients in one session">' +
+        '<circle class="ab-ring" cx="180" cy="180" r="150"/><circle class="ab-ring" cx="180" cy="180" r="128"/>' + links + nodes +
+        '<g class="ab-host" transform="translate(180 180)"><circle class="p" r="34"/><circle r="26"/><path d="M0 -12l12 12-12 12-12-12z"/><text y="48">HOST</text></g></svg>';
+      var stats = [[16, "players in one session"], [1, "host, the authority"], [0, "Konami servers touched"], [100, "% free and open source"]];
+      $("#vb").innerHTML = '<div class="bf ab">' +
+        '<section class="bf-sec ab-hero"><div class="ab-copy"><span class="ab-kick">MGSV: Joint Operations · by Hound Protocol</span><h3 class="bf-head">' + hl(b.headline || "") + "</h3>" +
+          (b.summary || []).map(function (t) { return '<p class="bf-lead">' + hl(t) + "</p>"; }).join("") +
+          '<div class="toolbar"><a class="btn primary" href="#/contribute">Join the Hound</a><a class="btn" href="#/roadmap">Roadmap</a><a class="btn" href="#/guides/hp-gde-001">Player Guide</a></div></div>' +
+          '<div class="ab-vis">' + diagram + "</div></section>" +
+        '<section class="bf-sec ab-stats">' + stats.map(function (st, k) { return '<div style="--k:' + k + '"><b data-to="' + st[0] + '">0</b><span>' + esc(st[1]) + "</span></div>"; }).join("") + "</section>" +
+        '<section class="bf-sec"><div class="label">How a session works</div><ol class="ab-steps">' + (b.how || []).map(function (h, k) {
+          return '<li style="--k:' + k + '"><span class="ab-n">0' + (k + 1) + '</span><span class="st-n">' + (ICONS[h[0]] || k + 1) + "</span><h4>" + esc(h[1]) + "</h4><p>" + hl(h[2]) + "</p></li>";
         }).join("") + "</ol></section>" +
-        ((b.faq || []).length ? '<section class="bf-sec"><div class="label">Frequently asked</div><div class="faq">' + b.faq.map(function (f, k) {
+        '<section class="bf-sec ab-more"><div class="label">Read more in the Handbook</div><div class="ab-links">' +
+          [["hp-gde-001", "HP-GDE-001", "Player Guide", "Install, host and join, and stay safe."], ["hp-gde-002", "HP-GDE-002", "Linux and Proton", "Play on Linux and Steam Deck."], ["hp-gde-017", "HP-GDE-017", "Can I Contribute?", "Find where you fit in five questions."], ["hp-gde-015", "HP-GDE-015", "Using the Website", "Every section, search and sign-in."]].map(function (g, k) {
+            return '<a href="#/guides/' + g[0] + '" style="--k:' + k + '"><small>' + g[1] + "</small><b>" + esc(g[2]) + "</b><span>" + esc(g[3]) + "</span></a>";
+          }).join("") + "</div></section>" +
+        ((b.faq || []).length ? '<section class="bf-sec"><div class="label">Frequently asked</div><div class="faq ab-faq">' + b.faq.map(function (f, k) {
           return '<details style="--k:' + k + '"><summary>' + esc(f[0]) + "</summary><p>" + hl(f[1]) + "</p></details>";
         }).join("") + "</div></section>" : "") +
         "</div>";
@@ -679,7 +696,7 @@
      Seen from above. Phase 0 is the command platform in the centre, every later phase is a platform on its own bridge,
      named after the phase. The fill inside a platform is the share of that phase's tasks that are done; the hatched part
      above it is still scaffolding. Point at a platform to light it, click it to read its tasks.
-     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys)
+     Everything that moves (cargo ships unloading, crews carrying crates, cranes, boats, a helicopter, the comms mast, gulls, channel buoys, helipad lights)
      is decoration and stops with Options → Animations. The data comes live from ROADMAP.md. */
   var MB_SLOTS = [[-345, -220], [345, -220], [345, 220], [-345, 220], [0, -330], [0, 330]];
   var MB_W = 1600, MB_H = 900, MB_CX = 600, MB_CY = 470;
@@ -791,7 +808,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbPadL"></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -930,6 +947,11 @@
     [[0.18, 0.5], [0.42, 0.28], [0.62, 0.9], [0.86, 0.3], [0.08, 0.86], [0.6, 0.62]].forEach(function (q, k) { buoys.push({ x: q[0] * 1150 + 30, y: q[1] * MB_H, red: k % 2 === 0, ph: r() * 6.3, per: 2.2 + r() * 1.6 }); });
     $("#mbBuoys").innerHTML = buoys.map(function (b) { return '<g class="mb-buoy ' + (b.red ? "red" : "grn") + '" transform="translate(' + mbF(b.x) + " " + mbF(b.y) + ')"><circle class="bw" r="7"/><circle class="bb" r="4.6"/><circle class="bl" r="2.2"/></g>'; }).join("");
     var buoyEls = $$("#mbBuoys .mb-buoy");
+    /* Helipad lights (v0.0.26): four lights around every pad chase in turn, faster on the pad the helicopter is heading for */
+    var padL = [];
+    mods.forEach(function (m) { var c = padOf(m); for (var q = 0; q < 4; q++) { var a = q * Math.PI / 2 + Math.PI / 4; padL.push({ m: m, q: q, x: c[0] + Math.cos(a) * 17, y: c[1] + Math.sin(a) * 17 }); } });
+    $("#mbPadL").innerHTML = padL.map(function (l) { return '<circle class="mb-padl" r="2.1" cx="' + mbF(l.x) + '" cy="' + mbF(l.y) + '"/>'; }).join("");
+    var padEls = $$("#mbPadL .mb-padl");
     function shipPos(sh, k) { var c = CONT[k], q = mbRot([c[0] + 4.5, c[1] + 3.5], sh.h * Math.PI / 180); return [sh.x + q[0], sh.y + q[1]]; }
 
     function step(dt) {
@@ -1073,6 +1095,10 @@
       });
       commsEl.setAttribute("transform", "translate(" + mbF(comms[0]) + " " + mbF(comms[1]) + ") rotate(" + mbF((T * 40) % 360) + ")");
       commsT -= dt; if (commsT <= 0) { commsT = 2.6; ring(comms[0], comms[1], 6, 70, 2.4, false); }
+      padL.forEach(function (l, i) {
+        var fast = H.to === l.m && H.st === "fly", k = Math.floor(T * (fast ? 8 : 2.5)) % 4;
+        padEls[i].style.opacity = k === l.q ? "1" : (fast ? "0.25" : "0.12");
+      });
       buoys.forEach(function (b, i) {
         var e = buoyEls[i], t = (T + b.ph) % b.per, bob = 1 + 0.08 * Math.sin(T * 1.7 + b.ph);
         e.lastChild.style.opacity = t < 0.35 ? "1" : "0.15";
@@ -1579,11 +1605,41 @@
      the opened page highlights and scrolls to the first match. */
   var CAB_GROUPS = {
     Handbook: ["HB", "#c9a24a", "#7d5f15"], Decisions: ["ADR", "#e0453f", "#a3352b"], Research: ["RES", "#5aa7d6", "#1d6a8a"],
-    Technical: ["TEC", "#f28c28", "#a8560f"], Community: ["COM", "#7fbf8a", "#3b7446"], Project: ["PRJ", "#c9d0d2", "#4d5a60"], Legal: ["LEG", "#b07cd6", "#6e4a96"]
+    Technical: ["TEC", "#f28c28", "#a8560f"], Community: ["COM", "#7fbf8a", "#3b7446"], Project: ["PRJ", "#c9d0d2", "#4d5a60"], Legal: ["LEG", "#b07cd6", "#6e4a96"],
+    Staff: ["LV3", "#7fbf8a", "#3b7446"], Leads: ["LV5", "#f28c28", "#a8560f"], Administration: ["LV6", "#e0453f", "#a3352b"]
   };
   var CAB_CLASS = { Decisions: ["decision", "Decision record"], Research: ["research", "Research"], Technical: ["technical", "Technical"],
-    Community: ["community", "Community"], Project: ["project", "Project"], Legal: ["legal", "Legal"] };
-  var CAB_ORDER = ["Project", "Handbook", "Decisions", "Research", "Technical", "Community", "Legal"];
+    Community: ["community", "Community"], Project: ["project", "Project"], Legal: ["legal", "Legal"],
+    Staff: ["restricted", "Restricted"], Leads: ["restricted", "Restricted"], Administration: ["restricted", "Restricted"] };
+  var CAB_ORDER = ["Project", "Handbook", "Decisions", "Research", "Technical", "Community", "Legal", "Staff", "Leads", "Administration"];
+  /* Clearance. Everything in the public repository is LV1: anyone can read it. Restricted documents live in private
+     repositories, one per clearance (config.signin.areas); GitHub itself decides who can read them (ADR 0011, 0017).
+     Each restricted area is a drawer: its files when your card and GitHub both allow it, otherwise one locked file. */
+  var cabX = {}, cabDocs = [];
+  function cabLvl() { return typeof siIn === "function" && siIn() ? siLevel() : 1; }
+  function cabSlug(p) { return p.replace(/\.md$/i, "").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase(); }
+  function cabXDocs(onChange) {
+    var areas = (cfg.signin && cfg.signin.areas) || [], out = [], lvl = cabLvl(), who = typeof siIn === "function" && siIn() ? SI.user.id : 0;
+    areas.forEach(function (a, i) {
+      var need = +String(a.card).slice(2), st = cabX[i];
+      if (st && st.who !== who) st = cabX[i] = null;
+      var base = { group: a.title, restricted: { area: i, repo: a.repo, card: a.card, need: need } };
+      function lock(why) { return [Object.assign({ id: "r" + i + "-restricted", title: a.title + " files", locked: why }, base)]; }
+      if (lvl < need) { out = out.concat(lock("level")); return; }
+      if (!st) {
+        st = cabX[i] = { who: who, state: "loading", docs: [] };
+        siArea(a).then(function (paths) {
+          st.state = "open";
+          st.docs = paths.map(function (pth) { return Object.assign({ id: "r" + i + "-" + cabSlug(pth), title: siTitle(pth), path: pth }, base); });
+          if (onChange) onChange();
+        }, function () { st.state = "github"; if (onChange) onChange(); });
+      }
+      if (st.state === "open") out = out.concat(st.docs.length ? st.docs : lock("empty"));
+      else if (st.state === "github") out = out.concat(lock("github"));
+      else out = out.concat([Object.assign({ id: "r" + i + "-loading", title: "Checking clearance…", locked: "loading" }, base)]);
+    });
+    return out;
+  }
   var cabOpen = {}, cabQ = "", cabJump = false, cabHL = null, cabIdx = null, cabIdxP = null, cabSel = 0, cabRes = [];
   function cabGroup(g) { return CAB_GROUPS[g] || ["DOC", "#c9d0d2", "#4d5a60"]; }
   /* File number and plain title: HP-POL-009, ADR-0012, or the group prefix and position */
@@ -1608,10 +1664,19 @@
     if (!$("#cab")) { v.innerHTML = shell("Documentation", "Library", loading("Opening the cabinet")); addZones("lib"); }
     Promise.all([loadLocal("docs"), loadLocal("guides")]).then(function (res) {
       if (currentView !== "docs") return;
-      var man = res[0], all = (man && man.docs) || [], docs = all;
+      var man = res[0], all = (man && man.docs) || [];
+      function xChanged() {
+        if (currentView !== "docs" || !$("#cab")) return;
+        cabDocs = all.concat(cabXDocs(xChanged)); drawDrawers(cabDocs);
+        var want = (location.hash.split("/")[2] || ""), cur = $("#docBody").getAttribute("data-id");
+        if (/^r\d+-/.test(want) && cur !== want) { var d2 = cabDocs.filter(function (d) { return d.id === want; })[0]; if (d2) openDossier(d2, cabDocs); else { var ph = cabDocs.filter(function (d) { return d.restricted && d.locked && want.indexOf("r" + d.restricted.area + "-") === 0; })[0]; if (ph) openDossier(ph, cabDocs); } }
+      }
+      var docs = cabDocs = all.concat(cabXDocs(xChanged));
       var zn = $(".zones"); if (zn) zn.outerHTML = docZones("lib");
       if (!docs.length) { $("#vb").innerHTML = '<div class="empty">No documents<small>data/docs.json could not be loaded.</small></div>'; return; }
       var doc = docs.filter(function (d) { return d.id === id; })[0];
+      /* A restricted link before its drawer is read: show that drawer's placeholder until it is */
+      if (!doc && /^r\d+-/.test(id || "")) doc = docs.filter(function (d) { return d.restricted && id.indexOf("r" + d.restricted.area + "-") === 0; })[0];
       /* Handbook documents live in the Handbook zone */
       if (doc && doc.group === "Handbook") { location.replace("#/guides/" + doc.id); return; }
       doc = doc || docs.filter(function (d) { return d.group !== "Handbook"; })[0];
@@ -1706,11 +1771,12 @@
       if (hits && !list.length) return "";
       total += list.length;
       var open = hits ? true : !!cabOpen[g];
-      return '<section class="drawer' + (open ? " open" : "") + '" style="--g:' + gc[1] + "; --d:" + gi + '">' +
-        '<button class="dr-head" data-g="' + esc(g) + '" aria-expanded="' + open + '"><span class="dr-handle" aria-hidden="true"></span><b>' + esc(g) + "</b><small>" + plural(list.length, "file") + '</small><i aria-hidden="true"></i></button>' +
+      var rx = list[0] && list[0].restricted, rlock = rx && list[0].locked && list[0].locked !== "loading";
+      return '<section class="drawer' + (open ? " open" : "") + (rx ? " rx" : "") + (rlock ? " rlock" : "") + '" style="--g:' + gc[1] + "; --d:" + gi + '">' +
+        '<button class="dr-head" data-g="' + esc(g) + '" aria-expanded="' + open + '"><span class="dr-handle" aria-hidden="true"></span><b>' + esc(g) + "</b>" + (rx ? '<em class="dr-lv">' + esc(rx.card) + (rlock ? " · locked" : "") + "</em>" : "<small>" + plural(list.length, "file") + "</small>") + '<i aria-hidden="true"></i></button>' +
         '<div class="dr-body"><div class="dr-files">' + list.map(function (d, n) {
           var c = cabCode(d, docs), h = hits && hits[d.id];
-          return '<a class="fold' + (d.id === active ? " on" : "") + (h ? " hit" : "") + '" data-id="' + esc(d.id) + '" href="#/docs/' + esc(d.id) + '" style="--k:' + n + "; --tx:" + ((n % 3) * 30) + 'px"><span class="f-tab">' + hl(c[0]) + '</span><span class="f-t">' + hl(c[1]) + "</span>" +
+          return '<a class="fold' + (d.id === active ? " on" : "") + (h ? " hit" : "") + (d.locked ? " locked" : "") + '" data-id="' + esc(d.id) + '" href="#/docs/' + esc(d.id) + '" style="--k:' + n + "; --tx:" + ((n % 3) * 30) + 'px"><span class="f-tab">' + hl(c[0]) + '</span><span class="f-t">' + hl(c[1]) + "</span>" +
             (h && h.text ? '<span class="f-in">In text</span>' : "") + "</a>";
         }).join("") + "</div></div></section>";
     }).join("") || (hits ? '<div class="cab-none"><b>No match</b>No file in the Library matches every word of “' + esc(cabQ.trim()) + '”.<small>Guides, policies and procedures are searched in the Handbook.</small></div>' : "");
@@ -1734,29 +1800,61 @@
       });
     });
   }
+  /* The clearance line above every document */
+  function cabClr(ok, x, need) {
+    var card = x ? x.card : "LV1", lv = (typeof KC_LV !== "undefined" && KC_LV[card]) || ["Public", "#8b9599"];
+    return '<div class="clr ' + (ok ? "ok" : "no") + '" style="--hk:' + lv[1] + '"><i aria-hidden="true"></i><b>Access ' + (ok ? "granted" : "denied") + "</b><span>" +
+      (ok ? esc(card) + " · " + (x ? esc(lv[0]) + " clearance" : "Public") : esc(need || card) + " required") + "</span></div>";
+  }
+  /* A document you may not open: a greyed-out draft behind an access-denied screen */
+  function cabDenied(body, doc, c) {
+    var x = doc.restricted, why = doc.locked, signed = typeof siIn === "function" && siIn();
+    if (why === "loading") { body.innerHTML = cabClr(true, x).replace("Access granted", "Checking clearance") + loading("Checking your clearance with GitHub"); return; }
+    if (why === "empty") { body.innerHTML = cabClr(true, x) + '<div class="empty">No documents here yet<small>' + esc(x.repo) + " is empty.</small></div>"; return; }
+    var lines = ""; for (var n = 0; n < 14; n++) lines += '<span style="width:' + (55 + (n * 37) % 40) + '%"></span>';
+    var msg = why === "level" ? "LV" + x.need + " clearance required." : why === "github" ? "Your card allows it, but GitHub has not given your account access yet." : "Could not reach GitHub to check your clearance.";
+    body.innerHTML = cabClr(false, x, x.card) +
+      '<div class="ds-tab"><b>' + esc(c[0]) + "</b>" + esc(doc.group) + '</div><div class="ds-folder denied"><div class="ds-page">' +
+      '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Restricted · ' + esc(x.card) + "</span></header>" +
+      '<div class="ad-draft" aria-hidden="true"><b></b>' + lines + "</div>" +
+      '<div class="ad" role="alert"><div class="ad-box"><small>Security</small><strong>Access denied</strong><em>' + esc(msg) + "</em>" +
+        "<p>Please contact Administration.</p>" +
+        '<div class="ad-act">' + (signed ? "" : '<a class="btn small primary" href="#/profile">Sign in</a>') +
+        '<a class="btn small" href="#/guides/hp-gde-009">How clearance works</a><a class="btn small" href="#/team">Contact Administration</a></div></div></div>' +
+      "</div></div>";
+    body.classList.add("is-denied"); body.classList.remove("in"); void body.offsetWidth; body.classList.add("in");
+    blip();
+  }
   function openDossier(doc, docs) {
     var body = $("#docBody"), gc = cabGroup(doc.group), c = cabCode(doc, docs), k = cabClass(doc, c[0]);
     $$(".fold").forEach(function (f) { f.classList.toggle("on", f.getAttribute("data-id") === doc.id); });
     body.style.setProperty("--g", gc[1]); body.style.setProperty("--gd", gc[2]);
     body.className = "dossier k-" + k[0];
+    body.setAttribute("data-id", doc.id);
+    var x = doc.restricted;
+    if (x && doc.locked) return cabDenied(body, doc, c);
     body.innerHTML = loading("Opening " + c[0]);
-    loadDoc(doc).then(function (md) {
+    var src = x ? (docCache["x:" + x.repo + ":" + doc.path] ? Promise.resolve(docCache["x:" + x.repo + ":" + doc.path]) :
+      siApi("/repos/" + x.repo + "/contents/" + doc.path.split("/").map(encodeURIComponent).join("/"), true).then(function (t) { docCache["x:" + x.repo + ":" + doc.path] = t; return t; })) : loadDoc(doc);
+    src.then(function (md) {
       if (currentView !== "docs") return;
       var html = markdown(md.replace(/^# .*\n/, "").replace(/^Code: .*\n/, ""), doc.path);
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/docs/" + doc.id;
-      body.innerHTML =
+      var gh = x ? "https://github.com/" + x.repo + "/blob/HEAD/" + doc.path : repoUrl("/blob/" + cfg.branch + "/" + doc.path);
+      var ed = x ? "https://github.com/" + x.repo + "/edit/HEAD/" + doc.path : repoUrl("/edit/" + cfg.branch + "/" + doc.path);
+      body.innerHTML = cabClr(true, x) +
         '<div class="ds-tab"><b>' + esc(c[0]) + "</b>" + esc(doc.group) + "</div>" +
         '<div class="ds-folder"><div class="ds-page">' +
           '<span class="ds-clip" aria-hidden="true"></span><span class="ds-holes" aria-hidden="true"></span>' +
           '<header class="ds-head"><span><img src="assets/brand/hound-protocol-mark-light.svg" alt="" width="20" height="20">Hound Protocol</span><span class="ds-class">Class: ' + esc(k[1]) + "</span></header>" +
           '<h1 class="ds-title">' + esc(c[1]) + "</h1>" +
           '<div class="ds-meta"><span>' + esc(c[0]) + " · " + esc(doc.path) + "</span>" +
-            '<a href="' + repoUrl("/blob/" + cfg.branch + "/" + doc.path) + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
-            '<a href="' + repoUrl("/edit/" + cfg.branch + "/" + doc.path) + '" target="_blank" rel="noopener noreferrer">Suggest an edit</a>' +
+            '<a href="' + esc(gh) + '" target="_blank" rel="noopener noreferrer">GitHub</a>' +
+            '<a href="' + esc(ed) + '" target="_blank" rel="noopener noreferrer">Suggest an edit</a>' +
             (/^HP-/.test(c[0]) ? '<a href="#/guides/' + esc(doc.id) + '">Printable sheet</a>' : "") +
             '<button type="button" class="ds-link" data-url="' + esc(url) + '">Copy link</button></div>' +
           '<div class="sh-body ds-body">' + html + "</div>" +
-          '<footer class="ds-foot"><span>' + esc(c[0]) + " · " + esc(k[1]) + " · " + esc(doc.path) + "</span><span>Read live from the repository</span></footer>" +
+          '<footer class="ds-foot"><span>' + esc(c[0]) + " · " + esc(k[1]) + " · " + esc(doc.path) + "</span><span>" + (x ? "Restricted to " + esc(x.card) + " and up. Do not copy it to public places." : "Read live from the repository") + "</span></footer>" +
         "</div></div>";
       body.classList.remove("in"); void body.offsetWidth; body.classList.add("in");
       var cl = $(".ds-link", body);
@@ -1770,8 +1868,9 @@
       if (first && first.scrollIntoView) setTimeout(function () { first.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "center" }); }, opts.motion ? 260 : 0);
       else if (cabJump && window.innerWidth <= 900 && body.scrollIntoView) body.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "start" });
       cabJump = false;
-    }, function () {
+    }, function (e) {
       if (currentView !== "docs") return;
+      if (x) return cabDenied(body, Object.assign({}, doc, { locked: e && (e.status === 404 || e.status === 403) ? "github" : "offline" }), c);
       body.innerHTML = '<div class="empty">Could not open this document<small><a href="' + repoUrl("/blob/" + cfg.branch + "/" + doc.path) + '" target="_blank" rel="noopener noreferrer">Open it on GitHub</a></small></div>';
     });
   }
@@ -1798,7 +1897,7 @@
   function cabIndex(docs) {
     if (cabIdx) return Promise.resolve(cabIdx);
     if (cabIdxP) return cabIdxP;
-    return (cabIdxP = Promise.all(docs.filter(function (d) { return d.group !== "Handbook"; }).map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
+    return (cabIdxP = Promise.all(docs.filter(function (d) { return d.group !== "Handbook" && !d.restricted; }).map(function (d) { return loadDoc(d).then(function (t) { return [d, t]; }, function () { return [d, ""]; }); })).then(function (all) {
       cabIdx = all.map(function (p) {
         var lines = p[1].split("\n"), heads = [], text = "", pos = [];
         lines.forEach(function (l) {
@@ -2235,6 +2334,7 @@
       var html = markdown(body, g.path).replace(/href="#\/docs\/(hp-(?:pol|sop|gde)-\d{3})"/g, 'href="#/guides/$1"');
       var url = (cfg.siteUrl || "https://hound-protocol.github.io/Joint-Operations/") + "#/guides/" + g.id;
       $("#vb").innerHTML =
+        cabClr(true, null).replace('class="clr ok"', 'class="clr ok hb-clr"') +
         '<div class="toolbar sheet-bar"><a class="btn small" href="#/guides">Handbook</a><a class="btn small primary" id="gpdf" href="guides/pdf/' + esc(g.code) + '.pdf" download hidden>Download PDF</a><button class="btn small" id="gprint">Print</button>' +
         '<a class="btn small" href="' + esc(repoUrl("/blob/" + cfg.branch + "/" + g.path)) + '" target="_blank" rel="noopener noreferrer">View on GitHub</a></div>' +
         '<article class="sheet t-' + esc(g.type.toLowerCase()) + '" aria-label="' + esc(g.code + " " + g.title) + '">' +
@@ -2501,8 +2601,22 @@
     if (!siIn()) return null;
     var staff = (data.staff && data.staff.staff) || [];
     var s = staff.filter(function (x) { return x.github_id === SI.user.id && x.status === "active"; })[0];
-    if (s) return Object.assign({}, s, { avatar: SI.user.avatar, name: s.name || SI.user.name });
+    /* A staff card counts only once its signature checks out against the published records key, so an edited
+       staff.json can never raise anyone's clearance. Until then (or if it fails) the holder is a member. */
+    if (s) {
+      var v = siV[s.id];
+      if (!v) siVerify(s);
+      else if (v === "ok" || v === "unsupported") return Object.assign({}, s, { avatar: SI.user.avatar, name: s.name || SI.user.name, unchecked: v === "unsupported" });
+    }
     return { id: "MEMBER", login: SI.user.login, name: SI.user.name, github_id: SI.user.id, avatar: SI.user.avatar, card: "LV2", department: "Member", since: "", status: "active", member: true };
+  }
+  var siV = {};
+  function siVerify(card) {
+    siV[card.id] = "wait";
+    loadLocal("records-key").then(function (k) { return verifyRecord(card, (k && k.keys) || []); }).then(function (r) {
+      siV[card.id] = r; siBadge();
+      if (r === "ok" || r === "unsupported") { if (currentView === "profile" || currentView === "docs") route(); }
+    });
   }
   function siLevel() { var c = siCard(); return c ? +String(c.card).slice(2) : 1; }
   /* The badge in the top bar: "Sign in", or the person's level and name */
@@ -2546,18 +2660,12 @@
           "<div><dt>Card</dt><dd>" + (c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
           "<div><dt>Session</dt><dd>" + (SI.exp ? "Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab" : "Signed in, in this tab") + "</dd></div>" +
           '<div><dt></dt><dd><button class="btn small" id="siOut">Sign out</button></dd></div></dl></div>' +
-        '<div class="label">Your documents</div>' +
-        '<p class="sub">Restricted documents live in private repositories, one per clearance. GitHub decides what you can read, through your teams; your card shows what your clearance should open.</p>' +
-        (areas.length ? '<div class="si-areas">' + areas.map(function (a, i) {
-          var need = +String(a.card).slice(2), open = lvl >= need;
-          return '<section class="si-area' + (open ? "" : " locked") + '" data-a="' + i + '" style="--hk:' + (KC_LV[a.card] || KC_LV.LV3)[1] + '"><header><b>' + esc(a.title) + "</b><span>" + esc(a.card) + " and up</span></header>" +
-            '<div class="si-list">' + (open ? loading("Checking access") : '<p class="sub">Needs ' + esc(a.card) + " clearance.</p>") + "</div></section>";
-        }).join("") + "</div>" : '<div class="empty">No restricted areas yet</div>') +
+        siAccess(lvl, areas) +
         '<article class="dossier si-reader" id="siDoc" hidden></article>';
       $("#siOut").addEventListener("click", function () { signOut(); status("Signed out"); viewProfile(); });
       areas.forEach(function (a, i) {
-        if (lvl < +String(a.card).slice(2)) return;
-        var box = $('.si-area[data-a="' + i + '"] .si-list');
+        var box = $('.si-docs[data-a="' + i + '"]');
+        if (!box || lvl < +String(a.card).slice(2)) return;
         siArea(a).then(function (paths) {
           if (currentView !== "profile") return;
           box.innerHTML = paths.length ? "<ul>" + paths.map(function (p) { return '<li><button type="button" data-p="' + esc(p) + '">' + esc(siTitle(p)) + "<small>" + esc(p) + "</small></button></li>"; }).join("") + "</ul>" : '<p class="sub">No documents here yet.</p>';
@@ -2569,6 +2677,34 @@
       if (keys.length && !c.member) markVerified([c], keys);
       else $$('.kc-profile [data-rid] .vs').forEach(function (el) { el.innerHTML = '<span class="status claimed">Signed in</span>'; });
     });
+  }
+  /* Access granted and access restricted: every level's rights from ADR 0011 (config.signin.access), split at the
+     holder's clearance. Restricted document areas show their files inside the level that opens them. */
+  function siAccess(lvl, areas) {
+    var levels = siCfg().access || [], got = [], not = [];
+    levels.forEach(function (L) { (+String(L.card).slice(2) <= lvl ? got : not).push(L); });
+    function item(it, open) {
+      if (it.area != null) {
+        var a = areas[it.area]; if (!a) return "";
+        return '<li class="ax-doc"><span class="ax-t">' + esc(a.title) + " documents</span>" +
+          (open ? '<div class="si-list si-docs" data-a="' + it.area + '">' + loading("Checking access") + "</div>" : "") + "</li>";
+      }
+      return '<li><span class="ax-t">' + esc(it.t) + "</span>" + (it.s ? '<em class="ax-s">' + esc(it.s) + "</em>" : "") + "</li>";
+    }
+    function group(L, open, n) {
+      var lv = KC_LV[L.card] || KC_LV.LV2;
+      return '<section class="ax-lv" style="--hk:' + lv[1] + "; --n:" + n + '"><header><i>' + esc(L.card) + "</i><b>" + esc(lv[0]) + "</b>" +
+        (open ? "" : "<small>Needs " + esc(L.card) + "</small>") + "</header><ul>" + L.items.map(function (it) { return item(it, open); }).join("") + "</ul></section>";
+    }
+    var next = not[0];
+    return '<div class="ax">' +
+      '<div class="ax-col ax-ok"><div class="ax-head"><span class="ax-ico" aria-hidden="true"></span><b>Access granted</b><small>Level ' + lvl + " clearance · " + plural(got.reduce(function (n, L) { return n + L.items.length; }, 0), "right") + "</small></div>" +
+        got.slice().reverse().map(function (L, n) { return group(L, true, n); }).join("") + "</div>" +
+      '<div class="ax-col ax-no"><div class="ax-head"><span class="ax-ico" aria-hidden="true"></span><b>Access restricted</b><small>' + (not.length ? "Opens with a higher card" : "Nothing: you hold the highest card") + "</small></div>" +
+        (not.length ? not.map(function (L, n) { return group(L, false, n); }).join("") : '<p class="sub">Every level is open to you.</p>') +
+        (next ? '<p class="ax-how">' + (lvl < 3 ? "A completed contract earns <b>LV3</b>; higher cards come with a department. " : "Higher cards come with a department role. ") + 'How cards are issued: <a href="#/guides/hp-gde-009">Grades, Records and Hound IDs</a>. Not sure where you fit? <a href="#/guides/hp-gde-017">Can I Contribute?</a></p>' : "") + "</div>" +
+      "</div>" +
+      '<p class="sub ax-note">GitHub decides what you can read in the restricted areas, through your teams; your card shows what your clearance should open. Items marked with a date or <em>Planned</em> arrive with the session browser and the API server (<a href="#/docs/adr-0011">ADR 0011</a>).</p>';
   }
   function siOpen(a, path) {
     var d = $("#siDoc"); if (!d) return;

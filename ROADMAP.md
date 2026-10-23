@@ -24,6 +24,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Library search shows matching folders only, one drawer open at a time, animated cabinet; Handbook filter
 - [x] Documentation in two zones, Library and Handbook
 - [x] Sign-in with GitHub, keycard profiles and clearance-based documents in private repositories (ADR 0017)
+- [x] Clearance across the Library: access granted or denied per document, restricted drawers, signature-checked cards
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)
 - [ ] Steam App ID position recorded (legal.md, contract C14)

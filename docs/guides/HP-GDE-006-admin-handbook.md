@@ -12,7 +12,7 @@ Direction and decisions, seats and access, legal stance and funding, the communi
 | GitHub Pages | Source: GitHub Actions |
 | Discord | See [HP-SOP-008](HP-SOP-008-discord-administration.md); server widget on; release webhook stored as the `DISCORD_RELEASE_WEBHOOK` repository secret |
 | Backups | Weekly on the owner's computer plus encrypted Google Drive ([HP-SOP-009](HP-SOP-009-backup-and-restore.md)) |
-| Sign-in | GitHub App **Hound Protocol Sign-in** (Contents: read-only, installed only on `hp-staff`, `hp-leads`, `hp-admin`); relay on Cloudflare Workers with the client secret as an encrypted variable ([signin.md](../signin.md)) |
+| Sign-in | GitHub App **Hound ID Sign-in** (Contents: read-only, installed only on `hp-staff`, `hp-leads`, `hp-admin`); relay on Cloudflare Workers with the client secret as an encrypted variable ([signin.md](../signin.md)) |
 | Restricted documents | Private repositories `hp-staff` (teams LV3 and up), `hp-leads` (LV5 and up), `hp-admin` (LV6 and up). Team membership is what opens them |
 
 The full checklist is in [github-setup.md](../github-setup.md).

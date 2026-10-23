@@ -35,7 +35,7 @@ Use one (Bitwarden, KeePassXC, 1Password). Shared team credentials live only the
 Once you join a department, Administration issues your Hound ID ([HP-GDE-009](HP-GDE-009-grades-records-hound-ids.md)). Anyone can check it on the Verify page, so nobody can pretend to be you. The **signing key** from step 3 is also how you prove the card is yours: Verify → Prove a Hound ID → Prove it's me.
 
 ## 7. Signing in to the website
-The website's **Sign in** uses your GitHub account and its two-factor login; there is no separate password. To remove the website's access at any time: GitHub → **Settings → Applications → Authorized GitHub Apps → Hound Protocol Sign-in → Revoke** ([Using the Website](HP-GDE-015-using-the-website.md#5-signing-in)).
+The website's **Sign in** uses your GitHub account and its two-factor login; there is no separate password. To remove the website's access at any time: GitHub → **Settings → Applications → Authorized GitHub Apps → Hound ID Sign-in → Revoke** ([Using the Website](HP-GDE-015-using-the-website.md#5-signing-in)).
 
 ## If something goes wrong
 Lost device, leaked token or a strange login: tell Administration right away and follow [HP-SOP-006](HP-SOP-006-security-incident.md). Reporting fast is never held against you.

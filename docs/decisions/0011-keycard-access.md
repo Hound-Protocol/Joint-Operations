@@ -46,6 +46,7 @@ Until a bot keeps GitHub teams and Discord roles in sync, the Administration Dep
 - **With the session registry (ADR 0008):** the API server, GitHub sign-in on the site, keycard-gated tools (review queue, moderation, mod uploads).
 - **Later:** Steam sign-in for players, a Discord bot that syncs roles from GitHub teams.
 - **Update 2026-10-23:** GitHub sign-in, keycard profiles and clearance-based documents arrived early, without the API server: restricted documents live in private repositories that GitHub itself protects ([ADR 0017](0017-hound-id-sign-in.md)). Keycard-gated *tools* (review queue, moderation, mod uploads) still wait for the API server.
+- **Update 2026-10-23 (v0.0.26):** the Library shows every document's clearance; restricted areas are drawers that open at their level or show *Access denied*. A staff card raises clearance only after its signature verifies in the browser, and clearance files need the owner's review (CODEOWNERS).
 
 ## Consequences
 - The website has a sign-in button and a keycard badge since v0.0.22 (ADR 0017). Everything public stays public, and nothing pretends to be protected: restricted documents are protected by GitHub, not by the page.
