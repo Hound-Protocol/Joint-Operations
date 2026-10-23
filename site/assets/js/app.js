@@ -825,7 +825,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -986,6 +986,10 @@
     var winEls = $$("#mbWin .mb-win");
     /* Shooting star (v0.0.37): now and then a streak crosses the night sky */
     var star = { t: 20, x: 0, y: 0 }, starEl = $("#mbStar");
+    /* Vents (v0.0.41): puffs of steam rising from two vents on the command platform */
+    var vents = [[-0.42, -0.2], [0.38, 0.18]].map(function (q, i) { var w = mbWorld(core, [q[0] * core.g.R, q[1] * core.g.R]); return { x: w[0], y: w[1], t: i * 1.3 }; });
+    $("#mbVent").innerHTML = vents.map(function () { return '<circle class="mb-puff" r="3"/><circle class="mb-puff" r="3"/><circle class="mb-puff" r="3"/>'; }).join("");
+    var puffEls = $$("#mbVent .mb-puff");
     /* Sonar (v0.0.39): every 20 seconds a slow ring pulses out from the command platform */
     var sonarT = 4;
     var drop = { t: 9, m: null }, dropEl = $("#mbDrop"), dropCn = $("#mbDrop .cn"), dropLn = $("#mbDrop .ln");
@@ -1141,6 +1145,7 @@
       var fw = Math.sin(T * 4.2), fw2 = Math.sin(T * 4.2 + 1.3);
       flagP.setAttribute("d", "M0 -26 Q7 " + mbF(-27 + fw * 2) + " 15 " + mbF(-23 + fw2 * 1.6) + " Q7 " + mbF(-20 + fw * 1.6) + " 0 -19 Z");
       wins.forEach(function (w, i) { w.t -= dt; if (w.t <= 0) { w.on = !w.on; w.t = 3 + r() * 9; } winEls[i].style.opacity = w.on ? "1" : "0.12"; });
+      vents.forEach(function (v, i) { v.t += dt; for (var k = 0; k < 3; k++) { var ph = ((v.t + k * 1.1) % 3.3) / 3.3, el2 = puffEls[i * 3 + k]; el2.setAttribute("cx", mbF(v.x + Math.sin(ph * 5 + i) * 3 + ph * 10)); el2.setAttribute("cy", mbF(v.y - ph * 26)); el2.setAttribute("r", mbF(2 + ph * 5)); el2.style.opacity = (Math.sin(ph * Math.PI) * 0.5).toFixed(2); } });
       sonarT -= dt; if (sonarT <= 0) { sonarT = 20; ring(core.x, core.y, core.g.R * 1.1, core.g.R * 4.2, 5.5, false); }
       star.t += dt;
       if (star.t > 38) { star.t = 0; star.x = 80 + r() * (MB_W - 480); star.y = 30 + r() * 160; }
@@ -2892,9 +2897,9 @@
     var org = siCfg().org || "Hound-Protocol";
     SI.org = { at: Date.now(), role: "" };
     siApi("/user/memberships/orgs/" + encodeURIComponent(org)).then(function (m) {
-      SI.org = { at: Date.now(), role: m && m.state === "active" ? m.role : "" }; siSave(); siBadge();
+      SI.org = { at: Date.now(), role: m && m.state === "active" ? m.role : "", done: true }; siSave(); siBadge();
       if (SI.org.role === "admin" && (currentView === "profile" || currentView === "docs")) route();
-    }, function () { /* no Members permission yet, or not a member */ });
+    }, function () { /* no Members permission yet, or not a member */ if (SI && SI.org) { SI.org.done = true; siSave(); siBadge(); } });
   }
   /* The person's card: their active staff card, or a member card (LV2) */
   function siCard() {
@@ -2921,12 +2926,22 @@
     });
   }
   function siLevel() { var c = siCard(); return c ? +String(c.card).slice(2) : 1; }
+  /* The clearance is settled once GitHub has answered the owner check and any staff card has been checked; before that
+     the card shows LV2 for a moment, which must not be announced as a clearance */
+  function siSettled() {
+    if (!siIn()) return sgIn();
+    if (!SI.org || !(SI.org.done || SI.org.role)) return false;
+    if (SI.org.role === "admin") return true;
+    if (!data.staff) return false;
+    var s = (data.staff.staff || []).filter(function (x) { return x.github_id === SI.user.id && x.status === "active"; })[0];
+    return !s || (siV[s.id] && siV[s.id] !== "wait");
+  }
   /* The badge in the top bar: "Sign in", or the person's level and name */
   function siBadge() {
     if (!siOn()) { var t = $("#tbId"); if (t) t.remove(); return; }
     if (!tbMount()) return;
     var b = $("#siBadge"), c = siCard();
-    if (c) msgLevel();
+    if (c && siSettled()) msgLevel();
     /* A small access credential: level colour edge, picture, name over "Access Credential · level", the level number */
     var lv = c ? KC_LV[c.card] || KC_LV.LV2 : null, ph = c && !c.guest ? kcPhoto(c) : "";
     b.style.setProperty("--hk", lv ? lv[1] : "var(--jo)");
@@ -3066,7 +3081,15 @@
   }
   function sgOwnerApi(path, method) {
     return fetch(siRelay() + path, { method: method || "GET", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) {
-      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || "HTTP " + r.status); e.code = j.code; throw e; } return j; });
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok) {
+          /* An older relay does not know these commands and answers as if a guest pass were asked for */
+          var old = j.code === "invalid" || /guest pass is not valid|Unknown request/.test(j.error || "");
+          var e = new Error(old ? "The sign-in relay runs older code: the pass list, Revoke, Clear and requests need its update (sign-in setup, section 6b)." : j.error || "HTTP " + r.status);
+          e.code = old ? "old_relay" : j.code; throw e;
+        }
+        return j;
+      });
     });
   }
   /* The live passes, from the relay: number, expiry, status, and Revoke */
@@ -3087,7 +3110,7 @@
         (old.length ? '<li class="gp-h"><b>Expired and revoked</b><span>' + old.length + ' · records are kept ' + (j.keepDays || 30) + ' days</span><button class="btn small" id="gpPurge">Clear expired</button></li>' + old.map(row).join("") : "");
       sgWireList();
     }, function (e) {
-      if (e.code === "no_kv") { $("#gpMsg").textContent = "Passes can be granted. To revoke them instantly, add the GUEST_KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
+      if (e.code === "no_kv" || e.code === "old_relay") { $("#gpMsg").textContent = e.code === "old_relay" ? e.message + " Until then, only the passes granted in this tab are listed, and they cannot be cleared." : "Passes can be granted. To revoke them instantly, add the KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
       else $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay." : e.message;
     });
   }
@@ -3163,7 +3186,7 @@
           }, function (e) { $("#gpMsg").textContent = e.message; $$("button", b.parentNode).forEach(function (x) { x.disabled = false; }); });
         };
       });
-    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Requests need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? "Could not reach the sign-in relay." : /Unknown request|not valid/.test(e.message) ? "The relay needs its update for requests (sign-in setup, section 6)." : e.message) + "</span></li>"; });
+    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Requests need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? "Could not reach the sign-in relay." : e.code === "old_relay" ? "Requests need the relay\u2019s update (sign-in setup, section 6b)." : e.message) + "</span></li>"; });
   }
   /* #/guest/PASS: check the pass with the relay, keep it in this tab, then open the profile */
   function viewGuest(pass) {
@@ -3341,13 +3364,19 @@
   setInterval(function () { if (!document.hidden && askGet()) askCheck(); }, 20 * 1000);
 
   /* ---- Messages: a small list in the top bar, kept in this browser (clearance changes, guest passes, requests) ---- */
-  var MSG_KEY = "hp.msgs";
+  /* Once you open the menu, each message shows a bar that runs out; when it does, the message clears itself */
+  var MSG_KEY = "hp.msgs", MSG_LIFE = 20 * 1000;
   function msgAll() { try { return JSON.parse(lsv(MSG_KEY) || "[]") || []; } catch (e) { return []; } }
   function msgAdd(id, title, body, tone) {
     var all = msgAll(); if (all.some(function (x) { return x.id === id; })) return;
     all.unshift({ id: id, t: title, b: body, k: tone || "info", at: Date.now(), r: 0 });
     lsv(MSG_KEY, JSON.stringify(all.slice(0, 30))); msgDraw();
   }
+  /* Clear messages whose timer has run out (the timer starts the first time the menu shows them) */
+  setInterval(function () {
+    var all = msgAll(), keep = all.filter(function (x) { return !x.s || Date.now() - x.s < MSG_LIFE; });
+    if (keep.length !== all.length) { lsv(MSG_KEY, JSON.stringify(keep)); msgDraw(); }
+  }, 1000);
   function msgAgo(t) { var s = Math.round((Date.now() - t) / 1000); return s < 60 ? "just now" : s < 3600 ? Math.floor(s / 60) + " min ago" : s < 86400 ? Math.floor(s / 3600) + " h ago" : fmtDate(new Date(t).toISOString().slice(0, 10)); }
   function msgDraw() {
     var b = $("#tbMsg"); if (!b) return;
@@ -3357,14 +3386,18 @@
     b.setAttribute("aria-label", "Messages" + (n ? ", " + n + " unread" : ""));
     var menu = $("#msgMenu");
     if (menu && !menu.hidden) menu.innerHTML = '<div class="mm-head"><b>Messages</b>' + (all.length ? '<button type="button" id="mmClear">Clear all</button>' : "") + "</div>" +
-      (all.length ? "<ul>" + all.map(function (x) { return '<li class="mm-' + esc(x.k) + (x.r ? "" : " new") + '"><i aria-hidden="true"></i><div><b>' + esc(x.t) + "</b><p>" + esc(x.b) + "</p><small>" + esc(msgAgo(x.at)) + "</small></div></li>"; }).join("") + "</ul>" : '<p class="mm-none">No messages yet.</p>');
+      (all.length ? "<ul>" + all.map(function (x) {
+        var left = x.s ? Math.max(0, MSG_LIFE - (Date.now() - x.s)) : MSG_LIFE;
+        return '<li class="mm-' + esc(x.k) + (x.r ? "" : " new") + '"><i aria-hidden="true"></i><div><b>' + esc(x.t) + "</b><p>" + esc(x.b) + "</p><small>" + esc(msgAgo(x.at)) + "</small></div>" +
+          '<span class="mm-bar" aria-hidden="true"><em style="--f:' + (left / MSG_LIFE).toFixed(3) + "; --t:" + left + 'ms"></em></span></li>';
+      }).join("") + "</ul>" : '<p class="mm-none">No messages yet.</p>');
     var c = $("#mmClear"); if (c) c.onclick = function (e) { e.stopPropagation(); lsv(MSG_KEY, "[]"); msgDraw(); };
   }
   function msgToggle(open) {
     var menu = $("#msgMenu"), b = $("#tbMsg"); if (!menu || !b) return;
     if (open == null) open = menu.hidden;
     menu.hidden = !open; b.setAttribute("aria-expanded", String(open));
-    if (open) { msgDraw(); var all = msgAll(); all.forEach(function (x) { x.r = 1; }); lsv(MSG_KEY, JSON.stringify(all)); setTimeout(function () { var bb = $("#tbMsg"); if (bb) { bb.querySelector(".tb-n").textContent = ""; bb.classList.remove("unread"); } }, 600); blip(); }
+    if (open) { var all = msgAll(), now = Date.now(); all.forEach(function (x) { x.r = 1; if (!x.s) x.s = now; }); lsv(MSG_KEY, JSON.stringify(all)); msgDraw(); setTimeout(function () { var bb = $("#tbMsg"); if (bb) { bb.querySelector(".tb-n").textContent = ""; bb.classList.remove("unread"); } }, 600); blip(); }
   }
   /* The top bar: messages, then the gear (Profile details), then the access credential */
   function tbMount() {

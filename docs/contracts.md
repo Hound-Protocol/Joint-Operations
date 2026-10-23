@@ -58,6 +58,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F18 | Classification stamps; the Dev Log as a document | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F19 | LV1 for visitors, guest pass requests, messages | web | 🟡 Medium | — | done | Forge77 (with Claude) |
 | F20 | About: Start here triangle; FAQ as a document | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F21 | Messages clear themselves; one clearance message | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -750,3 +751,15 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - Overview on top, three guides beneath
 - FAQ in the Library
+
+## F21
+**Messages clear themselves; one clearance message**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Messages stay tidy and say only what is true.
+
+**Deliverable.** Timer bar and auto-clear; settled-clearance check; old-relay message.
+
+**Acceptance criteria**
+- A message clears 20 s after the menu shows it
+- Signing in as owner announces only LV7

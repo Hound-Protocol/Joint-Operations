@@ -39,6 +39,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Classification stamps on Library documents; the Dev Log as a document
 - [x] LV1 for visitors, guest pass requests, messages in the top bar
 - [x] About: Start here triangle; the FAQ as a document
+- [x] Messages clear themselves; one clearance message per sign-in
 - [x] Signed certificates of service, checked in the browser and printable (ADR 0020)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)

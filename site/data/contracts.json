@@ -1083,6 +1083,30 @@
     "Forge77"
    ],
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F21",
+   "title": "Messages clear themselves; one clearance message",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Messages stay tidy and say only what is true.",
+   "deliverable": "Timer bar and auto-clear; settled-clearance check; old-relay message.",
+   "acceptance": [
+    "A message clears 20 s after the menu shows it",
+    "Signing in as owner announces only LV7"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

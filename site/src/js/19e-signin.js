@@ -117,9 +117,9 @@
     var org = siCfg().org || "Hound-Protocol";
     SI.org = { at: Date.now(), role: "" };
     siApi("/user/memberships/orgs/" + encodeURIComponent(org)).then(function (m) {
-      SI.org = { at: Date.now(), role: m && m.state === "active" ? m.role : "" }; siSave(); siBadge();
+      SI.org = { at: Date.now(), role: m && m.state === "active" ? m.role : "", done: true }; siSave(); siBadge();
       if (SI.org.role === "admin" && (currentView === "profile" || currentView === "docs")) route();
-    }, function () { /* no Members permission yet, or not a member */ });
+    }, function () { /* no Members permission yet, or not a member */ if (SI && SI.org) { SI.org.done = true; siSave(); siBadge(); } });
   }
   /* The person's card: their active staff card, or a member card (LV2) */
   function siCard() {
@@ -146,12 +146,22 @@
     });
   }
   function siLevel() { var c = siCard(); return c ? +String(c.card).slice(2) : 1; }
+  /* The clearance is settled once GitHub has answered the owner check and any staff card has been checked; before that
+     the card shows LV2 for a moment, which must not be announced as a clearance */
+  function siSettled() {
+    if (!siIn()) return sgIn();
+    if (!SI.org || !(SI.org.done || SI.org.role)) return false;
+    if (SI.org.role === "admin") return true;
+    if (!data.staff) return false;
+    var s = (data.staff.staff || []).filter(function (x) { return x.github_id === SI.user.id && x.status === "active"; })[0];
+    return !s || (siV[s.id] && siV[s.id] !== "wait");
+  }
   /* The badge in the top bar: "Sign in", or the person's level and name */
   function siBadge() {
     if (!siOn()) { var t = $("#tbId"); if (t) t.remove(); return; }
     if (!tbMount()) return;
     var b = $("#siBadge"), c = siCard();
-    if (c) msgLevel();
+    if (c && siSettled()) msgLevel();
     /* A small access credential: level colour edge, picture, name over "Access Credential · level", the level number */
     var lv = c ? KC_LV[c.card] || KC_LV.LV2 : null, ph = c && !c.guest ? kcPhoto(c) : "";
     b.style.setProperty("--hk", lv ? lv[1] : "var(--jo)");
@@ -291,7 +301,15 @@
   }
   function sgOwnerApi(path, method) {
     return fetch(siRelay() + path, { method: method || "GET", headers: { Authorization: "Bearer " + SI.token }, cache: "no-store" }).then(function (r) {
-      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || "HTTP " + r.status); e.code = j.code; throw e; } return j; });
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok) {
+          /* An older relay does not know these commands and answers as if a guest pass were asked for */
+          var old = j.code === "invalid" || /guest pass is not valid|Unknown request/.test(j.error || "");
+          var e = new Error(old ? "The sign-in relay runs older code: the pass list, Revoke, Clear and requests need its update (sign-in setup, section 6b)." : j.error || "HTTP " + r.status);
+          e.code = old ? "old_relay" : j.code; throw e;
+        }
+        return j;
+      });
     });
   }
   /* The live passes, from the relay: number, expiry, status, and Revoke */
@@ -312,7 +330,7 @@
         (old.length ? '<li class="gp-h"><b>Expired and revoked</b><span>' + old.length + ' · records are kept ' + (j.keepDays || 30) + ' days</span><button class="btn small" id="gpPurge">Clear expired</button></li>' + old.map(row).join("") : "");
       sgWireList();
     }, function (e) {
-      if (e.code === "no_kv") { $("#gpMsg").textContent = "Passes can be granted. To revoke them instantly, add the GUEST_KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
+      if (e.code === "no_kv" || e.code === "old_relay") { $("#gpMsg").textContent = e.code === "old_relay" ? e.message + " Until then, only the passes granted in this tab are listed, and they cannot be cleared." : "Passes can be granted. To revoke them instantly, add the KV storage to the relay (sign-in setup, section 6)."; ul.innerHTML = sgIssued().map(sgItem).join(""); sgWireList(); }
       else $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay." : e.message;
     });
   }
@@ -388,7 +406,7 @@
           }, function (e) { $("#gpMsg").textContent = e.message; $$("button", b.parentNode).forEach(function (x) { x.disabled = false; }); });
         };
       });
-    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Requests need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? "Could not reach the sign-in relay." : /Unknown request|not valid/.test(e.message) ? "The relay needs its update for requests (sign-in setup, section 6)." : e.message) + "</span></li>"; });
+    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Requests need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? "Could not reach the sign-in relay." : e.code === "old_relay" ? "Requests need the relay\u2019s update (sign-in setup, section 6b)." : e.message) + "</span></li>"; });
   }
   /* #/guest/PASS: check the pass with the relay, keep it in this tab, then open the profile */
   function viewGuest(pass) {
