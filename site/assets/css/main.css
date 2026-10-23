@@ -1048,7 +1048,6 @@ a, button, .field, summary { transition: color .3s ease, background-color .3s ea
 .mb-wave { stroke: #9fc4cf; stroke-width: 1.3; stroke-linecap: round; }
 .mb-ring { fill: none; stroke: #9fc4cf; stroke-width: 1.2; }
 .mb-ring.hot { stroke: var(--jo); stroke-width: 1.6; }
-#mbSweepEdge { stroke: var(--jo); stroke-width: 1.2; opacity: .22; }
 .mb-wake { fill: none; stroke: #cfe6ec; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .28; }
 .mb-wake.big { stroke-width: 7; opacity: .12; }
 .mb-hull { fill: #d8dfe1; stroke: #0a0f11; stroke-width: .8; }

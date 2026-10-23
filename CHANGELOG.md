@@ -3,13 +3,13 @@
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
 ## v0.0.19 · Dossier cabinet · 2026-10-23
-- **Roadmap:** the ticker line is gone and the hint reads "Click a platform for details".
+- **Roadmap:** the ticker line and the radar sweep are gone, and the hint reads "Click a platform for details".
 - **Docs:** the neural web is replaced by a dossier cabinet. Each library group is a drawer of kraft case files with a file number (HP-POL-009, ADR-0012, RES-03…). The open file lies on the desk as a typed, ruled page clipped into its folder, with punch holes, a stamp and the group's colour. Guides keep their printed A4 sheet look; documents now have their own case-file identity.
 - **Search:** Ctrl+K or / jumps to the search; titles filter the drawers at once, and from three letters the full text of every file is searched with highlighted snippets.
 - The classic list stays available (button, or Options → Docs view).
 
 ## v0.0.18 · Base operations · 2026-10-23
-- **Roadmap:** the base fills 80% of the 16:9 screen with the progress panel floating on the right. Platforms are named after the phases. Opening the page builds the base: platforms rise, bridges are laid, then each gauge fills with a moving waterline; unfinished parts show as scaffolding. Cargo ships dock beside platforms under construction and crews carry crates to the stockpile; plus a radar sweep, cloud shadows, ripples and beacons. Crews stay on the decks.
+- **Roadmap:** the base fills 80% of the 16:9 screen with the progress panel floating on the right. Platforms are named after the phases. Opening the page builds the base: platforms rise, bridges are laid, then each gauge fills with a moving waterline; unfinished parts show as scaffolding. Cargo ships dock beside platforms under construction and crews carry crates to the stockpile; plus cloud shadows, ripples and beacons. Crews stay on the decks.
 - **Guides:** the type stripe runs along the right edge; mini sheets keep their A4 shape (no wrapped codes or overflowing text).
 - **Release procedure:** each release also adds a matching detail to the base ([HP-SOP-003](docs/guides/HP-SOP-003-release.md) 1.1).
 - **CI:** the browser download retries when it stalls.
