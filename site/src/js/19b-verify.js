@@ -96,7 +96,7 @@
         '<div class="label">Hound staff</div>' +
         '<p class="sub">Every staff member has a permanent <b class="tint key">Hound ID</b>, tied to their GitHub account number, which never changes even if they rename the account. Check anyone who claims to be staff here.</p>' +
         '<div class="toolbar"><input class="field grow" id="sfind" type="search" placeholder="Hound ID, GitHub name or Discord ID" aria-label="Find staff"><span id="sres"></span></div>' +
-        '<div class="kcs">' + (staff.length ? staff.map(function (s, n) { return keycard(s, { link: true, i: n }); }).join("") :
+        '<div class="hks">' + (staff.length ? staff.map(function (s, n) { return keycard(s, { link: true, i: n }); }).join("") :
           keycard(KC_SPECIMEN, { link: true, specimen: true }) + '<div class="empty">No staff cards issued yet<small>This is a specimen. The owner issues real cards once the signing key exists.</small></div>') + "</div>" +
         '<div class="label">Prove a Hound ID</div>' +
         '<p class="sub">A card can be copied, so it only shows what someone claims. To check that a person really holds a Hound ID, give them a challenge to sign with the SSH key on their GitHub account. You can try it now with any GitHub name.</p>' +

@@ -2,6 +2,14 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.20 · Paper classes · 2026-10-23
+- **Docs:** each document shows its class (Policy, Procedure, Guide, Decision record, Research, Technical, Community, Project, Legal) instead of "case file", and each class has its own paper: linen for policies, dot grid for procedures, graph paper for guides, ruled paper for decisions, triangle grid for research, millimetre paper for technical, green bars for community, pinstripe for project and a yellow legal pad for legal. Stamps removed.
+- **Search:** every word must match; file numbers ("pol 9", "adr 12") and titles rank first, then headings, then text. Results show the section they come from. Arrow keys and Enter open a result, Esc clears, and the opened page highlights the words and scrolls to the first one. Light stemming ("appeals" finds "appeal").
+- **Folders:** smoother hover and opening; drawers open in place without redrawing the others.
+- **Classic list removed.** The cabinet is the only Docs view.
+- **Main menu:** "Join the Hound" is now "Explore the Hound", linking to the Hound Protocol website.
+- **Fixed:** the contract board was broken by the keycard styles (both used the same class name). Keycards now have their own names, contract cards are back, and "Acceptance criteria" stays on one line.
+
 ## v0.0.19 · Dossier cabinet · 2026-10-23
 - **Roadmap:** the ticker line and the radar sweep are gone, and the hint reads "Click a platform for details".
 - **Docs:** the neural web is replaced by a dossier cabinet. Each library group is a drawer of kraft case files with a file number (HP-POL-009, ADR-0012, RES-03…). The open file lies on the desk as a typed, ruled page clipped into its folder, with punch holes, a stamp and the group's colour. Guides keep their printed A4 sheet look; documents now have their own case-file identity.
