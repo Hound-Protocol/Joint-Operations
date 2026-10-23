@@ -80,7 +80,6 @@
     });
     var defs = '<defs><filter id="mbGlow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
       '<pattern id="mbHatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9"/></pattern>' +
-      '<radialGradient id="mbSweepG" gradientUnits="userSpaceOnUse" cx="' + MB_CX + '" cy="' + MB_CY + '" r="1000"><stop offset="0" stop-color="#f28c28" stop-opacity=".08"/><stop offset="1" stop-color="#f28c28" stop-opacity="0"/></radialGradient>' +
       '<radialGradient id="mbCloudG"><stop offset="0" stop-color="#000" stop-opacity=".42"/><stop offset=".6" stop-color="#000" stop-opacity=".16"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>' +
       '<radialGradient id="mbSea" gradientUnits="userSpaceOnUse" cx="' + MB_CX + '" cy="' + MB_CY + '" r="900"><stop offset="0" stop-color="#18343d" stop-opacity=".9"/><stop offset="1" stop-color="#060a0c" stop-opacity="0"/></radialGradient>' +
       mods.map(function (m) { return '<clipPath id="mbClip' + m.i + '">' + m.g.sh.map(function (s) { return mbShapeSvg(s, m.deg); }).join("") + "</clipPath>"; }).join("") + "</defs>";
@@ -112,7 +111,7 @@
     for (var w = 0; w < 46; w++) waves += '<line class="mb-wave"/>';
     var svg = '<svg class="mb-svg" viewBox="0 0 ' + MB_W + " " + MB_H + '" role="group" aria-label="Base under construction: one platform per roadmap phase">' + defs +
       '<rect class="mb-sea" x="0" y="0" width="' + MB_W + '" height="' + MB_H + '" fill="url(#mbSea)"/>' +
-      '<g class="mb-water">' + waves + '<g id="mbRings"></g><path id="mbSweep" fill="url(#mbSweepG)"/><line id="mbSweepEdge"/><g id="mbBoats"></g><g id="mbShips"></g></g>' +
+      '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
       '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g></g>' +
@@ -149,8 +148,7 @@
         '<div class="mb-stage">' + b.svg +
           '<div class="mb-hudtl"><span class="kicker">Base construction</span><b>' + (all[1] ? Math.round(all[0] / all[1] * 100) : 0) + "%</b><small>" + all[0] + " of " + all[1] + " tasks done</small>" +
           '<ul class="mb-key"><li class="k-done">Complete</li><li class="k-now">Under construction</li><li class="k-next">Planned</li></ul></div>' +
-          '<div class="mb-tick" id="mbTick" aria-hidden="true"></div>' +
-          '<p class="mb-hint">Point at a platform to light it · click it to see its progress</p>' +
+          '<p class="mb-hint">Click a platform for details</p>' +
           '<aside class="mb-panel" id="mbPanel" aria-live="polite"></aside>' +
         "</div>" +
         '<p class="source">Read live from <a href="' + repoUrl("/blob/" + cfg.branch + "/ROADMAP.md") + '" target="_blank" rel="noopener noreferrer">ROADMAP.md</a> · the base grows as tasks are ticked off in each release · each phase starts when the one before it is done</p>' +
@@ -222,7 +220,7 @@
       cont: $$("#mbShips .mb-ship").map(function (g) { return $$(".cont", g); }),
       carry: $$("#mbCarry .mb-carrier"), pile: $$("#mbPile .mb-crate"), rings: $$("#mbRings circle"), waves: $$(".mb-wave"), clouds: $$(".mb-clouds ellipse"),
       fill: $$(".mb-fill"), lvl: $$(".mb-lvl"), hatch: $$(".mb-hatch"), pct: $$(".mb-pct"), mod: $$(".mb-mod"), inner: $$(".mb-mod .mb-in"), name: $$(".mb-mod .mb-name"),
-      br: $$(".mb-bridge"), sweep: $("#mbSweep"), edge: $("#mbSweepEdge"), sel: $("#mbSel"), selR: $$("#mbSel circle"), tick: $("#mbTick"),
+      br: $$(".mb-bridge"), sel: $("#mbSel"), selR: $$("#mbSel circle"),
       hsh: $("#mbHeli .mb-hsh"), heli: $("#mbHeli .mb-heli"), hb: $("#mbHeli .hb"), rot: $$("#mbHeli .rotor"), pat: $("#mbHatch")
     };
     function padOf(m) { return mbWorld(m, [m.g.pad.x, m.g.pad.y]); }
@@ -266,12 +264,8 @@
         if (b.classList.contains("built")) $$("line", b).forEach(function (l) { if (a < 1) { l.style.strokeDasharray = len + " " + len; l.style.strokeDashoffset = mbF(len * (1 - a)); } else { l.style.strokeDasharray = ""; l.style.strokeDashoffset = ""; } });
       });
       el.pat.setAttribute("patternTransform", "rotate(45) translate(" + mbF((T * 6) % 9) + " 0)");
-      /* Sea, radar sweep, clouds */
+      /* Sea and clouds */
       waves.forEach(function (w, i) { w.x += w.sp * dt; if (w.x > MB_W + 30) w.x = -30; var l = el.waves[i]; l.setAttribute("x1", mbF(w.x)); l.setAttribute("x2", mbF(w.x + w.l)); l.setAttribute("y1", mbF(w.y)); l.setAttribute("y2", mbF(w.y)); l.style.opacity = w.o; });
-      var sa = T * 0.55, R0 = 1050, a0 = sa - 0.55;
-      el.sweep.setAttribute("d", "M" + MB_CX + "," + MB_CY + " L" + mbF(MB_CX + Math.cos(a0) * R0) + "," + mbF(MB_CY + Math.sin(a0) * R0) + " A" + R0 + "," + R0 + " 0 0 1 " + mbF(MB_CX + Math.cos(sa) * R0) + "," + mbF(MB_CY + Math.sin(sa) * R0) + " Z");
-      el.edge.setAttribute("x1", MB_CX); el.edge.setAttribute("y1", MB_CY); el.edge.setAttribute("x2", mbF(MB_CX + Math.cos(sa) * R0)); el.edge.setAttribute("y2", mbF(MB_CY + Math.sin(sa) * R0));
-      function swept(x, y) { var a = Math.atan2(y - MB_CY, x - MB_CX), d = ((sa - a) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2); return d < dt * 0.55 + 0.001; }
       clouds.forEach(function (c, i) { c.x += c.sp * dt; if (c.x > MB_W + 380) { c.x = -380; c.y = 120 + r() * 660; } el.clouds[i].setAttribute("cx", mbF(c.x)); el.clouds[i].setAttribute("cy", mbF(c.y)); });
       ringT -= dt;
       if (ringT <= 0) { ringT = 0.35 + r() * 0.4; var rm = mods[Math.floor(r() * mods.length)]; if (rm.st !== "next") { var ang = r() * Math.PI * 2, rr = rm.g.R * 1.02; ring(rm.x + Math.cos(ang) * rr, rm.y + Math.sin(ang) * rr, 3, 20, 2.4); } }
@@ -318,7 +312,6 @@
         }
         b.tick += dt; if (b.tick > 0.12) { b.tick = 0; b.trail.push([b.x, b.y]); if (b.trail.length > 18) b.trail.shift(); }
         if (b.st === "dock" && b.trail.length) b.trail.shift();
-        if (swept(b.x, b.y)) ring(b.x, b.y, 4, 26, 1.2, true);
         el.hull[i].setAttribute("transform", "translate(" + mbF(b.x) + " " + mbF(b.y) + ") rotate(" + mbF(b.h) + ")");
         el.wake[i].setAttribute("points", b.trail.map(function (p) { return mbF(p[0]) + "," + mbF(p[1]); }).join(" ") + " " + mbF(b.x) + "," + mbF(b.y));
       });
@@ -350,7 +343,6 @@
         }
         sh.tick += dt; if (sh.tick > 0.15) { sh.tick = 0; sh.trail.push([sh.x, sh.y]); if (sh.trail.length > 26) sh.trail.shift(); }
         if (sh.st === "unload" && sh.trail.length) sh.trail.shift();
-        if (swept(sh.x, sh.y)) ring(sh.x, sh.y, 8, 46, 1.4, true);
         g.setAttribute("transform", "translate(" + mbF(sh.x) + " " + mbF(sh.y) + ") rotate(" + mbF(sh.h) + ") scale(1.35)");
         el.swake[i].setAttribute("points", sh.trail.map(function (p) { return mbF(p[0]) + "," + mbF(p[1]); }).join(" ") + " " + mbF(sh.x) + "," + mbF(sh.y));
         var gl = el.gang[i];
@@ -411,12 +403,6 @@
       el.hb.setAttribute("transform", "rotate(" + mbF(H.h) + ")");
       var spin = (T * (H.st === "wait" && H.alt < 0.05 ? 160 : 1500)) % 360;
       el.rot[0].setAttribute("transform", "rotate(" + mbF(spin) + ")"); el.rot[1].setAttribute("transform", "rotate(" + mbF(spin) + ")");
-      /* Ticker */
-      if (!MB.tk || T - MB.tk > 0.5) {
-        MB.tk = T;
-        var afloat = ships.filter(function (s) { return s.st !== "wait"; }).length + boats.filter(function (b) { return b.delay <= 0; }).length;
-        el.tick.textContent = "Crew " + (crew.length + walk.length + carriers.length) + " · Vessels " + afloat + " · Cargo landed " + MB.cargo + " · " + new Date().toISOString().slice(11, 19) + " UTC";
-      }
     }
     if (!opts.motion) { MB.t = 30; step(0); return; }
     step(0);
