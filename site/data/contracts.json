@@ -866,6 +866,30 @@
    ],
    "status": "done",
    "completed": "2026-10-23"
+  },
+  {
+   "id": "F12",
+   "title": "Hotfix: contract board fits the frame, headers aligned, smaller sign-in window",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "The five fields fit side by side with aligned headers; the GitHub window is as small as GitHub allows.",
+   "deliverable": "",
+   "acceptance": [
+    "No board column cut off at 1280px and up",
+    "Header bottom lines aligned"
+   ],
+   "refs": [],
+   "kind": "work",
+   "by": [
+    "Forge77"
+   ],
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "completed": "2026-10-23"
   }
  ],
  "updated": "2026-10-23"

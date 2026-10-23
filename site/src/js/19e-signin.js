@@ -58,9 +58,10 @@
     if (!siOn()) return Promise.reject(new Error("Sign-in is not switched on yet."));
     var relay = siCfg().relay.replace(/\/$/, ""), origin;
     try { origin = new URL(relay).origin; } catch (e) { return Promise.reject(new Error("The sign-in relay address is not valid.")); }
-    /* GitHub cannot be shown inside another page, so it opens in a small window centered over this one */
-    var W = 520, H = 720, L = Math.round((window.screenX || window.screenLeft || 0) + ((window.outerWidth || screen.width) - W) / 2), T = Math.round((window.screenY || window.screenTop || 0) + ((window.outerHeight || screen.height) - H) / 2);
-    var w = window.open(relay + "/login", "hpsignin", "width=" + W + ",height=" + H + ",left=" + L + ",top=" + T);
+    /* GitHub cannot be shown inside another page, so it opens in the smallest window its sign-in fits in, centered over this one.
+       Browsers do not allow a window to be hidden or minimized; once authorized, GitHub answers at once and the window closes by itself. */
+    var W = 400, H = 540, L = Math.round((window.screenX || window.screenLeft || 0) + ((window.outerWidth || screen.width) - W) / 2), T = Math.round((window.screenY || window.screenTop || 0) + ((window.outerHeight || screen.height) - H) / 2);
+    var w = window.open(relay + "/login", "hpsignin", "width=" + W + ",height=" + H + ",left=" + L + ",top=" + T + ",menubar=no,toolbar=no,location=no,status=no,scrollbars=yes");
     if (!w) return Promise.reject(new Error("Allow pop-ups for this site to sign in."));
     return new Promise(function (ok, fail) {
       var done = false, t;
@@ -196,7 +197,7 @@
         siCerts(c) +
         (siOwner() ? sgPanel() : "") +
         siAccess(lvl, areas) +
-        '<article class="dossier si-reader" id="siDoc" hidden></article>';
+        "";
       $("#siOut").addEventListener("click", function () {
         (c.guest ? hpConfirm("End your guest pass?", "You will need the link again to come back, while it is still valid.", "End guest pass", "Stay", "danger")
           : hpConfirm("Are you sure you want to log out?", "Your Hound ID session in this tab ends. You can sign in again at any time.", "Log out", "Stay signed in", "danger")).then(function (yes) {
@@ -208,17 +209,6 @@
       if (siOwner()) sgPanelWire();
       /* Right after signing in (the owner check may redraw the card once, so allow a few seconds) */
       if (siFresh && Date.now() - siFresh < 5000) kcReveal($(".kc-profile .hk")); else siFresh = 0;
-      areas.forEach(function (a, i) {
-        var box = $('.si-docs[data-a="' + i + '"]');
-        if (!box || lvl < +String(a.card).slice(2)) return;
-        siArea(a).then(function (paths) {
-          if (currentView !== "profile") return;
-          box.innerHTML = paths.length ? "<ul>" + paths.map(function (p) { return '<li><button type="button" data-p="' + esc(p) + '">' + esc(siTitle(p)) + "<small>" + esc(p) + "</small></button></li>"; }).join("") + "</ul>" : '<p class="sub">No documents here yet.</p>';
-          $$("button[data-p]", box).forEach(function (b) { b.addEventListener("click", function () { siOpen(a, b.getAttribute("data-p")); }); });
-        }, function (e) {
-          box.innerHTML = '<p class="sub">' + (e.status === 404 || e.status === 403 ? "GitHub has not given your account access yet. Ask Administration to add you to the right team." : "Could not reach GitHub. Try again later.") + "</p>";
-        });
-      });
       if (keys.length && !c.member && !c.guest && !c.owner) markVerified([c], keys);
       else $$('.kc-profile [data-rid] .vs').forEach(function (el) { el.innerHTML = c.owner ? '<span class="status done">Confirmed by GitHub</span>' : c.guest ? '<span class="status planned">Guest · until ' + esc(new Date(c.exp).toTimeString().slice(0, 5)) + "</span>" : '<span class="status claimed">Signed in</span>'; });
     });
@@ -231,8 +221,8 @@
     function item(it, open) {
       if (it.area != null) {
         var a = areas[it.area]; if (!a) return "";
-        return '<li class="ax-doc"><span class="ax-t">' + esc(a.title) + " documents</span>" +
-          (open ? '<div class="si-list si-docs" data-a="' + it.area + '">' + loading("Checking access") + "</div>" : "") + "</li>";
+        /* Information only: the documents themselves open from the Library */
+        return '<li class="ax-doc"><span class="ax-t">' + esc(a.title) + " documents</span></li>";
       }
       return '<li><span class="ax-t">' + esc(it.t) + "</span>" + (it.s ? '<em class="ax-s">' + esc(it.s) + "</em>" : "") + "</li>";
     }
@@ -249,7 +239,7 @@
         (not.length ? not.map(function (L, n) { return group(L, false, n); }).join("") : '<p class="sub">Every level is open to you.</p>') +
         (next ? '<p class="ax-how">' + (lvl < 3 ? "A completed contract earns <b>LV3</b>; higher cards come with a department. " : "Higher cards come with a department role. ") + 'How cards are issued: <a href="#/guides/hp-gde-009">Grades, Records and Hound IDs</a>. Not sure where you fit? <a href="#/guides/hp-gde-017">Can I Contribute?</a></p>' : "") + "</div>" +
       "</div>" +
-      '<p class="sub ax-note">GitHub decides what you can read in the restricted areas, through your teams; your card shows what your clearance should open. Items marked with a date or <em>Planned</em> arrive with the session browser and the API server (<a href="#/docs/adr-0011">ADR 0011</a>).</p>';
+      '<p class="sub ax-note">GitHub decides what you can read in the restricted areas, through your teams; your card shows what your clearance should open. Restricted documents open from the <a href="#/docs">Library</a>. Items marked with a date or <em>Planned</em> arrive with the session browser and the API server (<a href="#/docs/adr-0011">ADR 0011</a>).</p>';
   }
   /* The holder's certificates of service, if any */
   function siCerts(c) {

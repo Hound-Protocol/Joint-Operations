@@ -144,7 +144,7 @@
           ? '<div class="kc-stamp">Completed' + (c.completed ? " · " + esc(fmtDate(c.completed)) : "") + "</div>" + (c.live ? '<div class="actions">' + action + "</div>" : "")
           : (c.depends && c.depends.length ? '<div class="meta' + (c.blocked ? " blocked" : "") + '">' + (c.blocked ? "Waiting for " : "After ") + esc(c.depends.join(", ")) + "</div>" : "") +
             (c.goal ? '<p class="goal">' + esc(c.goal) + "</p>" : "") +
-            ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary><span>Acceptance criteria</span><i aria-hidden="true">' + (c.acceptance ? c.acceptance.length : 0) + "</i></summary>" +
+            ((c.acceptance && c.acceptance.length) || c.deliverable ? '<details class="spec"><summary><span>Done when</span><i aria-hidden="true">' + (c.acceptance ? c.acceptance.length : 0) + "</i></summary>" +
               (c.deliverable ? '<div class="meta">Deliverable: ' + esc(c.deliverable) + "</div>" : "") +
               (c.acceptance && c.acceptance.length ? "<ul>" + c.acceptance.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>" : "") + "</details>" : "") +
             (c.skills ? '<div class="meta">Skills: ' + esc(c.skills) + "</div>" : "") +

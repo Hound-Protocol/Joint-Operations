@@ -1876,3 +1876,18 @@ html.booting .center, html.booting .bar { opacity: 0; }
 /* Comms mast beacon (v0.0.31): a red aircraft-warning light that blinks */
 .mb-beacon { fill: #ff3b30; filter: drop-shadow(0 0 4px #ff3b30); animation: mbBlink 1.8s steps(1) infinite; }
 .no-motion .mb-beacon { animation: none; }
+/* Hotfix v0.0.32: the contract board fits the shared frame. Five fields side by side on wide screens,
+   a horizontal scroll with snapping only where they cannot fit (layout stability, HP-GDE-012). */
+.kanban { grid-auto-columns: minmax(0, 1fr); gap: 14px; overflow-x: visible; }
+.kcol + .kcol::before { left: -8px; }
+.kanban .kc { padding-left: 12px; padding-right: 12px; }
+.kcol-t b { font-size: 14px; letter-spacing: .12em; }
+.kcol-h { padding: 12px 12px 10px; }
+.kcol-b { padding: 10px; }
+@media (max-width: 1180px) { .kanban { grid-auto-columns: minmax(250px, 1fr); overflow-x: auto; gap: 18px; } .kcol + .kcol::before { left: -10px; } }
+.kanban .kc .spec summary { min-width: 0; letter-spacing: .1em; font-size: 11.5px; }
+.kanban .kc .spec summary span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kanban .kc .spec summary i { flex: none; }
+/* Column headers line up: the title, the description and the progress bar sit at the same height in every field */
+.kcol-t { min-height: 34px; }
+.kcol-h p { min-height: 2.8em; }
