@@ -9,6 +9,7 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 - **Guest passes:** the owner's Profile lists live passes with **Revoke pass**; a revoked guest sees a small window telling them, within a minute. Needs a KV store on the relay ([setup](docs/signin.md)).
 - **Bans (LV0):** banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. One ban covers linked GitHub, Discord and Steam accounts; no IP bans. New: [HP-SOP-012 Banning an Account](docs/guides/HP-SOP-012-bans.md) and [ADR 0019](docs/decisions/0019-bans-across-accounts.md).
 - **Roster:** the Team page lists everyone with a signed card, grouped by clearance, as keycards. Member cards (LV2) can now be issued too.
+- **About:** the session diagram is gone; the introduction is centered.
 - **Layout stability:** every section uses the same width, so nothing grows or shrinks when you switch; the smoke test checks it ([HP-GDE-012](docs/guides/HP-GDE-012-website-maintainers.md)).
 
 ## v0.0.28 · Keycards · 2026-10-23
