@@ -2179,16 +2179,22 @@
     Promise.all([loadLocal("staff"), loadLocal("records-key")]).then(function (res) {
       if (currentView !== "team") return;
       var staff = ((res[0] && res[0].staff) || []).filter(function (x) { return x.status === "active"; }), keys = (res[1] && res[1].keys) || [];
+      /* The owner holds LV7 by owning the GitHub organization; until a signed card exists, show that card too */
+      var oc = (cfg.signin || {}).ownerCard, oid = (cfg.signin || {}).owner;
+      if (oc && oid && !staff.some(function (x) { return String(x.github_id) === String(oid); }))
+        staff.unshift({ id: "OWNER", login: oc.login, name: oc.name, github_id: oid, card: "LV7", department: oc.department || "Administration", since: "", status: "active", owner: true });
       var by = {}; staff.forEach(function (x) { (by[x.card] = by[x.card] || []).push(x); });
       var lv = ["LV7", "LV6", "LV5", "LV4", "LV3", "LV2"].filter(function (l) { return by[l]; });
       var html = '<section class="bf-sec in roster"><div class="label">Roster</div>' +
-        '<p class="sub">Everyone holding a signed Hound ID card, by clearance. Each card is checked against the records key in your browser. Prove that someone really holds a card on <a href="#/verify">Verify</a>.</p>' +
+        '<p class="sub">Everyone holding a Hound ID card, by clearance. Signed cards are checked against the records key in your browser; the owner holds LV7 by owning the GitHub organization. Prove that someone really holds a card on <a href="#/verify">Verify</a>.</p>' +
         (lv.length ? lv.map(function (l) {
-          return '<div class="ro-lv" style="--hk:' + (KC_LV[l] || KC_LV.LV3)[1] + '"><h4><i>' + esc(l) + "</i>" + esc((KC_LV[l] || [""])[0]) + "<small>" + plural(by[l].length, "member") + '</small></h4><div class="hks">' + by[l].map(function (x, n) { return keycard(x, { link: true, i: n }); }).join("") + "</div></div>";
+          return '<div class="ro-lv" style="--hk:' + (KC_LV[l] || KC_LV.LV3)[1] + '"><h4><i>' + esc(l) + "</i>" + esc((KC_LV[l] || [""])[0]) + "<small>" + plural(by[l].length, "member") + '</small></h4><div class="hks">' + by[l].map(function (x, n) { return keycard(x, { link: !x.owner, i: n }); }).join("") + "</div></div>";
         }).join("") : '<div class="empty">No signed cards yet<small>The roster fills as the owner issues signed cards (<a href="#/guides/hp-gde-009">how</a>).</small></div>') +
         "</section>";
       $(".bf", $("#vb")).insertAdjacentHTML("beforeend", html);
-      if (keys.length) markVerified(staff, keys);
+      var signed = staff.filter(function (x) { return !x.owner; });
+      if (keys.length) markVerified(signed, keys);
+      $$('.roster [data-rid="OWNER"] .vs').forEach(function (el) { el.innerHTML = '<span class="status done">Owner · GitHub</span>'; });
     });
   }
 
@@ -2472,6 +2478,7 @@
     if (fly) hbFly(true);
     $("#hbCount").innerHTML = filtering ? '<span class="n">' + plural(shown.length, "document") + "</span> match" + (guideIdx || guideMode !== "text" ? "" : '<span class="cab-wait"> · reading the text…</span>') + '<span class="cab-keys">↵ open the first · Esc clear</span>' : "";
     $("#hbList").classList.toggle("filtering", filtering);
+    $$("#hbList .mini").forEach(function (a) { a.addEventListener("click", function (e) { if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; if (hbZoom(a)) e.preventDefault(); }); });
   }
   var HB_FOLDERS = [["Guide", "Guides", "All guides relevant to the Joint Operations Platform"], ["Policy", "Policies", "Rules & Standards"], ["Procedure", "Procedures", "How Joint Operations handles the process"]];
   var guideOpen = "Guide", hbBusy = false;
@@ -2486,6 +2493,27 @@
       var a = m.animate(out ? [away, home] : [home, away], { duration: out ? 520 : 320, delay: out ? i * 40 : (sheets.length - 1 - i) * 22, easing: out ? "cubic-bezier(.2,.8,.2,1)" : "cubic-bezier(.5,0,.8,.4)", fill: "both" });
       a.onfinish = function () { if (out) a.cancel(); if (--left === 0 && done) done(); };
     });
+  }
+  /* Opening a sheet: the others fade, the chosen sheet glides to the middle, the Handbook controls fade, a short pause,
+     then the sheet zooms up into the reading view, which grows in from the same spot. */
+  var hbZoomIn = false;
+  function hbZoom(a) {
+    if (!opts.motion || !a.animate || hbBusy) return false;
+    hbBusy = true; if (typeof hbpHide === "function") hbpHide(true);
+    var href = a.getAttribute("href"), fade = { duration: 320, fill: "forwards", easing: "ease-out" };
+    $$("#hbList .mini").forEach(function (m) { if (m !== a) m.animate([{ opacity: 1 }, { opacity: 0, transform: "scale(.96)" }], fade); });
+    [".zones", ".hb-tools", "#hbCount", "#hbFolders", "#vb > p.sub", ".vh"].forEach(function (sel) { $$(sel).forEach(function (el) { el.animate([{ opacity: 1 }, { opacity: 0 }], fade); }); });
+    var r = a.getBoundingClientRect(), dx = window.innerWidth / 2 - (r.left + r.width / 2), dy = window.innerHeight / 2 - (r.top + r.height / 2);
+    a.style.position = "relative"; a.style.zIndex = 5;
+    var center = a.animate([{ transform: "none" }, { transform: "translate(" + dx + "px," + dy + "px) scale(1.3)" }], { duration: 560, delay: 120, fill: "forwards", easing: "cubic-bezier(.2,.8,.2,1)" });
+    center.onfinish = function () {
+      setTimeout(function () {
+        var z = a.animate([{ transform: "translate(" + dx + "px," + dy + "px) scale(1.3)", opacity: 1 }, { transform: "translate(" + dx + "px," + dy + "px) scale(3.2)", opacity: 0 }], { duration: 420, fill: "forwards", easing: "cubic-bezier(.5,0,.75,0)" });
+        z.onfinish = function () { hbZoomIn = true; hbBusy = false; location.hash = href; };
+      }, 500);
+    };
+    blip();
+    return true;
   }
   function hbSwitch(list, t) {
     if (hbBusy) return; hbBusy = true; blip();
@@ -2523,6 +2551,12 @@
           '<footer class="sh-foot"><span>' + esc(g.code) + " · v" + esc(g.version) + " · " + esc(g.effective) + '</span><span>Uncontrolled when printed. Current version: ' + esc(url) + "</span></footer>" +
         "</article>";
       $("#gprint").addEventListener("click", function () { printSheet(); });
+      if (hbZoomIn) {
+        hbZoomIn = false;
+        var sh = $("#vb .sheet"), bar = $("#vb .sheet-bar");
+        if (sh && sh.animate) sh.animate([{ transform: "scale(.55)", opacity: 0, filter: "blur(3px)" }, { transform: "none", opacity: 1, filter: "none" }], { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" });
+        if (bar && bar.animate) bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 300, fill: "backwards" });
+      }
       /* Opened from a Documentation search: mark the words and scroll to the first */
       if (cabHL) { var hit = cabHighlight($(".sh-body"), cabHL); cabHL = null; if (hit && hit.scrollIntoView) setTimeout(function () { hit.scrollIntoView({ behavior: opts.motion ? "smooth" : "auto", block: "center" }); }, opts.motion ? 260 : 0); }
       // The PDF exists on the deployed site (built by tools/guides_pdf.py); show the button only when it is there

@@ -83,16 +83,22 @@
     Promise.all([loadLocal("staff"), loadLocal("records-key")]).then(function (res) {
       if (currentView !== "team") return;
       var staff = ((res[0] && res[0].staff) || []).filter(function (x) { return x.status === "active"; }), keys = (res[1] && res[1].keys) || [];
+      /* The owner holds LV7 by owning the GitHub organization; until a signed card exists, show that card too */
+      var oc = (cfg.signin || {}).ownerCard, oid = (cfg.signin || {}).owner;
+      if (oc && oid && !staff.some(function (x) { return String(x.github_id) === String(oid); }))
+        staff.unshift({ id: "OWNER", login: oc.login, name: oc.name, github_id: oid, card: "LV7", department: oc.department || "Administration", since: "", status: "active", owner: true });
       var by = {}; staff.forEach(function (x) { (by[x.card] = by[x.card] || []).push(x); });
       var lv = ["LV7", "LV6", "LV5", "LV4", "LV3", "LV2"].filter(function (l) { return by[l]; });
       var html = '<section class="bf-sec in roster"><div class="label">Roster</div>' +
-        '<p class="sub">Everyone holding a signed Hound ID card, by clearance. Each card is checked against the records key in your browser. Prove that someone really holds a card on <a href="#/verify">Verify</a>.</p>' +
+        '<p class="sub">Everyone holding a Hound ID card, by clearance. Signed cards are checked against the records key in your browser; the owner holds LV7 by owning the GitHub organization. Prove that someone really holds a card on <a href="#/verify">Verify</a>.</p>' +
         (lv.length ? lv.map(function (l) {
-          return '<div class="ro-lv" style="--hk:' + (KC_LV[l] || KC_LV.LV3)[1] + '"><h4><i>' + esc(l) + "</i>" + esc((KC_LV[l] || [""])[0]) + "<small>" + plural(by[l].length, "member") + '</small></h4><div class="hks">' + by[l].map(function (x, n) { return keycard(x, { link: true, i: n }); }).join("") + "</div></div>";
+          return '<div class="ro-lv" style="--hk:' + (KC_LV[l] || KC_LV.LV3)[1] + '"><h4><i>' + esc(l) + "</i>" + esc((KC_LV[l] || [""])[0]) + "<small>" + plural(by[l].length, "member") + '</small></h4><div class="hks">' + by[l].map(function (x, n) { return keycard(x, { link: !x.owner, i: n }); }).join("") + "</div></div>";
         }).join("") : '<div class="empty">No signed cards yet<small>The roster fills as the owner issues signed cards (<a href="#/guides/hp-gde-009">how</a>).</small></div>') +
         "</section>";
       $(".bf", $("#vb")).insertAdjacentHTML("beforeend", html);
-      if (keys.length) markVerified(staff, keys);
+      var signed = staff.filter(function (x) { return !x.owner; });
+      if (keys.length) markVerified(signed, keys);
+      $$('.roster [data-rid="OWNER"] .vs').forEach(function (el) { el.innerHTML = '<span class="status done">Owner · GitHub</span>'; });
     });
   }
 

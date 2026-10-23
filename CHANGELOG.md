@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): **0.0.x** are foundation releases (organization, docs, website, tools), **0.1** is the first playable build.
 
+## v0.0.33 · Opening a sheet · 2026-10-23
+- **Handbook:** opening a sheet is one smooth move. The other sheets fade, the chosen one glides to the middle of the screen, the Handbook controls fade, a short pause, then it zooms up into the reading view, which grows in from the same spot. Calm mode and reduced motion open it at once.
+- **Roster:** every card holder is on the Team page's roster, the owner included: the owner's LV7 card comes from owning the GitHub organization until a signed card exists.
+- **Roadmap:** this release's base detail is a line of lamps along every bridge, with a light running out from the command platform.
+
 ## v0.0.32 · Board hotfix · 2026-10-23
 - **Contract board:** the five fields fit side by side in the shared frame again, instead of running off the right edge (a side effect of the layout stability rule in v0.0.29). Narrow screens scroll the board sideways.
 - **Column headers line up:** title, description and progress bar sit at the same height in every field.
