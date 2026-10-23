@@ -8,6 +8,7 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 - **Update notice:** when a new release goes live while the site is open, a small notice slides in at the top and offers to reload.
 - **Search by name or content:** a switch under the search in the Library and the Handbook. Name (the default) searches numbers and titles; Content searches what the documents say.
 - **Fix:** opening a guide from the Handbook no longer highlights words, and one- or two-letter words are never highlighted.
+- **CI:** browser tests now run inside Playwright's own image, so a slow Ubuntu package mirror can no longer stall a release.
 - **Roadmap:** this release's base detail is a windsock beside the command helipad.
 
 ## v0.0.26 · Clearance · 2026-10-23
