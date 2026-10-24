@@ -25,6 +25,8 @@
     if (booted) flash();
     booted = true;
     var parts = (location.hash || "").replace(/^#\/?/, "").split("/"), name = parts[0];
+    /* A guest pass link: <site>#/GC-00001-7KQ4XW */
+    if (/^GC-\d{5}-/i.test(name)) { parts = ["guest", name]; name = "guest"; }
     var menu = $("#menuView"), view = $("#view");
     $("#keys").innerHTML = VIEWS[name] ? "<kbd>←</kbd><kbd>→</kbd>Section<kbd>Esc</kbd>Menu" : "<kbd>↑</kbd><kbd>↓</kbd>Select<kbd>Enter</kbd>Confirm";
     if (!VIEWS[name]) {

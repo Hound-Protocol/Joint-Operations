@@ -1180,6 +1180,31 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F25",
+   "title": "Guest Pass 2.0: short GC links, four clearances, one device, extensions, history",
+   "module": "web",
+   "difficulty": "hard",
+   "skills": "",
+   "depends": [],
+   "goal": "Guest passes that are short to send, claimed once by name, bound to one device, extendable by LV7, with a full history.",
+   "deliverable": "Relay version 4 and the website's claim window, LV7 desk and history.",
+   "acceptance": [
+    "A second device is told the pass is in use, and by whom",
+    "Only LV7 approves an extension, one at a time",
+    "Every pass stays in the history"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
  "updated": "2026-10-24"

@@ -20,9 +20,9 @@ Signing in is optional and uses your GitHub account ([how it works](signin.md), 
 - To revoke access at any time: GitHub → Settings → Applications → Authorized GitHub Apps → Hound ID Sign-in → Revoke.
 
 ## Guest passes
-- A guest pass link holds a signed code with its expiry time and nothing about you. The site keeps it in the open tab (session storage) until it expires or you end it.
-- **Asking for a guest pass:** the relay keeps the name you type, the time and the answer, for at most 2 days, so the owner can approve or decline it. It keeps no IP address. Your browser keeps the request number and a private key in local storage to collect the answer; both are removed once the request is answered.
-- When you read a Staff document with a guest pass, the sign-in relay fetches it from GitHub for you. The relay stores nothing and keeps no logs of passes.
+- **Claiming a guest pass:** the relay keeps the pass's history: its number, level, who granted it, the **name you write** when you claim it, when you claimed it, extensions, and how it ended. It also keeps your browser's public key, which proves later requests come from your device. LV7 can delete a finished pass from the history on request (ask Administration). Your browser keeps the pass details in local storage and its private key in IndexedDB; the private key can never be read out, not even by the site. Ending the pass removes both.
+- **Asking for a guest pass:** the relay keeps the name you type, the time and the answer, for at most 2 days, so the owner can approve or decline it. It keeps no IP address. Your browser keeps the request number and a key to collect the answer in local storage, plus a device key in IndexedDB that the approved pass is bound to; the request details are removed once it is answered.
+- When you read a restricted document with a guest pass, the sign-in relay fetches it from GitHub for you. It keeps no logs of what you read.
 - The site checks once in a while whether a new version is live, by reading its own build number. Nothing about you is sent.
 
 ## Certificates of service

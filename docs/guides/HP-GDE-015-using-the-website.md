@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.12 · Effective 2026-10-24 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.13 · Effective 2026-10-24 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -58,7 +58,7 @@ Everyone starts on a temporary **LV1** pass. LV1 can read every section; acting 
 
 Allow pop-ups for the site if nothing happens when you click **Sign in with GitHub**.
 
-**Guest passes:** a link with LV3 (Staff) access for 24 hours, no account needed. LV7 can send you one, or you can ask: **Request a guest pass**, write your name (it cannot be blank; at most one request a minute) and wait. Once the owner approves, the pass opens in your browser by itself. Open the link, and your Profile shows a guest card with the time left. It cannot be extended, and it lasts only in that tab. The owner can revoke a pass at any time; the guest is told in a small window.
+**Guest passes:** a short link such as `…/#/GC-00001-7KQ4XW`, at LV2, LV3, LV5 (Low Clearance) or LV6 (High Clearance), for 24 hours, no account needed. LV7 can send you one, or you can ask: **Request a guest pass**, write your name (it cannot be blank; at most one request a minute) and wait; once approved, the pass opens in your browser by itself. Opening a link shows *You have been granted temporary clearance via Guest Pass*: write your name and press **Claim**, and your credential appears. The pass then works in that browser only; anyone else opening the link is told it is in use, and by whom. An hour before the end you are warned and can ask for 24 more hours, which LV7 approves or declines. LV7 can revoke a pass at any time; you are told in a small window.
 
 **Roster:** the Team page lists everyone holding a signed card, grouped by clearance.
 

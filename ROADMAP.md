@@ -43,6 +43,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Site 1.0.0: separate website and mod versions; security policy; accessibility; relay health and tests
 - [x] Site 1.1.0: every section readable at LV1; acting asks for LV2
 - [x] Site 1.2.0: keep me signed in on this device (opt-in, 24 h)
+- [x] Site 1.3.0: Guest Pass 2.0: short GC links, four clearances, claim by name on one device, extensions, history
 - [x] Signed certificates of service, checked in the browser and printable (ADR 0020)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)

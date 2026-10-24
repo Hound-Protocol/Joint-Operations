@@ -62,6 +62,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F22 | Site 1.0.0: two version lines, security policy, accessibility, relay health | web | 🟡 Medium | — | done | Forge77 (with Claude) |
 | F23 | Every section readable at LV1; acting asks for LV2 | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F24 | Keep me signed in on this device (opt-in, 24 h) | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F25 | Guest Pass 2.0: short GC links, four clearances, one device, extensions, history | web | 🔴 Hard | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -803,3 +804,16 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - Off by default
 - Signing out in one tab signs out all tabs
+
+## F25
+**Guest Pass 2.0: short GC links, four clearances, one device, extensions, history**  
+Module: web · Difficulty: 🔴 Hard · Skills: 
+
+**Goal.** Guest passes that are short to send, claimed once by name, bound to one device, extendable by LV7, with a full history.
+
+**Deliverable.** Relay version 4 and the website's claim window, LV7 desk and history.
+
+**Acceptance criteria**
+- A second device is told the pass is in use, and by whom
+- Only LV7 approves an extension, one at a time
+- Every pass stays in the history
