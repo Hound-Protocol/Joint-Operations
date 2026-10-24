@@ -842,7 +842,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><ellipse class="mb-shade" cx="0" cy="0" rx="190" ry="70"/><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><ellipse class="mb-shade" cx="0" cy="0" rx="190" ry="70"/><g class="mb-buoy" transform="translate(450 700)"><g class="mby-bob"><path class="mby-body" d="M-6 0 L6 0 L3 -12 L-3 -12 Z"/><line x1="0" y1="-12" x2="0" y2="-17"/><circle class="mby-light" cx="0" cy="-18" r="2"/></g></g><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -2869,6 +2869,11 @@
     });
   }
   var siFresh = 0;
+  /* Firewalls and privacy tools (Portmaster, uBlock Origin, Pi-hole, NextDNS) can block the relay. When a request cannot
+     reach it, say so plainly and name the address to allow, instead of a bare network error. */
+  function relayHost() { try { return new URL(siRelay()).host; } catch (e) { return "the sign-in relay"; } }
+  function netHelp() { return "This browser could not reach Hound ID's relay (" + relayHost() + "). A firewall or privacy tool such as Portmaster, uBlock Origin or Pi-hole may be blocking it: allow that address, then try again. Help: Using the Website, section 7."; }
+  function relayReach() { return typeof fetch !== "function" ? Promise.resolve(true) : fetch(siRelay() + "/health", { cache: "no-store" }).then(function () { return true; }, function () { return false; }); }
   /* The sign-in window: explains the three steps, opens GitHub, waits, and reports back in the site's own design */
   function siStart(o) {
     o = o || {};
@@ -2893,8 +2898,11 @@
           m.actions([{ label: "Close", value: null }]);
           return;
         }
-        m.body('<div class="hm-err"><b>Not signed in</b><small>' + esc(e.message) + "</small></div>");
-        m.actions([{ label: "Close", value: null }, { label: "Try again", primary: true, run: go }]);
+        /* A blocked relay often shows up only as a closed or broken GitHub window: check it before blaming the window */
+        relayReach().then(function (up) {
+          m.body('<div class="hm-err"><b>Not signed in</b><small>' + esc(up ? e.message : netHelp()) + "</small></div>");
+          m.actions([{ label: "Close", value: null }, { label: "Try again", primary: true, run: go }]);
+        });
       });
     }
     return m.result;
@@ -3079,7 +3087,7 @@
     var lv = ["LV0", "LV1", "LV2", "LV3", "LV4", "LV5", "LV6", "LV7"];
     return '<section class="si-levels"><div class="label">Clearance levels</div>' +
       '<ol class="si-how"><li><b>Sign in with GitHub</b> and you hold a member card, <b>LV2</b>.</li><li><b>Higher cards are earned:</b> a completed contract brings LV3; LV4 to LV6 come with a department. Each staff card is signed, so it cannot be faked.</li>' +
-      '<li><b>GitHub guards the doors:</b> restricted documents live in private repositories that open at their level. A <b>guest pass</b> opens LV3 for 24 hours; banned accounts are <b>LV0</b>.</li></ol>' +
+      '<li><b>GitHub guards the doors:</b> restricted documents live in private repositories that open at their level. A <b>guest pass</b> opens LV2, LV3, LV5 or LV6 for 24 hours; banned accounts are <b>LV0</b>.</li></ol>' +
       '<div class="si-lvrow">' + lv.map(function (l, k) {
         var n = +l.slice(2), spec = { id: n > 2 ? "HND-000" + n : ["REVOKED", "VISITOR", "MEMBER"][n], login: "agent", name: "Agent", github_id: 0, card: l, department: (KC_LV[l] || [""])[0], since: "", status: n === 0 ? "revoked" : "active" };
         return '<figure style="--k:' + k + '">' + keycard(spec, { specimen: true }) + "<figcaption><b>" + esc(l) + " · " + esc((KC_LV[l] || [""])[0]) + "</b>" + esc(SI_LV_INFO[l]) + "</figcaption></figure>";
@@ -3117,8 +3125,8 @@
   function needLv2(what) {
     if (lv2Has()) return true;
     var m = hpModal({ kicker: "Hound ID · Clearance", title: "LV2 needed",
-      html: "<p>" + esc(what) + " needs <b>LV2</b>. You are on a temporary LV1 pass: you can read everything, but acting needs a Hound ID.</p>" +
-        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once.</span></li><li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once approved.</span></li></ul>',
+      html: "<p>" + esc(what) + " needs <b>LV2</b>. You are on a temporary LV1 pass: you can read everything, but actions need a Hound ID.</p>" +
+        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once.</span></li><li><b>Request a guest pass</b><span>For people the owner knows: a 24-hour pass, usually LV3, once approved.</span></li></ul>',
       actions: [{ label: "Not now", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });
     m.el.classList.add("hm-gate");
     return false;
@@ -3161,9 +3169,9 @@
     var a = askGet();
     var m = hpModal({ kicker: "Hound ID · Clearance", title: "You are on restricted clearance",
       html: '<div class="gw"><div class="gw-lv"><b>LV1</b><span>Visitor<small>Temporary pass</small></span></div>' +
-        "<p>Your access is limited. You can <b>read every section</b>; acting, such as claiming a contract, downloading a build or joining a session, needs a higher clearance.</p>" +
+        "<p>Your access is limited. You can <b>read every section</b>. Actions such as claiming a contract, downloading a build or joining a session need a higher clearance.</p>" +
         '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once: your profile, your keycard, claiming contracts and downloads.</span></li>' +
-        "<li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once the owner approves it.</span></li></ul>" +
+        "<li><b>Request a guest pass</b><span>For people the owner knows: a 24-hour pass, usually LV3, once the owner approves it.</span></li></ul>" +
         (a ? '<p class="hm-note">Your guest pass request as <b>' + esc(a.name) + "</b> is still waiting for the owner.</p>" : "") + "</div>",
       actions: [{ label: "Continue with LV1", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });
     m.el.classList.add("hm-blur", "hm-gate");
@@ -3213,7 +3221,7 @@
         m.actions([{ label: "OK", primary: true, value: true }]);
         gateApply(currentView); blip("go");
       }, function (e) {
-        say(e instanceof TypeError ? "Could not reach the sign-in relay. Try again in a minute." : e.message);
+        say(e instanceof TypeError ? netHelp() : e.message);
         timer = setInterval(tick, 1000); tick();
       });
     }
@@ -3323,7 +3331,7 @@
   function relayLine(h) {
     return h.state === "ok" ? "Up to date (version " + h.v + ")" + (h.kv ? "" : " · storage not connected")
       : h.state === "behind" ? (h.v ? "Runs version " + h.v + ", this site needs " + h.want : "Runs older code, this site needs version " + h.want) + ": deploy the current worker.js"
-      : h.state === "down" ? "Not reachable right now" : "Sign-in is off";
+      : h.state === "down" ? "Not reachable from this browser. A firewall or privacy tool (Portmaster, uBlock Origin, Pi-hole) may be blocking " + relayHost() : "Sign-in is off";
   }
   /* LV7 is told once per relay version when the relay is behind the site */
   function relayWatch() {
@@ -3414,7 +3422,7 @@
     });
   }
   function gkB64u(buf) { var s = "", u = new Uint8Array(buf); for (var i = 0; i < u.length; i++) s += String.fromCharCode(u[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
-  function gkErr(e) { return e && (e.message === "no_crypto" || e.message === "no_idb") ? "This browser cannot keep a device key (a private window, or an old browser). Open the link in an up-to-date browser, in a normal window." : e instanceof TypeError ? "Could not reach the sign-in relay. Try again in a minute." : (e && e.message) || "Something went wrong."; }
+  function gkErr(e) { return e && (e.message === "no_crypto" || e.message === "no_idb") ? "This browser cannot keep a device key (a private window, or an old browser). Open the link in an up-to-date browser, in a normal window." : e instanceof TypeError ? netHelp() : (e && e.message) || "Something went wrong."; }
 
   /* ---- Signed requests: "<pass>.<time>.<signature over time, method, path and query>" ---- */
   function sgApi(path, raw, method) {
@@ -3531,7 +3539,7 @@
         });
       }
       sgDenied({ revoked: "This guest pass has been revoked.", ended: "This guest pass was ended by its holder.", expired: "This guest pass has run its time.", lapsed: "This guest pass was not claimed within 72 hours." }[j.state] || "This guest pass is no longer valid.");
-    }, function () { if (currentView === "guest") sgDenied("Could not reach the sign-in relay. Try again in a minute."); });
+    }, function (e) { if (currentView === "guest") sgDenied(e instanceof TypeError ? netHelp() : "This guest pass could not be checked. Try again in a minute."); });
   }
   /* The claim window: the clearance, a name (required), Claim. Then the credential rises in the middle of the window. */
   function sgClaim(id, code, j) {
@@ -3616,7 +3624,7 @@
       }).join("") || '<li class="none"><span>No live guest passes.</span></li>');
       sgHistory(ps);
       sgWireList();
-    }, function (e) { $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay." : e.message; ul.innerHTML = ""; });
+    }, function (e) { $("#gpMsg").textContent = e instanceof TypeError ? netHelp() : e.message; ul.innerHTML = ""; });
   }
   /* Every pass ever issued: to whom, at which level, and what became of it */
   function sgHistory(ps) {
@@ -3726,7 +3734,7 @@
           }, function (e) { $("#gpMsg").textContent = e.message; $$("button", b.parentNode).forEach(function (x) { x.disabled = false; }); });
         };
       });
-    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Guest passes need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? "Could not reach the sign-in relay." : e.message) + "</span></li>"; });
+    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Guest passes need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? netHelp() : e.message) + "</span></li>"; });
   }
   function sgPanelWire() {
     sgLoad(); sgAsks();
@@ -3740,7 +3748,7 @@
         g.disabled = true;
         m.body('<div class="hm-wait"><span class="spin"></span><b>Issuing a guest pass…</b></div>'); m.actions([]);
         sgOwnerApi("/guest/grant", "POST", { lvl: lvl }).then(function (k) { sgShowLink(m, k); sgLoad(); blip("go"); }, function (e) {
-          m.body('<div class="hm-err"><b>No pass issued</b><small>' + esc(e instanceof TypeError ? "Could not reach the sign-in relay." : e.message) + "</small></div>"); m.actions([{ label: "Close", value: null }]);
+          m.body('<div class="hm-err"><b>No pass issued</b><small>' + esc(e instanceof TypeError ? netHelp() : e.message) + "</small></div>"); m.actions([{ label: "Close", value: null }]);
         }).then(function () { setTimeout(function () { g.disabled = false; }, 1500); });
       }
     });

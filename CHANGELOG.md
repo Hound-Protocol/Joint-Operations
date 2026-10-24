@@ -2,6 +2,13 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.3.1 · Clear path · 2026-10-24
+- **Wording:** the clearance windows now say *Actions such as claiming a contract, downloading a build or joining a session need a higher clearance*, instead of "acting, such as …". Guest pass requests are described as a 24-hour pass, usually LV3, since LV7 picks the level when approving.
+- **Buttons:** in the clearance windows, **Sign in with GitHub** spans the top, with the two other choices side by side below it, instead of one button wrapping onto its own line. On phones they stack.
+- **Firewalls and privacy tools:** when Portmaster, uBlock Origin, Pi-hole or a similar tool blocks the sign-in relay, sign-in, guest passes and the LV7 desk now say so and name the address to allow, instead of a bare network error or "the sign-in window was closed". **Options → Sign-in relay** says the same. The Website Handbook lists every address the site needs, with Portmaster steps ([HP-GDE-015](docs/guides/HP-GDE-015-using-the-website.md), section 7).
+- **Sign-in for everyone:** the setup guide said to make the GitHub App installable *Only on this account*. That lets only Hound-Protocol members sign in: everyone else gets GitHub's 404 page. The guide now says **Any account** (Make public), and why that is safe ([sign-in setup, section 2](docs/signin.md)).
+- **Roadmap:** this release's base detail is a green channel buoy, bobbing south-west of the command platform and flashing every four seconds, drawn by CSS alone.
+
 ## Site 1.3.0 · Guest Pass 2.0 · 2026-10-24
 - **Short pass links:** guest passes are numbered GC-00001, GC-00002 and so on. A link is the site plus the number and a 6-character secret, for example `…/#/GC-00001-7KQ4XW`, about 15 characters instead of 120. The secret stops anyone from claiming a pass by guessing the next number.
 - **Four clearances:** **LV2** Guest Pass (every section, no restricted documents), **LV3** Guest Pass (Staff), **LV5** Guest Pass · Low Clearance (Staff and Leads), **LV6** Guest Pass · High Clearance (Staff, Leads and Administration).

@@ -1205,6 +1205,29 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F26",
+   "title": "Site 1.3.1: clearer clearance windows and firewall help",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Fix the clearance window wording and buttons, explain blocked relays, open sign-in to every GitHub account",
+   "deliverable": "",
+   "acceptance": [
+    "Wording fixed; buttons in two rows; blocked relay named with the address to allow; handbook lists addresses; sign-in guide says Any account"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
  "updated": "2026-10-24"

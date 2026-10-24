@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.13 · Effective 2026-10-24 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.14 · Effective 2026-10-24 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -49,7 +49,7 @@ Choose **Search by Name** (file numbers and titles, the default) or **Content** 
 - Guides, policies and procedures live in the **Handbook**, which has its own filter (section 3).
 
 ## 5. Signing in
-Everyone starts on a temporary **LV1** pass. LV1 can read every section; acting (claiming a contract, downloading a build, joining a session) asks for **LV2**: sign in with GitHub, or hold a guest pass. On each visit a welcome window explains this, until your browser has signed in with GitHub once. Signing in uses your GitHub account ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).
+Everyone starts on a temporary **LV1** pass. LV1 can read every section; actions (claiming a contract, downloading a build, joining a session) ask for **LV2**: sign in with GitHub, or hold a guest pass. On each visit a welcome window explains this, until your browser has signed in with GitHub once. Signing in uses your GitHub account ([ADR 0017](../decisions/0017-hound-id-sign-in.md)).
 1. Click **Sign in with GitHub** in the welcome window, in an *LV2 needed* window, or on your Profile (the gear in the top bar). A window explains the steps; **Continue with GitHub** opens GitHub in a small window in the middle of your screen (GitHub cannot be shown inside our page).
 2. The first time, GitHub asks you to authorize **Hound ID Sign-in**. It can only read our restricted document repositories that your GitHub teams already allow; it cannot change anything.
 3. The window closes, and your keycard rises onto your **Profile** while its details decrypt. Each level has its own card design. It shows your signed staff card if you are staff, otherwise a member card (LV2). A staff card counts only after its signature checks out in your browser.
@@ -75,4 +75,15 @@ Allow pop-ups for the site if nothing happens when you click **Sign in with GitH
 - Hard-refresh the page (Ctrl+Shift+R) after a release; your browser may be showing a cached copy.
 - **Options → Refresh now** reloads the data read from GitHub.
 - "GitHub unreachable · showing bundled data" means GitHub's API did not answer (often a rate limit). The page still works with the copy built into the site.
+- **GitHub shows a 404 page in the sign-in window:** the sign-in app is not open to accounts outside Hound-Protocol yet. Tell Administration ([sign-in setup, section 2](../signin.md)); a guest pass works meanwhile.
+- **Firewalls and privacy tools** (Portmaster, uBlock Origin, Pi-hole, NextDNS, school or work networks) can block sign-in and guest passes. The site then says it *could not reach Hound ID's relay*. Allow these addresses for your browser:
+
+  | Address | Used for |
+  |---|---|
+  | `hound-protocol.github.io` | The website |
+  | `hp-signin.trueman-truetown.workers.dev` | Sign-in, guest passes and contract claims |
+  | `github.com`, `api.github.com`, `raw.githubusercontent.com` | The GitHub sign-in window, data and restricted documents |
+  | `avatars.githubusercontent.com` | Profile pictures |
+
+  In **Portmaster**: open your browser in the app list → **Settings** → **Rules** (Outgoing Rules) and add one line per address, for example `+ hp-signin.trueman-truetown.workers.dev`. Then reload the page. **Options → Sign-in relay** shows whether your browser can reach it.
 - Still wrong? [Report it](HP-GDE-016-reporting-a-problem.md).

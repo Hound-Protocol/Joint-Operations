@@ -11,8 +11,8 @@
   function needLv2(what) {
     if (lv2Has()) return true;
     var m = hpModal({ kicker: "Hound ID · Clearance", title: "LV2 needed",
-      html: "<p>" + esc(what) + " needs <b>LV2</b>. You are on a temporary LV1 pass: you can read everything, but acting needs a Hound ID.</p>" +
-        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once.</span></li><li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once approved.</span></li></ul>',
+      html: "<p>" + esc(what) + " needs <b>LV2</b>. You are on a temporary LV1 pass: you can read everything, but actions need a Hound ID.</p>" +
+        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once.</span></li><li><b>Request a guest pass</b><span>For people the owner knows: a 24-hour pass, usually LV3, once approved.</span></li></ul>',
       actions: [{ label: "Not now", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });
     m.el.classList.add("hm-gate");
     return false;
@@ -55,9 +55,9 @@
     var a = askGet();
     var m = hpModal({ kicker: "Hound ID · Clearance", title: "You are on restricted clearance",
       html: '<div class="gw"><div class="gw-lv"><b>LV1</b><span>Visitor<small>Temporary pass</small></span></div>' +
-        "<p>Your access is limited. You can <b>read every section</b>; acting, such as claiming a contract, downloading a build or joining a session, needs a higher clearance.</p>" +
+        "<p>Your access is limited. You can <b>read every section</b>. Actions such as claiming a contract, downloading a build or joining a session need a higher clearance.</p>" +
         '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once: your profile, your keycard, claiming contracts and downloads.</span></li>' +
-        "<li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once the owner approves it.</span></li></ul>" +
+        "<li><b>Request a guest pass</b><span>For people the owner knows: a 24-hour pass, usually LV3, once the owner approves it.</span></li></ul>" +
         (a ? '<p class="hm-note">Your guest pass request as <b>' + esc(a.name) + "</b> is still waiting for the owner.</p>" : "") + "</div>",
       actions: [{ label: "Continue with LV1", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });
     m.el.classList.add("hm-blur", "hm-gate");
@@ -107,7 +107,7 @@
         m.actions([{ label: "OK", primary: true, value: true }]);
         gateApply(currentView); blip("go");
       }, function (e) {
-        say(e instanceof TypeError ? "Could not reach the sign-in relay. Try again in a minute." : e.message);
+        say(e instanceof TypeError ? netHelp() : e.message);
         timer = setInterval(tick, 1000); tick();
       });
     }
@@ -217,7 +217,7 @@
   function relayLine(h) {
     return h.state === "ok" ? "Up to date (version " + h.v + ")" + (h.kv ? "" : " · storage not connected")
       : h.state === "behind" ? (h.v ? "Runs version " + h.v + ", this site needs " + h.want : "Runs older code, this site needs version " + h.want) + ": deploy the current worker.js"
-      : h.state === "down" ? "Not reachable right now" : "Sign-in is off";
+      : h.state === "down" ? "Not reachable from this browser. A firewall or privacy tool (Portmaster, uBlock Origin, Pi-hole) may be blocking " + relayHost() : "Sign-in is off";
   }
   /* LV7 is told once per relay version when the relay is behind the site */
   function relayWatch() {

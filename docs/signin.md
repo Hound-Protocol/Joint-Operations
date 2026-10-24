@@ -23,7 +23,7 @@ Organization → Settings → Developer settings → GitHub Apps → **New GitHu
 - Callback URL: `https://<your-relay>.workers.dev/callback` (from step 3; you can edit it later).
 - **Expire user authorization tokens:** on. **Webhook:** off.
 - Permissions → Repository → **Contents: Read-only**. Nothing else.
-- Where can this app be installed: **Only on this account**.
+- Where can this app be installed: **Any account** (Advanced → **Make public** on an existing app). With *Only on this account*, only members of Hound-Protocol can authorize it, and everyone else gets GitHub's **404** page in the sign-in window. Public does not publish anything: it lets any GitHub account sign in, and an install elsewhere reaches only that account's own repositories, never ours.
 - Create, then **Generate a new client secret**. Copy it straight into step 3. Do not save it in a file, chat or repository.
 - **Install App** → Hound-Protocol → **Only select repositories**: `hp-staff`, `hp-leads`, `hp-admin`.
 
