@@ -2047,3 +2047,18 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .mb-sockl { fill: #ff4a3d; filter: drop-shadow(0 0 3px #ff4a3d); animation: mbSockL 2.2s steps(1, end) infinite; }
 @keyframes mbSockL { 0%, 55% { opacity: 1; } 56%, 100% { opacity: .15; } }
 .no-motion .mb-sockl { animation: none; }
+
+/* Sign-in window: Keep me signed in on this device */
+.hm-check { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; margin: 4px 0 12px; padding: 10px 12px; border: 1px solid var(--line); background: rgba(255,255,255,.02); cursor: pointer; }
+.hm-check input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--jo); }
+.hm-check b { display: block; font: 400 13px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--fg); }
+.hm-check small { display: block; margin-top: 4px; font: 300 14px/1.45 var(--ui); color: var(--dim); }
+.hm-check:hover { border-color: var(--dim); }
+
+/* Base detail (Site 1.2.0): a fishing boat's lantern bobbing on the horizon, CSS only */
+.mb-lantern .ml-hull { fill: #2a3337; } .mb-lantern line { stroke: #4d5a60; stroke-width: 1; }
+.mb-lantern .ml-light { fill: #ffd98a; filter: drop-shadow(0 0 5px rgba(255,210,120,.95)); animation: mlFlick 3.1s ease-in-out infinite; }
+.mb-lantern .ml-bob { animation: mlBob 4.6s ease-in-out infinite; }
+@keyframes mlBob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(2px) rotate(2deg); } }
+@keyframes mlFlick { 0%, 100% { opacity: 1; } 45% { opacity: .75; } 60% { opacity: .95; } }
+.no-motion .mb-lantern .ml-light, .no-motion .mb-lantern .ml-bob { animation: none; }

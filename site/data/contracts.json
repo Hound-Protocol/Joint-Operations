@@ -1156,6 +1156,30 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F24",
+   "title": "Keep me signed in on this device (opt-in, 24 h)",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Signed-in people keep their session across tabs when they choose to.",
+   "deliverable": "Opt-in box in the sign-in window; local storage with the 24 h cap; sign-out in every tab.",
+   "acceptance": [
+    "Off by default",
+    "Signing out in one tab signs out all tabs"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
  "updated": "2026-10-24"

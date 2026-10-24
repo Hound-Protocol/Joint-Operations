@@ -61,6 +61,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F21 | Messages clear themselves; one clearance message | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F22 | Site 1.0.0: two version lines, security policy, accessibility, relay health | web | 🟡 Medium | — | done | Forge77 (with Claude) |
 | F23 | Every section readable at LV1; acting asks for LV2 | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F24 | Keep me signed in on this device (opt-in, 24 h) | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -790,3 +791,15 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 **Acceptance criteria**
 - No No-access window on any section at LV1
 - Downloading or claiming at LV1 asks for LV2
+
+## F24
+**Keep me signed in on this device (opt-in, 24 h)**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Signed-in people keep their session across tabs when they choose to.
+
+**Deliverable.** Opt-in box in the sign-in window; local storage with the 24 h cap; sign-out in every tab.
+
+**Acceptance criteria**
+- Off by default
+- Signing out in one tab signs out all tabs
