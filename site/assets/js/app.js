@@ -249,9 +249,22 @@
     });
     return out;
   }
+  /* "Join Discord": a document asks for it with the line <!-- hp:join-discord -->, invisible on GitHub. The icon is our own,
+     a chat bubble whose dots type and whose signal pulses; it is not Discord's logo. */
+  var DC_ICO = '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="dci-b" d="M8 9h24a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H19l-7 6v-6H8a4 4 0 0 1-4-4V13a4 4 0 0 1 4-4z"/>' +
+    '<circle class="dci-d d1" cx="13" cy="19" r="2.3"/><circle class="dci-d d2" cx="20" cy="19" r="2.3"/><circle class="dci-d d3" cx="27" cy="19" r="2.3"/>' +
+    '<path class="dci-w w1" d="M33 4.5a6 6 0 0 1 3.5 3.5"/><path class="dci-w w2" d="M34 1a10 10 0 0 1 5.5 5.5"/></svg>';
+  function joinDiscord() {
+    var url = (cfg.links && cfg.links.discord) || "";
+    if (!url) return "";
+    return '<div class="dc-wrap"><a class="dc-join" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer"><span class="dc-ico">' + DC_ICO + '</span><span class="dc-t">Join Discord</span><i class="dc-go" aria-hidden="true">→</i></a>' +
+      '<span class="dc-print">Join Discord: ' + esc(url.replace(/^https?:\/\//, "")) + "</span></div>";
+  }
   function markdown(md, basePath) {
-    // Raw HTML lines (the README's centered banner and badges) are skipped: this renderer never emits raw HTML
-    var lines = String(md).replace(/\r\n?/g, "\n").split("\n").filter(function (l) { return !/^\s*<\/?[a-z][^>]*>/i.test(l); }), html = "", i = 0, para = [];
+    // Raw HTML lines (the README's centered banner and badges) are skipped: this renderer never emits raw HTML.
+    // HTML comments are dropped too, except our own markers such as <!-- hp:join-discord -->.
+    var lines = String(md).replace(/\r\n?/g, "\n").split("\n").map(function (l) { return /^\s*<!--\s*hp:join-discord\s*-->\s*$/.test(l) ? "\u0000join-discord" : l; })
+      .filter(function (l) { return !/^\s*<\/?[a-z][^>]*>/i.test(l) && !/^\s*<!--.*-->\s*$/.test(l); }), html = "", i = 0, para = [];
     function flush() { if (para.length) { html += "<p>" + inline(para.join(" "), basePath) + "</p>"; para = []; } }
     function cells(l) { return l.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map(function (c) { return c.trim(); }); }
     while (i < lines.length) {
@@ -261,6 +274,7 @@
         while (i < lines.length && !/^```/.test(lines[i])) code.push(lines[i++]);
         i++; html += "<pre><code>" + esc(code.join("\n")) + "</code></pre>"; continue;
       }
+      if (l === "\u0000join-discord") { flush(); html += joinDiscord(); i++; continue; }
       var h = /^(#{1,4})\s+(.*)$/.exec(l);
       if (h) { flush(); var lv = h[1].length; html += "<h" + lv + ">" + inline(h[2], basePath) + "</h" + lv + ">"; i++; continue; }
       if (/^\s*(-{3,}|\*{3,})\s*$/.test(l)) { flush(); html += "<hr>"; i++; continue; }
@@ -878,7 +892,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><ellipse class="mb-shade" cx="0" cy="0" rx="190" ry="70"/><rect class="mb-fog" x="0" y="0" width="520" height="34" rx="17"/><g class="mb-bollards" transform="translate(600 613)"><path class="mbb-rope" d="M-18 0 Q0 7 18 0"/><circle cx="-18" cy="0" r="2.6"/><circle cx="18" cy="0" r="2.6"/></g><g class="mb-buoy" transform="translate(450 700)"><g class="mby-bob"><path class="mby-body" d="M-6 0 L6 0 L3 -12 L-3 -12 Z"/><line x1="0" y1="-12" x2="0" y2="-17"/><circle class="mby-light" cx="0" cy="-18" r="2"/></g></g><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><ellipse class="mb-shade" cx="0" cy="0" rx="190" ry="70"/><g class="mb-wake" transform="translate(905 470)"><path d="M0 0 Q-30 6 -64 4"/><path d="M0 0 Q-30 -6 -64 -4"/></g><rect class="mb-fog" x="0" y="0" width="520" height="34" rx="17"/><g class="mb-bollards" transform="translate(600 613)"><path class="mbb-rope" d="M-18 0 Q0 7 18 0"/><circle cx="-18" cy="0" r="2.6"/><circle cx="18" cy="0" r="2.6"/></g><g class="mb-buoy" transform="translate(450 700)"><g class="mby-bob"><path class="mby-body" d="M-6 0 L6 0 L3 -12 L-3 -12 Z"/><line x1="0" y1="-12" x2="0" y2="-17"/><circle class="mby-light" cx="0" cy="-18" r="2"/></g></g><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +

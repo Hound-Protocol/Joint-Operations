@@ -1,5 +1,5 @@
 # Documentation Style Guide
-Code: HP-GDE-005 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · For: everyone who writes docs
+Code: HP-GDE-005 · Version 1.2 · Effective 2026-10-24 · Owner: Administration · For: everyone who writes docs
 
 ## Principles
 1. **Write for a newcomer.** Assume they are smart, but new to the project.
@@ -23,6 +23,8 @@ Code: HP-GDE-005 · Version 1.1 · Effective 2026-10-23 · Owner: Administration
 | Guide | HP-GDE-NNN | How-to help for an audience |
 
 Each starts with a title, then one metadata line: `Code · Version · Effective date · Owner department · Audience`. Add its audience and one-line summary to `tools/guides_index.py`, then run `python3 tools/guides_index.py`: it writes `site/data/guides.json`, and the document appears in the website's Handbook with a PDF. Raise the version when the meaning changes (1.0 → 1.1 for small changes, 2.0 for rewrites).
+
+**Join Discord button:** in a document about the Discord server, put the line `<!-- hp:join-discord -->` under the opening paragraph. The website shows a **Join Discord** button there; GitHub hides the line, and printed copies show the invite address.
 
 ## Words we use
 | Use | Not |

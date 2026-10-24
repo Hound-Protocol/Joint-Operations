@@ -2,6 +2,8 @@
 
 Status: Current · Updated: 2026-10-23 · Server name: MGSV: Joint Operations | Hound Protocol · Member guide: [HP-GDE-008](guides/HP-GDE-008-discord-members.md)
 
+<!-- hp:join-discord -->
+
 ## Automated setup
 The server can be built automatically from `tools/discord/blueprint.json` (roles, categories, channels, permissions and starter messages).
 
