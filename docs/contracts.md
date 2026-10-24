@@ -64,6 +64,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F24 | Keep me signed in on this device (opt-in, 24 h) | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F25 | Guest Pass 2.0: short GC links, four clearances, one device, extensions, history | web | 🔴 Hard | — | done | Forge77 (with Claude) |
 | F26 | Site 1.3.1: clearer clearance windows and firewall help | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F27 | Site 1.4.0: Docs opens on a choice of zones, distinct zone buttons | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -827,3 +828,12 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 
 **Acceptance criteria**
 - Wording fixed; buttons in two rows; blocked relay named with the address to allow; handbook lists addresses; sign-in guide says Any account
+
+## F27
+**Site 1.4.0: Docs opens on a choice of zones, distinct zone buttons**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Make the Library and Handbook buttons hard to overlook, and ask users to pick one first
+
+**Acceptance criteria**
+- Docs opens on two large zone buttons with icons and textures; zone buttons inside are raised with Switch labels; deep links still work; phone layout stacks

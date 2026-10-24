@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.4.0 · Two doors · 2026-10-24
+- **Choose a zone first:** the Docs tab now opens on two large buttons, **Library** and **Handbook**, each with its own colour (steel blue and gold), texture (brushed steel drawers and woven binding cloth), icon (a filing cabinet and a ring binder), document count, a line on what it holds and a clear **Open** bar. Picking one switches to that interface. Direct links to a document still open it straight away; the Library's own address is now `#/docs/library`.
+- **Zone buttons inside:** at the top of the Library and the Handbook, the two zones are now raised buttons with the same icons, textures and colours, a **Switch →** label on the other zone and *You are here* on the current one. A tester found the old flat panels easy to overlook.
+- **Roadmap:** this release's base detail is a pair of mooring bollards on the command platform's south dock, drawn by CSS alone.
+
 ## Site 1.3.1 · Clear path · 2026-10-24
 - **Wording:** the clearance windows now say *Actions such as claiming a contract, downloading a build or joining a session need a higher clearance*, instead of "acting, such as …". Guest pass requests are described as a 24-hour pass, usually LV3, since LV7 picks the level when approving.
 - **Buttons:** in the clearance windows, **Sign in with GitHub** spans the top, with the two other choices side by side below it, instead of one button wrapping onto its own line. On phones they stack.
