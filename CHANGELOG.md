@@ -2,6 +2,17 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.3.0 · Guest Pass 2.0 · 2026-10-24
+- **Short pass links:** guest passes are numbered GC-00001, GC-00002 and so on. A link is the site plus the number and a 6-character secret, for example `…/#/GC-00001-7KQ4XW`, about 15 characters instead of 120. The secret stops anyone from claiming a pass by guessing the next number.
+- **Four clearances:** **LV2** Guest Pass (every section, no restricted documents), **LV3** Guest Pass (Staff), **LV5** Guest Pass · Low Clearance (Staff and Leads), **LV6** Guest Pass · High Clearance (Staff, Leads and Administration).
+- **Claim by name, on one device:** opening a link shows *You have been granted temporary clearance via Guest Pass* with the clearance. The recipient writes their name (required, for the pass index) and presses **Claim**. Their credential then rises in the middle of the window, with the sign-in reveal. The pass is bound to that browser by a key that can never be read out, and every request is signed with it. Anyone else opening the link is told *This pass is already in use by …*.
+- **24 hours, with extensions:** a pass runs 24 hours from the claim. An hour before the end, the guest is warned and can **Request 24 h extension**. Only one request waits at a time, and only LV7 can approve it.
+- **The LV7 desk:** live passes on the left (**New code**, **Revoke**, **Clear**), visitor requests and extension requests on the right (approve a visitor at LV2, LV3, LV5 or LV6). Below them, the **History** of every pass ever issued: to whom, which level, when it was claimed, extensions, and whether it is active, never claimed, ran out of time, was revoked (by whom) or was ended by its holder. **Forget** removes a finished pass from the history on request.
+- **Visitor requests** are bound at once to the requesting browser, so an approved pass opens there by itself.
+- **Security:** the relay checks every signature and its time (2-minute window), opens only the repositories the pass's level allows, keeps codes only as an HMAC, and names are cleaned. 53 relay checks run on every pull request, and the whole flow was tested end to end in browsers. Passes from before this release stop working.
+- **Needs the relay update:** deploy the new `worker.js` (relay version 4). For LV5 and LV6 passes, add `GUEST_REPOS` and install the GitHub App on `hp-leads` and `hp-admin` ([sign-in setup, section 6](docs/signin.md)).
+- **Roadmap:** this release's base detail is a cloud's shadow drifting slowly across the sea, drawn by CSS alone.
+
 ## Site 1.2.0 · Stay signed in · 2026-10-24
 - **Keep me signed in on this device (24 h):** a new box in the sign-in window, off by default. Ticked, your sign-in is shared by every tab on that browser until the 24 hours run out. Signing out in one tab signs you out in all of them. Leave it off on shared or work computers. Your Profile shows which kind of session you have.
 - **Privacy and sign-in docs** explain where the sign-in is kept in each case ([privacy](docs/privacy.md), [sign-in](docs/signin.md)).
@@ -141,7 +152,7 @@ All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs
 
 ## v0.0.27 · Guest pass · 2026-10-23
 - **Owner card (LV7) from GitHub:** if GitHub confirms you own the Hound-Protocol organization, your Profile shows an Owner card, LV7, "Confirmed by GitHub". It needs the sign-in app's read-only Members permission ([setup](docs/signin.md#5-owner-card-lv7-from-github)). No file can fake it.
-- **Guest passes:** the owner (only the owner, checked by GitHub through the relay) can **Grant Guest Pass** on the Profile: a link that gives LV3 (Staff) access for 24 hours, no account needed. The guest gets a gold guest card with the time left; the relay signs and checks the pass and reads the Staff documents for them. A pass cannot be extended ([setup](docs/signin.md#6-guest-passes-lv7-only)).
+- **Guest passes:** the owner (only the owner, checked by GitHub through the relay) can **Grant Guest Pass** on the Profile: a link that gives LV3 (Staff) access for 24 hours, no account needed. The guest gets a gold guest card with the time left; the relay signs and checks the pass and reads the Staff documents for them. A pass cannot be extended ([setup](docs/signin.md)).
 - **Update notice:** when a new release goes live while the site is open, a small notice slides in at the top and offers to reload.
 - **Search by name or content:** a switch under the search in the Library and the Handbook. Name (the default) searches numbers and titles; Content searches what the documents say.
 - **Fix:** opening a guide from the Handbook no longer highlights words, and one- or two-letter words are never highlighted.

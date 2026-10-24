@@ -4,6 +4,11 @@ News and notes from Hound Protocol, newest first. It is updated regularly, whene
 
 ## 2026-10-24
 
+### Guest Pass 2.0
+*Website*
+
+Guest passes are now short links (GC-00001 and so on) at four clearances, from LV2 to LV6 High Clearance. Each is claimed once, by name, and works only on the device that claimed it. Holders can ask for 24 more hours, and every pass ever issued stays in a history that LV7 can read.
+
 ### Site 1.0.0: the website gets its own version line
 *Website*
 

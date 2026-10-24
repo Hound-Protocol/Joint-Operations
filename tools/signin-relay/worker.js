@@ -1,26 +1,26 @@
 /* Hound Protocol sign-in relay (Cloudflare Worker). See docs/signin.md.
    1. Sign-in: swaps GitHub's one-time sign-in code for a user token, using the app secret that only it holds, and hands
       the token to the website window that asked for it.
-   2. Guest passes: LV7 (checked against GitHub on every request) mints a pass that lasts
-      24 hours. Whoever holds the pass can read the Staff documents (LV3) through this relay, which reads them with the
-      GitHub App's own short-lived token, limited to that one repository and to reading. The pass is signed here and
-      checked here; the browser cannot forge or extend it.
-   No storage, no logging of tokens or passes.
+   2. Guest passes (Guest Pass 2.0): LV7, checked against GitHub on every request, grants numbered passes (GC-00001 ...)
+      at LV2, LV3, LV5 or LV6. A pass is claimed once, by name, and bound to the claiming browser's own key; see the
+      Guest passes section below. Restricted documents are read for the guest with the GitHub App's own short-lived,
+      read-only token, only from the repositories the pass's level opens.
+   3. Contract claims from the website (GitHub name and number, public).
+   No logs of tokens, passes or IP addresses.
    Settings (Worker → Settings → Variables and Secrets):
      GITHUB_CLIENT_ID (text), GITHUB_CLIENT_SECRET (secret), SITE_ORIGIN (text, https://hound-protocol.github.io)
      For guest passes: OWNER_GITHUB_ID (text), GUEST_SECRET (secret, a long random string), GITHUB_APP_ID (text),
-     GITHUB_APP_PRIVATE_KEY (secret, the app's .pem file), GUEST_REPO (text, Hound-Protocol/hp-staff)
-     For revoking passes: a KV namespace bound as GUEST_KV (Worker → Settings → Bindings → KV namespace). It holds the
-     list of live passes (number and expiry only) and the revoked ones, each deleted automatically when the pass expires.
-     Guest pass requests: a visitor (LV1) asks for a pass with their name; LV7 approves or declines it on the Profile, and
-     the visitor's browser collects the pass by itself. Requests live in one KV record ("asks"), at most 25 open at once,
-     and are removed 2 days after they were made. No IP addresses or other details are kept.
+     GITHUB_APP_PRIVATE_KEY (secret, the app's .pem file), GUEST_REPO (text, Hound-Protocol/hp-staff), and for LV5 and LV6
+     passes GUEST_REPOS (text), for example {"3":"Hound-Protocol/hp-staff","5":"Hound-Protocol/hp-leads","6":"Hound-Protocol/hp-admin"}
+     (the GitHub App must be installed on each of those repositories).
+     Storage: a KV namespace bound as HP_KV (or GUEST_KV). It holds guest passes and their history, guest pass requests and
+     contract claims.
      Bans (LV0): BANNED_GITHUB_IDS (secret), the banned GitHub account numbers separated by commas. A banned account is
      refused at sign-in and never receives a token. The list is private; see docs/guides/HP-SOP-012-bans.md. */
 /* The relay's version: the website compares it with site/data/config.json signin.relayVersion and tells LV7 when the
-   relay is behind (3 = guest pass requests, short passes, clearing live passes, /health) */
-const RELAY_VERSION = 3;
-const PASS_HOURS = 24, KEEP_DAYS = 30, ASK_MAX_OPEN = 25, ASK_KEEP_MS = 2 * 86400 * 1000;
+   relay is behind (3 = requests, short passes, /health; 4 = Guest Pass 2.0) */
+const RELAY_VERSION = 4;
+const PASS_HOURS = 24, ASK_MAX_OPEN = 25, ASK_KEEP_MS = 2 * 86400 * 1000;
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -109,155 +109,251 @@ async function claims(req, env, url) {
 
 /* ---------------- Guest passes ---------------- */
 /* Signs a new 24-hour LV3 pass and records it (number, expiry, who granted it, and for whom when it answers a request) */
-async function mint(env, kv, by, forName) {
-  const exp = Date.now() + PASS_HOURS * 3600 * 1000, n = crypto.randomUUID().slice(0, 8);
-  /* Short pass (v2): expiry in base 36, pass number, and 16 characters of the relay's signature over both, about 32 characters */
-  const e36 = Math.floor(exp / 1000).toString(36);
-  /* The record stays 30 days after the pass expires, so LV7 can see expired passes and delete them */
-  if (kv) await kv.put("pass:" + n, JSON.stringify(Object.assign({ n, exp, at: Date.now(), by }, forName ? { for: forName } : {})), { expiration: Math.ceil(exp / 1000) + KEEP_DAYS * 86400 });
-  return { pass: e36 + "." + n + "." + (await hmac(env.GUEST_SECRET, "v2|" + e36 + "|" + n)).slice(0, 16), exp: Math.floor(exp / 1000) * 1000, n };
+/* ---------------- Guest passes (Guest Pass 2.0) ----------------
+   A pass is numbered GC-00001, GC-00002 ... and opened with a 6-character secret code: the link is <site>#/GC-00001-7KQ4XW.
+   The number alone is not enough, so nobody can claim a pass by guessing the next number. LV7 grants it at a clearance
+   (LV2, LV3, LV5 or LV6). The recipient claims it within 72 hours by writing their name (required); the claim binds the
+   pass to their browser, which creates a key pair whose private half can never be read out (WebCrypto, non-extractable,
+   kept in IndexedDB) and sends the public half here. Every later request is signed with that key and checked here, so
+   after the claim the link is useless to anyone else: they are told the pass is in use, and by whom. The pass runs 24
+   hours from the claim; the guest may ask for 24 more hours, one request at a time, and only LV7 can approve it. Every
+   pass stays in the history (who, which level, what happened to it); Clear only hides it from the active list. The code
+   is kept only as an HMAC with GUEST_SECRET, so the storage alone never reveals a link. */
+const GP_LVLS = [2, 3, 5, 6], GP_CLAIM_MS = 72 * 3600 * 1000, GP_MS = PASS_HOURS * 3600 * 1000, GP_SKEW = 120 * 1000;
+const CODE_ABC = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; /* 32 letters and digits that cannot be confused (no 0/O, 1/I) */
+function gpCode() { const b = crypto.getRandomValues(new Uint8Array(6)); let c = ""; for (const x of b) c += CODE_ABC[x % 32]; return c; } /* 256 = 8 x 32: no bias */
+const gpKey = id => "gp:" + id;
+function gpCodeHash(env, id, code) { return hmac(env.GUEST_SECRET, "gp|" + id + "|" + String(code).toUpperCase()); }
+function gpState(p, now) {
+  if (p.status === "revoked") return "revoked";
+  if (p.status === "ended") return "ended";
+  if (!p.claimedAt) return p.claimBy > now ? "unclaimed" : "lapsed";
+  return p.exp > now ? "active" : "expired";
+}
+/* What LV7 sees of a pass: never its code hash or the guest's key */
+function gpPublic(p, now) {
+  return { id: p.id, lvl: p.lvl, by: p.by, at: p.at, claimBy: p.claimBy, name: p.name || "", claimedAt: p.claimedAt || 0, exp: p.exp || 0, state: gpState(p, now),
+    ext: p.ext || null, exts: p.exts || 0, revokedAt: p.revokedAt || 0, revokedBy: p.revokedBy || "", endedAt: p.endedAt || 0, hidden: !!p.hidden, fromAsk: p.fromAsk || "", reissued: p.reissued || 0 };
+}
+function gpName(v) { return String(v || "").replace(/[\u0000-\u001f\u007f<>]/g, "").replace(/\s+/g, " ").trim(); }
+function gpPubOk(j) { return !!(j && j.kty === "EC" && j.crv === "P-256" && typeof j.x === "string" && typeof j.y === "string" && j.x.length === 43 && j.y.length === 43 && !j.d); }
+async function gpNew(env, kv, lvl, by, extra) {
+  let n = parseInt((await kv.get("gp:seq")) || "0", 10) || 0, id;
+  do { n++; id = "GC-" + String(n).padStart(5, "0"); } while (await kv.get(gpKey(id)));
+  await kv.put("gp:seq", String(n));
+  const code = gpCode(), now = Date.now();
+  const p = Object.assign({ id, lvl, by, at: now, claimBy: now + GP_CLAIM_MS, ch: await gpCodeHash(env, id, code), status: "issued", exts: 0 }, extra || {});
+  await kv.put(gpKey(id), JSON.stringify(p));
+  return { p, code };
+}
+/* A signed guest request: header X-HP-Guest = "<pass>.<time in ms>.<signature>", the signature (ECDSA P-256, SHA-256)
+   over "<time>\n<METHOD>\n<path and query>". The time must be within two minutes of the relay's clock. */
+async function gpVerify(req, kv, url) {
+  const h = String(req.headers.get("X-HP-Guest") || "").split(".");
+  if (h.length !== 3 || !/^GC-\d{5}$/.test(h[0]) || !/^\d{12,14}$/.test(h[1]) || !/^[\w-]{80,100}$/.test(h[2])) return { err: "invalid" };
+  if (Math.abs(Date.now() - +h[1]) > GP_SKEW) return { err: "clock" };
+  const p = await kv.get(gpKey(h[0]), "json");
+  if (!p || !p.pub) return { err: "invalid" };
+  let ok = false;
+  try {
+    const key = await crypto.subtle.importKey("jwk", p.pub, { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"]);
+    ok = await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, unb64u(h[2]), new TextEncoder().encode(h[1] + "\n" + req.method + "\n" + url.pathname + url.search));
+  } catch (e) { ok = false; }
+  return ok ? { p } : { err: "invalid" };
+}
+/* The repositories a level opens: every entry of GUEST_REPOS at or below it (LV2 opens none) */
+function gpRepos(env, lvl) {
+  let map = null; try { map = JSON.parse(env.GUEST_REPOS || "null"); } catch (e) { map = null; }
+  if (!map || typeof map !== "object") map = { 3: env.GUEST_REPO || "Hound-Protocol/hp-staff" };
+  return Object.keys(map).filter(k => +k <= lvl).map(k => String(map[k]));
 }
 async function sha(s) { return b64u(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))); }
 async function asksGet(kv) { const a = (await kv.get("asks", "json")) || []; const now = Date.now(); return a.filter(x => now - x.at < ASK_KEEP_MS); }
 async function asksPut(kv, a) { await kv.put("asks", JSON.stringify(a)); }
+async function extIdx(kv, id, add) { let a = (await kv.get("gp:ext", "json")) || []; a = a.filter(x => x !== id); if (add) a.push(id); await kv.put("gp:ext", JSON.stringify(a)); }
+/* LV7: the owner's GitHub account, or any owner (admin) of the organization, as GitHub reports it for this token */
+async function lv7(env, auth) {
+  const m = /^Bearer\s+(\S+)$/.exec(auth); if (!m) return { err: "Sign in first.", st: 401 };
+  const H = { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" };
+  const u = await fetch("https://api.github.com/user", { headers: H });
+  if (!u.ok) return { err: "GitHub did not recognise your sign-in. Sign in again.", st: 401 };
+  const who = await u.json();
+  if (String(who.id) === String(env.OWNER_GITHUB_ID)) return { who };
+  const mm = await fetch("https://api.github.com/user/memberships/orgs/" + (env.GITHUB_ORG || "Hound-Protocol"), { headers: H });
+  const ms = mm.ok ? await mm.json() : null;
+  return ms && ms.state === "active" && ms.role === "admin" ? { who } : { err: "Only LV7 can manage guest passes.", st: 403 };
+}
 async function guest(req, env, url) {
-  const site = env.SITE_ORIGIN, auth = req.headers.get("Authorization") || "";
-  if (!env.GUEST_SECRET || !env.OWNER_GITHUB_ID) return json(site, { error: "Guest passes are not set up on the relay yet (code: guest_off)." }, 503);
-  /* Visitors (LV1) ask for a pass with their name, then check on it with the key only they received */
-  if (url.pathname === "/guest/ask" || url.pathname === "/guest/ask/status") {
-    const kv = env.HP_KV || env.GUEST_KV;
-    if (!kv) return json(site, { error: "Guest pass requests need the KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
+  const site = env.SITE_ORIGIN, path = url.pathname, now = Date.now(), kv = env.HP_KV || env.GUEST_KV;
+  if (!env.GUEST_SECRET || !env.OWNER_GITHUB_ID) return json(site, { error: "Guest passes are not set up on the relay yet.", code: "guest_off" }, 503);
+  if (!kv) return json(site, { error: "Guest passes need the KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
+
+  /* Visitors (LV1) ask for a pass with their name and their browser's public key; they check on it with a key only they hold */
+  if (path === "/guest/ask" || path === "/guest/ask/status") {
     const asks = await asksGet(kv);
-    if (url.pathname === "/guest/ask") {
+    if (path === "/guest/ask") {
       if (req.method !== "POST") return json(site, { error: "Use POST." }, 405);
       const b = await req.json().catch(() => ({}));
-      const name = String(b.name || "").replace(/[\u0000-\u001f\u007f<>]/g, "").replace(/\s+/g, " ").trim();
+      const name = gpName(b.name);
       if (name.length < 2 || name.length > 40) return json(site, { error: "Write your name (2 to 40 characters), so the owner knows who is asking.", code: "name" }, 400);
+      if (b.pub && !gpPubOk(b.pub)) return json(site, { error: "This browser sent an unusable device key.", code: "key" }, 400);
       if (asks.filter(x => x.state === "pending").length >= ASK_MAX_OPEN) return json(site, { error: "Too many requests are waiting right now. Try again later.", code: "busy" }, 429);
-      const last = asks.reduce((m, x) => Math.max(m, x.at), 0);
-      if (Date.now() - last < 3000) return json(site, { error: "Someone just asked. Try again in a few seconds.", code: "busy" }, 429);
+      if (now - asks.reduce((m, x) => Math.max(m, x.at), 0) < 3000) return json(site, { error: "Someone just asked. Try again in a few seconds.", code: "busy" }, 429);
       const id = crypto.randomUUID().slice(0, 8), key = crypto.randomUUID();
-      asks.push({ id, name, at: Date.now(), kh: await sha(key), state: "pending" });
+      asks.push(Object.assign({ id, name, at: now, kh: await sha(key), state: "pending" }, b.pub ? { pub: { kty: "EC", crv: "P-256", x: b.pub.x, y: b.pub.y } } : {}));
       await asksPut(kv, asks);
       return json(site, { ok: true, id, key });
     }
-    const id = String(url.searchParams.get("id") || ""), key = String(url.searchParams.get("key") || "");
-    const a = asks.find(x => x.id === id);
-    if (!a || a.kh !== await sha(key)) return json(site, { state: "gone" });
-    return json(site, a.state === "approved" ? { state: a.state, pass: a.pass, exp: a.exp } : { state: a.state });
+    const a = asks.find(x => x.id === String(url.searchParams.get("id") || ""));
+    if (!a || a.kh !== await sha(String(url.searchParams.get("key") || ""))) return json(site, { state: "gone" });
+    if (a.state !== "approved") return json(site, { state: a.state });
+    const p = a.pass && await kv.get(gpKey(a.pass), "json");
+    return json(site, p ? { state: "approved", pass: { id: p.id, lvl: p.lvl, exp: p.exp, name: p.name, bound: !!p.pub }, link: a.link || "" } : { state: "gone" });
   }
-  /* LV7 actions. GitHub tells us who holds the token: the owner's account, or any owner of the organization. */
-  if (/^\/guest\/(grant|list|revoke|delete|purge|asks|approve|decline)$/.test(url.pathname)) {
-    const m = /^Bearer\s+(\S+)$/.exec(auth);
-    if (!m) return json(site, { error: "Sign in first." }, 401);
-    const u = await fetch("https://api.github.com/user", { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
-    if (!u.ok) return json(site, { error: "GitHub did not recognise your sign-in. Sign in again." }, 401);
-    const who = await u.json();
-    let lv7 = String(who.id) === String(env.OWNER_GITHUB_ID);
-    if (!lv7) {
-      const org = env.GITHUB_ORG || "Hound-Protocol";
-      const mm = await fetch("https://api.github.com/user/memberships/orgs/" + org, { headers: { Authorization: "Bearer " + m[1], Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
-      const ms = mm.ok ? await mm.json() : null;
-      lv7 = !!(ms && ms.state === "active" && ms.role === "admin");
+
+  /* Opening a link: look at the pass, then claim it with a name (both need the secret code) */
+  if (path === "/guest/peek" || path === "/guest/claim") {
+    if (path === "/guest/claim" && req.method !== "POST") return json(site, { error: "Use POST." }, 405);
+    const b = path === "/guest/claim" ? await req.json().catch(() => ({})) : {};
+    const id = String(b.id || url.searchParams.get("id") || "").toUpperCase(), code = String(b.code || url.searchParams.get("code") || "").toUpperCase();
+    const bad = json(site, { error: "This pass link is not valid. Check that it was copied whole.", code: "invalid" }, 404);
+    if (!/^GC-\d{5}$/.test(id) || !/^[2-9A-HJ-NP-Z]{6}$/.test(code)) return bad;
+    const p = await kv.get(gpKey(id), "json");
+    if (!p || p.ch !== await gpCodeHash(env, id, code)) return bad;
+    const st = gpState(p, now);
+    if (path === "/guest/peek") return json(site, { id, lvl: p.lvl, state: st, name: p.claimedAt ? p.name : "", exp: p.exp || 0, claimBy: p.claimBy, by: p.by });
+    if (st !== "unclaimed") return json(site, st === "active" ? { error: "This pass is already in use by " + p.name + ".", code: "in_use", name: p.name } : { error: "This pass can no longer be claimed (" + st + ").", code: st }, 409);
+    const name = gpName(b.name);
+    if (name.length < 2 || name.length > 40) return json(site, { error: "Write your name (2 to 40 characters). It is kept in the pass history.", code: "name" }, 400);
+    if (!gpPubOk(b.pub)) return json(site, { error: "This browser could not create a device key, so the pass cannot be bound to it. Try an up-to-date browser, not in private mode.", code: "key" }, 400);
+    Object.assign(p, { name, pub: { kty: "EC", crv: "P-256", x: b.pub.x, y: b.pub.y }, claimedAt: now, exp: now + GP_MS, status: "active" });
+    await kv.put(gpKey(id), JSON.stringify(p));
+    return json(site, { ok: true, id, lvl: p.lvl, exp: p.exp, name });
+  }
+
+  /* LV7 actions */
+  if (/^\/guest\/(grant|list|revoke|delete|purge|asks|approve|decline|reissue|forget|extend-approve|extend-decline)$/.test(path)) {
+    const L = await lv7(env, req.headers.get("Authorization") || "");
+    if (L.err) return json(site, { error: L.err }, L.st);
+    const by = L.who.login, id = String(url.searchParams.get("id") || "").toUpperCase();
+    const post = req.method === "POST";
+    if (path === "/guest/grant" && post) {
+      const b = await req.json().catch(() => ({})), lvl = +b.lvl || 3;
+      if (GP_LVLS.indexOf(lvl) < 0) return json(site, { error: "Guest passes are LV2, LV3, LV5 or LV6." }, 400);
+      const { p, code } = await gpNew(env, kv, lvl, by);
+      return json(site, { id: p.id, code, lvl, claimBy: p.claimBy, hours: PASS_HOURS });
     }
-    if (!lv7) return json(site, { error: "Only LV7 can manage guest passes." }, 403);
-    const kv = env.HP_KV || env.GUEST_KV;
-    if (url.pathname === "/guest/grant" && req.method === "POST") {
-      const p = await mint(env, kv, who.login);
-      return json(site, Object.assign(p, { hours: PASS_HOURS, revocable: !!kv }));
+    if (path === "/guest/list") {
+      const out = [];
+      for (const k of (await kv.list({ prefix: "gp:GC-" })).keys) { const p = await kv.get(k.name, "json"); if (p) out.push(gpPublic(p, now)); }
+      return json(site, { passes: out.sort((a, b) => b.at - a.at), levels: GP_LVLS });
     }
-    if (!kv) return json(site, { error: "Revoking needs the GUEST_KV storage on the relay (sign-in setup, section 6).", code: "no_kv" }, 503);
-    /* Requests from visitors: list them, approve one (a pass is made for that name) or decline it */
-    if (url.pathname === "/guest/asks") {
-      const asks = await asksGet(kv);
-      return json(site, { asks: asks.map(x => ({ id: x.id, name: x.name, at: x.at, state: x.state, by: x.by || "", n: x.n || "" })).sort((a, b) => b.at - a.at), maxOpen: ASK_MAX_OPEN });
+    if (path === "/guest/asks") {
+      const asks = await asksGet(kv), ext = [];
+      for (const x of (await kv.get("gp:ext", "json")) || []) { const p = await kv.get(gpKey(x), "json"); if (p && p.ext && p.ext.state === "pending" && gpState(p, now) === "active") ext.push(gpPublic(p, now)); }
+      return json(site, { asks: asks.map(x => ({ id: x.id, name: x.name, at: x.at, state: x.state, by: x.by || "", pass: x.pass || "", lvl: x.lvl || 0 })).sort((a, b) => b.at - a.at), extensions: ext, maxOpen: ASK_MAX_OPEN, levels: GP_LVLS });
     }
-    if ((url.pathname === "/guest/approve" || url.pathname === "/guest/decline") && req.method === "POST") {
+    if (!post) return json(site, { error: "Use POST." }, 405);
+    if (path === "/guest/approve" || path === "/guest/decline") {
       const asks = await asksGet(kv), a = asks.find(x => x.id === String(url.searchParams.get("id") || ""));
       if (!a) return json(site, { error: "That request is gone." }, 404);
       if (a.state !== "pending") return json(site, { error: "That request was already answered." }, 409);
-      if (url.pathname === "/guest/approve") { const p = await mint(env, kv, who.login, a.name); Object.assign(a, { state: "approved", pass: p.pass, exp: p.exp, n: p.n }); }
-      else a.state = "declined";
-      a.by = who.login; a.done = Date.now();
+      if (path === "/guest/approve") {
+        const lvl = +url.searchParams.get("lvl") || 3;
+        if (GP_LVLS.indexOf(lvl) < 0) return json(site, { error: "Guest passes are LV2, LV3, LV5 or LV6." }, 400);
+        /* The asker's browser sent its public key with the request, so the pass is bound to it at once: nothing to send */
+        const extra = { name: a.name, fromAsk: a.id };
+        if (a.pub) Object.assign(extra, { pub: a.pub, claimedAt: now, exp: now + GP_MS, status: "active" });
+        const { p, code } = await gpNew(env, kv, lvl, by, extra);
+        Object.assign(a, { state: "approved", pass: p.id, lvl }, a.pub ? {} : { link: p.id + "-" + code });
+      } else a.state = "declined";
+      a.by = by; a.done = now;
       await asksPut(kv, asks);
-      return json(site, { ok: true, id: a.id, state: a.state, n: a.n || "" });
+      return json(site, { ok: true, id: a.id, state: a.state, pass: a.pass || "" });
     }
-    if (url.pathname === "/guest/list") {
-      const keys = (await kv.list({ prefix: "pass:" })).keys;
-      const out = [];
-      for (const k of keys) { const v = await kv.get(k.name, "json"); if (v) out.push(Object.assign(v, { revoked: !!(await kv.get("revoked:" + v.n)), expired: v.exp <= Date.now() })); }
-      return json(site, { passes: out.sort((a, b) => b.at - a.at), keepDays: KEEP_DAYS });
+    if (path === "/guest/purge") {
+      const all = url.searchParams.get("all") === "1"; let n = 0;
+      for (const k of (await kv.list({ prefix: "gp:GC-" })).keys) {
+        const q = await kv.get(k.name, "json"); if (!q || q.hidden) continue;
+        const qs = gpState(q, now), ql = qs === "active" || qs === "unclaimed";
+        if (ql && !all) continue;
+        if (ql) { Object.assign(q, { status: "revoked", revokedAt: now, revokedBy: by }); await extIdx(kv, q.id, false); }
+        q.hidden = true; await kv.put(k.name, JSON.stringify(q)); n++;
+      }
+      return json(site, { ok: true, cleared: n });
     }
-    if (url.pathname === "/guest/revoke" && req.method === "POST") {
-      const n = String(url.searchParams.get("n") || "");
-      if (!/^[0-9a-f-]{8}$/.test(n)) return json(site, { error: "Bad pass number." }, 400);
-      const v = await kv.get("pass:" + n, "json");
-      await kv.put("revoked:" + n, "1", { expiration: Math.ceil(((v && v.exp) || Date.now() + PASS_HOURS * 3600 * 1000) / 1000) + KEEP_DAYS * 86400 });
-      return json(site, { ok: true, n });
+    if (!/^GC-\d{5}$/.test(id)) return json(site, { error: "Unknown pass." }, 400);
+    const p = await kv.get(gpKey(id), "json");
+    if (!p) return json(site, { error: "That pass does not exist." }, 404);
+    const st = gpState(p, now), live = st === "active" || st === "unclaimed";
+    const revoke = () => { Object.assign(p, { status: "revoked", revokedAt: now, revokedBy: by }); if (p.ext && p.ext.state === "pending") p.ext = { state: "cancelled", at: now }; };
+    /* Forget: remove a finished pass from the history entirely, for example when its holder asks for their name to be deleted */
+    if (path === "/guest/forget") { if (live) return json(site, { error: "Revoke or wait for this pass to end first." }, 409); await kv.delete(gpKey(id)); await extIdx(kv, id, false); return json(site, { ok: true, id, forgotten: true }); }
+    if (path === "/guest/revoke") { if (!live) return json(site, { error: "This pass is not live." }, 409); revoke(); await extIdx(kv, id, false); }
+    else if (path === "/guest/delete") { if (live) revoke(); p.hidden = true; await extIdx(kv, id, false); }
+    else if (path === "/guest/reissue") {
+      /* A new code for the same number, unbound again: for a guest who lost their browser data, or a link sent to the wrong person */
+      if (st === "revoked" || st === "ended") return json(site, { error: "This pass has ended. Grant a new one." }, 409);
+      const code = gpCode();
+      Object.assign(p, { ch: await gpCodeHash(env, id, code), pub: null, name: "", claimedAt: 0, exp: 0, status: "issued", claimBy: now + GP_CLAIM_MS, hidden: false, ext: null, reissued: (p.reissued || 0) + 1 });
+      await kv.put(gpKey(id), JSON.stringify(p)); await extIdx(kv, id, false);
+      return json(site, { ok: true, id, code, lvl: p.lvl, claimBy: p.claimBy });
     }
-    /* Clear one pass: a live pass is revoked first (the revocation stays until it would have expired), then its record goes.
-       Purge clears every expired one; with ?all=1 it clears every pass, live ones included. */
-    const clear = async (n, v) => {
-      if (v && v.exp > Date.now()) await kv.put("revoked:" + n, "1", { expiration: Math.ceil(v.exp / 1000) + 60 });
-      else await kv.delete("revoked:" + n);
-      await kv.delete("pass:" + n);
-    };
-    if (url.pathname === "/guest/delete" && req.method === "POST") {
-      const n = String(url.searchParams.get("n") || "");
-      if (!/^[0-9a-f-]{8}$/.test(n)) return json(site, { error: "Bad pass number." }, 400);
-      await clear(n, await kv.get("pass:" + n, "json"));
-      return json(site, { ok: true, n });
+    else if (path === "/guest/extend-approve" || path === "/guest/extend-decline") {
+      if (!p.ext || p.ext.state !== "pending" || st !== "active") return json(site, { error: "No extension is waiting for this pass." }, 409);
+      if (path === "/guest/extend-approve") { p.exp = Math.max(p.exp, now) + GP_MS; p.exts = (p.exts || 0) + 1; p.ext = { state: "approved", at: now, by }; }
+      else p.ext = { state: "declined", at: now, by };
+      await extIdx(kv, id, false);
     }
-    if (url.pathname === "/guest/purge" && req.method === "POST") {
-      const all = url.searchParams.get("all") === "1"; let gone = 0;
-      for (const k of (await kv.list({ prefix: "pass:" })).keys) { const v = await kv.get(k.name, "json"); if (!v || all || v.exp <= Date.now()) { await clear(k.name.slice(5), v); gone++; } }
-      return json(site, { ok: true, deleted: gone });
-    }
-    return json(site, { error: "Unknown request." }, 404);
+    await kv.put(gpKey(id), JSON.stringify(p));
+    return json(site, { ok: true, pass: gpPublic(p, now) });
   }
-  /* Everything else needs a valid, unexpired pass */
-  const g = /^Guest\s+(\S+)$/.exec(auth);
-  const p = g && await checkPass(env.GUEST_SECRET, g[1]);
-  if (!p) return json(site, { error: "This guest pass is not valid or has expired.", code: "invalid" }, 401);
-  if ((env.HP_KV || env.GUEST_KV) && await (env.HP_KV || env.GUEST_KV).get("revoked:" + p.n)) return json(site, { error: "This guest pass has been revoked by the owner.", code: "revoked" }, 401);
-  if (url.pathname === "/guest/check") return json(site, { ok: true, exp: p.exp, lvl: p.lvl });
-  const repo = env.GUEST_REPO || "Hound-Protocol/hp-staff", tok = await appToken(env, repo);
-  const gh = (path, raw) => fetch("https://api.github.com/repos/" + repo + path, { headers: { Authorization: "Bearer " + tok, Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
-  if (url.pathname === "/guest/tree") {
+
+  /* Everything else is a signed request from the browser that claimed the pass */
+  const v = await gpVerify(req, kv, url);
+  if (v.err) return json(site, { error: v.err === "clock" ? "Your device clock is more than two minutes off. Set it right and try again." : "This guest pass is not valid on this device.", code: v.err }, 401);
+  const p = v.p, st = gpState(p, now);
+  if (st === "revoked") return json(site, { error: "This guest pass has been revoked.", code: "revoked" }, 401);
+  if (st !== "active") return json(site, { error: st === "ended" ? "This guest pass was ended." : "This guest pass has expired.", code: st }, 401);
+  if (path === "/guest/check") return json(site, { ok: true, id: p.id, lvl: p.lvl, exp: p.exp, name: p.name, by: p.by, ext: p.ext || null, exts: p.exts || 0, repos: gpRepos(env, p.lvl) });
+  if (path === "/guest/extend" && req.method === "POST") {
+    if (p.ext && p.ext.state === "pending") return json(site, { error: "An extension request is already waiting for LV7.", code: "pending" }, 409);
+    p.ext = { state: "pending", at: now };
+    await kv.put(gpKey(p.id), JSON.stringify(p)); await extIdx(kv, p.id, true);
+    return json(site, { ok: true, ext: p.ext });
+  }
+  if (path === "/guest/end" && req.method === "POST") {
+    Object.assign(p, { status: "ended", endedAt: now }); if (p.ext && p.ext.state === "pending") p.ext = { state: "cancelled", at: now };
+    await kv.put(gpKey(p.id), JSON.stringify(p)); await extIdx(kv, p.id, false);
+    return json(site, { ok: true });
+  }
+  const repo = String(url.searchParams.get("repo") || "");
+  if (gpRepos(env, p.lvl).indexOf(repo) < 0) return json(site, { error: "This pass does not open that area.", code: "level" }, 403);
+  const tok = await appToken(env, repo);
+  const gh = (pth, raw) => fetch("https://api.github.com/repos/" + repo + pth, { headers: { Authorization: "Bearer " + tok, Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json", "User-Agent": "hound-protocol-signin" } });
+  if (path === "/guest/tree") {
     const r = await gh(""); if (!r.ok) return json(site, { error: "GitHub refused (" + r.status + ")" }, 502);
     const t = await (await gh("/git/trees/" + encodeURIComponent((await r.json()).default_branch) + "?recursive=1")).json();
     return json(site, { exp: p.exp, paths: (t.tree || []).filter(n => n.type === "blob" && /\.md$/i.test(n.path) && !/(^|\/)README\.md$/i.test(n.path)).map(n => n.path) });
   }
-  if (url.pathname === "/guest/file") {
-    const path = url.searchParams.get("path") || "";
-    if (!/^[\w\-./ ]+\.md$/i.test(path) || path.split("/").some(s => s === ".." || s === "")) return json(site, { error: "Bad path." }, 400);
-    const r = await gh("/contents/" + path.split("/").map(encodeURIComponent).join("/"), true);
+  if (path === "/guest/file") {
+    const fp = url.searchParams.get("path") || "";
+    if (!/^[\w\-./ ]+\.md$/i.test(fp) || fp.split("/").some(x => x === ".." || x === "")) return json(site, { error: "Bad path." }, 400);
+    const r = await gh("/contents/" + fp.split("/").map(encodeURIComponent).join("/"), true);
     if (!r.ok) return json(site, { error: "Not found." }, r.status === 404 ? 404 : 502);
     return new Response(await r.text(), { status: 200, headers: Object.assign({ "Content-Type": "text/markdown; charset=utf-8", "Cache-Control": "no-store" }, cors(site)) });
   }
   return json(site, { error: "Unknown request." }, 404);
 }
-async function checkPass(secret, pass) {
-  const parts = String(pass).split(".");
-  if (parts.length === 3) {
-    const [e36, n, sig] = parts;
-    if (!/^[0-9a-z]{4,9}$/.test(e36) || !/^[0-9a-f-]{8}$/.test(n) || sig !== (await hmac(secret, "v2|" + e36 + "|" + n)).slice(0, 16)) return null;
-    const exp = parseInt(e36, 36) * 1000;
-    return exp > Date.now() && exp - Date.now() <= PASS_HOURS * 3600 * 1000 + 60000 ? { v: 2, lvl: 3, exp, n } : null;
-  }
-  const [body, sig] = parts;
-  if (!body || !sig || sig !== await hmac(secret, body)) return null;
-  let p; try { p = JSON.parse(new TextDecoder().decode(unb64u(body))); } catch (e) { return null; }
-  return p && p.v === 1 && p.exp > Date.now() && p.exp - Date.now() <= PASS_HOURS * 3600 * 1000 + 60000 ? p : null;
-}
 async function hmac(secret, data) {
   const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   return b64u(new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(data))));
 }
-/* The GitHub App's installation token: read-only, for the one guest repository, cached while it is valid */
-let tokCache = null;
+/* The GitHub App's installation token: read-only, for one guest repository at a time, cached per repository while valid */
+const tokCache = {};
 async function appToken(env, repo) {
-  if (tokCache && tokCache.repo === repo && tokCache.exp > Date.now() + 120000) return tokCache.tok;
+  const c = tokCache[repo];
+  if (c && c.exp > Date.now() + 120000) return c.tok;
   if (!env.GITHUB_APP_ID || !env.GITHUB_APP_PRIVATE_KEY) throw new Error("guest_app_key_missing");
   const jwt = await appJwt(env.GITHUB_APP_ID, env.GITHUB_APP_PRIVATE_KEY);
   const H = { Authorization: "Bearer " + jwt, Accept: "application/vnd.github+json", "User-Agent": "hound-protocol-signin" };
@@ -268,7 +364,7 @@ async function appToken(env, repo) {
     body: JSON.stringify({ repositories: [repo.split("/")[1]], permissions: { contents: "read" } }) });
   if (!t.ok) throw new Error("token_" + t.status);
   const j = await t.json();
-  tokCache = { repo, tok: j.token, exp: Date.parse(j.expires_at) || Date.now() + 3000000 };
+  tokCache[repo] = { tok: j.token, exp: Date.parse(j.expires_at) || Date.now() + 3000000 };
   return j.token;
 }
 async function appJwt(appId, pem) {
@@ -293,7 +389,7 @@ function pkcs8(pem) {
 function b64u(u) { let s = ""; for (let i = 0; i < u.length; i++) s += String.fromCharCode(u[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
 function unb64(s) { const b = atob(s); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
 function unb64u(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return unb64(s); }
-function cors(site) { return { "Access-Control-Allow-Origin": site, "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Max-Age": "600", Vary: "Origin" }; }
+function cors(site) { return { "Access-Control-Allow-Origin": site, "Access-Control-Allow-Headers": "Authorization, Content-Type, X-HP-Guest", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Max-Age": "600", Vary: "Origin" }; }
 function json(site, obj, status) { return new Response(JSON.stringify(obj), { status: status || 200, headers: Object.assign({ "Content-Type": "application/json", "Cache-Control": "no-store" }, cors(site)) }); }
 
 /* The callback page sends the result to the website window that opened it, and only to the website's origin */

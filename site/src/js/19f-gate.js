@@ -49,7 +49,7 @@
   }
   /* The welcome window: on each visit, until this browser has signed in with GitHub once */
   function gateWelcome() {
-    if (!siOn() || EMBED || siLevel() >= 2 || lsv("hp.verified") || ssv("hp.welcomed") || $("#hpModal")) return;
+    if (!siOn() || EMBED || siLevel() >= 2 || lsv("hp.verified") || ssv("hp.welcomed") || $("#hpModal") || currentView === "guest") return;
     ssv("hp.welcomed", "1");
     msgAdd("lv1", "Temporary LV1 pass", "You are on restricted clearance. Sign in with GitHub for LV2, or ask the owner for a guest pass.", "lv1");
     var a = askGet();
@@ -92,9 +92,15 @@
       if (name.length < 2) { say("Write your name, so the owner knows who is asking."); if (inp) inp.focus(); return; }
       if (askWait()) { say("You can ask again in " + askWait() + " s."); return; }
       lsv(ASK_LAST, Date.now()); var b = btn(); if (b) b.disabled = true; say("Sending…");
-      fetch(siRelay() + "/guest/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name }), cache: "no-store" }).then(function (r) {
+      /* A device key goes with the request, so an approved pass is bound to this browser at once. If this browser cannot
+         keep one, the request goes without it and an approved pass arrives as a link to claim instead. */
+      var made = null;
+      gkNew().then(function (k) { return gkPut("ask:pending", k.pair).then(function () { made = k; }); }, function () { made = null; }).then(null, function () { made = null; }).then(function () {
+        return fetch(siRelay() + "/guest/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(made ? { name: name, pub: made.pub } : { name: name }), cache: "no-store" });
+      }).then(function (r) {
         return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.id) { var e = new Error(j.code === "invalid" ? "Guest pass requests are not switched on yet. Try again later." : j.error || "HTTP " + r.status); throw e; } return j; });
       }).then(function (j) {
+        if (made) gkPut("ask:" + j.id, made.pair).then(function () { gkDel("ask:pending"); });
         lsv(ASK_KEY, JSON.stringify({ id: j.id, key: j.key, name: name, at: Date.now() }));
         msgAdd("ask-" + j.id, "Guest pass requested", "Your request as " + name + " is waiting for the owner. Your pass opens here by itself once approved.", "info");
         m.body('<div class="hm-ok"><b>Request sent</b><small>The owner sees your name, <b>' + esc(name) + "</b>. Keep this page open or come back later: once approved, your guest pass opens here by itself.</small></div>");
@@ -111,11 +117,16 @@
     var a = askGet(); if (!a || !siOn() || typeof fetch !== "function") return;
     fetch(siRelay() + "/guest/ask/status?id=" + encodeURIComponent(a.id) + "&key=" + encodeURIComponent(a.key), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
       if (j.state === "approved" && j.pass) {
-        lsv(ASK_KEY, null); SG = { pass: j.pass, exp: j.exp }; sgSave(); siFresh = Date.now();
-        msgAdd("ask-" + a.id + "-ok", "Guest pass approved", "The owner approved your request. You hold LV3 (Staff) clearance in this tab until " + new Date(j.exp).toTimeString().slice(0, 5) + ".", "ok");
-        siBadge(); status("Guest pass approved"); blip("go");
-        var m = hpModal({ kicker: "Hound ID · Guest pass", title: "You have been issued a temporary guest pass", html: "<p>The owner approved your request. This guest pass has <b>LV3</b> clearance for 24 hours, in this tab. It cannot be extended, and the owner can revoke it at any time.</p>", actions: [{ label: "Stay here", value: null }, { label: "Open my profile", primary: true, value: true }] });
-        m.result.then(function (go) { if (go) location.hash = "#/profile"; else route(); });
+        lsv(ASK_KEY, null);
+        msgAdd("ask-" + a.id + "-ok", "Guest pass approved", "Your request as " + a.name + " was approved: guest pass " + j.pass.id + ", LV" + j.pass.lvl + ".", "ok");
+        status("Guest pass approved");
+        /* Bound to this browser's key already: move the key to the pass and show the credential */
+        if (j.pass.bound) return gkGet("ask:" + a.id).then(function (pair) {
+          if (!pair) { sgInUse(j.pass.name); return; }
+          return gkPut(j.pass.id, pair).then(function () { gkDel("ask:" + a.id); sgGranted(null, { id: j.pass.id, lvl: j.pass.lvl, exp: j.pass.exp, name: j.pass.name, by: "" }); });
+        });
+        /* Not bound (this browser could not keep a key): open the pass's link to claim it */
+        if (j.link) location.hash = "#/" + j.link;
       } else if (j.state === "declined") {
         lsv(ASK_KEY, null); msgAdd("ask-" + a.id + "-no", "Guest pass declined", "The owner declined your request as " + a.name + ". You can still sign in with GitHub for LV2.", "bad");
         gateApply(currentView);
@@ -185,6 +196,7 @@
     if (!siOwner() || document.hidden) return;
     sgOwnerApi("/guest/asks").then(function (j) {
       (j.asks || []).filter(function (x) { return x.state === "pending"; }).forEach(function (x) { msgAdd("req-" + x.id, "Guest pass request", x.name + " asks for a guest pass. Approve or decline it on your Profile.", "req"); });
+      (j.extensions || []).forEach(function (x) { msgAdd("ext-" + x.id + "-" + x.ext.at, "Extension request", x.name + " asks for 24 more hours on " + x.id + " (LV" + x.lvl + "). Approve or decline it on your Profile.", "req"); });
     }, function () { /* relay not updated yet */ });
   }
   setInterval(asksWatch, 5 * 60 * 1000);
