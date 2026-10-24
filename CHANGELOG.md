@@ -2,6 +2,12 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.6.0 · Open channel · 2026-10-24
+- **Join Discord button:** documents about the Discord server now carry a **Join Discord** button under their opening lines: about a third of the page wide, centred, in Discord's blurple with a pressed-button edge and a light sweep. It opens our invite in a new tab. In the Handbook: the Discord Member Guide (HP-GDE-008), Discord Administration (HP-SOP-008) and the Community and Moderation Policy (HP-POL-005); in the Library: the Discord Blueprint.
+- **Animated icon:** a chat bubble whose three dots type and whose signal pulses, drawn in code. It is our own design, not Discord's logo, so it needs no permission and no image file. Animation stops with Calm mode or reduced motion. Printed sheets and PDFs show the invite address instead of the button.
+- **For writers:** put the line `<!-- hp:join-discord -->` in any document to place the button there. GitHub hides the line ([HP-GDE-005](docs/guides/HP-GDE-005-documentation-style.md)).
+- **Roadmap:** this release's base detail is the V of a patrol boat's wake off the east platform, drawn by CSS alone.
+
 ## Site 1.5.0 · Bearing · 2026-10-24
 - **Position marker:** the browser's scrollbar was nearly invisible against the frame, so an orange marker now rides beside the right-hand ruler, like a depth gauge on a Metal Gear radar. A chevron points at the ruler with how far down the page you are (000 to 100), and an orange line fills the track above it. It turns green at the end of the page.
 - **It stays out of the way:** the marker sits just left of the ruler, never over its lines, between the corner brackets and below the section bar's line. It hides when the page fits on screen, shows only the chevron when the margin is narrow, and stays hidden on phones and when the margin is too narrow for it (below about 1100 pixels wide). It takes no clicks, and screen readers skip it.

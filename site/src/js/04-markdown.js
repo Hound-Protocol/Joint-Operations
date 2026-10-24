@@ -29,9 +29,22 @@
     });
     return out;
   }
+  /* "Join Discord": a document asks for it with the line <!-- hp:join-discord -->, invisible on GitHub. The icon is our own,
+     a chat bubble whose dots type and whose signal pulses; it is not Discord's logo. */
+  var DC_ICO = '<svg viewBox="0 0 40 40" aria-hidden="true"><path class="dci-b" d="M8 9h24a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H19l-7 6v-6H8a4 4 0 0 1-4-4V13a4 4 0 0 1 4-4z"/>' +
+    '<circle class="dci-d d1" cx="13" cy="19" r="2.3"/><circle class="dci-d d2" cx="20" cy="19" r="2.3"/><circle class="dci-d d3" cx="27" cy="19" r="2.3"/>' +
+    '<path class="dci-w w1" d="M33 4.5a6 6 0 0 1 3.5 3.5"/><path class="dci-w w2" d="M34 1a10 10 0 0 1 5.5 5.5"/></svg>';
+  function joinDiscord() {
+    var url = (cfg.links && cfg.links.discord) || "";
+    if (!url) return "";
+    return '<div class="dc-wrap"><a class="dc-join" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer"><span class="dc-ico">' + DC_ICO + '</span><span class="dc-t">Join Discord</span><i class="dc-go" aria-hidden="true">→</i></a>' +
+      '<span class="dc-print">Join Discord: ' + esc(url.replace(/^https?:\/\//, "")) + "</span></div>";
+  }
   function markdown(md, basePath) {
-    // Raw HTML lines (the README's centered banner and badges) are skipped: this renderer never emits raw HTML
-    var lines = String(md).replace(/\r\n?/g, "\n").split("\n").filter(function (l) { return !/^\s*<\/?[a-z][^>]*>/i.test(l); }), html = "", i = 0, para = [];
+    // Raw HTML lines (the README's centered banner and badges) are skipped: this renderer never emits raw HTML.
+    // HTML comments are dropped too, except our own markers such as <!-- hp:join-discord -->.
+    var lines = String(md).replace(/\r\n?/g, "\n").split("\n").map(function (l) { return /^\s*<!--\s*hp:join-discord\s*-->\s*$/.test(l) ? "\u0000join-discord" : l; })
+      .filter(function (l) { return !/^\s*<\/?[a-z][^>]*>/i.test(l) && !/^\s*<!--.*-->\s*$/.test(l); }), html = "", i = 0, para = [];
     function flush() { if (para.length) { html += "<p>" + inline(para.join(" "), basePath) + "</p>"; para = []; } }
     function cells(l) { return l.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map(function (c) { return c.trim(); }); }
     while (i < lines.length) {
@@ -41,6 +54,7 @@
         while (i < lines.length && !/^```/.test(lines[i])) code.push(lines[i++]);
         i++; html += "<pre><code>" + esc(code.join("\n")) + "</code></pre>"; continue;
       }
+      if (l === "\u0000join-discord") { flush(); html += joinDiscord(); i++; continue; }
       var h = /^(#{1,4})\s+(.*)$/.exec(l);
       if (h) { flush(); var lv = h[1].length; html += "<h" + lv + ">" + inline(h[2], basePath) + "</h" + lv + ">"; i++; continue; }
       if (/^\s*(-{3,}|\*{3,})\s*$/.test(l)) { flush(); html += "<hr>"; i++; continue; }

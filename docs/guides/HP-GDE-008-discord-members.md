@@ -3,6 +3,8 @@ Code: HP-GDE-008 · Version 1.1 · Effective 2026-10-23 · Owner: Administration
 
 The Discord server is where the team talks, tests and plans. It is organized like a unit: departments with their own channels, keycard roles and contractor grades.
 
+<!-- hp:join-discord -->
+
 ## Joining, step by step
 1. **Get Discord.** Use the app (Windows, macOS, Linux, phone) from discord.com, or discord.com/app in a browser. On Bazzite, install **Discord** from the Bazaar or Flathub.
 2. **Make an account** if you do not have one, and confirm your email. Discord asks for this before you can talk on our server.

@@ -1,6 +1,8 @@
 # Community and Moderation Policy
 Code: HP-POL-005 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · Applies to: GitHub, Discord and every Hound Protocol space
 
+<!-- hp:join-discord -->
+
 ## 1. Standards
 The [Code of Conduct](../../CODE_OF_CONDUCT.md) and the Discord rules apply everywhere. In short: be respectful, stay on topic, no piracy, no cheating in others' games, no Konami online services, no harassment, hate or spam.
 

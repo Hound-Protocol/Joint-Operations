@@ -1,6 +1,8 @@
 # Discord Administration
 Code: HP-SOP-008 · Version 1.2 · Effective 2026-10-23 · Owner: Administration · Used by: Discord admins
 
+<!-- hp:join-discord -->
+
 ## The server is defined in code
 `tools/discord/blueprint.json` defines roles, categories, channels, permissions and starter messages. `tools/discord/setup.py` makes the server match it. Change the blueprint in a pull request, then apply.
 

@@ -66,6 +66,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F26 | Site 1.3.1: clearer clearance windows and firewall help | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F27 | Site 1.4.0: Docs opens on a choice of zones, distinct zone buttons | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F28 | Site 1.5.0: position marker beside the right ruler | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F29 | Site 1.6.0: Join Discord button in Discord documents | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -847,3 +848,12 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 
 **Acceptance criteria**
 - Marker beside the right ruler, never over its lines, corners or content; hides when the page fits, on phones and narrow screens
+
+## F29
+**Site 1.6.0: Join Discord button in Discord documents**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** A clear, animated Join Discord button under the opening of every Discord document
+
+**Acceptance criteria**
+- Button about 30% wide, centred, Discord blurple, own animated icon; in HP-GDE-008, HP-SOP-008, HP-POL-005 and the Discord Blueprint; print shows the address

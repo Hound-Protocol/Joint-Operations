@@ -1274,6 +1274,29 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F29",
+   "title": "Site 1.6.0: Join Discord button in Discord documents",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "A clear, animated Join Discord button under the opening of every Discord document",
+   "deliverable": "",
+   "acceptance": [
+    "Button about 30% wide, centred, Discord blurple, own animated icon; in HP-GDE-008, HP-SOP-008, HP-POL-005 and the Discord Blueprint; print shows the address"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
  "updated": "2026-10-24"
