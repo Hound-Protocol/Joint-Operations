@@ -680,6 +680,42 @@
     else t.remove();
   }, true);
 
+  /* ---------------- Position marker ----------------
+     The browser's own scrollbar is hard to see against the frame, so a marker rides beside the right-hand ruler, like the
+     depth gauge on a Metal Gear radar: an orange chevron pointing at the ruler, with how far down the page you are.
+     It sits just left of the ruler (never over its lines) and between the corner brackets, and hides when the page fits. */
+  function scrollMarkBoot() {
+    var stage = $("#stage"), ce = $("#center");
+    if (!stage || !ce || $("#posMark")) return;
+    stage.insertAdjacentHTML("beforeend", '<div class="pos-mark" id="posMark" aria-hidden="true"><i class="pm-track"></i><i class="pm-fill"></i><span class="pm-k"><b>000</b><i class="pm-chev"></i></span></div>');
+    var mk = $("#posMark"), k = $(".pm-k", mk), fill = $(".pm-fill", mk), num = $("b", mk), raf = 0;
+    function draw() {
+      raf = 0;
+      var room = ce.scrollHeight - ce.clientHeight;
+      /* Never over the content: with a narrow margin only the chevron shows, with less than that nothing does */
+      var host = $("#view:not([hidden])") || $("#menuView"), free = host ? stage.getBoundingClientRect().right - host.getBoundingClientRect().right : 99;
+      mk.classList.toggle("slim", free < 80);
+      /* Start below the section bar's full-width line, so the track never crosses it */
+      var sw = $("#view:not([hidden]) .secwrap"), st = stage.getBoundingClientRect().top;
+      mk.style.top = Math.max(104, sw ? Math.round(sw.getBoundingClientRect().bottom - st + 16) : 0) + "px";
+      var on = room > 24 && free >= 44 && !document.body.classList.contains("print");
+      mk.classList.toggle("on", on);
+      if (!on) return;
+      var f = Math.min(1, Math.max(0, ce.scrollTop / room));
+      k.style.top = fill.style.height = (f * 100).toFixed(2) + "%";
+      num.textContent = ("00" + Math.round(f * 100)).slice(-3);
+      mk.classList.toggle("end", f > 0.995);
+    }
+    function later() { if (!raf) raf = requestAnimationFrame(draw); }
+    ce.addEventListener("scroll", later, { passive: true });
+    window.addEventListener("resize", later);
+    /* Pages grow as documents and data arrive: watch the content, not only the window */
+    if (typeof ResizeObserver === "function") { var ro = new ResizeObserver(later); ro.observe(ce); $$("#center > *").forEach(function (c) { ro.observe(c); }); }
+    if (typeof MutationObserver === "function") new MutationObserver(later).observe(ce, { childList: true, subtree: true });
+    window.addEventListener("hashchange", function () { setTimeout(later, 60); });
+    later();
+  }
+
   /* Briefing */
   function hl(t) { return esc(t).replace(/\{\{([^}]+)\}\}/g, '<mark class="key">$1</mark>'); }
   /* Line icons for the Start here buttons, drawn for this site on a 24 x 24 grid */
@@ -842,7 +878,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><ellipse class="mb-shade" cx="0" cy="0" rx="190" ry="70"/><g class="mb-bollards" transform="translate(600 613)"><path class="mbb-rope" d="M-18 0 Q0 7 18 0"/><circle cx="-18" cy="0" r="2.6"/><circle cx="18" cy="0" r="2.6"/></g><g class="mb-buoy" transform="translate(450 700)"><g class="mby-bob"><path class="mby-body" d="M-6 0 L6 0 L3 -12 L-3 -12 Z"/><line x1="0" y1="-12" x2="0" y2="-17"/><circle class="mby-light" cx="0" cy="-18" r="2"/></g></g><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><ellipse class="mb-shade" cx="0" cy="0" rx="190" ry="70"/><rect class="mb-fog" x="0" y="0" width="520" height="34" rx="17"/><g class="mb-bollards" transform="translate(600 613)"><path class="mbb-rope" d="M-18 0 Q0 7 18 0"/><circle cx="-18" cy="0" r="2.6"/><circle cx="18" cy="0" r="2.6"/></g><g class="mb-buoy" transform="translate(450 700)"><g class="mby-bob"><path class="mby-body" d="M-6 0 L6 0 L3 -12 L-3 -12 Z"/><line x1="0" y1="-12" x2="0" y2="-17"/><circle class="mby-light" cx="0" cy="-18" r="2"/></g></g><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -3988,7 +4024,7 @@
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });
   }, function () { /* keep defaults */ }).then(function () {
-    loadLocal("build").then(function () { applyConfig(); siBadge(); siOrg(); renderMenu(); select(cur, false); route(); preload(); gateBoot(); });
+    loadLocal("build").then(function () { applyConfig(); siBadge(); siOrg(); renderMenu(); select(cur, false); route(); preload(); gateBoot(); scrollMarkBoot(); });
   });
   window.addEventListener("hashchange", route);
 })();

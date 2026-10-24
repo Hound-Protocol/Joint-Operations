@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.5.0 · Bearing · 2026-10-24
+- **Position marker:** the browser's scrollbar was nearly invisible against the frame, so an orange marker now rides beside the right-hand ruler, like a depth gauge on a Metal Gear radar. A chevron points at the ruler with how far down the page you are (000 to 100), and an orange line fills the track above it. It turns green at the end of the page.
+- **It stays out of the way:** the marker sits just left of the ruler, never over its lines, between the corner brackets and below the section bar's line. It hides when the page fits on screen, shows only the chevron when the margin is narrow, and stays hidden on phones and when the margin is too narrow for it (below about 1100 pixels wide). It takes no clicks, and screen readers skip it.
+- **Roadmap:** this release's base detail is a low fog bank drifting along the horizon, drawn by CSS alone.
+
 ## Site 1.4.0 · Two doors · 2026-10-24
 - **Choose a zone first:** the Docs tab now opens on two large buttons, **Library** and **Handbook**, each with its own colour (steel blue and gold), texture (brushed steel drawers and woven binding cloth), icon (a filing cabinet and a ring binder), document count, a line on what it holds and a clear **Open** bar. Picking one switches to that interface. Direct links to a document still open it straight away; the Library's own address is now `#/docs/library`.
 - **Zone buttons inside:** at the top of the Library and the Handbook, the two zones are now raised buttons with the same icons, textures and colours, a **Switch →** label on the other zone and *You are here* on the current one. A tester found the old flat panels easy to overlook.

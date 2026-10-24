@@ -30,6 +30,6 @@
   (EMBED && EMBED.config ? Promise.resolve(EMBED.config) : fetchJSON("data/config.json")).then(function (c) {
     cfg = Object.assign({}, DEFAULT_CFG, c, { links: Object.assign({}, DEFAULT_CFG.links, c.links), logo: Object.assign({}, DEFAULT_CFG.logo, c.logo), milestones: Object.assign({}, c.milestones) });
   }, function () { /* keep defaults */ }).then(function () {
-    loadLocal("build").then(function () { applyConfig(); siBadge(); siOrg(); renderMenu(); select(cur, false); route(); preload(); gateBoot(); });
+    loadLocal("build").then(function () { applyConfig(); siBadge(); siOrg(); renderMenu(); select(cur, false); route(); preload(); gateBoot(); scrollMarkBoot(); });
   });
   window.addEventListener("hashchange", route);

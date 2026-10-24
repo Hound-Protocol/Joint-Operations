@@ -2151,3 +2151,20 @@ html.booting .center, html.booting .bar { opacity: 0; }
 /* Base detail, Site 1.4.0: two mooring bollards on the command platform's south dock, a rope slack between them */
 .mb-bollards circle { fill: #1d2427; stroke: #7a878c; stroke-width: 1; }
 .mb-bollards .mbb-rope { fill: none; stroke: #b59a6a; stroke-width: 1; stroke-dasharray: 2 1.4; opacity: .8; }
+/* Position marker beside the right ruler (10e-scrollmark.js): the track runs between the corner brackets, left of the ruler's ticks */
+.pos-mark { position: absolute; right: 27px; top: 104px; bottom: 104px; width: 44px; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .3s ease; }
+.pos-mark.on { opacity: 1; }
+.pm-track { position: absolute; right: 0; top: 0; bottom: 0; width: 2px; background: rgba(242,140,40,.18); }
+.pm-fill { position: absolute; right: 0; top: 0; width: 2px; height: 0; background: var(--jo); box-shadow: 0 0 6px rgba(242,140,40,.7); transition: height .12s linear; }
+.pm-k { position: absolute; right: 0; top: 0; display: flex; align-items: center; gap: 3px; transform: translateY(-50%); transition: top .12s linear; }
+.pm-k b { padding: 2px 3px; border: 1px solid rgba(242,140,40,.55); background: rgba(8,10,11,.85); font: 400 12px/1 var(--mono); letter-spacing: .08em; color: var(--jo); text-shadow: 0 0 6px rgba(242,140,40,.6); }
+.pm-chev { width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 10px solid var(--jo); filter: drop-shadow(0 0 4px rgba(242,140,40,.8)); }
+.pos-mark.end .pm-chev { border-left-color: #7fbf8a; filter: drop-shadow(0 0 4px rgba(127,191,138,.8)); } .pos-mark.end .pm-k b { color: #7fbf8a; text-shadow: 0 0 6px rgba(127,191,138,.6); }
+.no-motion .pm-k, .no-motion .pm-fill, .no-motion .pos-mark { transition: none; }
+@media (max-width: 700px) { .pos-mark { display: none; } }
+.pos-mark.slim { width: 14px; } .pos-mark.slim .pm-k b { display: none; }
+@media print { .pos-mark { display: none !important; } }
+/* Base detail, Site 1.5.0: a low fog bank drifting along the horizon */
+.mb-fog { fill: rgba(200,215,220,.07); filter: blur(10px); animation: mbFog 180s linear infinite; }
+@keyframes mbFog { from { transform: translate(-560px, 318px); } to { transform: translate(1640px, 306px); } }
+.no-motion .mb-fog { display: none; }

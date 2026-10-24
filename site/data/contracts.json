@@ -1251,6 +1251,29 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F28",
+   "title": "Site 1.5.0: position marker beside the right ruler",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Show where you are on long pages, since the scrollbar is hard to see",
+   "deliverable": "",
+   "acceptance": [
+    "Marker beside the right ruler, never over its lines, corners or content; hides when the page fits, on phones and narrow screens"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
  "updated": "2026-10-24"
