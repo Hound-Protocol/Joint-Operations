@@ -2198,3 +2198,23 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .mb-wake path { fill: none; stroke: rgba(220,235,240,.35); stroke-width: 1.2; stroke-dasharray: 3 3; animation: mbWake 2.4s linear infinite; }
 @keyframes mbWake { to { stroke-dashoffset: -12; } }
 .no-motion .mb-wake path { animation: none; }
+/* Team page: our projects. The game leads, gold and classified; the mods follow */
+.prjs { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 14px; }
+.prj { position: relative; display: grid; align-content: start; gap: 8px; padding: 16px 18px 18px; border: 1px solid var(--line); border-top: 3px solid var(--pc, var(--dim)); background: rgba(10,13,15,.65); }
+.prj.p-game { --pc: #e0b25a; background: linear-gradient(160deg, rgba(224,178,90,.12), rgba(10,13,15,.7) 55%), repeating-linear-gradient(45deg, rgba(255,255,255,.02) 0 2px, transparent 2px 6px); }
+.prj.p-jo { --pc: var(--jo); } .prj.p-lp { --pc: #7d93a6; }
+.prj-top { display: flex; justify-content: space-between; gap: 10px; font: 400 11px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--dim); }
+.prj-st { color: var(--pc); border: 1px solid color-mix(in srgb, var(--pc) 55%, transparent); padding: 2px 6px; white-space: nowrap; }
+.p-game .prj-st { animation: prjBlink 2.6s steps(1, end) infinite; }
+.prj h3 { margin: 0; font: 400 19px/1.25 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fg); }
+.prj p { margin: 0; font: 300 15px/1.5 var(--ui); color: var(--fg-2); }
+.prj-red { display: inline-block; color: transparent; background: var(--fg); line-height: .9; letter-spacing: -.1em; user-select: none; }
+.prj-note { margin: 12px 0 0; font: 300 14px/1.5 var(--ui); color: var(--dim); }
+@keyframes prjBlink { 0%, 70% { opacity: 1; } 85% { opacity: .35; } }
+.no-motion .p-game .prj-st { animation: none; }
+@media (max-width: 860px) { .prjs { grid-template-columns: 1fr; } }
+/* Base detail, Site 1.7.0: a tanker crawling across the south sea, its stern light on */
+.mb-tanker path, .mb-tanker rect { fill: #3a464b; stroke: #56656b; stroke-width: .6; } .mb-tanker line { stroke: #56656b; stroke-width: 1; } .mb-tanker circle { fill: #ffe7a8; filter: drop-shadow(0 0 3px #ffd98a); }
+.mb-tanker { animation: mbTank 600s linear infinite alternate; }
+@keyframes mbTank { from { transform: translate(520px, 760px); } to { transform: translate(690px, 760px); } }
+.no-motion .mb-tanker { animation: none; }
