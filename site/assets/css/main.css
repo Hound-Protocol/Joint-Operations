@@ -2042,3 +2042,8 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .hk-key, .ax-lv header b, .ax-doc .ax-t, .roster h4, .si-badge .sb-txt small { color: color-mix(in srgb, var(--hk) 70%, #fff); }
 .vh h2:focus { outline: none; }
 .gp-ch { min-height: 50px; box-sizing: border-box; }
+
+/* Base detail (Site 1.1.0): an aircraft warning light on the windsock mast, blinking by CSS alone */
+.mb-sockl { fill: #ff4a3d; filter: drop-shadow(0 0 3px #ff4a3d); animation: mbSockL 2.2s steps(1, end) infinite; }
+@keyframes mbSockL { 0%, 55% { opacity: 1; } 56%, 100% { opacity: .15; } }
+.no-motion .mb-sockl { animation: none; }

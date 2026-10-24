@@ -2,6 +2,14 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.1.0 · Open to read · 2026-10-24
+- **Every section is readable at LV1:** Download, Sessions, Contribute and Mods no longer sit behind *No access*. Visitors can read everything public; restricted documents keep their own clearance.
+- **Acting needs LV2:** claiming a contract and downloading a build (and, later, joining a session) open a small **LV2 needed** window with **Sign in with GitHub** and **Request a guest pass**. Claiming still needs a GitHub sign-in, because a claim carries your account.
+- **Welcome window:** it now says you can read every section, and that acting needs a higher clearance.
+- **Fix:** pressing Esc in a window (welcome, sign-in, guest pass) closed it and also sent you back to the main menu. Now Esc closes only the window.
+- **Download page:** it now says Joint Operations includes no game files and has no connection to Konami.
+- **Roadmap:** this release's base detail is a red warning light on the windsock mast, blinking by CSS alone.
+
 ## Site 1.0.0 · Two version lines · 2026-10-24
 - **The website has its own version line.** This release is **Site 1.0.0**, tagged `site-v1.0.0`. It follows 0.0.41, and those older tags stay as they are. From now on, **0.1** means only the mod's first playable build. Website releases are never marked *Latest* on GitHub, so Latest always points at a mod build. The top bar reads *Site 1.0.0 · build · commit · Mod 0.1 in development* ([HP-SOP-003](docs/guides/HP-SOP-003-release.md)).
 - **View Profile:** the profile button now carries its words.

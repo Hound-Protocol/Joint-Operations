@@ -60,6 +60,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F20 | About: Start here triangle; FAQ as a document | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F21 | Messages clear themselves; one clearance message | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F22 | Site 1.0.0: two version lines, security policy, accessibility, relay health | web | 🟡 Medium | — | done | Forge77 (with Claude) |
+| F23 | Every section readable at LV1; acting asks for LV2 | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -777,3 +778,15 @@ Module: web · Difficulty: 🟡 Medium · Skills:
 - Release site-v1.0.0 published, not Latest
 - No CSP violations on any section
 - Relay tests run in Checks
+
+## F23
+**Every section readable at LV1; acting asks for LV2**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Visitors see the whole public site; authority stays with sign-in for actions.
+
+**Deliverable.** LV1_OPEN covers all sections; LV2 needed window for claims and downloads.
+
+**Acceptance criteria**
+- No No-access window on any section at LV1
+- Downloading or claiming at LV1 asks for LV2

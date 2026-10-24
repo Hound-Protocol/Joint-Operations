@@ -842,7 +842,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -1255,7 +1255,7 @@
       var hero = latest
         ? '<div class="dl-hero ready"><div class="dl-main"><span class="kicker">Latest release · ' + (latest.prerelease ? "Pre-release" : "Stable") + '</span><h3>Joint Operations ' + esc(latest.tag_name) + '</h3><p>Published ' + fmtDate(latest.published_at) + ". Free and open source.</p>" +
             '<div class="dl-files">' + (files.length ? files.map(function (a) {
-              return '<a class="btn primary" href="' + esc(a.browser_download_url) + '">' + esc(a.name) + ' <small>' + fmtBytes(a.size) + "</small></a>";
+              return '<a class="btn primary" data-dl href="' + esc(a.browser_download_url) + '">' + esc(a.name) + ' <small>' + fmtBytes(a.size) + "</small></a>";
             }).join("") : '<span class="sub">This release has no attached files yet.</span>') + "</div>" +
             '<div class="toolbar"><a class="btn" href="' + esc(latest.html_url) + '" target="_blank" rel="noopener noreferrer">Release notes</a><a class="btn" href="' + repoUrl("/releases") + '" target="_blank" rel="noopener noreferrer">All releases</a></div></div></div>'
         : '<div class="dl-hero"><div class="dl-main"><span class="kicker">Game release</span><h3>Joint Operations 0.1 is on its way</h3>' +
@@ -1272,8 +1272,10 @@
           '<ol class="steps" id="dlSteps">' + DL_STEPS[dlOS].map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>" +
           '<p class="sub">We guessed your system from your browser. Pick the other tab if that is wrong.</p></section>' +
         '<section class="panel"><div class="label">Requirements</div><dl class="dl-req">' + req.map(function (r) { return "<div><dt>" + r[0] + "</dt><dd>" + r[1] + "</dd></div>"; }).join("") + "</dl></section></div>" +
-        '<p class="note">You need your own copy of Metal Gear Solid V. Joint Operations never includes game files and never connects to Konami\'s servers. Step-by-step help: <a href="#/guides/hp-gde-001">Player Guide</a>.</p>';
+        '<p class="note">You need your own copy of Metal Gear Solid V. Joint Operations never includes game files and has no connection to Konami. Step-by-step help: <a href="#/guides/hp-gde-001">Player Guide</a>.</p>';
       v.querySelector("#vb").innerHTML = body;
+      /* Downloading a build is an action: LV1 is asked to sign in or request a guest pass first */
+      $$("[data-dl]").forEach(function (a) { a.addEventListener("click", function (e) { if (!needLv2("Downloading Joint Operations")) e.preventDefault(); }); });
       $$('[data-os]').forEach(function (b) {
         b.addEventListener("click", function () {
           dlOS = b.dataset.os;
@@ -3236,7 +3238,7 @@
   }
   /* For visitors: every card lined up, with one line on how clearance works */
   var SI_LV_INFO = {
-    LV0: "Banned: refused at sign-in, on every linked account.", LV1: "Everyone at first: About, Roadmap, Team, Docs and Options.", LV2: "Signed in with GitHub: your profile and keycard.", LV3: "Contractors: Staff documents, claiming contracts.",
+    LV0: "Banned: refused at sign-in, on every linked account.", LV1: "Everyone at first: read every section; acting needs LV2.", LV2: "Signed in with GitHub: your profile and keycard.", LV3: "Contractors: Staff documents, claiming contracts.",
     LV4: "Quality: reviews and testing.", LV5: "Development: Leads documents, site and contract data.", LV6: "Administration: moderation, Administration documents.", LV7: "The owner: everything."
   };
   function siLevelsIntro() {
@@ -3269,12 +3271,24 @@
   }
 
   /* ---------------- Clearance gate, guest pass requests and messages ----------------
-     Everyone who is not signed in holds a temporary LV1 pass. LV1 opens About, Roadmap, Team, Documentation and Options
-     (and Profile, to sign in, and Verify, so anyone can check a certificate). Every other section shows a No access window
-     over a blurred page, with two ways up: sign in with GitHub (LV2 at once) or ask the owner for a guest pass (LV3, 24 h).
+     Everyone who is not signed in holds a temporary LV1 pass. LV1 can READ every section; ACTING (claiming a contract,
+     downloading a build, joining a session) asks for LV2 in a small window, with two ways up: sign in with GitHub (LV2 at
+     once) or ask the owner for a guest pass (LV3, 24 h). A section that should stay closed at LV1 can be left out of
+     LV1_OPEN: it then shows No access over a blurred page.
      A visitor sees the welcome window on each visit until this browser has once signed in with GitHub. This is a gate in the
      interface: the public documents themselves stay public on GitHub. */
-  var LV1_OPEN = { briefing: 1, roadmap: 1, team: 1, docs: 1, guides: 1, options: 1, profile: 1, verify: 1, guest: 1, g: 1 };
+  var LV1_OPEN = { briefing: 1, roadmap: 1, team: 1, docs: 1, guides: 1, options: 1, profile: 1, verify: 1, guest: 1, g: 1, download: 1, sessions: 1, contribute: 1, mods: 1 };
+  function lv2Has() { return !siOn() || EMBED || siLevel() >= 2; }
+  /* An action that needs LV2: a small window with the two ways up. Returns true when the action may go ahead. */
+  function needLv2(what) {
+    if (lv2Has()) return true;
+    var m = hpModal({ kicker: "Hound ID · Clearance", title: "LV2 needed",
+      html: "<p>" + esc(what) + " needs <b>LV2</b>. You are on a temporary LV1 pass: you can read everything, but acting needs a Hound ID.</p>" +
+        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once.</span></li><li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once approved.</span></li></ul>',
+      actions: [{ label: "Not now", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });
+    m.el.classList.add("hm-gate");
+    return false;
+  }
   function lsv(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, String(v)); } catch (e) { /* storage blocked: this visit only */ } return null; }
   function ssv(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, String(v)); } catch (e) { /* this page only */ } return null; }
   function gateNeeded(view) { return siOn() && !EMBED && siLevel() < 2 && !LV1_OPEN[view]; }
@@ -3313,8 +3327,8 @@
     var a = askGet();
     var m = hpModal({ kicker: "Hound ID · Clearance", title: "You are on restricted clearance",
       html: '<div class="gw"><div class="gw-lv"><b>LV1</b><span>Visitor<small>Temporary pass</small></span></div>' +
-        "<p>Your access is limited. <b>About, Roadmap, Team, Documentation and Options</b> are open to you; Download, Sessions, Contribute and Mods need a higher clearance.</p>" +
-        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once: your profile, your keycard and the whole site.</span></li>' +
+        "<p>Your access is limited. You can <b>read every section</b>; acting, such as claiming a contract, downloading a build or joining a session, needs a higher clearance.</p>" +
+        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once: your profile, your keycard, claiming contracts and downloads.</span></li>' +
         "<li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once the owner approves it.</span></li></ul>" +
         (a ? '<p class="hm-note">Your guest pass request as <b>' + esc(a.name) + "</b> is still waiting for the owner.</p>" : "") + "</div>",
       actions: [{ label: "Continue with LV1", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });
@@ -3640,6 +3654,10 @@
   /* ---------------- Keyboard ---------------- */
   document.addEventListener("keydown", function (e) {
     var tag = (e.target && e.target.tagName) || "";
+    /* A window (sign-in, guest pass, welcome) or the messages menu is open: its own keys come first, and Esc closes it,
+       never the section behind it */
+    var mm = $("#msgMenu");
+    if ($("#hpModal") || (mm && !mm.hidden)) return;
     if (e.key === "Escape") {
       if (/INPUT|SELECT|TEXTAREA/.test(tag) && e.target.value) return;
       if (currentView) { location.hash = "#/"; e.preventDefault(); }
