@@ -1,10 +1,22 @@
   /* ---------------- Clearance gate, guest pass requests and messages ----------------
-     Everyone who is not signed in holds a temporary LV1 pass. LV1 opens About, Roadmap, Team, Documentation and Options
-     (and Profile, to sign in, and Verify, so anyone can check a certificate). Every other section shows a No access window
-     over a blurred page, with two ways up: sign in with GitHub (LV2 at once) or ask the owner for a guest pass (LV3, 24 h).
+     Everyone who is not signed in holds a temporary LV1 pass. LV1 can READ every section; ACTING (claiming a contract,
+     downloading a build, joining a session) asks for LV2 in a small window, with two ways up: sign in with GitHub (LV2 at
+     once) or ask the owner for a guest pass (LV3, 24 h). A section that should stay closed at LV1 can be left out of
+     LV1_OPEN: it then shows No access over a blurred page.
      A visitor sees the welcome window on each visit until this browser has once signed in with GitHub. This is a gate in the
      interface: the public documents themselves stay public on GitHub. */
-  var LV1_OPEN = { briefing: 1, roadmap: 1, team: 1, docs: 1, guides: 1, options: 1, profile: 1, verify: 1, guest: 1, g: 1 };
+  var LV1_OPEN = { briefing: 1, roadmap: 1, team: 1, docs: 1, guides: 1, options: 1, profile: 1, verify: 1, guest: 1, g: 1, download: 1, sessions: 1, contribute: 1, mods: 1 };
+  function lv2Has() { return !siOn() || EMBED || siLevel() >= 2; }
+  /* An action that needs LV2: a small window with the two ways up. Returns true when the action may go ahead. */
+  function needLv2(what) {
+    if (lv2Has()) return true;
+    var m = hpModal({ kicker: "Hound ID · Clearance", title: "LV2 needed",
+      html: "<p>" + esc(what) + " needs <b>LV2</b>. You are on a temporary LV1 pass: you can read everything, but acting needs a Hound ID.</p>" +
+        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once.</span></li><li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once approved.</span></li></ul>',
+      actions: [{ label: "Not now", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });
+    m.el.classList.add("hm-gate");
+    return false;
+  }
   function lsv(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, String(v)); } catch (e) { /* storage blocked: this visit only */ } return null; }
   function ssv(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, String(v)); } catch (e) { /* this page only */ } return null; }
   function gateNeeded(view) { return siOn() && !EMBED && siLevel() < 2 && !LV1_OPEN[view]; }
@@ -43,8 +55,8 @@
     var a = askGet();
     var m = hpModal({ kicker: "Hound ID · Clearance", title: "You are on restricted clearance",
       html: '<div class="gw"><div class="gw-lv"><b>LV1</b><span>Visitor<small>Temporary pass</small></span></div>' +
-        "<p>Your access is limited. <b>About, Roadmap, Team, Documentation and Options</b> are open to you; Download, Sessions, Contribute and Mods need a higher clearance.</p>" +
-        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once: your profile, your keycard and the whole site.</span></li>' +
+        "<p>Your access is limited. You can <b>read every section</b>; acting, such as claiming a contract, downloading a build or joining a session, needs a higher clearance.</p>" +
+        '<ul class="gw-ways"><li><b>Sign in with GitHub</b><span>LV2 at once: your profile, your keycard, claiming contracts and downloads.</span></li>' +
         "<li><b>Request a guest pass</b><span>For people the owner knows: LV3 for 24 hours, once the owner approves it.</span></li></ul>" +
         (a ? '<p class="hm-note">Your guest pass request as <b>' + esc(a.name) + "</b> is still waiting for the owner.</p>" : "") + "</div>",
       actions: [{ label: "Continue with LV1", value: null }, { label: "Request a guest pass", run: function () { m.close(null); setTimeout(askStart, 240); } }, { label: "Sign in with GitHub", primary: true, run: function () { m.close(null); setTimeout(function () { siStart({ stay: true }); }, 240); } }] });

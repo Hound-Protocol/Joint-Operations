@@ -1132,6 +1132,30 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F23",
+   "title": "Every section readable at LV1; acting asks for LV2",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Visitors see the whole public site; authority stays with sign-in for actions.",
+   "deliverable": "LV1_OPEN covers all sections; LV2 needed window for claims and downloads.",
+   "acceptance": [
+    "No No-access window on any section at LV1",
+    "Downloading or claiming at LV1 asks for LV2"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
  "updated": "2026-10-24"

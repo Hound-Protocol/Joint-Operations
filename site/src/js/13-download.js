@@ -22,7 +22,7 @@
       var hero = latest
         ? '<div class="dl-hero ready"><div class="dl-main"><span class="kicker">Latest release · ' + (latest.prerelease ? "Pre-release" : "Stable") + '</span><h3>Joint Operations ' + esc(latest.tag_name) + '</h3><p>Published ' + fmtDate(latest.published_at) + ". Free and open source.</p>" +
             '<div class="dl-files">' + (files.length ? files.map(function (a) {
-              return '<a class="btn primary" href="' + esc(a.browser_download_url) + '">' + esc(a.name) + ' <small>' + fmtBytes(a.size) + "</small></a>";
+              return '<a class="btn primary" data-dl href="' + esc(a.browser_download_url) + '">' + esc(a.name) + ' <small>' + fmtBytes(a.size) + "</small></a>";
             }).join("") : '<span class="sub">This release has no attached files yet.</span>') + "</div>" +
             '<div class="toolbar"><a class="btn" href="' + esc(latest.html_url) + '" target="_blank" rel="noopener noreferrer">Release notes</a><a class="btn" href="' + repoUrl("/releases") + '" target="_blank" rel="noopener noreferrer">All releases</a></div></div></div>'
         : '<div class="dl-hero"><div class="dl-main"><span class="kicker">Game release</span><h3>Joint Operations 0.1 is on its way</h3>' +
@@ -39,8 +39,10 @@
           '<ol class="steps" id="dlSteps">' + DL_STEPS[dlOS].map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>" +
           '<p class="sub">We guessed your system from your browser. Pick the other tab if that is wrong.</p></section>' +
         '<section class="panel"><div class="label">Requirements</div><dl class="dl-req">' + req.map(function (r) { return "<div><dt>" + r[0] + "</dt><dd>" + r[1] + "</dd></div>"; }).join("") + "</dl></section></div>" +
-        '<p class="note">You need your own copy of Metal Gear Solid V. Joint Operations never includes game files and never connects to Konami\'s servers. Step-by-step help: <a href="#/guides/hp-gde-001">Player Guide</a>.</p>';
+        '<p class="note">You need your own copy of Metal Gear Solid V. Joint Operations never includes game files and has no connection to Konami. Step-by-step help: <a href="#/guides/hp-gde-001">Player Guide</a>.</p>';
       v.querySelector("#vb").innerHTML = body;
+      /* Downloading a build is an action: LV1 is asked to sign in or request a guest pass first */
+      $$("[data-dl]").forEach(function (a) { a.addEventListener("click", function (e) { if (!needLv2("Downloading Joint Operations")) e.preventDefault(); }); });
       $$('[data-os]').forEach(function (b) {
         b.addEventListener("click", function () {
           dlOS = b.dataset.os;

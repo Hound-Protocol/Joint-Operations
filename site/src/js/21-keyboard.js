@@ -1,6 +1,10 @@
   /* ---------------- Keyboard ---------------- */
   document.addEventListener("keydown", function (e) {
     var tag = (e.target && e.target.tagName) || "";
+    /* A window (sign-in, guest pass, welcome) or the messages menu is open: its own keys come first, and Esc closes it,
+       never the section behind it */
+    var mm = $("#msgMenu");
+    if ($("#hpModal") || (mm && !mm.hidden)) return;
     if (e.key === "Escape") {
       if (/INPUT|SELECT|TEXTAREA/.test(tag) && e.target.value) return;
       if (currentView) { location.hash = "#/"; e.preventDefault(); }

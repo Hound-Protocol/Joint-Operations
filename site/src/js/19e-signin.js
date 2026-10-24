@@ -437,7 +437,7 @@
   }
   /* For visitors: every card lined up, with one line on how clearance works */
   var SI_LV_INFO = {
-    LV0: "Banned: refused at sign-in, on every linked account.", LV1: "Everyone at first: About, Roadmap, Team, Docs and Options.", LV2: "Signed in with GitHub: your profile and keycard.", LV3: "Contractors: Staff documents, claiming contracts.",
+    LV0: "Banned: refused at sign-in, on every linked account.", LV1: "Everyone at first: read every section; acting needs LV2.", LV2: "Signed in with GitHub: your profile and keycard.", LV3: "Contractors: Staff documents, claiming contracts.",
     LV4: "Quality: reviews and testing.", LV5: "Development: Leads documents, site and contract data.", LV6: "Administration: moderation, Administration documents.", LV7: "The owner: everything."
   };
   function siLevelsIntro() {

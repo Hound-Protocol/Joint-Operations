@@ -29,14 +29,17 @@ NO_KV = lambda r: r.fulfill(status=503, body='{"error":"test","code":"no_kv"}', 
 
 async def check(browser, name, size):
     failures = []
-    # LV1 (not signed in): the welcome window, No access on gated sections, the open ones stay open
+    # LV1 (not signed in): the welcome window; every section readable; acting (claiming) asks for LV2
     gate = await browser.new_page(viewport=size)
-    await gate.route(RELAY, NO_KV)
+    await gate.route(RELAY, lambda r: r.fulfill(status=200, body='{"claims":{}}', content_type="application/json", headers={"Access-Control-Allow-Origin": "*"}) if "/claims" in r.request.url else NO_KV(r))
     await gate.goto(BASE + "#/contribute"); await gate.wait_for_timeout(2200)
-    if not await gate.locator("#gate").count():
-        failures.append("gate: no No access window on Contribute at LV1")
+    if await gate.locator("#gate").count():
+        failures.append("gate: Contribute should be readable at LV1")
     if not await gate.locator("#hpModal.hm-gate").count():
         failures.append("gate: welcome window missing at LV1")
+    await gate.keyboard.press("Escape"); await gate.wait_for_timeout(400)
+    if not await gate.locator("[data-claim-in]").count():
+        failures.append("gate: LV1 should see 'Sign in to claim' on contract cards")
     await gate.goto(BASE + "#/roadmap"); await gate.wait_for_timeout(700)
     if await gate.locator("#gate").count():
         failures.append("gate: Roadmap should be open at LV1")
