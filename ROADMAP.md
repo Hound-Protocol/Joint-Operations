@@ -46,6 +46,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Site 1.3.0: Guest Pass 2.0: short GC links, four clearances, claim by name on one device, extensions, history
 - [x] Site 1.3.1: clearer clearance windows, help when a firewall blocks sign-in, sign-in open to every GitHub account
 - [x] Site 1.4.0: Docs opens on a choice of two zones, Library or Handbook, with distinct zone buttons
+- [x] Site 1.5.0: position marker beside the right ruler
 - [x] Signed certificates of service, checked in the browser and printable (ADR 0020)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)
