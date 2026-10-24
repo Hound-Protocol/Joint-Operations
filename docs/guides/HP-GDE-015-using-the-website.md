@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.14 · Effective 2026-10-24 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.15 · Effective 2026-10-24 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -26,7 +26,9 @@ The website at **hound-protocol.github.io/Joint-Operations** is the project's fr
 | **Profile** | Your keycard and your restricted documents, after signing in |
 
 ## 3. Documentation: two zones
-**Library:** plans, decision records, research, technical, community, project and legal documents, kept in drawers like a filing cabinet. The Docs tab always opens it on the **Overview**. The Project drawer also holds the **Changelog** (every release) and the **Dev Log** (news and notes, updated regularly).
+The **Docs** tab first asks you to **choose a zone**: two large buttons, the **Library** (steel blue, a filing cabinet) and the **Handbook** (gold, a ring binder). Once inside, the same two zones sit as buttons at the top: **Switch →** takes you to the other one.
+
+**Library:** plans, decision records, research, technical, community, project and legal documents, kept in drawers like a filing cabinet. It always opens on the **Overview**. The Project drawer also holds the **Changelog** (every release) and the **Dev Log** (news and notes, updated regularly).
 - Open a drawer to see its folders; each folder shows a file number such as ADR-0012 or RES-03. One drawer is open at a time: opening another closes the rest.
 - The open document lies on the right. Its paper shows its class: ruled paper for decisions, triangle grid for research, millimetre paper for technical, green bars for community, pinstripes for project, a yellow pad for legal.
 - **Clearance:** a line above every document shows **Access granted** and its level: LV1 (public) for everything in the public repository, LV3 to LV6 for restricted documents. The **Staff**, **Leads** and **Administration** drawers hold restricted documents: you see their files when your card and GitHub both allow it. Otherwise the drawer is locked, and opening it shows **Access denied** with the level required. Contact Administration if you think you should have access.

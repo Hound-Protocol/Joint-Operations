@@ -842,7 +842,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><ellipse class="mb-shade" cx="0" cy="0" rx="190" ry="70"/><g class="mb-buoy" transform="translate(450 700)"><g class="mby-bob"><path class="mby-body" d="M-6 0 L6 0 L3 -12 L-3 -12 Z"/><line x1="0" y1="-12" x2="0" y2="-17"/><circle class="mby-light" cx="0" cy="-18" r="2"/></g></g><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><ellipse class="mb-shade" cx="0" cy="0" rx="190" ry="70"/><g class="mb-bollards" transform="translate(600 613)"><path class="mbb-rope" d="M-18 0 Q0 7 18 0"/><circle cx="-18" cy="0" r="2.6"/><circle cx="18" cy="0" r="2.6"/></g><g class="mb-buoy" transform="translate(450 700)"><g class="mby-bob"><path class="mby-body" d="M-6 0 L6 0 L3 -12 L-3 -12 Z"/><line x1="0" y1="-12" x2="0" y2="-17"/><circle class="mby-light" cx="0" cy="-18" r="2"/></g></g><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -1633,16 +1633,46 @@
   /* ---------------- Documentation ----------------
      The Docs section is the dossier cabinet (17b-cabinet.js). loadDoc reads a document from the bundled copy,
      the deployed site or GitHub. */
-  function viewDocs(id) { return viewCabinet(id); }
+  /* #/docs asks first: Library or Handbook. #/docs/library opens the Library on its Overview; #/docs/<id> opens a document. */
+  function viewDocs(id) { if (!id) return viewDocPick(); return viewCabinet(id === "library" ? "" : id); }
+  /* The two zones' own icons: a filing cabinet for the Library, a ring binder for the Handbook */
+  var ZONE_ICO = {
+    lib: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="4" width="30" height="40" rx="1.5"/><path d="M9 17.5h30M9 31h30"/><rect class="zi-f" x="19" y="8.5" width="10" height="4"/><rect class="zi-f" x="19" y="22" width="10" height="4"/><rect class="zi-f" x="19" y="35.5" width="10" height="4"/><path d="M12 47h4M32 47h4"/></svg>',
+    hb: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 4h26v40H13z"/><path class="zi-f" d="M13 4h6v40h-6z"/><circle cx="16" cy="13" r="2.4"/><circle cx="16" cy="24" r="2.4"/><circle cx="16" cy="35" r="2.4"/><path d="M24 14h10M24 19h10M24 24h7"/><path class="zi-s" d="M25 34l9-6"/></svg>'
+  };
+  function docCounts() {
+    var all = (data.docs && data.docs.docs) || [], hb = ((data.guides && data.guides.guides) || []).length || all.filter(function (d) { return d.group === "Handbook"; }).length;
+    return { lib: all.filter(function (d) { return d.group !== "Handbook"; }).length, hb: hb };
+  }
+  /* The first step of Docs: two large doors, each with its texture, icon and a clear way in */
+  function viewDocPick() {
+    var v = $("#view");
+    function door(id, href, name, kick, sub, go) {
+      var n = docCounts()[id];
+      return '<a class="door d-' + id + '" href="' + href + '"><span class="door-tex" aria-hidden="true"></span><span class="door-ico">' + ZONE_ICO[id] + '</span>' +
+        '<span class="door-t"><small>' + kick + "</small><b>" + name + '</b><span class="door-n">' + (n ? n + " documents" : "&nbsp;") + "</span><span>" + sub + "</span></span>" +
+        '<span class="door-go">' + go + '<i aria-hidden="true">→</i></span></a>';
+    }
+    v.innerHTML = shell("Documentation", "Choose a zone",
+      '<p class="sub">Documentation has two zones. Pick one; you can switch at any time from the bar at the top.</p>' +
+      '<div class="doors">' +
+      door("lib", "#/docs/library", "Library", "Zone 1 · Reference", "Plans, decisions, research, the Dev Log, technical and legal. Start here to understand the project.", "Open the Library") +
+      door("hb", "#/guides", "Handbook", "Zone 2 · How to", "Guides, policies and procedures: how to play, contribute, test and run Hound Protocol. Printable on A4.", "Open the Handbook") +
+      "</div>");
+    Promise.all([loadLocal("docs"), loadLocal("guides")]).then(function () {
+      if (currentView !== "docs" || !$(".doors")) return;
+      var c = docCounts(); $$(".door").forEach(function (a) { var n = c[a.classList.contains("d-lib") ? "lib" : "hb"]; $(".door-n", a).textContent = n ? n + " documents" : ""; });
+    }, function () {});
+  }
   /* Documentation has two zones: the Library (plans, decisions, research, the Dev Log…) and the Handbook (guides, policies, procedures) */
   function docZones(active) {
     var all = (data.docs && data.docs.docs) || [], hb = ((data.guides && data.guides.guides) || []).length || all.filter(function (d) { return d.group === "Handbook"; }).length;
     var lib = all.filter(function (d) { return d.group !== "Handbook"; }).length;
     function z(id, href, name, sub) {
-      return '<a class="zone z-' + id + (active === id ? " on" : "") + '" href="' + href + '"' + (active === id ? ' aria-current="page"' : "") + '><span class="z-ico" aria-hidden="true"></span><b>' + name + "</b><small>" + sub + "</small></a>";
+      return '<a class="zone z-' + id + (active === id ? " on" : "") + '" href="' + href + '"' + (active === id ? ' aria-current="page"' : "") + '><span class="door-tex" aria-hidden="true"></span><span class="z-ico" aria-hidden="true">' + ZONE_ICO[id] + "</span><b>" + name + "</b><small>" + sub + '</small><i class="z-go" aria-hidden="true">' + (active === id ? "You are here" : "Switch →") + "</i></a>";
     }
     return '<nav class="zones" aria-label="Documentation zones">' +
-      z("lib", "#/docs", "Library", (lib ? lib + " documents · " : "") + "plans, decisions, research, the dev log, technical and legal") +
+      z("lib", "#/docs/library", "Library", (lib ? lib + " documents · " : "") + "plans, decisions, research, the dev log, technical and legal") +
       z("hb", "#/guides", "Handbook", (hb ? hb + " documents · " : "") + "guides, policies and procedures, printable on A4") + "</nav>";
   }
   function addZones(active) { var vh = $(".vh"); if (vh && !$(".zones")) vh.insertAdjacentHTML("afterend", docZones(active)); }
@@ -3054,7 +3084,7 @@
         (not.length ? not.map(function (L, n) { return group(L, false, n); }).join("") : '<p class="sub">Every level is open to you.</p>') +
         (next ? '<p class="ax-how">' + (lvl < 3 ? "A completed contract earns <b>LV3</b>; higher cards come with a department. " : "Higher cards come with a department role. ") + 'How cards are issued: <a href="#/guides/hp-gde-009">Grades, Records and Hound IDs</a>. Not sure where you fit? <a href="#/guides/hp-gde-017">Can I Contribute?</a></p>' : "") + "</div>" +
       "</div>" +
-      '<p class="sub ax-note">GitHub decides what you can read in the restricted areas, through your teams; your card shows what your clearance should open. Restricted documents open from the <a href="#/docs">Library</a>. Items marked with a date or <em>Planned</em> arrive with the session browser and the API server (<a href="#/docs/adr-0011">ADR 0011</a>).</p>';
+      '<p class="sub ax-note">GitHub decides what you can read in the restricted areas, through your teams; your card shows what your clearance should open. Restricted documents open from the <a href="#/docs/library">Library</a>. Items marked with a date or <em>Planned</em> arrive with the session browser and the API server (<a href="#/docs/adr-0011">ADR 0011</a>).</p>';
   }
   /* The holder's certificates of service, if any */
   function siCerts(c) {

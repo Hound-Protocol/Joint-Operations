@@ -1228,6 +1228,29 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F27",
+   "title": "Site 1.4.0: Docs opens on a choice of zones, distinct zone buttons",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Make the Library and Handbook buttons hard to overlook, and ask users to pick one first",
+   "deliverable": "",
+   "acceptance": [
+    "Docs opens on two large zone buttons with icons and textures; zone buttons inside are raised with Switch labels; deep links still work; phone layout stacks"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
  "updated": "2026-10-24"
