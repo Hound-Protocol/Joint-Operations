@@ -1,5 +1,5 @@
 # Using the Website and Documentation
-Code: HP-GDE-015 · Version 1.11 · Effective 2026-10-24 · Owner: Administration · For: everyone
+Code: HP-GDE-015 · Version 1.12 · Effective 2026-10-24 · Owner: Administration · For: everyone
 
 The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
@@ -54,7 +54,7 @@ Everyone starts on a temporary **LV1** pass. LV1 can read every section; acting 
 2. The first time, GitHub asks you to authorize **Hound ID Sign-in**. It can only read our restricted document repositories that your GitHub teams already allow; it cannot change anything.
 3. The window closes, and your keycard rises onto your **Profile** while its details decrypt. Each level has its own card design. It shows your signed staff card if you are staff, otherwise a member card (LV2). A staff card counts only after its signature checks out in your browser.
 4. **Access granted and access restricted:** your Profile lists what every level opens, split at your clearance. Restricted documents appear under the level that opens them (Staff LV3, Leads LV5, Administration LV6). If an area says GitHub has not given you access yet, ask Administration to add you to the right team.
-5. **Sign out** with the button at the foot of your Profile (it asks first), or close the tab. Your sign-in lasts at most 24 hours and lives only in that tab ([privacy](../privacy.md)).
+5. **Sign out** with the button on your Profile (it asks first), or close the tab. Your sign-in lasts at most 24 hours and lives only in that tab, unless you tick **Keep me signed in on this device (24 h)** in the sign-in window: then every tab on that browser shares it until it runs out or you sign out ([privacy](../privacy.md)).
 
 Allow pop-ups for the site if nothing happens when you click **Sign in with GitHub**.
 

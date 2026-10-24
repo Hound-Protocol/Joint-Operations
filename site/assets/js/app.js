@@ -842,7 +842,7 @@
       '<g class="mb-water">' + waves + '<g id="mbRings"></g><g id="mbBuoys"></g><g id="mbBoats"></g><g id="mbShips"></g></g>' +
       '<g class="mb-bridges">' + bridges + '<g id="mbWalk"></g></g>' +
       '<g class="mb-plats">' + plats + "</g>" +
-      '<g class="mb-fx" aria-hidden="true"><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
+      '<g class="mb-fx" aria-hidden="true"><g class="mb-lantern" transform="translate(790 330)"><g class="ml-bob"><path class="ml-hull" d="M-12 0 L12 0 L8 5 L-8 5 Z"/><line x1="0" y1="0" x2="0" y2="-10"/><circle class="ml-light" cx="0" cy="-11" r="2"/></g></g><g id="mbPile"></g><g id="mbCrew"></g><g id="mbCarry"></g><g id="mbCranes"></g><g id="mbComms" class="mb-comms"><rect x="-6" y="-6" width="12" height="12"/><circle class="mb-beacon" cx="0" cy="0" r="2.4"/><line x1="0" y1="0" x2="18" y2="0"/><circle cx="18" cy="0" r="2.2"/><g class="mb-radar" transform="translate(-16 -11)"><circle class="rd" r="8.5"/><g class="mb-rad-spin"><line x1="0" y1="0" x2="8.5" y2="0"/></g></g></g><g id="mbVent"></g><g id="mbWin"></g><line id="mbStar" class="mb-star" x1="0" y1="0" x2="0" y2="0" opacity="0"/><g id="mbFlag" class="mb-flag"><line x1="0" y1="0" x2="0" y2="-26"/><path d="M0 -26 L16 -23 L0 -19 Z"/></g><g id="mbDrop" class="mb-drop" opacity="0"><path class="cn" d="M-11 -20 Q0 -33 11 -20 Z"/><path class="ln" d="M-11 -20 L-3 -5 M11 -20 L3 -5"/><rect class="cr" x="-4" y="-5" width="8" height="7"/></g><g id="mbSearch" class="mb-search"><path d="M0 0 L150 -20 A151 151 0 0 1 150 20 Z"/></g><g id="mbPadL"></g><g id="mbBridgeL"></g><g id="mbSock" class="mb-sock"><line x1="0" y1="0" x2="0" y2="-1"/><path d="M0 0 L16 -3 L16 3 Z"/><circle class="mb-sockl" cx="0" cy="0" r="1.9"/></g><g id="mbSel"><circle class="r1"/><circle class="r2"/></g><g id="mbHeli"></g><g id="mbGulls"></g></g>' +
       '<g class="mb-clouds" aria-hidden="true"><ellipse rx="300" ry="170" fill="url(#mbCloudG)"/><ellipse rx="240" ry="140" fill="url(#mbCloudG)"/><ellipse rx="340" ry="190" fill="url(#mbCloudG)"/></g>' +
       '<g class="mb-hud" aria-hidden="true"><path d="M14 44V14h30M1586 44V14h-30M14 856v30h30M1586 856v30h-30"/>' +
       '<g transform="translate(1080 70)"><circle r="20"/><path d="M0 -15L5 4 0 0-5 4z"/><text y="-28">N</text></g></g>' +
@@ -2804,12 +2804,24 @@
      back to this window. The token stays in this tab only (sessionStorage) and can read nothing but the restricted document
      repositories the person's GitHub teams already allow. The keycard comes from the person's signed staff card, matched by
      GitHub account number; anyone else signed in holds a member card (LV2). While config.signin.relay is empty, sign-in is off. */
-  var SI_KEY = "hp.signin";
+  var SI_KEY = "hp.signin", SI_DEV = "hp.signin.device";
   var SI = null;
   try { SI = JSON.parse(sessionStorage.getItem(SI_KEY) || "null"); } catch (e) { SI = null; }
+  /* "Keep me signed in on this device": the same sign-in kept in local storage, so every tab on this browser shares it
+     until it runs out (at most 24 hours). Opt-in, off by default; the security policy keeps foreign scripts away from it. */
+  if (!SI) { try { SI = JSON.parse(localStorage.getItem(SI_DEV) || "null"); if (SI && !(SI.exp > Date.now())) { localStorage.removeItem(SI_DEV); SI = null; } } catch (e) { SI = null; } }
   function siCfg() { return cfg.signin || {}; }
   function siOn() { return !!siCfg().relay; }
-  function siSave() { try { if (SI) sessionStorage.setItem(SI_KEY, JSON.stringify(SI)); else sessionStorage.removeItem(SI_KEY); } catch (e) { /* private mode: the session lives in this page only */ } }
+  function siSave() {
+    try { if (SI && !SI.device) sessionStorage.setItem(SI_KEY, JSON.stringify(SI)); else sessionStorage.removeItem(SI_KEY); } catch (e) { /* private mode: the session lives in this page only */ }
+    try { if (SI && SI.device) localStorage.setItem(SI_DEV, JSON.stringify(SI)); else localStorage.removeItem(SI_DEV); } catch (e) { /* storage blocked: this page only */ }
+  }
+  /* Another tab signed out (or in) on this device: follow it */
+  window.addEventListener("storage", function (e) {
+    if (e.key !== SI_DEV) return;
+    if (!e.newValue && SI && SI.device) { SI = null; siBadge(); if (currentView) route(); }
+    else if (e.newValue && !siIn()) { try { SI = JSON.parse(e.newValue); } catch (x) { SI = null; } siBadge(); if (currentView) route(); }
+  });
   function siIn() { return !!(SI && SI.token && SI.user && SI.exp && SI.exp > Date.now()); }
   /* Guest passes: the owner grants a link that opens LV3 (Staff) for 24 hours. The relay signs and checks the pass and
      reads the Staff documents for the guest; the pass lives in this tab only and cannot be extended here. */
@@ -2855,7 +2867,7 @@
       return raw ? r.text() : r.json();
     });
   }
-  function signIn() {
+  function signIn(device) {
     if (!siOn()) return Promise.reject(new Error("Sign-in is not switched on yet."));
     var relay = siCfg().relay.replace(/\/$/, ""), origin;
     try { origin = new URL(relay).origin; } catch (e) { return Promise.reject(new Error("The sign-in relay address is not valid.")); }
@@ -2873,7 +2885,7 @@
         if (m.error || !m.token) { var er = new Error(m.error || "Sign-in failed."); er.code = m.code; fail(er); return; }
         /* A sign-in lasts at most 24 hours at every level (less if GitHub's token expires sooner); then sign in again */
         var cap = Date.now() + 24 * 3600 * 1000;
-        SI = { token: m.token, exp: m.expires_in ? Math.min(cap, Date.now() + m.expires_in * 1000) : cap };
+        SI = { token: m.token, exp: m.expires_in ? Math.min(cap, Date.now() + m.expires_in * 1000) : cap, device: !!device };
         siApi("/user").then(function (u) {
           SI.user = { id: u.id, login: u.login, name: u.name || "", avatar: u.avatar_url };
           siSave(); lsv("hp.verified", "1"); siBadge(); siOrg(); siFresh = Date.now(); ok(SI.user);
@@ -2888,12 +2900,16 @@
   function siStart(o) {
     o = o || {};
     var m = hpModal({ kicker: "Hound ID · Sign in", title: "Sign in with GitHub",
-      html: '<ol class="hm-steps"><li><b>GitHub opens</b> in a small window in the middle of your screen.</li><li><b>Authorize Hound ID Sign-in</b> the first time. It can only read what your GitHub teams already allow.</li><li><b>Your keycard</b> appears here, at your clearance.</li></ol><p class="hm-note">We never see your password, and nothing about you is stored on a server.</p>',
+      html: '<ol class="hm-steps"><li><b>GitHub opens</b> in a small window in the middle of your screen.</li><li><b>Authorize Hound ID Sign-in</b> the first time. It can only read what your GitHub teams already allow.</li><li><b>Your keycard</b> appears here, at your clearance.</li></ol>' +
+        '<label class="hm-check"><input type="checkbox" id="siDev"><span><b>Keep me signed in on this device (24 h)</b><small>Every tab on this browser stays signed in until the 24 hours run out. Leave it off on shared or work computers.</small></span></label>' +
+        '<p class="hm-note">We never see your password, and nothing about you is stored on a server.</p>',
       actions: [{ label: "Cancel", value: null }, { label: "Continue with GitHub", primary: true, run: go }] });
+    var dev = false;
     function go() {
+      if ($("#siDev")) dev = $("#siDev").checked; /* kept for Try again, when the box is no longer shown */
       m.body('<div class="hm-wait"><span class="spin"></span><b>Waiting for GitHub…</b><small>Finish signing in in the GitHub window. If nothing opened, allow pop-ups for this site.</small></div>');
       m.actions([{ label: "Cancel", value: null }]);
-      signIn().then(function () {
+      signIn(dev).then(function () {
         status("Signed in"); blip("go");
         m.body('<div class="hm-ok"><b>Access granted</b><small>Opening your keycard…</small></div>'); m.actions([]);
         setTimeout(function () { m.close(true); if (o.stay || currentView === "profile") route(); else location.hash = "#/profile"; }, opts.motion ? 700 : 0);
@@ -3011,7 +3027,7 @@
           '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>End pass<small>End guest clearance</small></span></button></div></div>' :
         '<dl class="kc-facts"><div><dt>GitHub</dt><dd><a href="https://github.com/' + encodeURIComponent(c.login) + '" target="_blank" rel="noopener noreferrer">' + esc(c.login) + "</a> · account #" + esc(c.github_id) + "</dd></div>" +
           "<div><dt>Card</dt><dd>" + (c.owner ? "Owner card: GitHub confirms you own the Hound-Protocol organization." : c.member ? 'Member card. Staff cards are issued by Administration (<a href="#/guides/hp-gde-009">how</a>).' : '<a href="#/verify/' + esc(c.id) + '">Signed staff card ' + esc(c.id) + "</a>") + "</dd></div>" +
-          "<div><dt>Session</dt><dd>Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + " in this tab (at most 24 hours)</dd></div>" +
+          "<div><dt>Session</dt><dd>Signed in until " + esc(new Date(SI.exp).toTimeString().slice(0, 5)) + (SI.device ? " on this device, in every tab" : " in this tab") + " (at most 24 hours)</dd></div>" +
           '</dl><button type="button" class="si-out" id="siOut"><i aria-hidden="true"></i><span>Sign out<small>Sign out of clearance</small></span></button></div></div>') +
         siCerts(c) +
         (siOwner() ? sgPanel() : "") +
@@ -3019,7 +3035,7 @@
         "";
       $("#siOut").addEventListener("click", function () {
         (c.guest ? hpConfirm("End your guest pass?", "You will need the link again to come back, while it is still valid.", "End guest pass", "Stay", "danger")
-          : hpConfirm("Are you sure you want to log out?", "Your Hound ID session in this tab ends. You can sign in again at any time.", "Log out", "Stay signed in", "danger")).then(function (yes) {
+          : hpConfirm("Are you sure you want to log out?", SI && SI.device ? "Your Hound ID session ends on this device, in every tab. You can sign in again at any time." : "Your Hound ID session in this tab ends. You can sign in again at any time.", "Log out", "Stay signed in", "danger")).then(function (yes) {
           if (!yes) return;
           if (c.guest) { SG = null; sgSave(); siBadge(); status("Guest pass ended"); } else { signOut(); status("Signed out"); }
           viewProfile();

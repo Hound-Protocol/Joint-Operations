@@ -65,6 +65,7 @@ Setup, once:
 - **Short links:** passes look like `tnfk0k.4ea23979.8F5wafMVtMwbZUrV` (expiry, pass number, signature) and open at `#/g/…`. Older long links still work.
 - **Clearing:** LV7 can clear any pass, live ones included (it is revoked at once), or every pass with **Clear all**.
 - **Sign-in length:** a sign-in lasts at most 24 hours at every level, then the person signs in again.
+- **Keep me signed in on this device:** an opt-in box in the sign-in window (off by default). The sign-in is then kept in local storage, shared by every tab on that browser, and signing out in one tab signs out all of them. The page's security policy only lets the site's own scripts run, which keeps the token away from foreign scripts.
 - Needs the KV storage (section 6, step 5) and the current `worker.js`.
 - **Health:** `/health` answers the relay's version and whether its storage, guest settings and app key are present (yes or no, never their values). The site expects the version in `config.json` (`signin.relayVersion`); LV7 gets a message when the relay is behind, and **Options → Sign-in relay** shows its state for everyone.
 
@@ -76,11 +77,11 @@ Banned GitHub accounts are refused at sign-in and see *Access revoked · LV0*. A
 - **Profile:** your keycard (your signed staff card, or a member card), your session, and your documents.
 - **Your documents:** one area per private repository. Areas above your clearance stay locked; inside an area GitHub decides what you can read.
 - **Guest:** open the link the owner sent, or ask for a pass with your name and wait for the owner's answer. The pass is kept in that tab; **End guest pass** on the Profile removes it.
-- **Sign out:** the button on the Profile page, or close the tab.
+- **Sign out:** the button on the Profile page, or close the tab (unless you chose to stay signed in on the device).
 
 ## How it stays safe
 - The relay keeps its secrets (client secret, app key, guest secret) and nothing else: no database, no logs of tokens or passes.
 - Guest passes are signed by the relay and checked by the relay on every request. The browser cannot forge, extend or widen one. Only LV7 (the owner, or an organization owner GitHub confirms) can grant or approve them.
-- The token lives only in the reader's browser tab (session storage) and the sign-in ends after at most 24 hours. Signing out removes it.
+- The token lives in the reader's browser tab (session storage), or on that device (local storage) when they choose to stay signed in, and the sign-in ends after at most 24 hours. Signing out removes it.
 - The token can only read the contents of the three private repositories, and only those the person's teams can already read.
 - Leaving a team removes access immediately ([HP-SOP-007](guides/HP-SOP-007-onboarding-offboarding.md)).

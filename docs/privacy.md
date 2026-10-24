@@ -1,6 +1,6 @@
 # Privacy
 
-Status: Current · Updated: 2026-10-23
+Status: Current · Updated: 2026-10-24
 
 This site does not use cookies, analytics, trackers or advertising. It collects no personal data unless you choose to sign in, and even then nothing is stored on our side.
 
@@ -10,6 +10,7 @@ This site does not use cookies, analytics, trackers or advertising. It collects 
 - **Messages** in the top bar (clearance changes, guest passes, requests) are kept in your browser's local storage, at most 30. **Clear all** in the messages menu deletes them.
 - Data read from GitHub is cached in your browser for a few minutes to avoid repeated requests. It is cleared when you close the tab.
 - **If you sign in:** your GitHub sign-in token, account number, user name, display name and picture address are kept in this browser tab's session storage, so the Profile page can show your keycard and your documents. They are deleted when you sign out or close the tab, and your sign-in ends on its own after at most 24 hours.
+- **Keep me signed in on this device (optional, off by default):** the same sign-in is kept in this browser's local storage instead, so every tab shares it. It is deleted when you sign out, and ends on its own after at most 24 hours. Leave it off on shared or work computers.
 
 ## Sign-in
 Signing in is optional and uses your GitHub account ([how it works](signin.md), [ADR 0017](decisions/0017-hound-id-sign-in.md)).

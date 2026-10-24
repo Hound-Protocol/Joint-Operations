@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.2.0 · Stay signed in · 2026-10-24
+- **Keep me signed in on this device (24 h):** a new box in the sign-in window, off by default. Ticked, your sign-in is shared by every tab on that browser until the 24 hours run out. Signing out in one tab signs you out in all of them. Leave it off on shared or work computers. Your Profile shows which kind of session you have.
+- **Privacy and sign-in docs** explain where the sign-in is kept in each case ([privacy](docs/privacy.md), [sign-in](docs/signin.md)).
+- **Roadmap:** this release's base detail is a fishing boat's lantern bobbing on the horizon, drawn by CSS alone.
+
 ## Site 1.1.0 · Open to read · 2026-10-24
 - **Every section is readable at LV1:** Download, Sessions, Contribute and Mods no longer sit behind *No access*. Visitors can read everything public; restricted documents keep their own clearance.
 - **Acting needs LV2:** claiming a contract and downloading a build (and, later, joining a session) open a small **LV2 needed** window with **Sign in with GitHub** and **Request a guest pass**. Claiming still needs a GitHub sign-in, because a claim carries your account.
