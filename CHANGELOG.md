@@ -2,6 +2,11 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.7.0 · Three projects · 2026-10-24
+- **Hound Protocol's projects:** the Team page has a new **Our projects** section. **Our first video game** leads it, as Hound Protocol's main project: an original, atmospheric offroad trucking game set in a world of our own, *Coming soon*, its name still classified. Then the two multiplayer mods: **MGSV: Joint Operations** (in development, 0.1 first) and **Lost Planet 2 multiplayer** (planned, after Joint Operations).
+- **New description everywhere:** *A community-focused organization that builds ambitious projects: two multiplayer mods, and our first video game, coming soon.* It is on the Team page, the main menu, the README, the team document and the suggested GitHub organization profile ([team](docs/team.md)). The mods stay free and non-commercial; Hound Protocol is not a company or a studio yet.
+- **Roadmap:** this release's base detail is a tanker crawling across the south sea with its stern light on, drawn by CSS alone.
+
 ## Site 1.6.0 · Open channel · 2026-10-24
 - **Join Discord button:** documents about the Discord server now carry a **Join Discord** button under their opening lines: about a third of the page wide, centred, in Discord's blurple with a pressed-button edge and a light sweep. It opens our invite in a new tab. In the Handbook: the Discord Member Guide (HP-GDE-008), Discord Administration (HP-SOP-008) and the Community and Moderation Policy (HP-POL-005); in the Library: the Discord Blueprint.
 - **Animated icon:** a chat bubble whose three dots type and whose signal pulses, drawn in code. It is our own design, not Discord's logo, so it needs no permission and no image file. Animation stops with Calm mode or reduced motion. Printed sheets and PDFs show the invite address instead of the button.

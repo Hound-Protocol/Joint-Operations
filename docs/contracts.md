@@ -67,6 +67,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F27 | Site 1.4.0: Docs opens on a choice of zones, distinct zone buttons | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F28 | Site 1.5.0: position marker beside the right ruler | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F29 | Site 1.6.0: Join Discord button in Discord documents | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F30 | Site 1.7.0: Hound Protocol's projects on the Team page | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -857,3 +858,12 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 
 **Acceptance criteria**
 - Button about 30% wide, centred, Discord blurple, own animated icon; in HP-GDE-008, HP-SOP-008, HP-POL-005 and the Discord Blueprint; print shows the address
+
+## F30
+**Site 1.7.0: Hound Protocol's projects on the Team page**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Describe Hound Protocol's two mods and announce its first video game, briefly
+
+**Acceptance criteria**
+- Team page lists the game (coming soon, name classified), Joint Operations and Lost Planet 2; description updated on the menu, README, team doc and org profile guide

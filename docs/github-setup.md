@@ -38,7 +38,7 @@ Repository page → gear icon next to **About**:
 ## 7. Organization (github.com/Hound-Protocol → Settings)
 - **Authentication security:** require two-factor authentication for all members.
 - **Member privileges:** base permission **Read**; members cannot create public repositories.
-- **Profile:** display name `Hound Protocol`, description `A community-focused organization. We build ambitious projects, one of them being Joint Operations.`, website as above. No Konami artwork.
+- **Profile:** display name `Hound Protocol`, description `A community-focused organization building ambitious projects: two multiplayer mods and our first video game, coming soon.`, website as above. No Konami artwork.
 - Optional: create a repository named `.github` with `profile/README.md` to show an organization page.
 
 ## 8. Add people

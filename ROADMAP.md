@@ -48,6 +48,7 @@ Gates and sequence are in docs/pre-development.md.
 - [x] Site 1.4.0: Docs opens on a choice of two zones, Library or Handbook, with distinct zone buttons
 - [x] Site 1.5.0: position marker beside the right ruler
 - [x] Site 1.6.0: Join Discord button in Discord documents
+- [x] Site 1.7.0: Hound Protocol's projects on the Team page: our first game, Joint Operations and Lost Planet 2
 - [x] Signed certificates of service, checked in the browser and printable (ADR 0020)
 - [x] Discord structure set up (see docs/discord.md)
 - [x] Quiet until 0.1 decided (ADR 0014)

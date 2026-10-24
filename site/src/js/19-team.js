@@ -8,7 +8,8 @@
       t = t || { members: [], seats: [], roles: [], departments: [] };
       var still = !opts.motion;
       $("#vb").innerHTML = '<div class="bf">' +
-        '<section class="bf-sec team-brand"><div class="tb-mark">' + BRAND.hpColor + '</div><div><div class="tb-name">Hound Protocol</div><p>A community-focused organization. We build ambitious projects, one of them being <b>Joint Operations</b>.</p></div><div class="tb-mark jo"><img src="assets/brand/joint-operations-mark.svg" alt="Joint Operations"></div></section>' +
+        '<section class="bf-sec team-brand"><div class="tb-mark">' + BRAND.hpColor + '</div><div><div class="tb-name">Hound Protocol</div><p>A community-focused organization that builds ambitious projects: two multiplayer mods, and our first video game, coming soon.</p></div><div class="tb-mark jo"><img src="assets/brand/joint-operations-mark.svg" alt="Joint Operations"></div></section>' +
+        teamProjects() +
         '<section class="bf-sec team-members">' + t.members.map(function (m) {
           return '<article class="member"><div class="portrait"><picture>' +
             (m.still ? '<source srcset="' + esc(m.still) + '" media="(prefers-reduced-motion: reduce)">' : "") +
@@ -22,6 +23,20 @@
     });
   }
 
+  /* Our projects: the two mods, and the first game, kept under wraps until it is announced */
+  function teamProjects() {
+    function card(cls, kind, name, status, text) {
+      return '<article class="prj ' + cls + '"><div class="prj-top"><span class="prj-kind">' + kind + '</span><span class="prj-st">' + status + "</span></div><h3>" + name + "</h3><p>" + text + "</p></article>";
+    }
+    return '<section class="bf-sec"><div class="label">Our projects</div><div class="prjs">' +
+      card("p-game", "Video game · Main project", 'Project <span class="prj-red" aria-label="name classified">████████</span>', "Coming soon",
+        "Hound Protocol's first video game: an original, atmospheric offroad trucking game, set in a world of our own. More when it is ready.") +
+      card("p-jo", "Multiplayer mod", "MGSV: Joint Operations", "In development",
+        "Online play for up to 16 players in Metal Gear Solid V: The Phantom Pain, on PC. Version 0.1, for two players, comes first.") +
+      card("p-lp", "Multiplayer mod", "Lost Planet 2 multiplayer", "Planned",
+        "Modernizing how Lost Planet 2 is played online, and possibly other Lost Planet games. Starts after Joint Operations.") +
+      '</div><p class="prj-note">Our mods are unofficial, free and non-commercial, and use no game files. The game is our own, with no other company\'s characters or world.</p></section>';
+  }
   // Chain of command (HP-POL-007): one tier per keycard level, authority badges per role
   function teamChain(t) {
     var A = t.authority || {}, depts = {};

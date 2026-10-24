@@ -53,7 +53,7 @@ It is a **multiplayer mod**. Hound Protocol and Joint Operations are an independ
 Full details: [ROADMAP.md](ROADMAP.md).
 
 ## Hound Protocol
-Hound Protocol is a non-commercial, community-focused organization. We build ambitious projects, one of them being Joint Operations. It is organized in four departments:
+Hound Protocol is a community-focused organization that builds ambitious projects: two multiplayer mods, **Joint Operations** and a planned **Lost Planet 2** multiplayer mod, and **our first video game**, an original offroad trucking game, coming soon. The mods are free and non-commercial. It is organized in four departments:
 
 | Department | Role |
 |---|---|

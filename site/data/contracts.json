@@ -1297,6 +1297,29 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F30",
+   "title": "Site 1.7.0: Hound Protocol's projects on the Team page",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Describe Hound Protocol's two mods and announce its first video game, briefly",
+   "deliverable": "",
+   "acceptance": [
+    "Team page lists the game (coming soon, name classified), Joint Operations and Lost Planet 2; description updated on the menu, README, team doc and org profile guide"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-24"
   }
  ],
  "updated": "2026-10-24"
