@@ -72,7 +72,7 @@ def strip_code(text):
 def main():
     docs = json.loads((ROOT / "site/data/docs.json").read_text())["docs"]
     guides = json.loads((ROOT / "site/data/guides.json").read_text())["guides"]
-    ids = {"docs": {d["id"] for d in docs} | {g["id"] for g in guides}, "guides": {g["id"] for g in guides}}
+    ids = {"docs": {d["id"] for d in docs} | {g["id"] for g in guides} | {"library"}, "guides": {g["id"] for g in guides}}
     errors = []
 
     for entry in docs + guides:
