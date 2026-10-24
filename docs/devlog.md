@@ -4,6 +4,11 @@ News and notes from Hound Protocol, newest first. It is updated regularly, whene
 
 ## 2026-10-24
 
+### Sign-in for everyone
+*Website*
+
+A tester outside the organization hit GitHub's 404 page when signing in: the sign-in app only accepted Hound-Protocol members. The setup guide now opens it to every GitHub account. The site also explains when a firewall or privacy tool such as Portmaster blocks the relay, and lists the addresses to allow.
+
 ### Guest Pass 2.0
 *Website*
 

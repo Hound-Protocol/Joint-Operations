@@ -68,6 +68,11 @@
     });
   }
   var siFresh = 0;
+  /* Firewalls and privacy tools (Portmaster, uBlock Origin, Pi-hole, NextDNS) can block the relay. When a request cannot
+     reach it, say so plainly and name the address to allow, instead of a bare network error. */
+  function relayHost() { try { return new URL(siRelay()).host; } catch (e) { return "the sign-in relay"; } }
+  function netHelp() { return "This browser could not reach Hound ID's relay (" + relayHost() + "). A firewall or privacy tool such as Portmaster, uBlock Origin or Pi-hole may be blocking it: allow that address, then try again. Help: Using the Website, section 7."; }
+  function relayReach() { return typeof fetch !== "function" ? Promise.resolve(true) : fetch(siRelay() + "/health", { cache: "no-store" }).then(function () { return true; }, function () { return false; }); }
   /* The sign-in window: explains the three steps, opens GitHub, waits, and reports back in the site's own design */
   function siStart(o) {
     o = o || {};
@@ -92,8 +97,11 @@
           m.actions([{ label: "Close", value: null }]);
           return;
         }
-        m.body('<div class="hm-err"><b>Not signed in</b><small>' + esc(e.message) + "</small></div>");
-        m.actions([{ label: "Close", value: null }, { label: "Try again", primary: true, run: go }]);
+        /* A blocked relay often shows up only as a closed or broken GitHub window: check it before blaming the window */
+        relayReach().then(function (up) {
+          m.body('<div class="hm-err"><b>Not signed in</b><small>' + esc(up ? e.message : netHelp()) + "</small></div>");
+          m.actions([{ label: "Close", value: null }, { label: "Try again", primary: true, run: go }]);
+        });
       });
     }
     return m.result;
@@ -278,7 +286,7 @@
     var lv = ["LV0", "LV1", "LV2", "LV3", "LV4", "LV5", "LV6", "LV7"];
     return '<section class="si-levels"><div class="label">Clearance levels</div>' +
       '<ol class="si-how"><li><b>Sign in with GitHub</b> and you hold a member card, <b>LV2</b>.</li><li><b>Higher cards are earned:</b> a completed contract brings LV3; LV4 to LV6 come with a department. Each staff card is signed, so it cannot be faked.</li>' +
-      '<li><b>GitHub guards the doors:</b> restricted documents live in private repositories that open at their level. A <b>guest pass</b> opens LV3 for 24 hours; banned accounts are <b>LV0</b>.</li></ol>' +
+      '<li><b>GitHub guards the doors:</b> restricted documents live in private repositories that open at their level. A <b>guest pass</b> opens LV2, LV3, LV5 or LV6 for 24 hours; banned accounts are <b>LV0</b>.</li></ol>' +
       '<div class="si-lvrow">' + lv.map(function (l, k) {
         var n = +l.slice(2), spec = { id: n > 2 ? "HND-000" + n : ["REVOKED", "VISITOR", "MEMBER"][n], login: "agent", name: "Agent", github_id: 0, card: l, department: (KC_LV[l] || [""])[0], since: "", status: n === 0 ? "revoked" : "active" };
         return '<figure style="--k:' + k + '">' + keycard(spec, { specimen: true }) + "<figcaption><b>" + esc(l) + " · " + esc((KC_LV[l] || [""])[0]) + "</b>" + esc(SI_LV_INFO[l]) + "</figcaption></figure>";

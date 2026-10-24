@@ -46,7 +46,7 @@
     });
   }
   function gkB64u(buf) { var s = "", u = new Uint8Array(buf); for (var i = 0; i < u.length; i++) s += String.fromCharCode(u[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
-  function gkErr(e) { return e && (e.message === "no_crypto" || e.message === "no_idb") ? "This browser cannot keep a device key (a private window, or an old browser). Open the link in an up-to-date browser, in a normal window." : e instanceof TypeError ? "Could not reach the sign-in relay. Try again in a minute." : (e && e.message) || "Something went wrong."; }
+  function gkErr(e) { return e && (e.message === "no_crypto" || e.message === "no_idb") ? "This browser cannot keep a device key (a private window, or an old browser). Open the link in an up-to-date browser, in a normal window." : e instanceof TypeError ? netHelp() : (e && e.message) || "Something went wrong."; }
 
   /* ---- Signed requests: "<pass>.<time>.<signature over time, method, path and query>" ---- */
   function sgApi(path, raw, method) {
@@ -163,7 +163,7 @@
         });
       }
       sgDenied({ revoked: "This guest pass has been revoked.", ended: "This guest pass was ended by its holder.", expired: "This guest pass has run its time.", lapsed: "This guest pass was not claimed within 72 hours." }[j.state] || "This guest pass is no longer valid.");
-    }, function () { if (currentView === "guest") sgDenied("Could not reach the sign-in relay. Try again in a minute."); });
+    }, function (e) { if (currentView === "guest") sgDenied(e instanceof TypeError ? netHelp() : "This guest pass could not be checked. Try again in a minute."); });
   }
   /* The claim window: the clearance, a name (required), Claim. Then the credential rises in the middle of the window. */
   function sgClaim(id, code, j) {
@@ -248,7 +248,7 @@
       }).join("") || '<li class="none"><span>No live guest passes.</span></li>');
       sgHistory(ps);
       sgWireList();
-    }, function (e) { $("#gpMsg").textContent = e instanceof TypeError ? "Could not reach the sign-in relay." : e.message; ul.innerHTML = ""; });
+    }, function (e) { $("#gpMsg").textContent = e instanceof TypeError ? netHelp() : e.message; ul.innerHTML = ""; });
   }
   /* Every pass ever issued: to whom, at which level, and what became of it */
   function sgHistory(ps) {
@@ -358,7 +358,7 @@
           }, function (e) { $("#gpMsg").textContent = e.message; $$("button", b.parentNode).forEach(function (x) { x.disabled = false; }); });
         };
       });
-    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Guest passes need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? "Could not reach the sign-in relay." : e.message) + "</span></li>"; });
+    }, function (e) { ul.innerHTML = '<li class="none"><span>' + esc(e.code === "no_kv" ? "Guest passes need the KV storage on the relay (sign-in setup, section 6)." : e instanceof TypeError ? netHelp() : e.message) + "</span></li>"; });
   }
   function sgPanelWire() {
     sgLoad(); sgAsks();
@@ -372,7 +372,7 @@
         g.disabled = true;
         m.body('<div class="hm-wait"><span class="spin"></span><b>Issuing a guest pass…</b></div>'); m.actions([]);
         sgOwnerApi("/guest/grant", "POST", { lvl: lvl }).then(function (k) { sgShowLink(m, k); sgLoad(); blip("go"); }, function (e) {
-          m.body('<div class="hm-err"><b>No pass issued</b><small>' + esc(e instanceof TypeError ? "Could not reach the sign-in relay." : e.message) + "</small></div>"); m.actions([{ label: "Close", value: null }]);
+          m.body('<div class="hm-err"><b>No pass issued</b><small>' + esc(e instanceof TypeError ? netHelp() : e.message) + "</small></div>"); m.actions([{ label: "Close", value: null }]);
         }).then(function () { setTimeout(function () { g.disabled = false; }, 1500); });
       }
     });

@@ -1950,7 +1950,10 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .hm.hm-blur .hm-back { background: rgba(4,6,7,.5); backdrop-filter: blur(10px) saturate(.6); -webkit-backdrop-filter: blur(10px) saturate(.6); }
 .hm-gate .hm-win { width: 620px; width: min(620px, 100%); border-color: #7d93a6; }
 .hm-gate .hm-bar { color: #9fb3c4; }
-.hm-gate .hm-act { flex-wrap: wrap; }
+.hm-gate .hm-act { display: grid; grid-template-columns: 1fr 1fr; }
+/* Three ways out of a clearance window: the main one across the top, the two others side by side below it */
+.hm-gate .hm-act .primary { grid-column: 1 / -1; order: -1; }
+.hm-gate .hm-act .btn { justify-content: center; text-align: center; }
 .gw-lv { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; }
 .gw-lv b { padding: 4px 12px; border: 1px solid #7d93a6; color: #9fb3c4; font: 300 36px/1 var(--ui); background: rgba(125,147,166,.1); }
 .gw-lv span { display: flex; flex-direction: column; font: 400 14px/1.3 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--fg); }
@@ -2107,3 +2110,11 @@ html.booting .center, html.booting .bar { opacity: 0; }
 .mb-shade { fill: rgba(0,0,0,.16); filter: blur(18px); animation: mbShade 140s linear infinite; }
 @keyframes mbShade { from { transform: translate(-260px, 640px); } to { transform: translate(1460px, 520px); } }
 .no-motion .mb-shade { display: none; }
+
+/* Base detail, Site 1.3.1: a channel buoy south-west of the command platform, its green light flashing every four seconds */
+.mb-buoy .mby-body { fill: #2f6b3a; stroke: #1c3f23; stroke-width: .8; } .mb-buoy line { stroke: #4d5a60; stroke-width: 1; }
+.mb-buoy .mby-light { fill: #6dff8a; opacity: .25; animation: mbyFlash 4s steps(1, end) infinite; }
+.mb-buoy .mby-bob { animation: mlBob 5.3s ease-in-out infinite; }
+@keyframes mbyFlash { 0% { opacity: 1; filter: drop-shadow(0 0 4px #6dff8a); } 12% { opacity: .25; filter: none; } }
+.no-motion .mb-buoy .mby-light, .no-motion .mb-buoy .mby-bob { animation: none; }
+@media (max-width: 520px) { .hm-gate .hm-act { grid-template-columns: 1fr; } }
