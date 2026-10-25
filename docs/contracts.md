@@ -68,6 +68,7 @@ Version 0.1 is built by the project lead. These contracts open to contractors af
 | F28 | Site 1.5.0: position marker beside the right ruler | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F29 | Site 1.6.0: Join Discord button in Discord documents | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 | F30 | Site 1.7.0: Hound Protocol's projects on the Team page | web | 🟢 Easy | — | done | Forge77 (with Claude) |
+| F31 | Site 1.7.1: move the projects section to the Hound Protocol website | web | 🟢 Easy | — | done | Forge77 (with Claude) |
 
 ## C01
 **Pin game build and set up Windows test rig**  
@@ -867,3 +868,12 @@ Module: web · Difficulty: 🟢 Easy · Skills:
 
 **Acceptance criteria**
 - Team page lists the game (coming soon, name classified), Joint Operations and Lost Planet 2; description updated on the menu, README, team doc and org profile guide
+
+## F31
+**Site 1.7.1: move the projects section to the Hound Protocol website**  
+Module: web · Difficulty: 🟢 Easy · Skills: 
+
+**Goal.** Keep this site about Joint Operations; projects belong on the Hound Protocol website
+
+**Acceptance criteria**
+- Team page, menu, README, team doc and org guide back to the 1.6.0 wording; Hound Protocol website shows the game and two mods

@@ -1320,7 +1320,30 @@
     "Forge77"
    ],
    "completed": "2026-10-24"
+  },
+  {
+   "id": "F31",
+   "title": "Site 1.7.1: move the projects section to the Hound Protocol website",
+   "module": "web",
+   "difficulty": "easy",
+   "skills": "",
+   "depends": [],
+   "goal": "Keep this site about Joint Operations; projects belong on the Hound Protocol website",
+   "deliverable": "",
+   "acceptance": [
+    "Team page, menu, README, team doc and org guide back to the 1.6.0 wording; Hound Protocol website shows the game and two mods"
+   ],
+   "refs": [],
+   "kind": "work",
+   "agents": [
+    "Claude"
+   ],
+   "status": "done",
+   "by": [
+    "Forge77"
+   ],
+   "completed": "2026-10-25"
   }
  ],
- "updated": "2026-10-24"
+ "updated": "2026-10-25"
 }

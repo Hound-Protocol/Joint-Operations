@@ -2,6 +2,10 @@
 
 All notable changes to MGSV: Joint Operations. Versions follow [HP-SOP-003](docs/guides/HP-SOP-003-release.md): the **website** has its own line from **Site 1.0.0** (before that it was 0.0.1 to 0.0.41); the **mod** starts at **0.1**, the first playable build, with its own changelog.
 
+## Site 1.7.1 · Back to the mod · 2026-10-25
+- **Projects moved to the Hound Protocol website:** the *Our projects* section and the new description from 1.7.0 belonged on [Hound Protocol's own website](https://hound-protocol.github.io/hound-protocol-web/), not here. They are removed from this site's Team page, main menu, README, team document and organization profile guide, which describe Hound Protocol as before. The Hound Protocol website now shows our first video game (coming soon) and the two multiplayer mods.
+- **Roadmap:** this release's base detail is a lifebuoy hung beside the bollards on the south dock, drawn by CSS alone.
+
 ## Site 1.7.0 · Three projects · 2026-10-24
 - **Hound Protocol's projects:** the Team page has a new **Our projects** section. **Our first video game** leads it, as Hound Protocol's main project: an original, atmospheric offroad trucking game set in a world of our own, *Coming soon*, its name still classified. Then the two multiplayer mods: **MGSV: Joint Operations** (in development, 0.1 first) and **Lost Planet 2 multiplayer** (planned, after Joint Operations).
 - **New description everywhere:** *A community-focused organization that builds ambitious projects: two multiplayer mods, and our first video game, coming soon.* It is on the Team page, the main menu, the README, the team document and the suggested GitHub organization profile ([team](docs/team.md)). The mods stay free and non-commercial; Hound Protocol is not a company or a studio yet.
