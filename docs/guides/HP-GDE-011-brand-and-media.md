@@ -1,7 +1,7 @@
 # Brand and Media Guide
 Code: HP-GDE-011 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · For: everyone who makes graphics, posts or videos about the project
 
-How to use the Hound Protocol and Joint Operations names, logos and colors. The full reference is the [brand guide](../brand.md).
+How to use the Hound Protocol and Joint Operations names, logos and colors. The full reference is the [brand guide](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/brand.md).
 
 ## The two brands
 | Brand | Colors | Mark |

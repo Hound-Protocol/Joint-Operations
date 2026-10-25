@@ -79,5 +79,5 @@ Prefer buttons to commands? **GitHub Desktop** does the same on Windows and macO
 ## 8. Good habits
 - One pull request per topic. Small pull requests are reviewed faster.
 - Say in the pull request if you used AI tools; they are welcome and credited ([HP-POL-002](HP-POL-002-ai-use-policy.md)).
-- Be kind in reviews and comments. Disagree with the work, never with the person ([Code of Conduct](../../CODE_OF_CONDUCT.md)).
+- Be kind in reviews and comments. Disagree with the work, never with the person ([Code of Conduct](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/code-of-conduct.md)).
 - Stuck? Ask in the issue or on the [Discord](HP-GDE-008-discord-members.md). Nobody is penalized for being slow or asking questions ([HP-POL-009](HP-POL-009-accountability.md)).

@@ -11,7 +11,7 @@ The Discord server is where the team talks, tests and plans. It is organized lik
 3. **Turn on two-factor authentication:** User Settings (the gear next to your name) → **My Account** → **Enable Two-Factor Auth**. Moderation channels require it, and it protects you ([HP-GDE-010](HP-GDE-010-account-security.md)).
 4. **Open the invite:** **https://discord.gg/QTpJ89kMCM** (also on the website's main menu and in the README). Choose **Accept Invite**.
 5. **Onboarding:** Discord shows a short setup. Pick what you are here for: **Windows Tester** or **Proton Tester** opens the QUALITY channels; you can skip it and pick later under **Channels & Roles** at the top of the channel list.
-6. **Read #rules and #welcome.** By staying, you agree to the [Code of Conduct](../../CODE_OF_CONDUCT.md).
+6. **Read #rules and #welcome.** By staying, you agree to the [Code of Conduct](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/code-of-conduct.md).
 7. You now hold **LV2 · Member**, which opens the community channels. Say hello in **#general**.
 
 **Tips**

@@ -2,9 +2,9 @@
 
 Status: Accepted design, waiting for the signing key (the project lead runs `keygen` once) · Updated: 2026-10-23
 
-Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, difficulty and a link to the merged pull request. Contractor grades (E to S++, see [departments.md](departments.md)) are counted from these records. Records are public on the website's [Verify page](https://hound-protocol.github.io/joint-operations-web/#/verify), and anyone can check them.
+Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, difficulty and a link to the merged pull request. Contractor grades (E to S++, see [departments.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md)) are counted from these records. Records are public on the website's [Verify page](https://hound-protocol.github.io/joint-operations-web/#/verify), and anyone can check them.
 
-Hand-written and AI-assisted work earn the same record; AI agents used are listed in `assisted`, detected from the pull request's commits ([ADR 0015](decisions/0015-ai-agents-and-attribution.md)). What counts is that the contract's acceptance criteria are met and the work passed review.
+Hand-written and AI-assisted work earn the same record; AI agents used are listed in `assisted`, detected from the pull request's commits ([ADR 0015](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0015-ai-agents-and-attribution.md)). What counts is that the contract's acceptance criteria are met and the work passed review.
 
 ## What a record looks like
 ```json

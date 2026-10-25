@@ -8,7 +8,7 @@ This is the master plan for everything that must be in place **before** developm
 | Area | State |
 |---|---|
 | Goal and scope | Set: multiplayer mod bringing online functionality into the single-player world, up to 16 players ([ADR 0001](decisions/0001-multiplayer-scope.md)) |
-| Team and name | Hound Protocol, a community-focused organization; contract-based contribution, departments and keycards ([governance](governance.md)). Critical seats wait for a playable prototype |
+| Team and name | Hound Protocol, a community-focused organization; contract-based contribution, departments and keycards ([governance](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/governance.md)). Critical seats wait for a playable prototype |
 | Repository and website | Public repository, website live on GitHub Pages, releases published automatically, CI in three browser engines |
 | Research | Desk research done for engine, modding tools, Steam, Proton, law, funding, prior art and the enemy AI ([research index](../research/README.md)) |
 | Architecture | Drafted, with two candidate strategies ([ADR 0002](decisions/0002-integration-strategy.md)) |
@@ -27,7 +27,7 @@ Development of 0.1 (Phase 2) starts only when every gate is **closed** or explic
 - [ ] Confirm the repository stays public (it is public now; docs no longer assume private)
 
 ### G2 People and governance
-- [ ] At least two holders for each critical seat: GitHub owner, Discord admin, release signer ([governance](governance.md)). **Deferred:** critical seats are filled once there is a playable prototype (project lead, 2026-10-23); until then the project lead holds them
+- [ ] At least two holders for each critical seat: GitHub owner, Discord admin, release signer ([governance](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/governance.md)). **Deferred:** critical seats are filled once there is a playable prototype (project lead, 2026-10-23); until then the project lead holds them
 - [ ] A **human** technical lead who can approve merges and releases (Claude is an AI agent, a tool, and cannot hold accounts or accountability)
 - [ ] Minimum crew to start Phase 1: one reverse engineer (C++, x64), one networking developer, one Windows tester, one Linux and Proton tester
 - [ ] Code of conduct and security policy adopted (`CODE_OF_CONDUCT.md`, `SECURITY.md`)

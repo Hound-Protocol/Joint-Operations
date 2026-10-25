@@ -2,7 +2,7 @@
 Code: HP-POL-009 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · Applies to: every contributor and every role holder, leads included
 
 ## 1. Purpose
-Joint Operations is a passion project, not a boot camp. There are **no deadlines and no time limits**: nobody is ever penalized for being slow, taking a break or leaving a contract. What we do ask is **care**: check your work before it reaches others, and do your role properly. This policy is how we hold everyone to that, the same way at every level ([ADR 0016](../decisions/0016-accountability.md)).
+Joint Operations is a passion project, not a boot camp. There are **no deadlines and no time limits**: nobody is ever penalized for being slow, taking a break or leaving a contract. What we do ask is **care**: check your work before it reaches others, and do your role properly. This policy is how we hold everyone to that, the same way at every level ([ADR 0016](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0016-accountability.md)).
 
 ## 2. Two tracks
 | Track | Who | About |

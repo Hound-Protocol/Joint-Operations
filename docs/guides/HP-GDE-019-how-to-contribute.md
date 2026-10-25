@@ -36,7 +36,7 @@ All work appears on the Contribute page, whoever does it, the owner and AI-assis
 | AI tools are welcome for code and documents; no generative AI art, music or voices | Credit the tool; art comes from people ([HP-POL-002](HP-POL-002-ai-use-policy.md)) |
 | Nothing touches Konami's servers or anti-cheat | Offline play and our own sessions only |
 | Leaving is fine; post a short handoff note first | Someone else can pick it up |
-| Be kind; disagree with the work, never the person | [Code of Conduct](../../CODE_OF_CONDUCT.md) |
+| Be kind; disagree with the work, never the person | [Code of Conduct](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/code-of-conduct.md) |
 
 ## 6. What you get
 - **Credit:** your name on the contributor wall and in signed records, with any AI tools you used named alongside.

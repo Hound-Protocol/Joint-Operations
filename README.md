@@ -62,7 +62,7 @@ Hound Protocol is a non-commercial, community-focused organization. We build amb
 | **Quality** | Testing, reviews, release sign-off |
 | **Contractor** | Contributors who take contracts and are graded E to S++ in each field |
 
-Access works like keycards, from **LV1** (visitor) to **LV7** (owner), and every staff member has a verifiable **Hound ID**. Sign in on the website with GitHub to see your keycard and the restricted documents your clearance opens. Every completed contract earns a signed record that anyone can check on the website. See [departments and grades](docs/departments.md), [keycard access](docs/decisions/0011-keycard-access.md) and [sign-in](docs/decisions/0017-hound-id-sign-in.md).
+Access works like keycards, from **LV1** (visitor) to **LV7** (owner), and every staff member has a verifiable **Hound ID**. Sign in on the website with GitHub to see your keycard and the restricted documents your clearance opens. Every completed contract earns a signed record that anyone can check on the website. See [departments and grades](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md), [keycard access](docs/decisions/0011-keycard-access.md) and [sign-in](docs/decisions/0017-hound-id-sign-in.md).
 
 ## Get involved
 - **Play:** follow the [Player Guide](docs/guides/HP-GDE-001-player-guide.md) when 0.1 is released.
@@ -83,7 +83,7 @@ Hand-written and AI-assisted work are welcome and credited equally, under the [A
 | Decisions | [docs/decisions/](docs/decisions/README.md) |
 | Research | [research/](research/README.md) |
 | Contracts | [docs/contracts.md](docs/contracts.md) |
-| Governance and team | [docs/governance.md](docs/governance.md) · [docs/team.md](docs/team.md) |
+| Governance and team | [docs/governance.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/governance.md) · [docs/team.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/team.md) |
 | Legal | [docs/legal.md](docs/legal.md) · [Clean-Room and IP Policy](docs/guides/HP-POL-003-clean-room-and-ip.md) |
 | Security | [SECURITY.md](SECURITY.md) |
 

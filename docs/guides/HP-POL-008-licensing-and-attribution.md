@@ -22,7 +22,7 @@ Anyone may build on our work, nobody may claim it as their own, and every piece 
 - Removing or changing someone's credit is not allowed, except to correct a mistake with their agreement.
 
 ## 5. Credit for AI agents
-- Work done with an AI agent is credited to the person, **with the agent named** as their tool, for example "Forge77, with Claude" ([ADR 0015](../decisions/0015-ai-agents-and-attribution.md)).
+- Work done with an AI agent is credited to the person, **with the agent named** as their tool, for example "Forge77, with Claude" ([ADR 0015](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0015-ai-agents-and-attribution.md)).
 - Keep the agent's commit trailers. They are detected automatically and shown on pull requests and records.
 - Hiding AI use on purpose breaks this policy and the [AI Use Policy](HP-POL-002-ai-use-policy.md).
 

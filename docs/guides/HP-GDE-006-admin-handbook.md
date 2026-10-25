@@ -2,7 +2,7 @@
 Code: HP-GDE-006 · Version 1.3 · Effective 2026-10-23 · Owner: Administration · For: Administration Department and seat holders
 
 ## What Administration owns
-Direction and decisions, seats and access, legal stance and funding, the community and moderation, and recruiting. See [governance.md](../governance.md) and [departments.md](../departments.md).
+Direction and decisions, seats and access, legal stance and funding, the community and moderation, and recruiting. See [governance.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/governance.md) and [departments.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md).
 
 ## Accounts and settings
 | Where | Must be on |

@@ -1,7 +1,7 @@
 # Chain of Command and Open Communication
 Code: HP-POL-007 · Version 1.1 · Effective 2026-10-23 · Owner: Administration · Applies to: everyone in Hound Protocol, on GitHub, Discord and the website
 
-Hound Protocol runs on three principles: **a solid hierarchy**, **open communication** and **transparency**. Everyone knows who decides what, anyone can talk to anyone, and decisions are made where people can see them. The decision is recorded in [ADR 0013](../decisions/0013-chain-of-command.md).
+Hound Protocol runs on three principles: **a solid hierarchy**, **open communication** and **transparency**. Everyone knows who decides what, anyone can talk to anyone, and decisions are made where people can see them. The decision is recorded in [ADR 0013](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0013-chain-of-command.md).
 
 ## 1. Three kinds of authority
 Authority means the right to make a decision that others must follow. There are three kinds, and each role has only the kinds listed for it.
@@ -26,7 +26,7 @@ Authority means the right to make a decision that others must follow. There are 
 Rules:
 1. **Authority only flows down.** A role can decide over people with a lower keycard, and only in its own kinds of authority. Development cannot moderate; moderators cannot decide on code.
 2. **Quality, contractors and members have no authority over anyone.** Quality's job is to check work against its acceptance criteria and to test it. A failed check stops that delivery or release until it is fixed, which is a quality gate, not authority over people. Development decides how to fix it.
-3. **AI agents have no authority.** An agent is a tool of the person using it, listed under Contractors, and its work is credited to that person ([ADR 0015](../decisions/0015-ai-agents-and-attribution.md)).
+3. **AI agents have no authority.** An agent is a tool of the person using it, listed under Contractors, and its work is credited to that person ([ADR 0015](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0015-ai-agents-and-attribution.md)).
 4. **Contractor grades give no authority.** A grade (E to S++) shows experience. Reviews by graded contractors are advice to Quality and Development.
 5. **The owner has the final say** in every kind of authority, and is the last step of every appeal.
 6. **Nobody decides their own case.** A person with authority hands a dispute they are part of to someone else with the same authority, or one level up.

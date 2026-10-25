@@ -55,5 +55,5 @@ Unreviewed or copied AI output is treated like any other copied or broken work u
 ## Attribution: who did it, and with what
 - Work done with an AI agent is **credited to you, with the agent named**: for example "Forge77, with Claude". You are responsible for it, as with any tool.
 - Keep the agent's commit trailers (for example `Co-Authored-By: Claude <noreply@anthropic.com>`) and name the agent in the pull request template. Removing trailers on purpose breaks this policy.
-- Agents are detected automatically from those trailers (`tools/agents.py`). Merged pull requests get an `agent: <name>` label and a credit comment, and signed contributor records list the agent, which the website shows as "with Claude" ([ADR 0015](../decisions/0015-ai-agents-and-attribution.md)).
+- Agents are detected automatically from those trailers (`tools/agents.py`). Merged pull requests get an `agent: <name>` label and a credit comment, and signed contributor records list the agent, which the website shows as "with Claude" ([ADR 0015](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0015-ai-agents-and-attribution.md)).
 - Agents are never graded and hold no authority. Your grade counts your work, whatever tools you used.

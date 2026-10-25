@@ -24,13 +24,13 @@ Each completed contract earns points in its field: 🟢 Easy **2**, 🟡 Medium 
 - Your **overall grade** is your best grade. It is your grade role on Discord (named Rank E to Rank S++ there).
 - **Commendations** work like medals: Administration can award one for exceptional work. It adds 5 points to every field and is listed publicly.
 - Grades never go down. They give no authority over anyone ([HP-POL-007](HP-POL-007-chain-of-command.md)).
-- Full rules: [departments.md](../departments.md).
+- Full rules: [departments.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md).
 
 ## Contributor records
 Every completed contract earns a **signed record**: who delivered which contract, its difficulty, the pull request and the date.
 - Records are signed with the project's key (Ed25519). Nobody can fake or edit one without the signature breaking.
 - Open **Verify** on the website to see the contributor wall and every record. Your browser checks each signature itself; "Verified" means it is genuine.
-- If you used an AI agent, the record says so: "Forge77, with Claude". The credit is yours; the agent is your tool ([ADR 0015](../decisions/0015-ai-agents-and-attribution.md)).
+- If you used an AI agent, the record says so: "Forge77, with Claude". The credit is yours; the agent is your tool ([ADR 0015](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0015-ai-agents-and-attribution.md)).
 
 ## Hound IDs
 Department members get a **Hound ID** (for example HND-0001): a signed staff card with their GitHub account, keycard level and department.

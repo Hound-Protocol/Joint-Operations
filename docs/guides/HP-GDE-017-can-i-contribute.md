@@ -9,7 +9,7 @@ You can contribute if all of these are true:
 | Requirement | Why |
 |---|---|
 | You can use a free **GitHub** account with two-factor authentication turned on | All work and credit lives there ([GitHub Basics](HP-GDE-014-github-basics.md), [Account Security](HP-GDE-010-account-security.md)) |
-| You agree to the [Contributor Policy](HP-POL-001-contributor-policy.md) and the [Code of Conduct](../../CODE_OF_CONDUCT.md) | Everyone works by the same rules |
+| You agree to the [Contributor Policy](HP-POL-001-contributor-policy.md) and the [Code of Conduct](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/code-of-conduct.md) | Everyone works by the same rules |
 | You will not share game files or copy other mods' code ([HP-POL-003](HP-POL-003-clean-room-and-ip.md)) | It keeps the project legal and open |
 | For testing or anything in the game: you own a **legal copy of MGSV: The Phantom Pain** on PC | We never share or touch pirated copies |
 
@@ -32,7 +32,7 @@ Not on the list? Design (made by people, no AI art), community help, translation
 Version 0.1 (the first playable build) is being built by the project lead. Until then:
 - **Open now:** Windows testers, Proton testers, reviewers, and help with documents and research.
 - **After 0.1:** contracts on the board open to everyone. You can already read them and pick the one you would like.
-- **After the playable prototype:** staff seats (technical lead, moderators, Discord admins, release signers). See [Governance](../governance.md).
+- **After the playable prototype:** staff seats (technical lead, moderators, Discord admins, release signers). See [Governance](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/governance.md).
 
 ## 4. Common worries
 | "But…" | The answer |

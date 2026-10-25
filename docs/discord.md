@@ -31,7 +31,7 @@ The script also brings an existing server in line with the blueprint. It renames
 6. Invite the first contributors, then open public invite.
 
 ## Roles (top to bottom)
-The server mirrors the project's four departments ([departments.md](departments.md)) and the keycard levels ([ADR 0011](decisions/0011-keycard-access.md)). Every staff role starts with its card level.
+The server mirrors the project's four departments ([departments.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md)) and the keycard levels ([ADR 0011](decisions/0011-keycard-access.md)). Every staff role starts with its card level.
 
 | Role | Who | Access |
 |---|---|---|

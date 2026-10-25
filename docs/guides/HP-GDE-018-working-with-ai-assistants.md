@@ -49,7 +49,7 @@ Common AI mistakes to look for: invented functions or APIs, links to pages that 
 3. If the tool made the commits (for example Claude Code), **keep its commit trailers** such as `Co-Authored-By: Claude <noreply@anthropic.com>`. Removing them on purpose breaks the policy.
 4. Answer review comments yourself. Use the assistant to help, but the reply and the fix are yours.
 
-What happens next: the checks detect the agent, the merged pull request gets an `agent:` label, and your signed record reads "your name, with Claude" (or the tool you used). **Your grade and credit are the same as for hand-written work** ([ADR 0015](../decisions/0015-ai-agents-and-attribution.md)). Disclosure never lowers your credit.
+What happens next: the checks detect the agent, the merged pull request gets an `agent:` label, and your signed record reads "your name, with Claude" (or the tool you used). **Your grade and credit are the same as for hand-written work** ([ADR 0015](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0015-ai-agents-and-attribution.md)). Disclosure never lowers your credit.
 
 ## 6. Quick checklist
 - [ ] I understand every line and can explain it.

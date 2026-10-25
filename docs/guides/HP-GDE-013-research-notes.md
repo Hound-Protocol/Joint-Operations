@@ -10,7 +10,7 @@ Research notes record what we learn about the game, Steam and other tools, in ou
 # Alert System
 Author: YourName, with Claude (AI agent) · Date: 2026-10-22 · Status: desk research · Game build: 1.0.15.4
 ```
-- Name any AI agent you used, the same way as in commits ([ADR 0015](../decisions/0015-ai-agents-and-attribution.md)).
+- Name any AI agent you used, the same way as in commits ([ADR 0015](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0015-ai-agents-and-attribution.md)).
 - **Status** is one of: desk research (read, not tested), tested on a rig (with the rig and build), or verified (checked by a second person).
 
 ## What goes in

@@ -19,19 +19,27 @@ def ref_link(ref, docs):
     path = docs.get(ref)
     if not path:
         return ref
+    if path.startswith("https://"):
+        return f"[{ref}]({path})"
     rel = ("../" + path) if not path.startswith("docs/") else path[len("docs/"):]
     return f"[{ref}]({rel})"
+
+
+# Organization documents that moved to the Hound Protocol website repository
+HP = "https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/"
+HP_DOCS = {"brand": HP + "brand.md", "team": HP + "team.md", "departments": HP + "departments.md", "governance": HP + "governance.md"}
 
 
 def render():
     data = json.loads(SRC.read_text(encoding="utf-8"))
     docs = {d["id"]: d["path"] for d in json.loads((ROOT / "data/docs.json").read_text(encoding="utf-8"))["docs"]}
+    docs.update(HP_DOCS)
     out = ["# Contract specs", "",
            "Generated from `data/contracts.json` by `tools/contracts_md.py`. Edit the JSON, then run the tool.", "",
            "Every contract has a goal, a deliverable and acceptance criteria. The Quality Department checks each criterion before merging. "
            "Difficulty (Easy, Medium, Hard) tells you how demanding a contract is. It is information only: anyone can take any contract. Core contracts are on the 0.1 critical path and reserved for the Development Department. "
            "Each completed contract earns points toward the contractor's grade in its field (E to S++). "
-           "See [Contributing](../CONTRIBUTING.md) and [departments.md](departments.md).", "",
+           "See [Contributing](../CONTRIBUTING.md) and [departments](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md).", "",
            "Version 0.1 is built by the project lead. These contracts open to contractors after 0.1. "
            "Foundation work (IDs starting with F) is everyone's current work on the project, the owner's and AI-assisted work included: "
            "it goes on the board when it starts and is checked off when it is done (`tools/work.py`, [HP-SOP-003](guides/HP-SOP-003-release.md)).", "",

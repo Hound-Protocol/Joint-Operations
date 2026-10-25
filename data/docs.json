@@ -140,12 +140,6 @@
       "path": "docs/decisions/0008-browser-launch.md"
     },
     {
-      "id": "adr-0009",
-      "title": "0009 Departments and Ranks",
-      "group": "Decisions",
-      "path": "docs/decisions/0009-departments-and-ranks.md"
-    },
-    {
       "id": "adr-0010",
       "title": "0010 Funding",
       "group": "Decisions",
@@ -164,28 +158,10 @@
       "path": "docs/decisions/0012-shared-alert.md"
     },
     {
-      "id": "adr-0013",
-      "title": "0013 Chain of Command",
-      "group": "Decisions",
-      "path": "docs/decisions/0013-chain-of-command.md"
-    },
-    {
       "id": "adr-0014",
       "title": "0014 Quiet Until 0.1",
       "group": "Decisions",
       "path": "docs/decisions/0014-quiet-until-0-1.md"
-    },
-    {
-      "id": "adr-0015",
-      "title": "0015 AI Agents and Attribution",
-      "group": "Decisions",
-      "path": "docs/decisions/0015-ai-agents-and-attribution.md"
-    },
-    {
-      "id": "adr-0016",
-      "title": "0016 Accountability",
-      "group": "Decisions",
-      "path": "docs/decisions/0016-accountability.md"
     },
     {
       "id": "adr-0017",
@@ -306,30 +282,6 @@
       "title": "Prior Art Study",
       "group": "Research",
       "path": "research/prior-art/dynamite.md"
-    },
-    {
-      "id": "team",
-      "title": "Team",
-      "group": "Community",
-      "path": "docs/team.md"
-    },
-    {
-      "id": "departments",
-      "title": "Departments and Ranks",
-      "group": "Community",
-      "path": "docs/departments.md"
-    },
-    {
-      "id": "brand",
-      "title": "Brand",
-      "group": "Community",
-      "path": "docs/brand.md"
-    },
-    {
-      "id": "governance",
-      "title": "Governance",
-      "group": "Community",
-      "path": "docs/governance.md"
     },
     {
       "id": "contributing",

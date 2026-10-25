@@ -1,23 +1,6 @@
-# Code of conduct
+# Code of Conduct
 
-Hound Protocol is an open community. Everyone who takes part, in GitHub, Discord or anywhere else the project is present, agrees to these rules.
+Joint Operations follows the Hound Protocol Code of Conduct, which applies to every Hound Protocol project:
+https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/code-of-conduct.md
 
-## Expected
-- Be respectful and assume good intent.
-- Give and accept critique of work, not of people.
-- Credit others' work and sources.
-- Help newcomers find their way.
-
-## Not accepted
-- Harassment, insults, threats, or discrimination of any kind.
-- Sexual content or unwelcome advances.
-- Sharing someone's private information.
-- Piracy, cheats for other people's online games, or attacks on Konami's online services.
-- Repeated disruption after a moderator has asked you to stop.
-
-## Enforcement
-1. A moderator may remove content and give a warning.
-2. Repeated or serious cases lead to a temporary or permanent ban from all project spaces.
-3. Reports go to the moderators privately (Discord moderator role, or a private message to a seat holder; until moderators are appointed after the playable prototype, the project lead). Reports are kept confidential.
-
-Moderators who are involved in a report step back from handling it.
+Reports: contact Administration on Discord or through the channels listed there.

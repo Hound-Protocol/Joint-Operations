@@ -2,7 +2,7 @@
 
 Status: Current · Updated: 2026-10-23
 
-Hound Protocol works like a contract network. Anyone can pick up a contract, deliver it, and leave. Contractors form the **Contractor Department**, one of four departments alongside Administration, Development and Quality ([departments.md](docs/departments.md)). This file explains how.
+Hound Protocol works like a contract network. Anyone can pick up a contract, deliver it, and leave. Contractors form the **Contractor Department**, one of four departments alongside Administration, Development and Quality ([departments.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md)). This file explains how.
 
 > **Before 0.1:** version 0.1 is being built by the project lead. The contract board shows the plan, and contracts open to contractors after 0.1. Testers and reviewers are welcome now.
 >
@@ -73,7 +73,7 @@ Every completed contract (delivered, reviewed by Quality and merged) earns **poi
 | **S+** | 125 | Can be invited into a department |
 | **S++** | 200 | Candidate for a lead position |
 
-Each contract has a **difficulty**, 🟢 **Easy**, 🟡 **Medium** or 🔴 **Hard**, so you know what you are about to take on. It is information, not a gate: anyone can take any contract. Contracts marked **Core** are on the 0.1 critical path and stay with the Development Department. The full structure, with the four departments, is in [departments.md](docs/departments.md).
+Each contract has a **difficulty**, 🟢 **Easy**, 🟡 **Medium** or 🔴 **Hard**, so you know what you are about to take on. It is information, not a gate: anyone can take any contract. Contracts marked **Core** are on the 0.1 critical path and stay with the Development Department. The full structure, with the four departments, is in [departments.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md).
 
 ## Submitting a mod to the repository
 Open an issue with the `mod-submission` label. Include the mod name, version, author, link, and what you tested. Reviewed mods are listed as Compatible or Known issues on the website.

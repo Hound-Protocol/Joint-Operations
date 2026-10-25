@@ -17,7 +17,7 @@ The project lead wants access levels on the website like the keycards in Metal G
 | **LV6** | Administration | Moderate people and content, edit pages, grant cards up to LV5 |
 | **LV7** | Owner | Everything. Only LV7 grants LV6 or LV7, publishes releases, and holds the records signing key |
 
-Levels add up: each card includes everything below it. Contractor grades (E to S++) are separate, sit inside LV3 and carry no authority ([ADR 0013](0013-chain-of-command.md)).
+Levels add up: each card includes everything below it. Contractor grades (E to S++) are separate, sit inside LV3 and carry no authority ([ADR 0013](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0013-chain-of-command.md)).
 
 ### Identity
 - Contributors and staff sign in with **GitHub**. Players will sign in with **Steam** (OpenID) once sessions go live.

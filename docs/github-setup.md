@@ -42,5 +42,5 @@ Repository page → gear icon next to **About**:
 - Optional: create a repository named `.github` with `profile/README.md` to show an organization page.
 
 ## 8. Add people
-- Seats are filled once there is a playable prototype ([governance](governance.md)). Then add seat holders as organization owners or maintainers (two per seat) and to the matching teams, which also opens their restricted documents ([signin.md](signin.md)).
+- Seats are filled once there is a playable prototype ([governance](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/governance.md)). Then add seat holders as organization owners or maintainers (two per seat) and to the matching teams, which also opens their restricted documents ([signin.md](signin.md)).
 - Add them to `.github/CODEOWNERS`.

@@ -2,7 +2,7 @@
 
 Status: Ready, not posted · Updated: 2026-10-23. Nothing here is posted before version 0.1: the project stays quiet until then ([ADR 0014](decisions/0014-quiet-until-0-1.md)). Before 0.1, recruiting is by personal invitation only. The project lead decides when and where to post.
 
-**Two waves.** Before 0.1, the project lead builds the core ([ADR 0009](decisions/0009-departments-and-ranks.md)), so we invite **Quality** helpers (testers and reviewers). Staff seats (moderators, Discord admins, technical lead, second GitHub owner, release signers) are filled once there is a playable prototype. After 0.1, contracts open and we recruit **contractors** for development.
+**Two waves.** Before 0.1, the project lead builds the core ([ADR 0009](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0009-departments-and-ranks.md)), so we invite **Quality** helpers (testers and reviewers). Staff seats (moderators, Discord admins, technical lead, second GitHub owner, release signers) are filled once there is a playable prototype. After 0.1, contracts open and we recruit **contractors** for development.
 
 This kit has ready-to-post texts, one pitch per role, answers to the usual questions, and the rules for whoever posts. Every post points to the Discord and the contract board.
 

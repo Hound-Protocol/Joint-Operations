@@ -2,7 +2,7 @@
 Status: Accepted · Date: 2026-10-22 · Deciders: project lead
 
 ## Context
-The repository, website and Discord are reachable, but there is nothing to play yet. Announcing too early would bring attention before there is a presentable version and a solid foundation that people can build on ([ADR 0009](0009-departments-and-ranks.md)).
+The repository, website and Discord are reachable, but there is nothing to play yet. Announcing too early would bring attention before there is a presentable version and a solid foundation that people can build on ([ADR 0009](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/decisions/0009-departments-and-ranks.md)).
 
 ## Decision
 1. **Joint Operations is not made actively public until version 0.1.** No announcements, launch posts, trailers or promotion on Reddit, forums, YouTube or social media before 0.1.

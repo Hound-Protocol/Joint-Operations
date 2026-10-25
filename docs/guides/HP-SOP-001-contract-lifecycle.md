@@ -23,7 +23,7 @@ How a piece of work goes from an idea to a signed contributor record.
 
 ## Claiming
 - `/claim` to join a contract, `/unclaim` to leave it. Several people can work on one contract together. Agree who does what on the issue.
-- One open contract per person, two from grade B upward ([departments.md](../departments.md)). Difficulty never limits who can take a contract.
+- One open contract per person, two from grade B upward ([departments.md](https://github.com/Hound-Protocol/hound-protocol-web/blob/main/docs/departments.md)). Difficulty never limits who can take a contract.
 - If there is no progress update for 14 days, a maintainer asks. After 7 more days without an answer, the contract is unassigned.
 
 ## Handoff when leaving
