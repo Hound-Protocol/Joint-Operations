@@ -25,7 +25,7 @@ All work goes on the Contribute page's board, whoever does it: contractors, staf
 
 ## Steps
 1. **Prepare.** Update `CHANGELOG.md` with a new section, `## Site X.Y.Z · Name · YYYY-MM-DD`, then the highlights. The release check fails if the version changes without its section.
-2. **Bump and roadmap.** Set `"version"` in `site/data/config.json`, and update `ROADMAP.md`: tick finished items, add new ones. The release check fails if the version changes without a roadmap update. The Roadmap page draws `ROADMAP.md` as a base under construction, so ticking items fills the platforms; when a release adds something new to the project, also give the base a matching detail (for example a new platform feature or more activity), so the picture grows with the project.
+2. **Bump and roadmap.** Set `"version"` in `joint-operations-web/site/data/config.json`, and update `ROADMAP.md`: tick finished items, add new ones. The release check fails if the version changes without a roadmap update. The Roadmap page draws `ROADMAP.md` as a base under construction, so ticking items fills the platforms; when a release adds something new to the project, also give the base a matching detail (for example a new platform feature or more activity), so the picture grows with the project.
 2b. **Check off the work.** Mark every finished item done with `tools/work.py`. The release check fails if the version changes and the board does not.
 3. **Pull request.** Everything for the release goes in one pull request, titled `Site X.Y.Z · <name>`.
 4. **Quality gate.** All checks green. For game builds: the checklist in [HP-POL-006](HP-POL-006-quality-policy.md) section 3.

@@ -10,7 +10,7 @@ Contributors can merge broken work without checking it, and role holders can ski
 3. Ladder: note (not counted), then infractions 1 and 2, and at **3 active infractions a suspension** with an invitation to appeal. Contributors cannot claim or merge; role holders step down from the role.
 4. **No time limits:** infractions clear through five clean deliveries or duties, not by waiting. Appeals have no deadline.
 5. Issued only along the chain of command (ADR 0013); Quality reports but does not issue. The owner cannot be suspended; duty concerns about the owner are recorded and answered in public.
-6. The record is `site/data/infractions.json`, changed only through pull requests with `tools/infractions.py`.
+6. The record is `data/infractions.json`, changed only through pull requests with `tools/infractions.py`.
 7. Enforcement: a required **Contributor standing** check on pull requests, refused claims for suspended contributors, and automatic **Broken main** incidents (not infractions by themselves).
 
 Rules: [HP-POL-009](../guides/HP-POL-009-accountability.md). Procedure: [HP-SOP-011](../guides/HP-SOP-011-infractions-and-appeals.md).

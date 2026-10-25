@@ -60,7 +60,7 @@ Quality reports problems with evidence but does not issue infractions.
 - Appealing is never held against you.
 
 ## 7. Transparency
-- Every infraction has a written reason, an evidence link and the issuer's name. The record (`site/data/infractions.json`) is changed only through pull requests, so its history is public.
+- Every infraction has a written reason, an evidence link and the issuer's name. The record (`data/infractions.json`) is changed only through pull requests, so its history is public.
 - It records facts about the work, never personal judgments.
 - Overturned infractions are marked as overturned and never count.
 

@@ -16,7 +16,7 @@ Departments and keycards (ADR 0009, ADR 0011) said who belongs where, but not wh
 The full rules are in [HP-POL-007](../guides/HP-POL-007-chain-of-command.md).
 
 ## Consequences
-- The Team page shows the hierarchy as a tree, generated from `site/data/team.json` (`hierarchy`).
+- The Team page shows the hierarchy as a tree, generated from `joint-operations-web/site/data/team.json` (`hierarchy`).
 - Discord moderation permissions stay with LV6 roles only. Department roles manage only their own channels.
 - CODEOWNERS and branch protection put merge approval with Development as the department fills. Until then, the owner approves.
 - HP-POL-005 (moderation) and HP-SOP-002 (pull request review) follow this policy.

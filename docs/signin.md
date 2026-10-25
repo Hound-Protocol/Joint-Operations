@@ -28,13 +28,13 @@ Organization → Settings → Developer settings → GitHub Apps → **New GitHu
 - **Install App** → Hound-Protocol → **Only select repositories**: `hp-staff`, `hp-leads`, `hp-admin`.
 
 ## 3. Relay (Cloudflare Worker, free plan)
-Cloudflare dashboard → Workers → **Create** → name it `hp-signin` → paste `tools/signin-relay/worker.js` → Deploy. Then Settings → Variables:
+Cloudflare dashboard → Workers → **Create** → name it `hp-signin` → paste `joint-operations-web/tools/signin-relay/worker.js` → Deploy. Then Settings → Variables:
 - `GITHUB_CLIENT_ID`: the app's Client ID (not secret).
 - `SITE_ORIGIN`: `https://hound-protocol.github.io`
 - `GITHUB_CLIENT_SECRET`: **Encrypt** (secret), paste the client secret.
 
 ## 4. Switch it on
-The relay URL goes in `site/data/config.json` → `signin.relay`, with the restricted areas in `signin.areas`. Neither the URL nor the client ID is secret. Live since v0.0.22: `https://hp-signin.trueman-truetown.workers.dev`.
+The relay URL goes in `joint-operations-web/site/data/config.json` → `signin.relay`, with the restricted areas in `signin.areas`. Neither the URL nor the client ID is secret. Live since v0.0.22: `https://hp-signin.trueman-truetown.workers.dev`.
 
 ## 5. Owner card (LV7) from GitHub
 Organization owners hold LV7 (ADR 0011). The website asks GitHub whether the signed-in account owns the organization, so nothing can be edited to fake it.
@@ -71,7 +71,7 @@ Setup, once:
    - `GUEST_REPOS` (Text), for LV5 and LV6 passes: `{"3":"Hound-Protocol/hp-staff","5":"Hound-Protocol/hp-leads","6":"Hound-Protocol/hp-admin"}`. Install the GitHub App on `hp-leads` and `hp-admin` too (GitHub App → **Install App** → Hound-Protocol → add the repositories).
    - `GITHUB_APP_PRIVATE_KEY` (Secret): the whole content of the `.pem` file, including the BEGIN and END lines
    - `GUEST_SECRET` (Secret): a long random string, for example 40 characters from a password manager
-4. Paste the current `tools/signin-relay/worker.js` into the worker (**Edit code** → **Deploy**) and check the variables are all still listed.
+4. Paste the current `joint-operations-web/tools/signin-relay/worker.js` into the worker (**Edit code** → **Deploy**) and check the variables are all still listed.
 5. **Storage for claims and revoking passes:** Cloudflare → **Storage & Databases → KV** → **Create** a namespace named `hp-relay`. Then hp-signin → **Settings → Bindings → Add → KV namespace**: variable name `HP_KV`, namespace `hp-relay` → **Deploy**. It enables **Claim** on the contract board and every guest pass feature. It holds contract claims (GitHub name and number), guest passes and their history (number, level, holder's name, times, outcome, the holder's public key), and visitor requests for 2 days.
 
 ## 6b. Clearance for visitors (LV1) and guest pass requests

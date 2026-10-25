@@ -1,19 +1,11 @@
-name: Deploy site
+name: Redirect old site address
 
+# The website moved to Hound-Protocol/joint-operations-web.
+# This keeps the old address (hound-protocol.github.io/Joint-Operations/) working:
+# every page forwards to the same page on the new site, keeping its #/ route.
+# Run it by hand (Actions -> Redirect old site address -> Run workflow) once the new site is live.
+# Until then the last deploy of the old site stays up.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "site/**"
-      - "tools/**"
-      - "docs/**"
-      - "research/**"
-      - "README.md"
-      - "ROADMAP.md"
-      - "CONTRIBUTING.md"
-      - "CODE_OF_CONDUCT.md"
-      - "SECURITY.md"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -29,24 +21,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-      - name: Assemble site
+      - name: Write redirect pages
         run: |
-          pip install fonttools brotli
-          python3 tools/assemble_site.py _site --woff2
-          for f in _site/data/*.json; do python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
-      - name: Handbook PDFs
-        # Chromium comes ready-made in Playwright's image (as in the checks), so a deploy never waits on the Ubuntu package mirror
-        timeout-minutes: 15
-        run: |
-          docker run --rm -v "$PWD:/w" -w /w mcr.microsoft.com/playwright/python:v1.52.0-noble \
-            bash -c 'python3 -c "import playwright" 2>/dev/null || pip install -q --break-system-packages playwright==1.52.0; python3 tools/guides_pdf.py _site'
-          sudo chown -R "$(id -u):$(id -g)" _site
+          mkdir -p _site
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en"><head><meta charset="utf-8">
+          <title>Joint Operations has moved</title>
+          <meta name="robots" content="noindex">
+          <link rel="canonical" href="https://hound-protocol.github.io/joint-operations-web/">
+          <meta http-equiv="refresh" content="0; url=https://hound-protocol.github.io/joint-operations-web/">
+          <script>
+            var p = location.pathname.replace(/^\/Joint-Operations\/?/i, "");
+            location.replace("https://hound-protocol.github.io/joint-operations-web/" + p + location.search + location.hash);
+          </script>
+          <style>body{background:#0b0d0e;color:#c9d1d6;font:16px system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0}a{color:#e8a33d}</style>
+          </head><body><p>The Joint Operations website has moved to <a href="https://hound-protocol.github.io/joint-operations-web/">hound-protocol.github.io/joint-operations-web</a>.</p></body></html>
+          HTML
+          cp _site/index.html _site/404.html
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

@@ -7,7 +7,7 @@ How a piece of work goes from an idea to a signed contributor record.
 ## Stages
 | # | Stage | Who | Done when |
 |---|---|---|---|
-| 1 | **Draft** | Development | Entry in `site/data/contracts.json` with goal, deliverable, acceptance criteria, and difficulty |
+| 1 | **Draft** | Development | Entry in `data/contracts.json` with goal, deliverable, acceptance criteria, and difficulty |
 | 2 | **Publish** | Development | Issue created with `tools/publish_contracts.py`, labels `contract`, `module:*`, `difficulty:easy|medium|hard`, and `core` where it applies |
 | 3 | **Claim** | Contractor | **Claim** on the website card (signed in with GitHub; the relay records the claim and the card's Contributors list shows it), or comment `/claim`. The Contract claims workflow assigns them at once, and the website shows their token on the card. Several people can claim one contract (up to 10) |
 | 4 | **Deliver** | Contractor | Pull request with `Closes #<issue>`, template filled in |

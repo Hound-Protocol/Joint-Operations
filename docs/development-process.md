@@ -18,7 +18,7 @@ How work moves from an idea to a release. Contribution rules for individuals are
 ```
 docs/            plans, architecture, decisions (docs/decisions/)
 research/        findings in our own words, with sources
-site/            the website
+data/            project records and the library and handbook indexes
 src/native/      C++ component (hooks, transport, session)
 src/lua/         game scripts
 tools/           build and helper scripts, test harness
@@ -26,10 +26,11 @@ tests/           automated tests that run outside the game
 ```
 
 ## Website development
-- The site's script is written as modules in `site/src/js/` and joined into `site/assets/js/app.js` by `python3 tools/build_js.py`. Commit both; CI checks they match.
+The website is in its own repository, [joint-operations-web](https://github.com/Hound-Protocol/joint-operations-web). Run `python3 tools/sync_mod.py PATH_TO_JOINT_OPERATIONS` there first: it brings in the documents and records from this repository. The commands below run in joint-operations-web, except `tools/check_links.py`, which checks this repository's documents.
+- The site's script is written as modules in `joint-operations-web/site/src/js/` and joined into `joint-operations-web/site/assets/js/app.js` by `python3 tools/build_js.py`. Commit both; CI checks they match.
 - `python3 tools/assemble_site.py _site` builds the deployable site (build number, documents, static doc pages). Add `--woff2` to convert fonts.
 - `python3 tests/browser_smoke.py _site` tests it in Chromium, Firefox and WebKit at desktop and phone sizes.
-- `python3 tools/check_links.py` checks every internal link in the docs and the site data; `python3 tools/css_compat.py` adds style fallbacks for older browsers. CI runs both.
+- `python3 tools/check_links.py` checks every internal link in the docs and the records in `data/`; `python3 tools/css_compat.py` adds style fallbacks for older browsers. CI runs both.
 - Full guide for website work: [HP-GDE-012](guides/HP-GDE-012-website-maintainers.md).
 - `python3 tools/bundle_site.py` makes the single-file version that opens from disk.
 

@@ -9,7 +9,7 @@ How to use the Hound Protocol and Joint Operations names, logos and colors. The 
 | **Joint Operations** (the mod) | Orange and white | The emblem: three operatives in a ring of sixteen marks. Small sizes use the sixteen-mark diamond |
 | **Hound Protocol** (the team) | White, black and red | The hound in a black hexagon, with a red ring, eye and collar |
 
-Files are in `site/assets/brand/`: full color, one color (`-mono`), light backgrounds (`-light`), lockups with the name, and 512 px avatars.
+Files are in `joint-operations-web/site/assets/brand/`: full color, one color (`-mono`), light backgrounds (`-light`), lockups with the name, and 512 px avatars.
 
 ## Do
 - Use the files as they are. Keep clear space around a mark equal to a quarter of its width.
@@ -30,7 +30,7 @@ If you use a free or bought graphic somewhere else, such as a website background
 3. Add the credit to `THIRD_PARTY_NOTICES.md` and wherever the license asks.
 
 ## Posting about the project
-Before version 0.1, we do not promote Joint Operations publicly ([ADR 0014](../decisions/0014-quiet-until-0-1.md)). Ask Administration first. From 0.1, use the link banner (`site/assets/img/og.png`) and always say it is an unofficial fan project, not affiliated with Konami.
+Before version 0.1, we do not promote Joint Operations publicly ([ADR 0014](../decisions/0014-quiet-until-0-1.md)). Ask Administration first. From 0.1, use the link banner (`joint-operations-web/site/assets/img/og.png`) and always say it is an unofficial fan project, not affiliated with Konami.
 
 ## License of the brand
 The names and logos are reserved. They are not part of the open licenses for the code and docs ([LICENSING.md](../../LICENSING.md)). You may use them unchanged to refer to this project. Forks must use their own name and logo.

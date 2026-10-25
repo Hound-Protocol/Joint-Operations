@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="site/assets/img/og.png" alt="MGSV: Joint Operations by Hound Protocol" width="720">
+  <img src="https://raw.githubusercontent.com/Hound-Protocol/joint-operations-web/main/site/assets/img/og.png" alt="MGSV: Joint Operations by Hound Protocol" width="720">
 </p>
 
 <h1 align="center">MGSV: Joint Operations</h1>
@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://hound-protocol.github.io/Joint-Operations/">Website</a> ·
-  <a href="https://hound-protocol.github.io/Joint-Operations/#/docs">Documentation</a> ·
+  <a href="https://hound-protocol.github.io/joint-operations-web/">Website</a> ·
+  <a href="https://hound-protocol.github.io/joint-operations-web/#/docs">Documentation</a> ·
   <a href="ROADMAP.md">Roadmap</a> ·
   <a href="https://discord.gg/QTpJ89kMCM">Discord</a> ·
   <a href="CHANGELOG.md">Changelog</a>
@@ -91,10 +91,11 @@ Hand-written and AI-assisted work are welcome and credited equally, under the [A
 ```
 docs/         plans, decisions, governance, and the handbook (docs/guides/)
 research/     sourced research notes
-site/         the website (deployed to GitHub Pages)
-tools/        build, checks, Discord setup, contract and record tools, sign-in relay
+data/         project records: contracts, contributor records, certificates, infractions, staff, library and handbook indexes
+tools/        checks, Discord setup, contract and record tools
 .github/      CI workflows, templates, code owners
 ```
+The website lives in its own repository, [joint-operations-web](https://github.com/Hound-Protocol/joint-operations-web), and reads the documents and records from this one.
 
 ## Requirements and rules
 - Your own legal copy of MGSV on Steam. This project does not distribute the game or any of its files.

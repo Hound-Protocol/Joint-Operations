@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Signed contributor records for Hound Protocol.
 
-Each completed contract gets one record in site/data/records.json, signed with
+Each completed contract gets one record in data/records.json, signed with
 the project's Ed25519 key. Anyone can check a record on the website's Verify
 page, or with `python3 tools/records.py verify`.
 
@@ -36,12 +36,12 @@ Needs: Python 3.8+ and the `cryptography` package for keygen, add and verify
 import argparse, base64, datetime, hashlib, json, os, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-RECORDS = ROOT / "site/data/records.json"
-KEYS = ROOT / "site/data/records-key.json"
-CONTRACTS = ROOT / "site/data/contracts.json"
-STAFF = ROOT / "site/data/staff.json"
-CERTS = ROOT / "site/data/certificates.json"
-# Grades and fields: the same tables as the website (site/src/js/15-contribute.js)
+RECORDS = ROOT / "data/records.json"
+KEYS = ROOT / "data/records-key.json"
+CONTRACTS = ROOT / "data/contracts.json"
+STAFF = ROOT / "data/staff.json"
+CERTS = ROOT / "data/certificates.json"
+# Grades and fields: the same tables as the website (joint-operations-web: site/src/js/15-contribute.js)
 POINTS = {"easy": 2, "medium": 5, "hard": 10}
 GRADE_STEPS = [("E", 1), ("D", 4), ("C", 8), ("B", 14), ("A", 22), ("A+", 32), ("A++", 50), ("S", 80), ("S+", 125), ("S++", 200)]
 FIELD_OF = {"net": "code", "session": "code", "launcher": "code", "modapi": "code", "hooks": "re", "testing": "qa", "lobby": "design", "web": "design", "docs": "docs", "legal": "docs"}
@@ -66,7 +66,7 @@ def save(path, obj):
 
 def canonical(record):
     """The exact bytes that are signed: the record without `sig`, keys sorted, no spaces, UTF-8.
-    The website builds the same string in JavaScript (site/src/js/19b-verify.js)."""
+    The website builds the same string in JavaScript (joint-operations-web: site/src/js/19b-verify.js)."""
     body = {k: v for k, v in record.items() if k != "sig"}
     return json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
@@ -150,7 +150,7 @@ def cmd_add(a):
         try:
             sys.path.insert(0, str(ROOT / "tools"))
             import agents as agent_detect
-            repo = load(ROOT / "site/data/config.json", {}).get("repo")
+            repo = "Hound-Protocol/Joint-Operations"
             agents = agent_detect.detect_commits(agent_detect.pr_commits(a.pr, repo))
         except SystemExit as e:
             sys.exit(f"{e}\nCould not detect AI agents automatically. Pass --assisted-by NAME (or --assisted-by '' for none).")

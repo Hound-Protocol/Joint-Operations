@@ -12,7 +12,7 @@ These settings cannot be changed from automated sessions, so an owner applies th
 ## 2. Repository details
 Repository page → gear icon next to **About**:
 - **Description:** `MGSV: Joint Operations, an unofficial multiplayer mod bringing online play for up to 16 players into the single-player world of Metal Gear Solid V (PC). By Hound Protocol.`
-- **Website:** `https://hound-protocol.github.io/Joint-Operations/`
+- **Website:** `https://hound-protocol.github.io/joint-operations-web/`
 - **Topics:** `metal-gear-solid-v`, `mgsv`, `mod`, `multiplayer`, `game-modding`, `fox-engine`, `proton`, `steam`
 - Untick Releases and Packages until there is something to publish (optional).
 
@@ -20,7 +20,7 @@ Repository page → gear icon next to **About**:
 - **Features:** Wikis off (docs live in the repo). Issues on. Discussions off (Discord is the community space). Projects optional.
 - **Pull requests:** allow **squash merging only**. Untick merge commits and rebase merging. Default squash message: pull request title and description.
 - Tick **Automatically delete head branches**.
-- **Social preview:** upload `site/assets/img/og.png`.
+- **Social preview:** upload `joint-operations-web/site/assets/img/og.png`.
 
 ## 4. Settings → Branches → Add branch ruleset for `main`
 - Require a pull request before merging. **Approvals: 0** while the project lead is the only reviewer; raise it to 1 when the seats are filled after the playable prototype.

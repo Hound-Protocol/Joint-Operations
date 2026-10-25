@@ -7,7 +7,7 @@ Status: Ready, not posted · Updated: 2026-10-23. Nothing here is posted before 
 This kit has ready-to-post texts, one pitch per role, answers to the usual questions, and the rules for whoever posts. Every post points to the Discord and the contract board.
 
 - Discord: https://discord.gg/QTpJ89kMCM
-- Website: https://hound-protocol.github.io/Joint-Operations/
+- Website: https://hound-protocol.github.io/joint-operations-web/
 - Code: https://github.com/Hound-Protocol/Joint-Operations
 - Contract specs: [contracts.md](contracts.md)
 
@@ -41,7 +41,7 @@ Hound Protocol is a community-focused organization that builds ambitious project
 - Docs writers and web developers (community moderators once there is a playable prototype)
 
 **Start here:** join the Discord. Testers can start now. Contracts open to contractors after version 0.1.
-Discord: https://discord.gg/QTpJ89kMCM · Site: https://hound-protocol.github.io/Joint-Operations/
+Discord: https://discord.gg/QTpJ89kMCM · Site: https://hound-protocol.github.io/joint-operations-web/
 
 ## Short post (Discord servers, Bluesky, X, Mastodon)
 Building MGSV: Joint Operations, an unofficial open-source multiplayer mod for Metal Gear Solid V (PC, Windows and Linux/Proton), for up to 16 players. Early stage. Looking for reverse engineers, netcode devs, Proton testers and docs writers. Contract-based: take a task, deliver it, leave any time. https://discord.gg/QTpJ89kMCM

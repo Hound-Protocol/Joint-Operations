@@ -1,7 +1,7 @@
 # Using the Website and Documentation
 Code: HP-GDE-015 · Version 1.16 · Effective 2026-10-24 · Owner: Administration · For: everyone
 
-The website at **hound-protocol.github.io/Joint-Operations** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
+The website at **hound-protocol.github.io/joint-operations-web** is the project's front door. It reads most of its content live from the repository, so what you see is current. This guide explains each section, how to find anything in the documentation, and how signing in works.
 
 ## 1. Getting around
 - **Main menu:** the first screen. Arrow keys and Enter work, as in a game menu. The panels beside it describe the project and the team.

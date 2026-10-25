@@ -6,7 +6,7 @@ MGSV: Joint Operations uses three licenses, one for each kind of material ([ADR 
 |---|---|---|
 | **Code**: the mod, launcher, tools, website code and tests | **GNU GPL-3.0-only**, with the additional permission below | [LICENSE](LICENSE), [LICENSES/GPL-3.0-only.txt](LICENSES/GPL-3.0-only.txt) |
 | **Documentation and text**: docs, research, handbook, website text | **CC BY-SA 4.0** | [LICENSES/CC-BY-SA-4.0.txt](LICENSES/CC-BY-SA-4.0.txt) |
-| **Brand**: the Hound Protocol and Joint Operations names, logos, emblem and avatars | **All rights reserved** | `site/assets/brand/`, `site/assets/img/` |
+| **Brand**: the Hound Protocol and Joint Operations names, logos, emblem and avatars | **All rights reserved** | `joint-operations-web/site/assets/brand/`, `joint-operations-web/site/assets/img/` |
 
 Copyright (C) 2026 Hound Protocol and contributors.
 
@@ -15,7 +15,7 @@ Copyright (C) 2026 Hound Protocol and contributors.
 - **Nobody may present this work as their own.** Notices and credits must stay.
 - **Forks stay open.** Anyone who distributes a changed version must publish its source under the same terms.
 - **The brand is not part of the open license.** Forks must use their own name and logos, so players can tell them apart. You may use our names and logos to refer to this project, unchanged.
-- Fonts and other third-party parts keep their own licenses (for example the SIL Open Font License for the site fonts, see `site/assets/fonts/`).
+- Fonts and other third-party parts keep their own licenses (for example the SIL Open Font License for the site fonts, see `joint-operations-web/site/assets/fonts/`).
 
 ## Additional permission under GNU GPL version 3 section 7
 If you modify this Program, or any covered work, by linking or combining it with the Steamworks SDK from Valve Corporation, or with Metal Gear Solid V: The Phantom Pain and its components from Konami Digital Entertainment (or modified versions of those), containing parts covered by the terms of their respective licenses, the licensors of this Program grant you additional permission to convey the resulting work. Corresponding Source for a non-source form of such a combination shall not include the source code for the parts of the Steamworks SDK or of the game used, as well as that of the covered work.

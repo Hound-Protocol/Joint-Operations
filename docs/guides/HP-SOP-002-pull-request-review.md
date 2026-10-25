@@ -2,7 +2,7 @@
 Code: HP-SOP-002 · Version 1.0 · Effective 2026-10-22 · Owner: Quality · Used by: everyone who opens or reviews a pull request
 
 ## Opening a pull request
-1. Branch from `main`. Name it `area/short-topic` (for example `site/guides`, `net/spike-gns`).
+1. Branch from `main`. Name it `area/short-topic` (for example `joint-operations-web/site/guides`, `net/spike-gns`).
 2. Sign off every commit: `git commit -s`.
 3. Fill in the template: what changed, contract, tests, AI assistance, checklist.
 4. Keep it focused. One contract, one pull request.

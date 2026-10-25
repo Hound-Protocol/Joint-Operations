@@ -2,19 +2,19 @@
 
 Status: v1 · Updated: 2026-10-23 · Owner: Administration
 
-Two marks, one family. **Hound Protocol** is the team. **Joint Operations** is the mod. Every piece is original vector artwork drawn in code (`tools/brand/build_brand.py`). There is no generative AI imagery ([AI Use Policy](guides/HP-POL-002-ai-use-policy.md)).
+Two marks, one family. **Hound Protocol** is the team. **Joint Operations** is the mod. Every piece is original vector artwork drawn in code (`joint-operations-web/tools/brand/build_brand.py`). There is no generative AI imagery ([AI Use Policy](guides/HP-POL-002-ai-use-policy.md)).
 
 ## The marks
-| Mark | Meaning | Files (`site/assets/brand/`) |
+| Mark | Meaning | Files (`joint-operations-web/site/assets/brand/`) |
 |---|---|---|
 | **Hound Protocol**: a geometric hound face over a red slash, with HOUND / PROTOCOL beneath (lockup) | The organization: watchful, sharp, organized like a unit | `hound-protocol-mark.svg` (no name), `hound-protocol-lockup.svg` (with name), each with `-mono` and `-light`; `hound-protocol-avatar.png` |
 | **Joint Operations badge**: a unit shield with an orange JOINT OPS band and a sixteen-point star around the orange host diamond | Sixteen players around one host | `joint-operations-mark.svg`, `-mono`, `-light`, `-white`; `joint-operations-avatar.png` |
 | **Joint Operations wordmark**: J, the star inside the O, speed bars, the full name and "up to 16 operatives" | The project's name in full | `joint-operations-lockup.svg`, `-mono`, `-light` |
 | **Background scene**: saluting operatives and their commander | Kept in the brand files; not used on the website now (the main menu shows the faint Joint Operations badge) | `joint-operations-salute.svg` |
 
-All marks are drawn in code (`tools/brand/logos.py`, `salute.py`) in the style of unit insignia, with our own shapes. They are not modeled on any Konami logo.
+All marks are drawn in code (`joint-operations-web/tools/brand/logos.py`, `salute.py`) in the style of unit insignia, with our own shapes. They are not modeled on any Konami logo.
 
-Also: `site/assets/img/favicon.svg` (simplified mark for small sizes) and `site/assets/img/og.png` (link previews and the README banner).
+Also: `joint-operations-web/site/assets/img/favicon.svg` (simplified mark for small sizes) and `joint-operations-web/site/assets/img/og.png` (link previews and the README banner).
 
 ## Colors
 | Name | Hex | Use |
@@ -49,4 +49,4 @@ We take the *feel* of tactical espionage games (insignia, radar, field manuals) 
 ```
 python3 tools/brand/build_brand.py
 ```
-The PNGs (avatars, `og.png`) are rendered from `tools/brand/render.html` in a browser at 1200 × 630 and 512 × 512.
+The PNGs (avatars, `og.png`) are rendered from `joint-operations-web/tools/brand/render.html` in a browser at 1200 × 630 and 512 × 512.

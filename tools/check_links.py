@@ -5,8 +5,8 @@ What it checks:
   - Markdown links [text](target) in *.md files (root, docs/, research/, .github/): the target file exists, and
     a #anchor matches a heading in that file (GitHub's heading slugs).
   - Website links "#/docs/<id>" and "#/guides/<id>" anywhere in Markdown, site data (JSON) and site scripts:
-    the id exists in site/data/docs.json or site/data/guides.json.
-  - Paths listed in site/data/docs.json and site/data/guides.json exist.
+    the id exists in data/docs.json or data/guides.json.
+  - Paths listed in data/docs.json and data/guides.json exist.
 External links (http, https, mailto) are not fetched.
 
 Usage: python3 tools/check_links.py        exits 1 and lists every broken link
@@ -70,8 +70,8 @@ def strip_code(text):
 
 
 def main():
-    docs = json.loads((ROOT / "site/data/docs.json").read_text())["docs"]
-    guides = json.loads((ROOT / "site/data/guides.json").read_text())["guides"]
+    docs = json.loads((ROOT / "data/docs.json").read_text())["docs"]
+    guides = json.loads((ROOT / "data/guides.json").read_text())["guides"]
     ids = {"docs": {d["id"] for d in docs} | {g["id"] for g in guides} | {"library"}, "guides": {g["id"] for g in guides}}
     errors = []
 
@@ -98,7 +98,7 @@ def main():
                 if m.group(2) not in ids[m.group(1)]:
                     errors.append(f"{rel}:{n}: no {m.group(1)} entry '{m.group(2)}' on the website")
 
-    for p in list((ROOT / "site/data").glob("*.json")) + list((ROOT / "site/src/js").glob("*.js")):
+    for p in list((ROOT / "data").glob("*.json")):
         for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
             for m in SITE.finditer(line):
                 if m.group(2) not in ids[m.group(1)]:

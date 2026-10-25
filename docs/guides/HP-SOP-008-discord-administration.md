@@ -29,7 +29,7 @@ Never paste the token into chat, an issue or an AI tool ([HP-POL-004](HP-POL-004
 | Announcement | #announcements, short, with a link |
 
 ## Website and release integration
-- **Online count on the website:** Server Settings → **Widget** → turn on **Enable Server Widget**. Copy the **Server ID** shown there into `links.discordGuildId` in `site/data/config.json` (pull request). The home page then shows how many members are online.
+- **Online count on the website:** Server Settings → **Widget** → turn on **Enable Server Widget**. Copy the **Server ID** shown there into `links.discordGuildId` in `joint-operations-web/site/data/config.json` (pull request). The home page then shows how many members are online.
 - **Release announcements:** in #announcements, Edit Channel → Integrations → **Webhooks** → New Webhook → Copy Webhook URL. On GitHub: repository Settings → Secrets and variables → Actions → **New repository secret**, name `DISCORD_RELEASE_WEBHOOK`, paste the URL. Every new release is then posted automatically. Treat the webhook URL like a password.
 
 ## Server settings to keep

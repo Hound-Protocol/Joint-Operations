@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Build the handbook index (site/data/guides.json) from docs/guides/*.md.
+"""Build the handbook index (data/guides.json) from docs/guides/*.md.
 
 Each handbook document starts with a title line and one metadata line:
   # Title
   Code: HP-POL-001 · Version 1.0 · Effective 2026-10-22 · Owner: Administration · For: everyone
 
 The tool also lists every handbook document in the docs library
-(site/data/docs.json, group "Handbook"), so links between documents resolve.
+(data/docs.json, group "Handbook"), so links between documents resolve.
 
 Usage:
   python3 tools/guides_index.py          # write the index
@@ -16,8 +16,8 @@ import json, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "docs/guides"
-OUT = ROOT / "site/data/guides.json"
-DOCS = ROOT / "site/data/docs.json"
+OUT = ROOT / "data/guides.json"
+DOCS = ROOT / "data/docs.json"
 TYPES = {"POL": "Policy", "SOP": "Procedure", "GDE": "Guide"}
 AUDIENCE = {  # who the website lists each document for
     "HP-GDE-001": "Players", "HP-GDE-002": "Players", "HP-GDE-007": "Players", "HP-GDE-008": "Everyone", "HP-GDE-009": "Contributors", "HP-GDE-010": "Contributors", "HP-GDE-011": "Everyone", "HP-GDE-012": "Contributors", "HP-GDE-013": "Contributors", "HP-POL-008": "Everyone", "HP-POL-009": "Everyone", "HP-SOP-011": "Administration", "HP-SOP-012": "Administration", "HP-SOP-010": "Administration",

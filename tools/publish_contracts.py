@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish the planned contracts in site/data/contracts.json as GitHub issues.
+"""Publish the planned contracts in data/contracts.json as GitHub issues.
 
 Creates the labels it needs, then one issue per contract with the goal,
 deliverable, acceptance checklist and background links. Dependencies are
@@ -16,8 +16,8 @@ Usage:
 import json, pathlib, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-REPO = json.loads((ROOT / "site/data/config.json").read_text(encoding="utf-8")).get("repo", "Hound-Protocol/Joint-Operations")
-SITE = "https://hound-protocol.github.io/Joint-Operations/"
+REPO = "Hound-Protocol/Joint-Operations"
+SITE = "https://hound-protocol.github.io/joint-operations-web/"
 MODULES = {"launcher": "Launcher / Injector", "hooks": "Game Hooks", "session": "Session / Host", "net": "Networking", "modapi": "Mod API",
            "lobby": "Lobby App", "web": "Web", "docs": "Docs", "testing": "Testing", "legal": "Legal"}
 LABEL_COLORS = {"contract": "c9a24a", "module": "4a6b7a", "difficulty:easy": "7fbf8a", "difficulty:medium": "e3c45a", "difficulty:hard": "d77a6e", "core": "e9edee"}
@@ -55,8 +55,8 @@ def issue_body(c, numbers, docs):
 
 def main():
     apply = "--apply" in sys.argv
-    contracts = [c for c in json.loads((ROOT / "site/data/contracts.json").read_text(encoding="utf-8"))["contracts"] if c.get("status") != "done"]
-    docs = {d["id"] for d in json.loads((ROOT / "site/data/docs.json").read_text(encoding="utf-8"))["docs"]}
+    contracts = [c for c in json.loads((ROOT / "data/contracts.json").read_text(encoding="utf-8"))["contracts"] if c.get("status") != "done"]
+    docs = {d["id"] for d in json.loads((ROOT / "data/docs.json").read_text(encoding="utf-8"))["docs"]}
     print(f"Repository: {REPO}  ({'APPLY' if apply else 'DRY RUN: nothing will change'})\n")
 
     have = {l["name"] for l in gh(f"repos/{REPO}/labels?per_page=100")}

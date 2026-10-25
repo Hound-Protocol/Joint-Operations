@@ -20,13 +20,13 @@ Usage:
   python3 tools/infractions.py check --login NAME --track contributor   # exit 1 if suspended (used by CI)
   python3 tools/infractions.py verify                                   # validate the file (used by CI)
 
-Data: site/data/infractions.json. Every change goes through a pull request, so the git
+Data: data/infractions.json. Every change goes through a pull request, so the git
 history is the audit trail (who changed what, when, approved by whom).
 """
 import argparse, datetime, json, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-DATA = ROOT / "site/data/infractions.json"
+DATA = ROOT / "data/infractions.json"
 TRACKS = ("contributor", "duty")
 LIMIT = 3            # active infractions that suspend
 CLEAR_AFTER = 5      # clean deliveries (contributor) or clean duties (role) that clear the oldest active infraction

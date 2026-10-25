@@ -2,7 +2,7 @@
 
 Status: Accepted design, waiting for the signing key (the project lead runs `keygen` once) · Updated: 2026-10-23
 
-Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, difficulty and a link to the merged pull request. Contractor grades (E to S++, see [departments.md](departments.md)) are counted from these records. Records are public on the website's [Verify page](https://hound-protocol.github.io/Joint-Operations/#/verify), and anyone can check them.
+Every completed contract earns a **contributor record**: a small signed statement that a person delivered a contract, with the date, difficulty and a link to the merged pull request. Contractor grades (E to S++, see [departments.md](departments.md)) are counted from these records. Records are public on the website's [Verify page](https://hound-protocol.github.io/joint-operations-web/#/verify), and anyone can check them.
 
 Hand-written and AI-assisted work earn the same record; AI agents used are listed in `assisted`, detected from the pull request's commits ([ADR 0015](decisions/0015-ai-agents-and-attribution.md)). What counts is that the contract's acceptance criteria are met and the work passed review.
 
@@ -26,10 +26,10 @@ Hand-written and AI-assisted work earn the same record; AI agents used are liste
 ```
 
 ## How signing works
-- The project has an **Ed25519 signing key**. Its public half is published in `site/data/records-key.json` and shown on the Verify page with its fingerprint.
+- The project has an **Ed25519 signing key**. Its public half is published in `data/records-key.json` and shown on the Verify page with its fingerprint.
 - The signature covers every field except `sig`, written as compact JSON with sorted keys in UTF-8. Changing any field, even one character, breaks the signature.
 - The **private key stays on the signer's own machine**: never committed, never pasted into chat, never stored as a GitHub secret. A leaked key is replaced with a new key ID, and records are re-signed.
-- Records live in the repository (`site/data/records.json`), so their history is public in git as well.
+- Records live in the repository (`data/records.json`), so their history is public in git as well.
 
 ## Checking a record
 - **On the website:** the Verify page checks every record in your browser. You can also paste a record someone shared with you.
@@ -42,13 +42,13 @@ One-time setup on the signer's machine:
 pip install --user cryptography
 python3 tools/records.py keygen --key-id hp-2026
 ```
-This writes the private key to `~/.config/hound-protocol/records-hp-2026.key` (readable only by you) and adds the public key to `site/data/records-key.json`. Back up the private key offline. Commit the public key file through a pull request.
+This writes the private key to `~/.config/hound-protocol/records-hp-2026.key` (readable only by you) and adds the public key to `data/records-key.json`. Back up the private key offline. Commit the public key file through a pull request.
 
 For each completed contract, after its pull request is merged:
 ```
 python3 tools/records.py add --login <github-user> --contract C07 --pr <number> --commit <merge sha>
 ```
-Title and difficulty come from the contract specs. Then open a pull request with the updated `site/data/records.json`.
+Title and difficulty come from the contract specs. Then open a pull request with the updated `data/records.json`.
 
 ## Rules
 - One record per person per contract. Shared contracts get one record for each contributor.
@@ -56,7 +56,7 @@ Title and difficulty come from the contract specs. Then open a pull request with
 - Records carry no money value. If donations open later, any payout rules will be published separately, and records are how contributions will be counted.
 
 ## Staff cards and Hound IDs
-Staff (keycard LV3 and up, [ADR 0011](decisions/0011-keycard-access.md)) also get a signed **staff card** in `site/data/staff.json`, with a permanent **Hound ID** (`HND-0001`, `HND-0002`, …).
+Staff (keycard LV3 and up, [ADR 0011](decisions/0011-keycard-access.md)) also get a signed **staff card** in `data/staff.json`, with a permanent **Hound ID** (`HND-0001`, `HND-0002`, …).
 
 - The card is tied to the person's **numeric GitHub account ID**. Logins can be renamed and later taken by someone else, but the number never changes.
 - It records the keycard level, department, start date and, optionally, the Discord user ID.

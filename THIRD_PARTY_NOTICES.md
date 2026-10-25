@@ -4,7 +4,7 @@ Third-party components used by MGSV: Joint Operations and the website, with thei
 
 | Component | Used for | License | Source |
 |---|---|---|---|
-| Barlow Semi Condensed | Website and brand typeface | SIL Open Font License 1.1 (`site/assets/fonts/OFL-*.txt`) | https://github.com/jpt/barlow |
-| Share Tech Mono | Website labels and brand typeface | SIL Open Font License 1.1 (`site/assets/fonts/OFL-*.txt`) | https://fonts.google.com/specimen/Share+Tech+Mono |
+| Barlow Semi Condensed | Website and brand typeface | SIL Open Font License 1.1 (`joint-operations-web/site/assets/fonts/OFL-*.txt`) | https://github.com/jpt/barlow |
+| Share Tech Mono | Website labels and brand typeface | SIL Open Font License 1.1 (`joint-operations-web/site/assets/fonts/OFL-*.txt`) | https://fonts.google.com/specimen/Share+Tech+Mono |
 
 Build and test tools that are not shipped (Python, fontTools, Playwright, the GitHub CLI) are not listed.

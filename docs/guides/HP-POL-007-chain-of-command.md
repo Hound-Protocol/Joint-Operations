@@ -57,4 +57,4 @@ Appeals are never held against the person who makes them.
 |---|---|
 | GitHub | Branch protection and CODEOWNERS: merges need approval from Development (technical authority). Organization roles are managed by Administration. |
 | Discord | Moderation permissions only for LV6 roles. Department channels are managed by their department. Contractor and Quality roles have no moderation or management permissions. |
-| Website | The Team page shows this hierarchy from `site/data/team.json` (`hierarchy`). Keycard-gated tools follow [ADR 0011](../decisions/0011-keycard-access.md). |
+| Website | The Team page shows this hierarchy from `joint-operations-web/site/data/team.json` (`hierarchy`). Keycard-gated tools follow [ADR 0011](../decisions/0011-keycard-access.md). |

@@ -1,7 +1,7 @@
 # Publishing Contracts as GitHub Issues
 Code: HP-SOP-010 · Version 1.0 · Effective 2026-10-22 · Owner: Development · Used by: Development and Administration, from version 0.1
 
-Before 0.1, contracts are a plan on the website's board, read from `site/data/contracts.json`. When the project opens to contractors ([ADR 0014](../decisions/0014-quiet-until-0-1.md)), they become GitHub issues that people can claim. The board switches to the live issues by itself.
+Before 0.1, contracts are a plan on the website's board, read from `data/contracts.json`. When the project opens to contractors ([ADR 0014](../decisions/0014-quiet-until-0-1.md)), they become GitHub issues that people can claim. The board switches to the live issues by itself.
 
 ## When
 Only on the project lead's go-ahead, normally together with the 0.1 launch.

@@ -1,6 +1,8 @@
 # Contributor Quick Start
 Code: HP-GDE-003 · Version 1.2 · Effective 2026-10-23 · Owner: Development · For: new contributors and contractors
 
+> **Where the website lives:** the site code, its build tools and tests are in the [joint-operations-web](https://github.com/Hound-Protocol/joint-operations-web) repository. This repository (Joint-Operations) holds the mod, the documents and the project records in `data/`. Website commands below run in joint-operations-web, after `python3 tools/sync_mod.py PATH_TO_JOINT_OPERATIONS`.
+
 ## 1. Read first (20 minutes)
 - Not sure where you fit? [Can I Contribute?](HP-GDE-017-can-i-contribute.md)
 - [Contributor Policy](HP-POL-001-contributor-policy.md) and [AI Use Policy](HP-POL-002-ai-use-policy.md), with the practical side in [Working with AI Assistants](HP-GDE-018-working-with-ai-assistants.md)
@@ -39,7 +41,7 @@ Code: HP-GDE-003 · Version 1.2 · Effective 2026-10-23 · Owner: Development ·
 |---|---|
 | `docs/` | Plans, decisions (`docs/decisions/`), this handbook (`docs/guides/`) |
 | `research/` | Sourced research notes |
-| `site/` | The website: `src/js/` modules, `data/` JSON, `assets/` |
+| `joint-operations-web/site/` | The website: `src/js/` modules, `data/` JSON, `assets/` |
 | `tools/` | Build, check, Discord, records and contract tools |
 | `.github/` | CI workflows, templates, CODEOWNERS |
 

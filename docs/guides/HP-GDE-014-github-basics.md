@@ -25,7 +25,7 @@ GitHub is where Joint Operations lives: the code, the documents, the contract bo
 
 ## 3. Find your way around the repository
 Open **github.com/Hound-Protocol/Joint-Operations**.
-- **Code** tab: the files. `docs/` holds the documentation (the handbook is `docs/guides/`), `research/` the research notes, `site/` the website.
+- **Code** tab: the files. `docs/` holds the documentation (the handbook is `docs/guides/`), `research/` the research notes, `joint-operations-web/site/` the website.
 - **Issues** tab: bug reports, questions and contracts. Filter with **Labels → contract** to see the contract board.
 - **Pull requests** tab: work being reviewed.
 - **Actions** tab: the automatic checks, and the jobs that publish the website and releases.

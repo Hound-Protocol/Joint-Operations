@@ -3,7 +3,7 @@
 
 All work goes through the board, whoever does it: contractors, staff, the owner, or the owner with an AI agent.
 A card shows who is working on it while it is in progress, and who completed it (with any AI agent named) once done.
-Edits site/data/contracts.json and regenerates docs/contracts.md. See docs/guides/HP-SOP-003-release.md.
+Edits data/contracts.json and regenerates docs/contracts.md. See docs/guides/HP-SOP-003-release.md.
 
 Usage:
   python3 tools/work.py list [--open]
@@ -16,7 +16,7 @@ Usage:
 import argparse, datetime, json, pathlib, re, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SRC = ROOT / "site/data/contracts.json"
+SRC = ROOT / "data/contracts.json"
 MODULES = ("launcher", "hooks", "session", "net", "modapi", "lobby", "web", "docs", "testing", "legal")
 LOGIN = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
 

@@ -6,7 +6,7 @@ Code: HP-SOP-004 · Version 1.2 · Effective 2026-10-23 · Owner: Administration
 pip install --user cryptography
 python3 tools/records.py keygen --key-id hp-2026
 ```
-Commit `site/data/records-key.json` in a pull request. Back up the private key (`~/.config/hound-protocol/`) offline, for example on an encrypted USB drive. Never upload it anywhere.
+Commit `data/records-key.json` in a pull request. Back up the private key (`~/.config/hound-protocol/`) offline, for example on an encrypted USB drive. Never upload it anywhere.
 
 ## After each merged contract
 1. Find the merged pull request number and its merge commit.
@@ -14,7 +14,7 @@ Commit `site/data/records-key.json` in a pull request. Back up the private key (
    ```
    python3 tools/records.py add --login <github-user> --contract <Cxx> --pr <number> --commit <sha>
    ```
-3. Open a pull request with the updated `site/data/records.json`. CI verifies the signature.
+3. Open a pull request with the updated `data/records.json`. CI verifies the signature.
 4. When it merges, the contributor appears on the Verify page with their grades.
 
 ## Grade roles on Discord
@@ -29,7 +29,7 @@ Records are never deleted. Issue a correct record and explain in the pull reques
 A certificate is a signed summary of everything a person has done: their records, grades per field, clearance and AI tools credited ([ADR 0020](../decisions/0020-certificates-of-service.md)).
 1. Make sure all of the person's completed contracts have signed records.
 2. On the owner's computer: `python3 tools/records.py certify --login <github-name> [--name "Display name"] [--statement "One line of thanks or context"]`.
-3. Commit `site/data/certificates.json` in a pull request; CI checks the signature.
+3. Commit `data/certificates.json` in a pull request; CI checks the signature.
 4. Send the person the link: `#/verify/HPC-NNNN`. They can print it or save it as PDF.
 5. Issue a new certificate when their work grows. To withdraw one: `python3 tools/records.py certificate-revoke --id HPC-NNNN --reason "..."`.
 

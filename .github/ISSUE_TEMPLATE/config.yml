@@ -4,7 +4,7 @@ contact_links:
     url: https://discord.gg/QTpJ89kMCM
     about: Ask questions and get help on the Discord. Issues are for bugs, mod submissions and appeals.
   - name: Documentation
-    url: https://hound-protocol.github.io/Joint-Operations/#/docs
+    url: https://hound-protocol.github.io/joint-operations-web/#/docs
     about: The handbook, plans, decisions and research. Many answers are already there.
   - name: Security problem
     url: https://github.com/Hound-Protocol/Joint-Operations/security/advisories/new
