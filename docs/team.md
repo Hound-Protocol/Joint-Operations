@@ -1,16 +1,9 @@
 # Team: Hound Protocol
 
-Hound Protocol is a community-focused organization that builds ambitious projects. It is not a company or a studio yet.
+Hound Protocol is a non-commercial, community-focused organization. We build ambitious projects, one of them being MGSV: Joint Operations.
+It is not a company or a studio.
 
-| Project | What | Status |
-|---|---|---|
-| **Our first video game** | Hound Protocol's main project: an original, atmospheric offroad trucking game, set in a world of our own | Coming soon |
-| **MGSV: Joint Operations** | A multiplayer mod: online play for up to 16 players in Metal Gear Solid V: The Phantom Pain, on PC | In development, 0.1 first |
-| **Lost Planet 2 multiplayer** | A multiplayer mod: modernizing how Lost Planet 2 is played online, possibly other Lost Planet games too | Planned, after Joint Operations |
-
-Our mods are unofficial, free and non-commercial, and use no game files. The game is our own, with no other company's characters or world.
-
-Status: Current · Updated: 2026-10-24 · Structure: [departments.md](departments.md)
+Status: Current · Updated: 2026-10-23 · Structure: [departments.md](departments.md)
 
 ## Departments
 | Department | Members | Open |
